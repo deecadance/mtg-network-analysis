@@ -1,0 +1,4638 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mardu Humans | Reigning Victor / Nightblade Brigade | Tarkir Dragonstorm Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "TDM",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 9,
+    "fit_summary": {
+      "deck_count": 126902,
+      "cluster_feature_count": 274,
+      "svd_components": 48,
+      "svd_explained_variance": 0.36968672275543213,
+      "k_search": [],
+      "chosen_k": 9,
+      "label_counts": {
+        "3": 15854,
+        "2": 12817,
+        "8": 16514,
+        "5": 7372,
+        "1": 18554,
+        "4": 12416,
+        "6": 16554,
+        "0": 14930,
+        "7": 11891
+      }
+    },
+    "deck_count": 126902,
+    "game_count": 552428
+  },
+  "segment": {
+    "cluster_id": 3,
+    "title": "Mardu Humans | Reigning Victor / Nightblade Brigade",
+    "color_signature": "WBR",
+    "color_name": "Mardu Humans",
+    "deck_count": 15854,
+    "draft_count": 13447,
+    "games": 70132,
+    "wins": 38457,
+    "win_rate": 0.548351679689728,
+    "draft_match_win_rate": 0.5446337868967392,
+    "top_deck_colors": [
+      {
+        "colors": "WBR",
+        "count": 11823
+      },
+      {
+        "colors": "WBRG",
+        "count": 1393
+      },
+      {
+        "colors": "WUBR",
+        "count": 1160
+      },
+      {
+        "colors": "WB",
+        "count": 644
+      },
+      {
+        "colors": "WUBRG",
+        "count": 504
+      },
+      {
+        "colors": "WBG",
+        "count": 249
+      },
+      {
+        "colors": "BR",
+        "count": 57
+      },
+      {
+        "colors": "WUB",
+        "count": 11
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "WBR",
+        "count": 12615
+      },
+      {
+        "colors": "WB",
+        "count": 2253
+      },
+      {
+        "colors": "BR",
+        "count": 218
+      },
+      {
+        "colors": "WBRG",
+        "count": 207
+      },
+      {
+        "colors": "WUBR",
+        "count": 188
+      },
+      {
+        "colors": "WBG",
+        "count": 114
+      },
+      {
+        "colors": "WR",
+        "count": 108
+      },
+      {
+        "colors": "WUBRG",
+        "count": 68
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Reigning Victor",
+        "score": 12035.269831971384,
+        "z_score": 137.6561099099742,
+        "log_odds": 2.9233281220139657,
+        "cluster_prevalence": 0.4814814230883476,
+        "global_prevalence": 0.1018250001917193,
+        "lift": 4.728518754547501,
+        "support_decks": 7644
+      },
+      {
+        "card": "Nightblade Brigade",
+        "score": 10028.015352073913,
+        "z_score": 124.26756663563295,
+        "log_odds": 2.6948204374062907,
+        "cluster_prevalence": 0.41019490346000764,
+        "global_prevalence": 0.09057239976175245,
+        "lift": 4.528917247848253,
+        "support_decks": 6512
+      },
+      {
+        "card": "Mardu Devotee",
+        "score": 9343.419590762851,
+        "z_score": 103.87991643930846,
+        "log_odds": 1.8819632216051358,
+        "cluster_prevalence": 0.5097036938475014,
+        "global_prevalence": 0.1833433135306598,
+        "lift": 2.7800506276017836,
+        "support_decks": 8090
+      },
+      {
+        "card": "Bearer of Glory",
+        "score": 8001.914066165805,
+        "z_score": 93.57203969774291,
+        "log_odds": 1.7011962060642742,
+        "cluster_prevalence": 0.46077298701824854,
+        "global_prevalence": 0.17565246057572448,
+        "lift": 2.6232082688053633,
+        "support_decks": 7313
+      },
+      {
+        "card": "Bone-Cairn Butcher",
+        "score": 7433.545701123959,
+        "z_score": 109.17527691493063,
+        "log_odds": 3.2753951335355627,
+        "cluster_prevalence": 0.2920120521065852,
+        "global_prevalence": 0.04995818510454981,
+        "lift": 5.845129311552813,
+        "support_decks": 4636
+      },
+      {
+        "card": "Worthy Cost",
+        "score": 7402.7976600703105,
+        "z_score": 103.87398009171974,
+        "log_odds": 2.3354026920250335,
+        "cluster_prevalence": 0.3199563857398457,
+        "global_prevalence": 0.0781220435437219,
+        "lift": 4.095596725663972,
+        "support_decks": 5079
+      },
+      {
+        "card": "Hardened Tactician",
+        "score": 7213.4714535433095,
+        "z_score": 107.44854487666946,
+        "log_odds": 3.0873569589667698,
+        "cluster_prevalence": 0.28389243512151296,
+        "global_prevalence": 0.05105348387559416,
+        "lift": 5.560686824297728,
+        "support_decks": 4507
+      },
+      {
+        "card": "Salt Road Packbeast",
+        "score": 7107.762719300739,
+        "z_score": 81.88253751615055,
+        "log_odds": 1.4531815756001525,
+        "cluster_prevalence": 0.47481351903552893,
+        "global_prevalence": 0.21207369249960878,
+        "lift": 2.2389081523461702,
+        "support_decks": 7535
+      },
+      {
+        "card": "Venerated Stormsinger",
+        "score": 6891.987318778859,
+        "z_score": 103.04929396583164,
+        "log_odds": 2.6096634106363705,
+        "cluster_prevalence": 0.28176640779610457,
+        "global_prevalence": 0.05978435616887872,
+        "lift": 4.713045784087252,
+        "support_decks": 4473
+      },
+      {
+        "card": "Fortress Kin-Guard",
+        "score": 6557.20214226359,
+        "z_score": 79.48853764613284,
+        "log_odds": 1.4377231690072898,
+        "cluster_prevalence": 0.4288093849753989,
+        "global_prevalence": 0.18601462413693343,
+        "lift": 2.30524555241277,
+        "support_decks": 6805
+      },
+      {
+        "card": "Mardu Monument",
+        "score": 6524.846163230064,
+        "z_score": 92.8151575499796,
+        "log_odds": 1.984232072202977,
+        "cluster_prevalence": 0.31134379766727166,
+        "global_prevalence": 0.0901454339250879,
+        "lift": 3.453794430963665,
+        "support_decks": 4942
+      },
+      {
+        "card": "Shock Brigade",
+        "score": 6510.362079760447,
+        "z_score": 79.82317952458502,
+        "log_odds": 1.453277115929434,
+        "cluster_prevalence": 0.4191642292707455,
+        "global_prevalence": 0.17874140971336244,
+        "lift": 2.345087408356774,
+        "support_decks": 6652
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Reigning Victor",
+        "label": "Reigning Victor",
+        "color_identity": "WBR",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Orc Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 9969,
+        "win_rate": 0.5486006620523624,
+        "standalone_delta": 0.0002489823626343757,
+        "dependency_score": 0.585534631774543,
+        "degree": 7,
+        "signpost_score": 12035.269831971384,
+        "signpost_lift": 4.728518754547501,
+        "deck_prevalence": 0.4814814230883476,
+        "draft_weight": 11485.0,
+        "draft_drafts": 7703,
+        "draft_presence": 0.5728415259909273,
+        "draft_win_rate": 0.5510838083147827,
+        "draft_win_lift": 0.006450021418043406,
+        "analysis_score_raw": 12045.844312874095,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 79.3667816114196,
+        "pick_priority_score": 7.455735989999803,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Reigning%20Victor%22",
+        "community": 0,
+        "x": 1134.9602543035978,
+        "y": 479.1774282298305,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Nightblade Brigade",
+        "label": "Nightblade Brigade",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Goblin Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 7636,
+        "win_rate": 0.5263226820324778,
+        "standalone_delta": -0.022028997657250193,
+        "dependency_score": 0.8506881204116783,
+        "degree": 9,
+        "signpost_score": 10028.015352073913,
+        "signpost_lift": 4.528917247848253,
+        "deck_prevalence": 0.41019490346000764,
+        "draft_weight": 8861.0,
+        "draft_drafts": 6536,
+        "draft_presence": 0.48605636945043507,
+        "draft_win_rate": 0.5423713143561937,
+        "draft_win_lift": -0.002262472540545568,
+        "analysis_score_raw": 10043.327738241323,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Nightblade%20Brigade%22",
+        "community": 0,
+        "x": 1199.9548481727777,
+        "y": 509.55973358525017,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Mardu Devotee",
+        "label": "Mardu Devotee",
+        "color_identity": "WBR",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Creature - Human Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 10234,
+        "win_rate": 0.5594098104358022,
+        "standalone_delta": 0.011058130746074202,
+        "dependency_score": 0.09236400552173492,
+        "degree": 8,
+        "signpost_score": 9343.419590762851,
+        "signpost_lift": 2.7800506276017836,
+        "deck_prevalence": 0.5097036938475014,
+        "draft_weight": 11024.0,
+        "draft_drafts": 7497,
+        "draft_presence": 0.5575221238938053,
+        "draft_win_rate": 0.5570093131818344,
+        "draft_win_lift": 0.012375526285095195,
+        "analysis_score_raw": 9346.630281166692,
+        "analysis_score": 9.962649161839266,
+        "pick_priority_score_raw": 188.2624676906407,
+        "pick_priority_score": 8.911553445337065,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mardu%20Devotee%22",
+        "community": 4,
+        "x": 670.4842791560823,
+        "y": 801.1777635203606,
+        "analysis_radius": 14.933301389816538,
+        "pick_radius": 30.0,
+        "radius": 14.933301389816538
+      },
+      {
+        "id": "Bearer of Glory",
+        "label": "Bearer of Glory",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Human Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 8659,
+        "win_rate": 0.5314701466682065,
+        "standalone_delta": -0.01688153302152151,
+        "dependency_score": 0.09602542788081844,
+        "degree": 10,
+        "signpost_score": 8001.914066165805,
+        "signpost_lift": 2.6232082688053633,
+        "deck_prevalence": 0.46077298701824854,
+        "draft_weight": 9289.0,
+        "draft_drafts": 6774,
+        "draft_presence": 0.5037554844946829,
+        "draft_win_rate": 0.5463068546124927,
+        "draft_win_lift": 0.0016730677157534846,
+        "analysis_score_raw": 8003.642523867659,
+        "analysis_score": 9.847521977277317,
+        "pick_priority_score_raw": 16.005237936726125,
+        "pick_priority_score": 4.81602678509989,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bearer%20of%20Glory%22",
+        "community": 0,
+        "x": 1149.706773282282,
+        "y": 610.1172193226992,
+        "analysis_radius": 14.456915403709464,
+        "pick_radius": 30.0,
+        "radius": 14.456915403709464
+      },
+      {
+        "id": "Bone-Cairn Butcher",
+        "label": "Bone-Cairn Butcher",
+        "color_identity": "WBR",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Demon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 5082,
+        "win_rate": 0.5312868949232585,
+        "standalone_delta": -0.017064784766469443,
+        "dependency_score": 0.08724738789923019,
+        "degree": 9,
+        "signpost_score": 7433.545701123959,
+        "signpost_lift": 5.845129311552813,
+        "deck_prevalence": 0.2920120521065852,
+        "draft_weight": 4821.0,
+        "draft_drafts": 4042,
+        "draft_presence": 0.30058749163382165,
+        "draft_win_rate": 0.5359563552891624,
+        "draft_win_lift": -0.008677431607576835,
+        "analysis_score_raw": 7435.116154106145,
+        "analysis_score": 9.792836609312369,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bone-Cairn%20Butcher%22",
+        "community": 2,
+        "x": 1076.5715342417204,
+        "y": 781.0697637416362,
+        "analysis_radius": 14.140905964372287,
+        "pick_radius": 30.0,
+        "radius": 14.140905964372287
+      },
+      {
+        "id": "Worthy Cost",
+        "label": "Worthy Cost",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 5404,
+        "win_rate": 0.5201702442635086,
+        "standalone_delta": -0.028181435426219426,
+        "dependency_score": 0.7841152158228187,
+        "degree": 7,
+        "signpost_score": 7402.7976600703105,
+        "signpost_lift": 4.095596725663972,
+        "deck_prevalence": 0.3199563857398457,
+        "draft_weight": 7375.0,
+        "draft_drafts": 5846,
+        "draft_presence": 0.434743809028036,
+        "draft_win_rate": 0.5373637628047792,
+        "draft_win_lift": -0.007270024091960092,
+        "analysis_score_raw": 7416.911733955121,
+        "analysis_score": 9.791017220078249,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Worthy%20Cost%22",
+        "community": 0,
+        "x": 1200.5104963904057,
+        "y": 563.0975505806389,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Hardened Tactician",
+        "label": "Hardened Tactician",
+        "color_identity": "WB",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Human Warrior",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(21, 11, 0)"
+          ],
+          "id": "WB"
+        },
+        "draw_games": 4757,
+        "win_rate": 0.5385747319739331,
+        "standalone_delta": -0.009776947715794848,
+        "dependency_score": 0.12954230702797342,
+        "degree": 13,
+        "signpost_score": 7213.4714535433095,
+        "signpost_lift": 5.560686824297728,
+        "deck_prevalence": 0.28389243512151296,
+        "draft_weight": 4569.0,
+        "draft_drafts": 3954,
+        "draft_presence": 0.29404328102922583,
+        "draft_win_rate": 0.5423886686915755,
+        "draft_win_lift": -0.0022451182051637097,
+        "analysis_score_raw": 7215.803215069813,
+        "analysis_score": 9.770615521491386,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Hardened%20Tactician%22",
+        "community": 2,
+        "x": 948.5464051730212,
+        "y": 811.8674534924018,
+        "analysis_radius": 15.663523053007044,
+        "pick_radius": 30.0,
+        "radius": 15.663523053007044
+      },
+      {
+        "id": "Salt Road Packbeast",
+        "label": "Salt Road Packbeast",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 6.0,
+        "types": "Creature - Beast",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 10134,
+        "win_rate": 0.5700611801855141,
+        "standalone_delta": 0.021709500495786127,
+        "dependency_score": 0.05899923351217056,
+        "degree": 8,
+        "signpost_score": 7107.762719300739,
+        "signpost_lift": 2.2389081523461702,
+        "deck_prevalence": 0.47481351903552893,
+        "draft_weight": 9726.0,
+        "draft_drafts": 6716,
+        "draft_presence": 0.4994422547780174,
+        "draft_win_rate": 0.5538963821220234,
+        "draft_win_lift": 0.009262595225284165,
+        "analysis_score_raw": 7111.864035573369,
+        "analysis_score": 9.759847309849896,
+        "pick_priority_score_raw": 195.28689594434772,
+        "pick_priority_score": 8.973493479643079,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Salt%20Road%20Packbeast%22",
+        "community": 3,
+        "x": 727.8074022886522,
+        "y": 751.0666428823956,
+        "analysis_radius": 14.317994933706377,
+        "pick_radius": 30.0,
+        "radius": 14.317994933706377
+      },
+      {
+        "id": "Venerated Stormsinger",
+        "label": "Venerated Stormsinger",
+        "color_identity": "B",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Orc Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 5181,
+        "win_rate": 0.5693881490059834,
+        "standalone_delta": 0.02103646931625547,
+        "dependency_score": 0.48820622116816675,
+        "degree": 8,
+        "signpost_score": 6891.987318778859,
+        "signpost_lift": 4.713045784087252,
+        "deck_prevalence": 0.28176640779610457,
+        "draft_weight": 4516.0,
+        "draft_drafts": 3783,
+        "draft_presence": 0.2813266899680226,
+        "draft_win_rate": 0.5550700111536161,
+        "draft_win_lift": 0.010436224256876847,
+        "analysis_score_raw": 6903.720136464162,
+        "analysis_score": 9.737802049980674,
+        "pick_priority_score_raw": 185.60889195300777,
+        "pick_priority_score": 8.887554516452807,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Venerated%20Stormsinger%22",
+        "community": 0,
+        "x": 1152.5270606538118,
+        "y": 572.1711414455756,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Fortress Kin-Guard",
+        "label": "Fortress Kin-Guard",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Dog Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 8541,
+        "win_rate": 0.5521601685985248,
+        "standalone_delta": 0.0038084889087968143,
+        "dependency_score": 0.10045988133598813,
+        "degree": 6,
+        "signpost_score": 6557.20214226359,
+        "signpost_lift": 2.30524555241277,
+        "deck_prevalence": 0.4288093849753989,
+        "draft_weight": 9109.0,
+        "draft_drafts": 6360,
+        "draft_presence": 0.4729679482412434,
+        "draft_win_rate": 0.5568707595937682,
+        "draft_win_lift": 0.012236972697028947,
+        "analysis_score_raw": 6559.543608574869,
+        "analysis_score": 9.699848379870094,
+        "pick_priority_score_raw": 129.21249023199567,
+        "pick_priority_score": 8.27593600202274,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fortress%20Kin-Guard%22",
+        "community": 3,
+        "x": 828.7166848946126,
+        "y": 819.190364326092,
+        "analysis_radius": 14.826022618079397,
+        "pick_radius": 30.0,
+        "radius": 14.826022618079397
+      },
+      {
+        "id": "Mardu Monument",
+        "label": "Mardu Monument",
+        "color_identity": "WBR",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 5551,
+        "win_rate": 0.5880021617726536,
+        "standalone_delta": 0.03965048208292565,
+        "dependency_score": 0.26977246977667724,
+        "degree": 7,
+        "signpost_score": 6524.846163230064,
+        "signpost_lift": 3.453794430963665,
+        "deck_prevalence": 0.31134379766727166,
+        "draft_weight": 5232.0,
+        "draft_drafts": 4414,
+        "draft_presence": 0.32825165464415856,
+        "draft_win_rate": 0.5669753813384142,
+        "draft_win_lift": 0.02234159444167494,
+        "analysis_score_raw": 6535.253135177654,
+        "analysis_score": 9.697095012400206,
+        "pick_priority_score_raw": 365.29376994475484,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mardu%20Monument%22",
+        "community": 0,
+        "x": 1144.3260300473626,
+        "y": 536.6994986061751,
+        "analysis_radius": 22.892585426521293,
+        "pick_radius": 30.0,
+        "radius": 22.892585426521293
+      },
+      {
+        "id": "Shock Brigade",
+        "label": "Shock Brigade",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Goblin Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 8550,
+        "win_rate": 0.5326315789473685,
+        "standalone_delta": -0.015720100742359522,
+        "dependency_score": 0.0901210758878377,
+        "degree": 5,
+        "signpost_score": 6510.362079760447,
+        "signpost_lift": 2.345087408356774,
+        "deck_prevalence": 0.4191642292707455,
+        "draft_weight": 9462.0,
+        "draft_drafts": 6370,
+        "draft_presence": 0.4737116085372202,
+        "draft_win_rate": 0.5455606036138337,
+        "draft_win_lift": 0.0009268167170944919,
+        "analysis_score_raw": 6511.984259126428,
+        "analysis_score": 9.694447832099593,
+        "pick_priority_score_raw": 8.392114894166053,
+        "pick_priority_score": 3.8070212791818396,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Shock%20Brigade%22",
+        "community": 1,
+        "x": 1184.48319869756,
+        "y": 646.8094476209462,
+        "analysis_radius": 14.244358731962157,
+        "pick_radius": 30.0,
+        "radius": 14.244358731962157
+      },
+      {
+        "id": "Sonic Shrieker",
+        "label": "Sonic Shrieker",
+        "color_identity": "WBR",
+        "rarity": "uncommon",
+        "mana_value": 5.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 6236,
+        "win_rate": 0.613855035279025,
+        "standalone_delta": 0.06550335558929699,
+        "dependency_score": 0.27183494253598794,
+        "degree": 8,
+        "signpost_score": 6405.475619066498,
+        "signpost_lift": 3.1164716395184096,
+        "deck_prevalence": 0.32742277334268016,
+        "draft_weight": 5249.0,
+        "draft_drafts": 4397,
+        "draft_presence": 0.326987432140998,
+        "draft_win_rate": 0.5670210241550844,
+        "draft_win_lift": 0.022387237258345127,
+        "analysis_score_raw": 6419.539117814648,
+        "analysis_score": 9.683836560705862,
+        "pick_priority_score_raw": 469.3231372307506,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sonic%20Shrieker%22",
+        "community": 4,
+        "x": 751.8666721375826,
+        "y": 714.933748531795,
+        "analysis_radius": 24.3887424887069,
+        "pick_radius": 30.0,
+        "radius": 24.3887424887069
+      },
+      {
+        "id": "Marshal of the Lost",
+        "label": "Marshal of the Lost",
+        "color_identity": "WB",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Orc Warrior",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(21, 11, 0)"
+          ],
+          "id": "WB"
+        },
+        "draw_games": 4447,
+        "win_rate": 0.5466606701146841,
+        "standalone_delta": -0.001691009575043867,
+        "dependency_score": 0.2771851890893127,
+        "degree": 7,
+        "signpost_score": 6275.942367076881,
+        "signpost_lift": 4.680505016269617,
+        "deck_prevalence": 0.2580239097629762,
+        "draft_weight": 4079.0,
+        "draft_drafts": 3526,
+        "draft_presence": 0.2622146203614189,
+        "draft_win_rate": 0.5419470821304746,
+        "draft_win_lift": -0.002686704766264647,
+        "analysis_score_raw": 6280.931700480489,
+        "analysis_score": 9.667636811500934,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Marshal%20of%20the%20Lost%22",
+        "community": 2,
+        "x": 982.5547103556801,
+        "y": 912.5913450194124,
+        "analysis_radius": 20.97866680721526,
+        "pick_radius": 30.0,
+        "radius": 20.97866680721526
+      },
+      {
+        "id": "Coordinated Maneuver",
+        "label": "Coordinated Maneuver",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 6742,
+        "win_rate": 0.5493918718481163,
+        "standalone_delta": 0.0010401921583883533,
+        "dependency_score": 0.08710025228152989,
+        "degree": 5,
+        "signpost_score": 5859.15401287278,
+        "signpost_lift": 2.4047470483861364,
+        "deck_prevalence": 0.37127441650663945,
+        "draft_weight": 7691.0,
+        "draft_drafts": 5954,
+        "draft_presence": 0.4427753402245854,
+        "draft_win_rate": 0.5491246188143191,
+        "draft_win_lift": 0.004490831917579818,
+        "analysis_score_raw": 5860.867444316023,
+        "analysis_score": 9.616264720229092,
+        "pick_priority_score_raw": 44.55461011628228,
+        "pick_priority_score": 6.490856779190548,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Coordinated%20Maneuver%22",
+        "community": 4,
+        "x": 634.4805381782521,
+        "y": 631.1777635203606,
+        "analysis_radius": 14.192819650846436,
+        "pick_radius": 30.0,
+        "radius": 14.192819650846436
+      },
+      {
+        "id": "Dragonback Lancer",
+        "label": "Dragonback Lancer",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Human Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 4490,
+        "win_rate": 0.5158129175946548,
+        "standalone_delta": -0.032538762095073226,
+        "dependency_score": 0.23826316034648926,
+        "degree": 9,
+        "signpost_score": 5368.784966274713,
+        "signpost_lift": 3.5320339566946917,
+        "deck_prevalence": 0.2544709843597013,
+        "draft_weight": 6826.0,
+        "draft_drafts": 5388,
+        "draft_presence": 0.4006841674722987,
+        "draft_win_rate": 0.5409988889569015,
+        "draft_win_lift": -0.0036348979398377335,
+        "analysis_score_raw": 5373.07370316095,
+        "analysis_score": 9.551774683529423,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dragonback%20Lancer%22",
+        "community": 1,
+        "x": 1186.49650544495,
+        "y": 759.8719771495904,
+        "analysis_radius": 19.577473772473613,
+        "pick_radius": 30.0,
+        "radius": 19.577473772473613
+      },
+      {
+        "id": "Unburied Earthcarver",
+        "label": "Unburied Earthcarver",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Human Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 3939,
+        "win_rate": 0.5003808073115004,
+        "standalone_delta": -0.047970872378227614,
+        "dependency_score": 0.8704719202372255,
+        "degree": 7,
+        "signpost_score": 5327.602924504117,
+        "signpost_lift": 4.250858693183391,
+        "deck_prevalence": 0.22881559995250272,
+        "draft_weight": 7404.0,
+        "draft_drafts": 5758,
+        "draft_presence": 0.4281995984234402,
+        "draft_win_rate": 0.5427792849998843,
+        "draft_win_lift": -0.0018545018968549876,
+        "analysis_score_raw": 5343.271419068387,
+        "analysis_score": 9.547646911342511,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Unburied%20Earthcarver%22",
+        "community": 1,
+        "x": 1016.4965054449499,
+        "y": 687.5242166738932,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Defibrillating Current",
+        "label": "Defibrillating Current",
+        "color_identity": "WBR",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 3776,
+        "win_rate": 0.5532309322033898,
+        "standalone_delta": 0.004879252513661836,
+        "dependency_score": 0.12902655466778676,
+        "degree": 7,
+        "signpost_score": 4964.465979651552,
+        "signpost_lift": 4.01079859238395,
+        "deck_prevalence": 0.219682557258888,
+        "draft_weight": 3528.0,
+        "draft_drafts": 3107,
+        "draft_presence": 0.23105525395999107,
+        "draft_win_rate": 0.5436325827258661,
+        "draft_win_lift": -0.0010012041708731267,
+        "analysis_score_raw": 4967.471552987485,
+        "analysis_score": 9.49352569374408,
+        "pick_priority_score_raw": 19.462138761871696,
+        "pick_priority_score": 5.13055740680155,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Defibrillating%20Current%22",
+        "community": 0,
+        "x": 1173.0145371497626,
+        "y": 649.1774282298305,
+        "analysis_radius": 15.913314856291723,
+        "pick_radius": 30.0,
+        "radius": 15.913314856291723
+      },
+      {
+        "id": "Inevitable Defeat",
+        "label": "Inevitable Defeat",
+        "color_identity": "WBR",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 2673,
+        "win_rate": 0.6169098391320613,
+        "standalone_delta": 0.06855815944233334,
+        "dependency_score": 0.17014871777408624,
+        "degree": 11,
+        "signpost_score": 3241.1181098422553,
+        "signpost_lift": 3.618055176672121,
+        "deck_prevalence": 0.15354865918219246,
+        "draft_weight": 2184.0,
+        "draft_drafts": 2044,
+        "draft_presence": 0.15200416449765747,
+        "draft_win_rate": 0.56683747339062,
+        "draft_win_lift": 0.022203686493880714,
+        "analysis_score_raw": 3253.7789290841156,
+        "analysis_score": 9.179553824603547,
+        "pick_priority_score_raw": 341.77246814495714,
+        "pick_priority_score": 9.921036870405112,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Inevitable%20Defeat%22",
+        "community": 1,
+        "x": 1098.0470009211533,
+        "y": 719.8134877102158,
+        "analysis_radius": 20.896052609195436,
+        "pick_radius": 30.0,
+        "radius": 20.896052609195436
+      },
+      {
+        "id": "Elspeth, Storm Slayer",
+        "label": "Elspeth, Storm Slayer",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Legendary Planeswalker - Elspeth",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 739,
+        "win_rate": 0.6711772665764547,
+        "standalone_delta": 0.12282558688672673,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 354.3561294474735,
+        "signpost_lift": 1.6191982565249217,
+        "deck_prevalence": 0.042970525641743126,
+        "draft_weight": 580.0,
+        "draft_drafts": 575,
+        "draft_presence": 0.04276046701866587,
+        "draft_win_rate": 0.591384501123141,
+        "draft_win_lift": 0.04675071422640176,
+        "analysis_score_raw": 371.55171161161525,
+        "analysis_score": 7.570677516714368,
+        "pick_priority_score_raw": 291.0650566920399,
+        "pick_priority_score": 9.648937586593526,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Elspeth%2C%20Storm%20Slayer%22",
+        "community": 5,
+        "x": 635.0,
+        "y": 560.0,
+        "analysis_radius": 17.755407278769972,
+        "pick_radius": 30.0,
+        "radius": 17.755407278769972
+      },
+      {
+        "id": "Sage of the Skies",
+        "label": "Sage of the Skies",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Human Monk",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1309,
+        "win_rate": 0.6287242169595111,
+        "standalone_delta": 0.0803725372697831,
+        "dependency_score": 0.12567557406767285,
+        "degree": 7,
+        "signpost_score": 323.9865334837835,
+        "signpost_lift": 1.2880821394138353,
+        "deck_prevalence": 0.07336121328952529,
+        "draft_weight": 1035.0,
+        "draft_drafts": 1007,
+        "draft_presence": 0.07488659180486354,
+        "draft_win_rate": 0.5803811431419829,
+        "draft_win_lift": 0.03574735624524361,
+        "analysis_score_raw": 337.50084903477125,
+        "analysis_score": 7.499531348581586,
+        "pick_priority_score_raw": 261.02364970601155,
+        "pick_priority_score": 9.46445327121441,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sage%20of%20the%20Skies%22",
+        "community": 2,
+        "x": 919.8853642670223,
+        "y": 742.5913450194124,
+        "analysis_radius": 19.94481021627429,
+        "pick_radius": 30.0,
+        "radius": 19.94481021627429
+      },
+      {
+        "id": "All-Out Assault",
+        "label": "All-Out Assault",
+        "color_identity": "WBR",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 1262,
+        "win_rate": 0.6077654516640254,
+        "standalone_delta": 0.059413771974297425,
+        "dependency_score": 0.11953760613283217,
+        "degree": 3,
+        "signpost_score": 1633.1453934047797,
+        "signpost_lift": 3.7167655024884754,
+        "deck_prevalence": 0.07702280031228431,
+        "draft_weight": 1069.0,
+        "draft_drafts": 1050,
+        "draft_presence": 0.07808433107756377,
+        "draft_win_rate": 0.5557263588264802,
+        "draft_win_lift": 0.011092571929741002,
+        "analysis_score_raw": 1643.6149983915723,
+        "analysis_score": 8.672865898823986,
+        "pick_priority_score_raw": 180.36377349722204,
+        "pick_priority_score": 8.839096955732485,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22All-Out%20Assault%22",
+        "community": 3,
+        "x": 897.8074022886522,
+        "y": 865.8329232461595,
+        "analysis_radius": 18.571111279368317,
+        "pick_radius": 30.0,
+        "radius": 18.571111279368317
+      },
+      {
+        "id": "Rally the Monastery",
+        "label": "Rally the Monastery",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3134,
+        "win_rate": 0.5807275047862157,
+        "standalone_delta": 0.03237582509648773,
+        "dependency_score": 0.13699877644923525,
+        "degree": 9,
+        "signpost_score": 1600.0364898104729,
+        "signpost_lift": 1.6444387335026154,
+        "deck_prevalence": 0.1799208275371118,
+        "draft_weight": 2853.0,
+        "draft_drafts": 2558,
+        "draft_presence": 0.19022830371086488,
+        "draft_win_rate": 0.5541245634390547,
+        "draft_win_lift": 0.009490776542315449,
+        "analysis_score_raw": 1607.0350833000673,
+        "analysis_score": 8.65616974464309,
+        "pick_priority_score_raw": 146.95880054484394,
+        "pick_priority_score": 8.493095278991902,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Rally%20the%20Monastery%22",
+        "community": 1,
+        "x": 1086.424307038192,
+        "y": 764.7963301328814,
+        "analysis_radius": 17.712626332479296,
+        "pick_radius": 30.0,
+        "radius": 17.712626332479296
+      },
+      {
+        "id": "Reverberating Summons",
+        "label": "Reverberating Summons",
+        "color_identity": "R",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 142,
+        "win_rate": 0.4295774647887324,
+        "standalone_delta": -0.1187742149009956,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -71.24931430676152,
+        "signpost_lift": 0.6893122499449972,
+        "deck_prevalence": 0.011232686528281384,
+        "draft_weight": 1462.0,
+        "draft_drafts": 1349,
+        "draft_presence": 0.10031977392727003,
+        "draft_win_rate": 0.5369781059503224,
+        "draft_win_lift": -0.007655680946416887,
+        "analysis_score_raw": -71.24931430676152,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Reverberating%20Summons%22",
+        "community": 6,
+        "x": 685.610496490639,
+        "y": 404.23690814249466,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Ruinous Ultimatum",
+        "label": "Ruinous Ultimatum",
+        "color_identity": "WBR",
+        "rarity": "rare",
+        "mana_value": 7.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 173,
+        "win_rate": 0.5491329479768786,
+        "standalone_delta": 0.0007812682871506382,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 244.45681683609473,
+        "signpost_lift": 5.117382039693014,
+        "deck_prevalence": 0.010201680579236977,
+        "draft_weight": 159.0,
+        "draft_drafts": 159,
+        "draft_presence": 0.011824198706031085,
+        "draft_win_rate": 0.5473729315425672,
+        "draft_win_lift": 0.002739144645827918,
+        "analysis_score_raw": 244.56619439629583,
+        "analysis_score": 7.261291840916769,
+        "pick_priority_score_raw": 5.640964196986411,
+        "pick_priority_score": 3.2178959988947975,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ruinous%20Ultimatum%22",
+        "community": 7,
+        "x": 818.1104964906389,
+        "y": 307.9700231817843,
+        "analysis_radius": 11.042969755793285,
+        "pick_radius": 29.429143679200905,
+        "radius": 11.042969755793285
+      },
+      {
+        "id": "Felothar, Dawn of the Abzan",
+        "label": "Felothar, Dawn of the Abzan",
+        "color_identity": "WBG",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Human Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 294,
+        "win_rate": 0.4931972789115646,
+        "standalone_delta": -0.05515440077816336,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -70.97016044824898,
+        "signpost_lift": 0.8011726741919577,
+        "deck_prevalence": 0.01866730105782599,
+        "draft_weight": 467.0,
+        "draft_drafts": 447,
+        "draft_presence": 0.03324161523016286,
+        "draft_win_rate": 0.5336890353672076,
+        "draft_win_lift": -0.010944751529531671,
+        "analysis_score_raw": -70.97016044824898,
+        "analysis_score": 0.002011458588037805,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Felothar%2C%20Dawn%20of%20the%20Abzan%22",
+        "community": 8,
+        "x": 981.889503509361,
+        "y": 307.9700231817843,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Yathan Roadwatcher",
+        "label": "Yathan Roadwatcher",
+        "color_identity": "WBG",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Creature - Human Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 129,
+        "win_rate": 0.5193798449612403,
+        "standalone_delta": -0.028971834728487633,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -161.86030763965894,
+        "signpost_lift": 0.30684210709061455,
+        "deck_prevalence": 0.008094770726171418,
+        "draft_weight": 349.0,
+        "draft_drafts": 341,
+        "draft_presence": 0.025358816092808805,
+        "draft_win_rate": 0.5420185095813932,
+        "draft_win_lift": -0.002615277315346054,
+        "analysis_score_raw": -161.86030763965894,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Yathan%20Roadwatcher%22",
+        "community": 9,
+        "x": 1114.389503509361,
+        "y": 404.2369081424946,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      }
+    ],
+    "edges": [
+      {
+        "from": "Inevitable Defeat",
+        "to": "Rally the Monastery",
+        "pair_games": 119,
+        "pair_win_rate": 0.7899159663865546,
+        "pair_expected_win_rate": 0.6475301090726263,
+        "pair_lift_vs_baseline": 0.2415642866968266,
+        "synergy_delta_logit": 0.7162188672062768,
+        "synergy_delta_prob": 0.14238585731392828,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 397,
+        "quality_score": 2.6553066119622044,
+        "pick_score_raw": 3.8782087105604397,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Sage of the Skies",
+        "pair_games": 104,
+        "pair_win_rate": 0.7115384615384616,
+        "pair_expected_win_rate": 0.6194797755485844,
+        "pair_lift_vs_baseline": 0.1631867818487336,
+        "synergy_delta_logit": 0.4155269856089352,
+        "synergy_delta_prob": 0.09205868598987721,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 280,
+        "quality_score": 0.9951079405324491,
+        "pick_score_raw": 2.5001421171574227,
+        "pick_score": 7.102041780855587
+      },
+      {
+        "from": "Defibrillating Current",
+        "to": "Inevitable Defeat",
+        "pair_games": 170,
+        "pair_win_rate": 0.6823529411764706,
+        "pair_expected_win_rate": 0.6215595956742381,
+        "pair_lift_vs_baseline": 0.13400126148674263,
+        "synergy_delta_logit": 0.26843295636225206,
+        "synergy_delta_prob": 0.060793345502232476,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 490,
+        "quality_score": 0.705987355219621,
+        "pick_score_raw": 2.7544526452110607,
+        "pick_score": 7.731678917626037
+      },
+      {
+        "from": "All-Out Assault",
+        "to": "Fortress Kin-Guard",
+        "pair_games": 133,
+        "pair_win_rate": 0.6766917293233082,
+        "pair_expected_win_rate": 0.6114279577779169,
+        "pair_lift_vs_baseline": 0.12834004963358026,
+        "synergy_delta_logit": 0.2852910082324157,
+        "synergy_delta_prob": 0.06526377154539131,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 483,
+        "quality_score": 0.6389201067548992,
+        "pick_score_raw": 2.3452976403819856,
+        "pick_score": 6.695851416111861
+      },
+      {
+        "from": "Mardu Devotee",
+        "to": "Sonic Shrieker",
+        "pair_games": 997,
+        "pair_win_rate": 0.649949849548646,
+        "pair_expected_win_rate": 0.6244078910286519,
+        "pair_lift_vs_baseline": 0.10159816985891801,
+        "synergy_delta_logit": 0.11051868579526336,
+        "synergy_delta_prob": 0.02554195851999408,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2503,
+        "quality_score": 0.5903717528806928,
+        "pick_score_raw": 5.642293072390332,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Rally the Monastery",
+        "to": "Sonic Shrieker",
+        "pair_games": 298,
+        "pair_win_rate": 0.6812080536912751,
+        "pair_expected_win_rate": 0.6445788009601366,
+        "pair_lift_vs_baseline": 0.13285637400154715,
+        "synergy_delta_logit": 0.1640355680617327,
+        "synergy_delta_prob": 0.036629252731138484,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 819,
+        "quality_score": 0.5780458575275297,
+        "pick_score_raw": 3.7009446975295486,
+        "pick_score": 9.749896590036387
+      },
+      {
+        "from": "Inevitable Defeat",
+        "to": "Unburied Earthcarver",
+        "pair_games": 145,
+        "pair_win_rate": 0.6413793103448275,
+        "pair_expected_win_rate": 0.5705174731874708,
+        "pair_lift_vs_baseline": 0.09302763065509956,
+        "synergy_delta_logit": 0.297393035862066,
+        "synergy_delta_prob": 0.07086183715735672,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 877,
+        "quality_score": 0.541928297759428,
+        "pick_score_raw": 1.9145089063111769,
+        "pick_score": 5.458333206653558
+      },
+      {
+        "from": "Mardu Monument",
+        "to": "Venerated Stormsinger",
+        "pair_games": 412,
+        "pair_win_rate": 0.6432038834951457,
+        "pair_expected_win_rate": 0.6085103324070193,
+        "pair_lift_vs_baseline": 0.0948522038054177,
+        "synergy_delta_logit": 0.1482424700358409,
+        "synergy_delta_prob": 0.03469355108812633,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1181,
+        "quality_score": 0.46784119785686573,
+        "pick_score_raw": 3.3208535326980426,
+        "pick_score": 8.993041078518198
+      },
+      {
+        "from": "Inevitable Defeat",
+        "to": "Mardu Devotee",
+        "pair_games": 430,
+        "pair_win_rate": 0.6558139534883721,
+        "pair_expected_win_rate": 0.6274298802673396,
+        "pair_lift_vs_baseline": 0.10746227379864415,
+        "synergy_delta_logit": 0.12348813800340175,
+        "synergy_delta_prob": 0.028384073221032535,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1162,
+        "quality_score": 0.4415897629935513,
+        "pick_score_raw": 3.7625401004602326,
+        "pick_score": 9.866756220274167
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Marshal of the Lost",
+        "pair_games": 338,
+        "pair_win_rate": 0.5946745562130178,
+        "pair_expected_win_rate": 0.5368780328110676,
+        "pair_lift_vs_baseline": 0.04632287652328981,
+        "synergy_delta_logit": 0.23554348794958366,
+        "synergy_delta_prob": 0.057796523401950184,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1121,
+        "quality_score": 0.38805586483006366,
+        "pick_score_raw": 1.7331234001435702,
+        "pick_score": 4.881504688787049
+      },
+      {
+        "from": "Defibrillating Current",
+        "to": "Sonic Shrieker",
+        "pair_games": 354,
+        "pair_win_rate": 0.6468926553672316,
+        "pair_expected_win_rate": 0.6185189416244989,
+        "pair_lift_vs_baseline": 0.09854097567750364,
+        "synergy_delta_logit": 0.12214164888811285,
+        "synergy_delta_prob": 0.028373713742732676,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1052,
+        "quality_score": 0.3672096705230129,
+        "pick_score_raw": 3.1616426144281644,
+        "pick_score": 8.656016677044814
+      },
+      {
+        "from": "Inevitable Defeat",
+        "to": "Marshal of the Lost",
+        "pair_games": 140,
+        "pair_win_rate": 0.6571428571428571,
+        "pair_expected_win_rate": 0.6152954340052518,
+        "pair_lift_vs_baseline": 0.10879117745312916,
+        "synergy_delta_logit": 0.1809607118470441,
+        "synergy_delta_prob": 0.041847423137605366,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 519,
+        "quality_score": 0.3619904231299642,
+        "pick_score_raw": 2.0956820016721083,
+        "pick_score": 5.999708207073139
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Inevitable Defeat",
+        "pair_games": 153,
+        "pair_win_rate": 0.6339869281045751,
+        "pair_expected_win_rate": 0.58557743332252,
+        "pair_lift_vs_baseline": 0.08563524841484715,
+        "synergy_delta_logit": 0.20364700758726162,
+        "synergy_delta_prob": 0.04840949478205514,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 795,
+        "quality_score": 0.3549620397744382,
+        "pick_score_raw": 1.8303040910115034,
+        "pick_score": 5.195152954217911
+      },
+      {
+        "from": "Coordinated Maneuver",
+        "to": "Sonic Shrieker",
+        "pair_games": 607,
+        "pair_win_rate": 0.6359143327841845,
+        "pair_expected_win_rate": 0.6148503277783887,
+        "pair_lift_vs_baseline": 0.08756265309445654,
+        "synergy_delta_logit": 0.08992781698349772,
+        "synergy_delta_prob": 0.02106400500579586,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1914,
+        "quality_score": 0.3283668415566164,
+        "pick_score_raw": 3.851726679243447,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Mardu Monument",
+        "to": "Reigning Victor",
+        "pair_games": 792,
+        "pair_win_rate": 0.6085858585858586,
+        "pair_expected_win_rate": 0.5882456991107181,
+        "pair_lift_vs_baseline": 0.060234178896130586,
+        "synergy_delta_logit": 0.0846539147127347,
+        "synergy_delta_prob": 0.02034015947514045,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.1210665061072065,
+        "draft_pair_events": 2594,
+        "quality_score": 0.32001503307536483,
+        "pick_score_raw": 3.6955746460482524,
+        "pick_score": 9.739635992631541
+      },
+      {
+        "from": "Sage of the Skies",
+        "to": "Worthy Cost",
+        "pair_games": 110,
+        "pair_win_rate": 0.6454545454545455,
+        "pair_expected_win_rate": 0.6019170763311693,
+        "pair_lift_vs_baseline": 0.09710286576481753,
+        "synergy_delta_logit": 0.18565887655813018,
+        "synergy_delta_prob": 0.04353746912337619,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 441,
+        "quality_score": 0.29747157390559636,
+        "pick_score_raw": 1.6770606227823508,
+        "pick_score": 4.695450573599052
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Sage of the Skies",
+        "pair_games": 183,
+        "pair_win_rate": 0.644808743169399,
+        "pair_expected_win_rate": 0.612725139875875,
+        "pair_lift_vs_baseline": 0.09645706347967098,
+        "synergy_delta_logit": 0.13751557819549254,
+        "synergy_delta_prob": 0.032083603293524,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 533,
+        "quality_score": 0.2846722839182689,
+        "pick_score_raw": 2.1690508267752393,
+        "pick_score": 6.2099843634602605
+      },
+      {
+        "from": "Inevitable Defeat",
+        "to": "Venerated Stormsinger",
+        "pair_games": 187,
+        "pair_win_rate": 0.6631016042780749,
+        "pair_expected_win_rate": 0.6368677122690664,
+        "pair_lift_vs_baseline": 0.11474992458834687,
+        "synergy_delta_logit": 0.11535207514293,
+        "synergy_delta_prob": 0.026233892009008497,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 536,
+        "quality_score": 0.2793632163974014,
+        "pick_score_raw": 2.5376615419582556,
+        "pick_score": 7.197757728308049
+      },
+      {
+        "from": "Reigning Victor",
+        "to": "Sonic Shrieker",
+        "pair_games": 898,
+        "pair_win_rate": 0.6269487750556793,
+        "pair_expected_win_rate": 0.614093320225217,
+        "pair_lift_vs_baseline": 0.07859709536595127,
+        "synergy_delta_logit": 0.054597770373033816,
+        "synergy_delta_prob": 0.012855454830462243,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.0690229255304842,
+        "draft_pair_events": 2590,
+        "quality_score": 0.2679513426380487,
+        "pick_score_raw": 4.812799832596021,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Mardu Devotee",
+        "pair_games": 767,
+        "pair_win_rate": 0.5814863102998696,
+        "pair_expected_win_rate": 0.5496756557101218,
+        "pair_lift_vs_baseline": 0.03313463061014166,
+        "synergy_delta_logit": 0.12951752973218925,
+        "synergy_delta_prob": 0.031810654589747855,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2148,
+        "quality_score": 0.2637098478539179,
+        "pick_score_raw": 2.1490024194383754,
+        "pick_score": 6.1530126584673095
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Defibrillating Current",
+        "pair_games": 424,
+        "pair_win_rate": 0.5801886792452831,
+        "pair_expected_win_rate": 0.5363775790532502,
+        "pair_lift_vs_baseline": 0.03183699955555508,
+        "synergy_delta_logit": 0.17778010703172129,
+        "synergy_delta_prob": 0.043811100192032826,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1542,
+        "quality_score": 0.2594167607253889,
+        "pick_score_raw": 1.5375623626572077,
+        "pick_score": 4.215042087328922
+      },
+      {
+        "from": "Mardu Monument",
+        "to": "Worthy Cost",
+        "pair_games": 386,
+        "pair_win_rate": 0.5932642487046632,
+        "pair_expected_win_rate": 0.5603109930369515,
+        "pair_lift_vs_baseline": 0.04491256901493523,
+        "synergy_delta_logit": 0.13505189856775193,
+        "synergy_delta_prob": 0.03295325566771168,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1846,
+        "quality_score": 0.23700765651984856,
+        "pick_score_raw": 1.8508592098489074,
+        "pick_score": 5.2601129184801705
+      },
+      {
+        "from": "Fortress Kin-Guard",
+        "to": "Salt Road Packbeast",
+        "pair_games": 1625,
+        "pair_win_rate": 0.5901538461538461,
+        "pair_expected_win_rate": 0.5738288799064232,
+        "pair_lift_vs_baseline": 0.04180216646411816,
+        "synergy_delta_logit": 0.06711112707350486,
+        "synergy_delta_prob": 0.016324966247422967,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3421,
+        "quality_score": 0.23522736440600794,
+        "pick_score_raw": 3.7077862153859997,
+        "pick_score": 9.762951763797087
+      },
+      {
+        "from": "Inevitable Defeat",
+        "to": "Shock Brigade",
+        "pair_games": 393,
+        "pair_win_rate": 0.6234096692111959,
+        "pair_expected_win_rate": 0.6018433359425671,
+        "pair_lift_vs_baseline": 0.07505798952146792,
+        "synergy_delta_logit": 0.09089432075612991,
+        "synergy_delta_prob": 0.02156633326862878,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1017,
+        "quality_score": 0.23059875863582813,
+        "pick_score_raw": 2.6675079985730075,
+        "pick_score": 7.521346976416207
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Rally the Monastery",
+        "pair_games": 382,
+        "pair_win_rate": 0.5942408376963351,
+        "pair_expected_win_rate": 0.5640941229758255,
+        "pair_lift_vs_baseline": 0.04588915800660709,
+        "synergy_delta_logit": 0.12373011993791139,
+        "synergy_delta_prob": 0.03014671472050956,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1339,
+        "quality_score": 0.2167039190802354,
+        "pick_score_raw": 1.8441506193028563,
+        "pick_score": 5.23896351259717
+      },
+      {
+        "from": "Mardu Monument",
+        "to": "Salt Road Packbeast",
+        "pair_games": 913,
+        "pair_win_rate": 0.6221248630887185,
+        "pair_expected_win_rate": 0.6091641888498894,
+        "pair_lift_vs_baseline": 0.07377318339899053,
+        "synergy_delta_logit": 0.054776717755656124,
+        "synergy_delta_prob": 0.012960674238829073,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2266,
+        "quality_score": 0.21516449478862798,
+        "pick_score_raw": 4.146945863775478,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Mardu Monument",
+        "pair_games": 635,
+        "pair_win_rate": 0.5937007874015748,
+        "pair_expected_win_rate": 0.571444403814409,
+        "pair_lift_vs_baseline": 0.04534910771184686,
+        "synergy_delta_logit": 0.09153888086721751,
+        "synergy_delta_prob": 0.022256383587165862,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2245,
+        "quality_score": 0.20890405910933166,
+        "pick_score_raw": 2.409212545342979,
+        "pick_score": 6.865747126008158
+      },
+      {
+        "from": "Inevitable Defeat",
+        "to": "Sonic Shrieker",
+        "pair_games": 252,
+        "pair_win_rate": 0.6904761904761905,
+        "pair_expected_win_rate": 0.6783033214841534,
+        "pair_lift_vs_baseline": 0.1421245107864625,
+        "synergy_delta_logit": 0.05636101721156339,
+        "synergy_delta_prob": 0.012172868992037067,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 672,
+        "quality_score": 0.1922808774597286,
+        "pick_score_raw": 3.5791827821400424,
+        "pick_score": 9.514313770167465
+      },
+      {
+        "from": "Coordinated Maneuver",
+        "to": "Mardu Devotee",
+        "pair_games": 1057,
+        "pair_win_rate": 0.5799432355723746,
+        "pair_expected_win_rate": 0.560444949572544,
+        "pair_lift_vs_baseline": 0.031591555882646616,
+        "synergy_delta_logit": 0.07957231868318301,
+        "synergy_delta_prob": 0.01949828599983061,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3356,
+        "quality_score": 0.18764844321016494,
+        "pick_score_raw": 2.4943909505507125,
+        "pick_score": 7.087279329406968
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Sonic Shrieker",
+        "pair_games": 334,
+        "pair_win_rate": 0.6047904191616766,
+        "pair_expected_win_rate": 0.5824418921383199,
+        "pair_lift_vs_baseline": 0.05643873947194866,
+        "synergy_delta_logit": 0.09266006544987465,
+        "synergy_delta_prob": 0.022348527023356768,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1666,
+        "quality_score": 0.17745878262111653,
+        "pick_score_raw": 2.018797327240124,
+        "pick_score": 5.773939184830905
+      },
+      {
+        "from": "Fortress Kin-Guard",
+        "to": "Hardened Tactician",
+        "pair_games": 696,
+        "pair_win_rate": 0.5704022988505747,
+        "pair_expected_win_rate": 0.5423968647057713,
+        "pair_lift_vs_baseline": 0.02205061916084672,
+        "synergy_delta_logit": 0.11349704274337544,
+        "synergy_delta_prob": 0.028005434144803387,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1931,
+        "quality_score": 0.17354424504653893,
+        "pick_score_raw": 1.6130025253274813,
+        "pick_score": 4.478032536192849
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Mardu Devotee",
+        "pair_games": 1309,
+        "pair_win_rate": 0.5645530939648586,
+        "pair_expected_win_rate": 0.5425968309118047,
+        "pair_lift_vs_baseline": 0.016201414275130666,
+        "synergy_delta_logit": 0.0888602105202905,
+        "synergy_delta_prob": 0.02195626305305398,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3873,
+        "quality_score": 0.16446604665782233,
+        "pick_score_raw": 1.959054003269166,
+        "pick_score": 5.594498922552337
+      },
+      {
+        "from": "Nightblade Brigade",
+        "to": "Venerated Stormsinger",
+        "pair_games": 640,
+        "pair_win_rate": 0.5671875,
+        "pair_expected_win_rate": 0.5475385761557444,
+        "pair_lift_vs_baseline": 0.018835820310271978,
+        "synergy_delta_logit": 0.07965491846998016,
+        "synergy_delta_prob": 0.01964892384425554,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.682914812720506,
+        "draft_pair_events": 1956,
+        "quality_score": 0.14060654524898955,
+        "pick_score_raw": 1.6697908201102412,
+        "pick_score": 4.671039553081777
+      },
+      {
+        "from": "Fortress Kin-Guard",
+        "to": "Marshal of the Lost",
+        "pair_games": 593,
+        "pair_win_rate": 0.5733558178752108,
+        "pair_expected_win_rate": 0.5504717288216383,
+        "pair_lift_vs_baseline": 0.02500413818548286,
+        "synergy_delta_logit": 0.09297927615210186,
+        "synergy_delta_prob": 0.02288408905357253,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1722,
+        "quality_score": 0.1398643847846991,
+        "pick_score_raw": 1.5859195070533274,
+        "pick_score": 4.3845029850513475
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Hardened Tactician",
+        "pair_games": 360,
+        "pair_win_rate": 0.5611111111111111,
+        "pair_expected_win_rate": 0.5214629154990843,
+        "pair_lift_vs_baseline": 0.012759431421383138,
+        "synergy_delta_logit": 0.15976821314055986,
+        "synergy_delta_prob": 0.039648195612026815,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1195,
+        "quality_score": 0.13449455247329067,
+        "pick_score_raw": 0.8858592462923441,
+        "pick_score": 1.550485980797179
+      },
+      {
+        "from": "Defibrillating Current",
+        "to": "Venerated Stormsinger",
+        "pair_games": 231,
+        "pair_win_rate": 0.5974025974025974,
+        "pair_expected_win_rate": 0.5742166037467565,
+        "pair_lift_vs_baseline": 0.0490509177128694,
+        "synergy_delta_logit": 0.09557826588292279,
+        "synergy_delta_prob": 0.023185993655840842,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 798,
+        "quality_score": 0.1338274265705378,
+        "pick_score_raw": 1.4703275461806569,
+        "pick_score": 3.9739812226132587
+      },
+      {
+        "from": "Nightblade Brigade",
+        "to": "Unburied Earthcarver",
+        "pair_games": 553,
+        "pair_win_rate": 0.5135623869801085,
+        "pair_expected_win_rate": 0.47823835256441055,
+        "pair_lift_vs_baseline": -0.0347892927096195,
+        "synergy_delta_logit": 0.14136447431264665,
+        "synergy_delta_prob": 0.035324034415697925,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.264224125861817,
+        "draft_pair_events": 2881,
+        "quality_score": 0.13085910551300728,
+        "pick_score_raw": 0.8525101288431797,
+        "pick_score": 1.3903183251385816
+      },
+      {
+        "from": "Coordinated Maneuver",
+        "to": "Rally the Monastery",
+        "pair_games": 273,
+        "pair_win_rate": 0.6007326007326007,
+        "pair_expected_win_rate": 0.581750005725312,
+        "pair_lift_vs_baseline": 0.05238092104287273,
+        "synergy_delta_logit": 0.07855705974932203,
+        "synergy_delta_prob": 0.018982595007288716,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1138,
+        "quality_score": 0.1270087689262347,
+        "pick_score_raw": 1.7009392738590665,
+        "pick_score": 4.775167953675434
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Inevitable Defeat",
+        "pair_games": 176,
+        "pair_win_rate": 0.6193181818181818,
+        "pair_expected_win_rate": 0.6005484431565804,
+        "pair_lift_vs_baseline": 0.07096650212845379,
+        "synergy_delta_logit": 0.0789044515917614,
+        "synergy_delta_prob": 0.018769738661601365,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 627,
+        "quality_score": 0.12589616821308708,
+        "pick_score_raw": 1.6733011878014294,
+        "pick_score": 4.682835184176058
+      },
+      {
+        "from": "Defibrillating Current",
+        "to": "Marshal of the Lost",
+        "pair_games": 249,
+        "pair_win_rate": 0.5783132530120482,
+        "pair_expected_win_rate": 0.5515432506276897,
+        "pair_lift_vs_baseline": 0.02996157332232019,
+        "synergy_delta_logit": 0.10894493307392003,
+        "synergy_delta_prob": 0.02677000238435845,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 789,
+        "quality_score": 0.11454310175799688,
+        "pick_score_raw": 1.103986300938206,
+        "pick_score": 2.5330205944800586
+      },
+      {
+        "from": "Rally the Monastery",
+        "to": "Reigning Victor",
+        "pair_games": 403,
+        "pair_win_rate": 0.5955334987593052,
+        "pair_expected_win_rate": 0.5809722778589458,
+        "pair_lift_vs_baseline": 0.04718181906957719,
+        "synergy_delta_logit": 0.06012276171148656,
+        "synergy_delta_prob": 0.014561220900359384,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1450,
+        "quality_score": 0.11060065660036869,
+        "pick_score_raw": 1.9377634100080912,
+        "pick_score": 5.52967532452038
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Salt Road Packbeast",
+        "pair_games": 784,
+        "pair_win_rate": 0.5752551020408163,
+        "pair_expected_win_rate": 0.5603774160348864,
+        "pair_lift_vs_baseline": 0.026903422351088335,
+        "synergy_delta_logit": 0.06063093070190803,
+        "synergy_delta_prob": 0.014877686005929869,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1994,
+        "quality_score": 0.10987798774767414,
+        "pick_score_raw": 1.9120325931621274,
+        "pick_score": 5.45070265548417
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Hardened Tactician",
+        "pair_games": 383,
+        "pair_win_rate": 0.5509138381201044,
+        "pair_expected_win_rate": 0.5059661968581461,
+        "pair_lift_vs_baseline": 0.0025621584303764378,
+        "synergy_delta_logit": 0.18049773649437942,
+        "synergy_delta_prob": 0.04494764126195827,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1645,
+        "quality_score": 0.10921167990613372,
+        "pick_score_raw": 0.6377601059586122,
+        "pick_score": 0.28424410930272975
+      },
+      {
+        "from": "Coordinated Maneuver",
+        "to": "Hardened Tactician",
+        "pair_games": 536,
+        "pair_win_rate": 0.5634328358208955,
+        "pair_expected_win_rate": 0.5396185365083357,
+        "pair_lift_vs_baseline": 0.015081156131167561,
+        "synergy_delta_logit": 0.09629884025031313,
+        "synergy_delta_prob": 0.02381429931255985,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1804,
+        "quality_score": 0.10753589397986914,
+        "pick_score_raw": 1.1775897813125573,
+        "pick_score": 2.8416935887015637
+      },
+      {
+        "from": "Venerated Stormsinger",
+        "to": "Worthy Cost",
+        "pair_games": 453,
+        "pair_win_rate": 0.5629139072847682,
+        "pair_expected_win_rate": 0.5414216071940071,
+        "pair_lift_vs_baseline": 0.014562227595040222,
+        "synergy_delta_logit": 0.08692948198559472,
+        "synergy_delta_prob": 0.021492300090761085,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.1472524888792697,
+        "draft_pair_events": 1704,
+        "quality_score": 0.1058576416846234,
+        "pick_score_raw": 1.18612610681463,
+        "pick_score": 2.876815344366488
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Unburied Earthcarver",
+        "pair_games": 388,
+        "pair_win_rate": 0.5309278350515464,
+        "pair_expected_win_rate": 0.48339546538782435,
+        "pair_lift_vs_baseline": -0.017423844638181585,
+        "synergy_delta_logit": 0.190312052574305,
+        "synergy_delta_prob": 0.04753236966372204,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2880,
+        "quality_score": 0.10483609691452128,
+        "pick_score_raw": 0.5822461796211438,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Venerated Stormsinger",
+        "pair_games": 431,
+        "pair_win_rate": 0.5777262180974478,
+        "pair_expected_win_rate": 0.5597009342191582,
+        "pair_lift_vs_baseline": 0.029374538407719863,
+        "synergy_delta_logit": 0.07349780533007619,
+        "synergy_delta_prob": 0.01802528387828961,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1156,
+        "quality_score": 0.10190861385046575,
+        "pick_score_raw": 1.4588553748436752,
+        "pick_score": 3.932195045869475
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Venerated Stormsinger",
+        "pair_games": 598,
+        "pair_win_rate": 0.5702341137123745,
+        "pair_expected_win_rate": 0.5526514464651661,
+        "pair_lift_vs_baseline": 0.021882434022646557,
+        "synergy_delta_logit": 0.0714169378890043,
+        "synergy_delta_prob": 0.017582667247208472,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1871,
+        "quality_score": 0.100701298791198,
+        "pick_score_raw": 1.4872184733358984,
+        "pick_score": 4.035152785752282
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Rally the Monastery",
+        "pair_games": 244,
+        "pair_win_rate": 0.5901639344262295,
+        "pair_expected_win_rate": 0.5711032322969416,
+        "pair_lift_vs_baseline": 0.04181225473650152,
+        "synergy_delta_logit": 0.07828938340512093,
+        "synergy_delta_prob": 0.0190607021292879,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 764,
+        "quality_score": 0.1006872714963023,
+        "pick_score_raw": 1.3502015445761733,
+        "pick_score": 3.5264808526986466
+      },
+      {
+        "from": "Nightblade Brigade",
+        "to": "Rally the Monastery",
+        "pair_games": 353,
+        "pair_win_rate": 0.5779036827195467,
+        "pair_expected_win_rate": 0.5590076761004926,
+        "pair_lift_vs_baseline": 0.029552003029818752,
+        "synergy_delta_logit": 0.07703795216627332,
+        "synergy_delta_prob": 0.018896006619054107,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1220,
+        "quality_score": 0.0972101411745888,
+        "pick_score_raw": 1.328017381364744,
+        "pick_score": 3.4413421695370063
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Fortress Kin-Guard",
+        "pair_games": 509,
+        "pair_win_rate": 0.5520628683693517,
+        "pair_expected_win_rate": 0.5196554354493793,
+        "pair_lift_vs_baseline": 0.0037111886796237226,
+        "synergy_delta_logit": 0.13034676176185336,
+        "synergy_delta_prob": 0.03240743291997239,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2528,
+        "quality_score": 0.09704713783493969,
+        "pick_score_raw": 0.7864468227762007,
+        "pick_score": 1.0643373399355787
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Sonic Shrieker",
+        "pair_games": 403,
+        "pair_win_rate": 0.607940446650124,
+        "pair_expected_win_rate": 0.597448305622988,
+        "pair_lift_vs_baseline": 0.059588766960396056,
+        "synergy_delta_logit": 0.043818937087356846,
+        "synergy_delta_prob": 0.010492141027136026,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1267,
+        "quality_score": 0.0950230850935792,
+        "pick_score_raw": 2.282700434193659,
+        "pick_score": 6.526282340393031
+      },
+      {
+        "from": "Rally the Monastery",
+        "to": "Shock Brigade",
+        "pair_games": 328,
+        "pair_win_rate": 0.5823170731707317,
+        "pair_expected_win_rate": 0.5652408392321564,
+        "pair_lift_vs_baseline": 0.03396539348100369,
+        "synergy_delta_logit": 0.06983282212788328,
+        "synergy_delta_prob": 0.01707623393857527,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1148,
+        "quality_score": 0.09229864064851276,
+        "pick_score_raw": 1.3905793353470597,
+        "pick_score": 3.6794008690017526
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Rally the Monastery",
+        "pair_games": 207,
+        "pair_win_rate": 0.5845410628019324,
+        "pair_expected_win_rate": 0.5639131612612843,
+        "pair_lift_vs_baseline": 0.03618938311220443,
+        "synergy_delta_logit": 0.084384374030678,
+        "synergy_delta_prob": 0.020627901540648086,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 717,
+        "quality_score": 0.09065019921517731,
+        "pick_score_raw": 1.1274191698692206,
+        "pick_score": 2.632448072345563
+      },
+      {
+        "from": "Sage of the Skies",
+        "to": "Shock Brigade",
+        "pair_games": 137,
+        "pair_win_rate": 0.6277372262773723,
+        "pair_expected_win_rate": 0.6138315042751508,
+        "pair_lift_vs_baseline": 0.0793855465876443,
+        "synergy_delta_logit": 0.059074987688269576,
+        "synergy_delta_prob": 0.01390572200222151,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 434,
+        "quality_score": 0.08959571480280659,
+        "pick_score_raw": 1.5873169804622125,
+        "pick_score": 4.389352992377107
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Salt Road Packbeast",
+        "pair_games": 1410,
+        "pair_win_rate": 0.5645390070921986,
+        "pair_expected_win_rate": 0.5533301155773682,
+        "pair_lift_vs_baseline": 0.01618732740247064,
+        "synergy_delta_logit": 0.045469288435457916,
+        "synergy_delta_prob": 0.0112088915148304,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3513,
+        "quality_score": 0.08700744831540927,
+        "pick_score_raw": 2.0244852685216137,
+        "pick_score": 5.790837503376598
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Worthy Cost",
+        "pair_games": 435,
+        "pair_win_rate": 0.5471264367816092,
+        "pair_expected_win_rate": 0.5103280143650654,
+        "pair_lift_vs_baseline": -0.0012252429081187621,
+        "synergy_delta_logit": 0.1477490104091156,
+        "synergy_delta_prob": 0.03679842241654385,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1798,
+        "quality_score": 0.08472717295970739,
+        "pick_score_raw": 0.6047174703656539,
+        "pick_score": 0.10127663344168643
+      },
+      {
+        "from": "Defibrillating Current",
+        "to": "Worthy Cost",
+        "pair_games": 293,
+        "pair_win_rate": 0.5563139931740614,
+        "pair_expected_win_rate": 0.5250902724409284,
+        "pair_lift_vs_baseline": 0.007962313484333405,
+        "synergy_delta_logit": 0.12577029376361942,
+        "synergy_delta_prob": 0.031223720733132954,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1312,
+        "quality_score": 0.08180984295187514,
+        "pick_score_raw": 0.6848368396808798,
+        "pick_score": 0.5386451530996975
+      },
+      {
+        "from": "Mardu Devotee",
+        "to": "Marshal of the Lost",
+        "pair_games": 710,
+        "pair_win_rate": 0.5704225352112676,
+        "pair_expected_win_rate": 0.557726810178778,
+        "pair_lift_vs_baseline": 0.022070855521539645,
+        "synergy_delta_logit": 0.051633803163811914,
+        "synergy_delta_prob": 0.012695725032489613,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1995,
+        "quality_score": 0.07987418083292575,
+        "pick_score_raw": 1.6321204794403554,
+        "pick_score": 4.543473369954873
+      },
+      {
+        "from": "Defibrillating Current",
+        "to": "Salt Road Packbeast",
+        "pair_games": 471,
+        "pair_win_rate": 0.5859872611464968,
+        "pair_expected_win_rate": 0.5748877226851602,
+        "pair_lift_vs_baseline": 0.03763558145676882,
+        "synergy_delta_logit": 0.04557986626988697,
+        "synergy_delta_prob": 0.0110995384613366,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1460,
+        "quality_score": 0.07778538530738281,
+        "pick_score_raw": 1.7977203881674815,
+        "pick_score": 5.09120630975176
+      },
+      {
+        "from": "Coordinated Maneuver",
+        "to": "Nightblade Brigade",
+        "pair_games": 771,
+        "pair_win_rate": 0.5499351491569391,
+        "pair_expected_win_rate": 0.527369880161078,
+        "pair_lift_vs_baseline": 0.0015834694672111072,
+        "synergy_delta_logit": 0.09081960796854793,
+        "synergy_delta_prob": 0.022565268995861087,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2886,
+        "quality_score": 0.07611303995581953,
+        "pick_score_raw": 0.8858208821675275,
+        "pick_score": 1.5503033594236595
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Salt Road Packbeast",
+        "pair_games": 674,
+        "pair_win_rate": 0.5667655786350149,
+        "pair_expected_win_rate": 0.553148225108397,
+        "pair_lift_vs_baseline": 0.01841389894528689,
+        "synergy_delta_logit": 0.05526774238819973,
+        "synergy_delta_prob": 0.01361735352661786,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1907,
+        "quality_score": 0.07593495493697461,
+        "pick_score_raw": 1.4492799680383557,
+        "pick_score": 3.8971680881635113
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Mardu Devotee",
+        "pair_games": 597,
+        "pair_win_rate": 0.5510887772194305,
+        "pair_expected_win_rate": 0.5269804952939283,
+        "pair_lift_vs_baseline": 0.0027370975297025257,
+        "synergy_delta_logit": 0.09704385703233295,
+        "synergy_delta_prob": 0.024108281925502184,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3034,
+        "quality_score": 0.07552606512894951,
+        "pick_score_raw": 0.8228110621141965,
+        "pick_score": 1.2452347931476742
+      },
+      {
+        "from": "Marshal of the Lost",
+        "to": "Unburied Earthcarver",
+        "pair_games": 280,
+        "pair_win_rate": 0.5321428571428571,
+        "pair_expected_win_rate": 0.49867439482448933,
+        "pair_lift_vs_baseline": -0.016208822546870838,
+        "synergy_delta_logit": 0.1340514158698265,
+        "synergy_delta_prob": 0.03346846231836781,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.2231786714100192,
+        "draft_pair_events": 1559,
+        "quality_score": 0.07486306859334807,
+        "pick_score_raw": 0.5412937459306756,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Shock Brigade",
+        "pair_games": 471,
+        "pair_win_rate": 0.5307855626326964,
+        "pair_expected_win_rate": 0.49999296751901723,
+        "pair_lift_vs_baseline": -0.017566117057031594,
+        "synergy_delta_logit": 0.12332634626842644,
+        "synergy_delta_prob": 0.030792595113679155,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2538,
+        "quality_score": 0.07451233081224092,
+        "pick_score_raw": 0.6382157767578513,
+        "pick_score": 0.28674141477414783
+      },
+      {
+        "from": "Nightblade Brigade",
+        "to": "Sage of the Skies",
+        "pair_games": 155,
+        "pair_win_rate": 0.6193548387096774,
+        "pair_expected_win_rate": 0.6078116244419712,
+        "pair_lift_vs_baseline": 0.07100315901994947,
+        "synergy_delta_logit": 0.048688016079342034,
+        "synergy_delta_prob": 0.011543214267706214,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 481,
+        "quality_score": 0.07220211782848686,
+        "pick_score_raw": 1.552949491741245,
+        "pick_score": 4.269311938412474
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Unburied Earthcarver",
+        "pair_games": 297,
+        "pair_win_rate": 0.4983164983164983,
+        "pair_expected_win_rate": 0.46774062203429634,
+        "pair_lift_vs_baseline": -0.050035181373229654,
+        "synergy_delta_logit": 0.12248297505730814,
+        "synergy_delta_prob": 0.030575876282201986,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.2260481032985333,
+        "draft_pair_events": 2302,
+        "quality_score": 0.0714819062769715,
+        "pick_score_raw": 0.5666695219380984,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Unburied Earthcarver",
+        "pair_games": 318,
+        "pair_win_rate": 0.5251572327044025,
+        "pair_expected_win_rate": 0.4905302272073422,
+        "pair_lift_vs_baseline": -0.023194446985325468,
+        "synergy_delta_logit": 0.13859759690480622,
+        "synergy_delta_prob": 0.034627005497060326,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1774,
+        "quality_score": 0.06792201702057143,
+        "pick_score_raw": 0.516749389762585,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Marshal of the Lost",
+        "pair_games": 306,
+        "pair_win_rate": 0.5555555555555556,
+        "pair_expected_win_rate": 0.5295868042314946,
+        "pair_lift_vs_baseline": 0.0072038758658276025,
+        "synergy_delta_logit": 0.10465791190307525,
+        "synergy_delta_prob": 0.025968751324060957,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1113,
+        "quality_score": 0.06727442465253104,
+        "pick_score_raw": 0.676188961352831,
+        "pick_score": 0.49244963461497837
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Sage of the Skies",
+        "pair_games": 104,
+        "pair_win_rate": 0.625,
+        "pair_expected_win_rate": 0.612550500185863,
+        "pair_lift_vs_baseline": 0.07664832031027202,
+        "synergy_delta_logit": 0.05277975270314428,
+        "synergy_delta_prob": 0.01244949981413701,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 289,
+        "quality_score": 0.06676858765037719,
+        "pick_score_raw": 1.3209253616274454,
+        "pick_score": 3.413953102544443
+      },
+      {
+        "from": "Fortress Kin-Guard",
+        "to": "Venerated Stormsinger",
+        "pair_games": 629,
+        "pair_win_rate": 0.5818759936406995,
+        "pair_expected_win_rate": 0.5731573305026761,
+        "pair_lift_vs_baseline": 0.03352431395097155,
+        "synergy_delta_logit": 0.03573453871654775,
+        "synergy_delta_prob": 0.008718663138023386,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1776,
+        "quality_score": 0.06591643738267482,
+        "pick_score_raw": 1.9450604415591255,
+        "pick_score": 5.551945403919275
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Shock Brigade",
+        "pair_games": 699,
+        "pair_win_rate": 0.5379113018597997,
+        "pair_expected_win_rate": 0.5154976345288863,
+        "pair_lift_vs_baseline": -0.010440377829928238,
+        "synergy_delta_logit": 0.08992641902572682,
+        "synergy_delta_prob": 0.022413667330913434,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2101,
+        "quality_score": 0.06574021906168039,
+        "pick_score_raw": 0.7714990345666711,
+        "pick_score": 0.9889078242475347
+      },
+      {
+        "from": "All-Out Assault",
+        "to": "Mardu Devotee",
+        "pair_games": 177,
+        "pair_win_rate": 0.6271186440677966,
+        "pair_expected_win_rate": 0.618381268398343,
+        "pair_lift_vs_baseline": 0.07876696437806863,
+        "synergy_delta_logit": 0.0371922782768912,
+        "synergy_delta_prob": 0.00873737566945365,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 584,
+        "quality_score": 0.06444033669640485,
+        "pick_score_raw": 1.8163503153420582,
+        "pick_score": 5.150785697602335
+      },
+      {
+        "from": "Salt Road Packbeast",
+        "to": "Unburied Earthcarver",
+        "pair_games": 591,
+        "pair_win_rate": 0.5431472081218274,
+        "pair_expected_win_rate": 0.5223877684674915,
+        "pair_lift_vs_baseline": -0.005204471567900604,
+        "synergy_delta_logit": 0.0834081727182007,
+        "synergy_delta_prob": 0.02075943965433591,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2893,
+        "quality_score": 0.05671539295500648,
+        "pick_score_raw": 0.7187268930129703,
+        "pick_score": 0.7174230737304723
+      },
+      {
+        "from": "Reigning Victor",
+        "to": "Sage of the Skies",
+        "pair_games": 173,
+        "pair_win_rate": 0.6358381502890174,
+        "pair_expected_win_rate": 0.6289588724538966,
+        "pair_lift_vs_baseline": 0.08748647059928938,
+        "synergy_delta_logit": 0.029592682826850458,
+        "synergy_delta_prob": 0.006879277835120767,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 560,
+        "quality_score": 0.05507791020365765,
+        "pick_score_raw": 1.9506876038477716,
+        "pick_score": 5.56908149728984
+      },
+      {
+        "from": "All-Out Assault",
+        "to": "Bearer of Glory",
+        "pair_games": 131,
+        "pair_win_rate": 0.6030534351145038,
+        "pair_expected_win_rate": 0.5914500955034756,
+        "pair_lift_vs_baseline": 0.054701755424775844,
+        "synergy_delta_logit": 0.048240895489068736,
+        "synergy_delta_prob": 0.011603339611028218,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 534,
+        "quality_score": 0.05420191606785272,
+        "pick_score_raw": 1.1772812073261425,
+        "pick_score": 2.8404214186096635
+      },
+      {
+        "from": "Mardu Monument",
+        "to": "Nightblade Brigade",
+        "pair_games": 567,
+        "pair_win_rate": 0.5749559082892416,
+        "pair_expected_win_rate": 0.5663777946333027,
+        "pair_lift_vs_baseline": 0.026604228599513613,
+        "synergy_delta_logit": 0.035012771108637264,
+        "synergy_delta_prob": 0.008578113655938857,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2062,
+        "quality_score": 0.05368146386947374,
+        "pick_score_raw": 1.6178902390320284,
+        "pick_score": 4.49480864491713
+      },
+      {
+        "from": "Dragonback Lancer",
+        "to": "Salt Road Packbeast",
+        "pair_games": 642,
+        "pair_win_rate": 0.5529595015576324,
+        "pair_expected_win_rate": 0.5377680551920759,
+        "pair_lift_vs_baseline": 0.004607821867904427,
+        "synergy_delta_logit": 0.06127504083114496,
+        "synergy_delta_prob": 0.015191446365556471,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2692,
+        "quality_score": 0.05329344213407218,
+        "pick_score_raw": 0.9189885110205205,
+        "pick_score": 1.7068175372823642
+      },
+      {
+        "from": "Bone-Cairn Butcher",
+        "to": "Dragonback Lancer",
+        "pair_games": 275,
+        "pair_win_rate": 0.5272727272727272,
+        "pair_expected_win_rate": 0.4986427696580071,
+        "pair_lift_vs_baseline": -0.02107895241700075,
+        "synergy_delta_logit": 0.11462822666699052,
+        "synergy_delta_prob": 0.028629957614720147,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1634,
+        "quality_score": 0.05208335391879715,
+        "pick_score_raw": 0.47890864173685005,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Hardened Tactician",
+        "to": "Mardu Monument",
+        "pair_games": 387,
+        "pair_win_rate": 0.58656330749354,
+        "pair_expected_win_rate": 0.5784236530186184,
+        "pair_lift_vs_baseline": 0.03821162780381204,
+        "synergy_delta_logit": 0.03347053102985598,
+        "synergy_delta_prob": 0.008139654474921598,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1264,
+        "quality_score": 0.0520179123484449,
+        "pick_score_raw": 1.6359372595632078,
+        "pick_score": 4.556481289877765
+      },
+      {
+        "from": "Inevitable Defeat",
+        "to": "Reigning Victor",
+        "pair_games": 402,
+        "pair_win_rate": 0.6218905472636815,
+        "pair_expected_win_rate": 0.6171474146959937,
+        "pair_lift_vs_baseline": 0.07353886757395356,
+        "synergy_delta_logit": 0.020122500258367204,
+        "synergy_delta_prob": 0.00474313256768788,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1228,
+        "quality_score": 0.05116228929250607,
+        "pick_score_raw": 2.6759599464466444,
+        "pick_score": 7.542011098615429
+      },
+      {
+        "from": "Nightblade Brigade",
+        "to": "Reigning Victor",
+        "pair_games": 917,
+        "pair_win_rate": 0.5398037077426391,
+        "pair_expected_win_rate": 0.5265733237165122,
+        "pair_lift_vs_baseline": -0.008547971947088895,
+        "synergy_delta_logit": 0.05315890623811839,
+        "synergy_delta_prob": 0.013230384026126862,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.45567825711711063,
+        "draft_pair_events": 3607,
+        "quality_score": 0.04910276046089656,
+        "pick_score_raw": 0.9444454801365207,
+        "pick_score": 1.8251218693325695
+      },
+      {
+        "from": "Reigning Victor",
+        "to": "Worthy Cost",
+        "pair_games": 757,
+        "pair_win_rate": 0.535006605019815,
+        "pair_expected_win_rate": 0.5204211750757078,
+        "pair_lift_vs_baseline": -0.01334507466991297,
+        "synergy_delta_logit": 0.058525726343117285,
+        "synergy_delta_prob": 0.014585429944107164,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.4521610925514282,
+        "draft_pair_events": 3270,
+        "quality_score": 0.04891843047595136,
+        "pick_score_raw": 0.8544319131638679,
+        "pick_score": 1.3996261896298379
+      },
+      {
+        "from": "Bearer of Glory",
+        "to": "Nightblade Brigade",
+        "pair_games": 906,
+        "pair_win_rate": 0.5231788079470199,
+        "pair_expected_win_rate": 0.5093544988533605,
+        "pair_lift_vs_baseline": -0.025172871742708103,
+        "synergy_delta_logit": 0.05535937135590363,
+        "synergy_delta_prob": 0.013824309093659393,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3211,
+        "quality_score": 0.04678100903475541,
+        "pick_score_raw": 0.8936513927540628,
+        "pick_score": 1.587501454644972
+      },
+      {
+        "from": "Nightblade Brigade",
+        "to": "Worthy Cost",
+        "pair_games": 743,
+        "pair_win_rate": 0.5087483176312247,
+        "pair_expected_win_rate": 0.4980249952903321,
+        "pair_lift_vs_baseline": -0.03960336205850323,
+        "synergy_delta_logit": 0.04289690196302983,
+        "synergy_delta_prob": 0.010723322340892627,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.264224125861817,
+        "draft_pair_events": 2961,
+        "quality_score": 0.046072992420251285,
+        "pick_score_raw": 0.9892677518756077,
+        "pick_score": 2.0297056155829063
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Mardu Monument",
+          "Marshal of the Lost",
+          "Shock Brigade"
+        ],
+        "games": 38,
+        "win_rate": 0.7631578947368421,
+        "expected_win_rate": 0.5709151607085298,
+        "synergy_delta_logit": 0.8844852941907422,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 507,
+        "quality": 7.4905733083051995
+      },
+      {
+        "cards": [
+          "Reigning Victor",
+          "Venerated Stormsinger",
+          "Worthy Cost"
+        ],
+        "games": 63,
+        "win_rate": 0.6825396825396826,
+        "expected_win_rate": 0.5416712167475668,
+        "synergy_delta_logit": 0.5983954298638186,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 925,
+        "quality": 6.6962584492624755
+      },
+      {
+        "cards": [
+          "Dragonback Lancer",
+          "Nightblade Brigade",
+          "Venerated Stormsinger"
+        ],
+        "games": 30,
+        "win_rate": 0.7,
+        "expected_win_rate": 0.5149930470359255,
+        "synergy_delta_logit": 0.7873076875588452,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 767,
+        "quality": 6.031247442831641
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Reigning Victor",
+          "Sonic Shrieker"
+        ],
+        "games": 79,
+        "win_rate": 0.7468354430379747,
+        "expected_win_rate": 0.6516388662979536,
+        "synergy_delta_logit": 0.4555543301398266,
+        "deck_log_lift": 0.22802175039254832,
+        "draft_triplet_events": 939,
+        "quality": 5.972718200040584
+      },
+      {
+        "cards": [
+          "Marshal of the Lost",
+          "Nightblade Brigade",
+          "Unburied Earthcarver"
+        ],
+        "games": 46,
+        "win_rate": 0.6086956521739131,
+        "expected_win_rate": 0.4765354288820411,
+        "synergy_delta_logit": 0.5357600306983596,
+        "deck_log_lift": 0.44486578176126435,
+        "draft_triplet_events": 795,
+        "quality": 5.542874915084837
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Nightblade Brigade",
+          "Reigning Victor"
+        ],
+        "games": 70,
+        "win_rate": 0.6714285714285714,
+        "expected_win_rate": 0.5666246933700387,
+        "synergy_delta_logit": 0.4465603292160362,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1174,
+        "quality": 5.32086539734617
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Shock Brigade",
+          "Worthy Cost"
+        ],
+        "games": 59,
+        "win_rate": 0.6610169491525424,
+        "expected_win_rate": 0.5446614990864888,
+        "synergy_delta_logit": 0.4887059738731397,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 877,
+        "quality": 5.28034647068383
+      },
+      {
+        "cards": [
+          "Reigning Victor",
+          "Sonic Shrieker",
+          "Unburied Earthcarver"
+        ],
+        "games": 39,
+        "win_rate": 0.6923076923076923,
+        "expected_win_rate": 0.5675989417463112,
+        "synergy_delta_logit": 0.538868668525122,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1015,
+        "quality": 4.763211482884987
+      },
+      {
+        "cards": [
+          "Nightblade Brigade",
+          "Reigning Victor",
+          "Worthy Cost"
+        ],
+        "games": 92,
+        "win_rate": 0.5760869565217391,
+        "expected_win_rate": 0.4982763367959681,
+        "synergy_delta_logit": 0.3136249475509521,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1568,
+        "quality": 4.336273224866312
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Reigning Victor",
+          "Venerated Stormsinger"
+        ],
+        "games": 56,
+        "win_rate": 0.6964285714285714,
+        "expected_win_rate": 0.6087498133736294,
+        "synergy_delta_logit": 0.3882881531043281,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 674,
+        "quality": 4.0414636612812584
+      },
+      {
+        "cards": [
+          "Nightblade Brigade",
+          "Unburied Earthcarver",
+          "Venerated Stormsinger"
+        ],
+        "games": 46,
+        "win_rate": 0.5869565217391305,
+        "expected_win_rate": 0.49956015795274367,
+        "synergy_delta_logit": 0.35315725548074023,
+        "deck_log_lift": 0.5623228023539638,
+        "draft_triplet_events": 913,
+        "quality": 3.7546179415294656
+      },
+      {
+        "cards": [
+          "Dragonback Lancer",
+          "Reigning Victor",
+          "Venerated Stormsinger"
+        ],
+        "games": 34,
+        "win_rate": 0.6470588235294118,
+        "expected_win_rate": 0.5373354753039149,
+        "synergy_delta_logit": 0.4565154056506992,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 831,
+        "quality": 3.7358173583370484
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 7,
+        "top_cards": [
+          "Reigning Victor",
+          "Nightblade Brigade",
+          "Bearer of Glory",
+          "Worthy Cost",
+          "Venerated Stormsinger"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 5,
+        "top_cards": [
+          "Shock Brigade",
+          "Dragonback Lancer",
+          "Unburied Earthcarver",
+          "Inevitable Defeat",
+          "Rally the Monastery"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Bone-Cairn Butcher",
+          "Hardened Tactician",
+          "Marshal of the Lost",
+          "Sage of the Skies"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 3,
+        "top_cards": [
+          "Salt Road Packbeast",
+          "Fortress Kin-Guard",
+          "All-Out Assault"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 3,
+        "top_cards": [
+          "Mardu Devotee",
+          "Sonic Shrieker",
+          "Coordinated Maneuver"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Elspeth, Storm Slayer"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Reverberating Summons"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Ruinous Ultimatum"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Felothar, Dawn of the Abzan"
+        ]
+      },
+      {
+        "community_id": 9,
+        "size": 1,
+        "top_cards": [
+          "Yathan Roadwatcher"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Salt Road Packbeast",
+          "pick_priority_score": 8.973493479643079,
+          "pick_priority_score_raw": 195.28689594434772,
+          "draft_drafts": 6716,
+          "draft_win_rate": 0.5538963821220234,
+          "draft_win_lift": 0.009262595225284165,
+          "draw_win_rate": 0.5700611801855141
+        },
+        {
+          "card": "Mardu Devotee",
+          "pick_priority_score": 8.911553445337065,
+          "pick_priority_score_raw": 188.2624676906407,
+          "draft_drafts": 7497,
+          "draft_win_rate": 0.5570093131818344,
+          "draft_win_lift": 0.012375526285095195,
+          "draw_win_rate": 0.5594098104358022
+        },
+        {
+          "card": "Fortress Kin-Guard",
+          "pick_priority_score": 8.27593600202274,
+          "pick_priority_score_raw": 129.21249023199567,
+          "draft_drafts": 6360,
+          "draft_win_rate": 0.5568707595937682,
+          "draft_win_lift": 0.012236972697028947,
+          "draw_win_rate": 0.5521601685985248
+        },
+        {
+          "card": "Reigning Victor",
+          "pick_priority_score": 7.455735989999803,
+          "pick_priority_score_raw": 79.3667816114196,
+          "draft_drafts": 7703,
+          "draft_win_rate": 0.5510838083147827,
+          "draft_win_lift": 0.006450021418043406,
+          "draw_win_rate": 0.5486006620523624
+        },
+        {
+          "card": "Coordinated Maneuver",
+          "pick_priority_score": 6.490856779190548,
+          "pick_priority_score_raw": 44.55461011628228,
+          "draft_drafts": 5954,
+          "draft_win_rate": 0.5491246188143191,
+          "draft_win_lift": 0.004490831917579818,
+          "draw_win_rate": 0.5493918718481163
+        },
+        {
+          "card": "Bearer of Glory",
+          "pick_priority_score": 4.81602678509989,
+          "pick_priority_score_raw": 16.005237936726125,
+          "draft_drafts": 6774,
+          "draft_win_rate": 0.5463068546124927,
+          "draft_win_lift": 0.0016730677157534846,
+          "draw_win_rate": 0.5314701466682065
+        },
+        {
+          "card": "Shock Brigade",
+          "pick_priority_score": 3.8070212791818396,
+          "pick_priority_score_raw": 8.392114894166053,
+          "draft_drafts": 6370,
+          "draft_win_rate": 0.5455606036138337,
+          "draft_win_lift": 0.0009268167170944919,
+          "draw_win_rate": 0.5326315789473685
+        },
+        {
+          "card": "Nightblade Brigade",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 6536,
+          "draft_win_rate": 0.5423713143561937,
+          "draft_win_lift": -0.002262472540545568,
+          "draw_win_rate": 0.5263226820324778
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Sonic Shrieker",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 469.3231372307506,
+          "draft_drafts": 4397,
+          "draft_win_rate": 0.5670210241550844,
+          "draft_win_lift": 0.022387237258345127,
+          "draw_win_rate": 0.613855035279025
+        },
+        {
+          "card": "Mardu Monument",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 365.29376994475484,
+          "draft_drafts": 4414,
+          "draft_win_rate": 0.5669753813384142,
+          "draft_win_lift": 0.02234159444167494,
+          "draw_win_rate": 0.5880021617726536
+        },
+        {
+          "card": "Venerated Stormsinger",
+          "pick_priority_score": 8.887554516452807,
+          "pick_priority_score_raw": 185.60889195300777,
+          "draft_drafts": 3783,
+          "draft_win_rate": 0.5550700111536161,
+          "draft_win_lift": 0.010436224256876847,
+          "draw_win_rate": 0.5693881490059834
+        },
+        {
+          "card": "Rally the Monastery",
+          "pick_priority_score": 8.493095278991902,
+          "pick_priority_score_raw": 146.95880054484394,
+          "draft_drafts": 2558,
+          "draft_win_rate": 0.5541245634390547,
+          "draft_win_lift": 0.009490776542315449,
+          "draw_win_rate": 0.5807275047862157
+        },
+        {
+          "card": "Defibrillating Current",
+          "pick_priority_score": 5.13055740680155,
+          "pick_priority_score_raw": 19.462138761871696,
+          "draft_drafts": 3107,
+          "draft_win_rate": 0.5436325827258661,
+          "draft_win_lift": -0.0010012041708731267,
+          "draw_win_rate": 0.5532309322033898
+        },
+        {
+          "card": "Bone-Cairn Butcher",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 4042,
+          "draft_win_rate": 0.5359563552891624,
+          "draft_win_lift": -0.008677431607576835,
+          "draw_win_rate": 0.5312868949232585
+        },
+        {
+          "card": "Hardened Tactician",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 3954,
+          "draft_win_rate": 0.5423886686915755,
+          "draft_win_lift": -0.0022451182051637097,
+          "draw_win_rate": 0.5385747319739331
+        },
+        {
+          "card": "Marshal of the Lost",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 3526,
+          "draft_win_rate": 0.5419470821304746,
+          "draft_win_lift": -0.002686704766264647,
+          "draw_win_rate": 0.5466606701146841
+        }
+      ],
+      "rare": [
+        {
+          "card": "Inevitable Defeat",
+          "pick_priority_score": 9.921036870405112,
+          "pick_priority_score_raw": 341.77246814495714,
+          "draft_drafts": 2044,
+          "draft_win_rate": 0.56683747339062,
+          "draft_win_lift": 0.022203686493880714,
+          "draw_win_rate": 0.6169098391320613
+        },
+        {
+          "card": "Sage of the Skies",
+          "pick_priority_score": 9.46445327121441,
+          "pick_priority_score_raw": 261.02364970601155,
+          "draft_drafts": 1007,
+          "draft_win_rate": 0.5803811431419829,
+          "draft_win_lift": 0.03574735624524361,
+          "draw_win_rate": 0.6287242169595111
+        },
+        {
+          "card": "Ruinous Ultimatum",
+          "pick_priority_score": 3.2178959988947975,
+          "pick_priority_score_raw": 5.640964196986411,
+          "draft_drafts": 159,
+          "draft_win_rate": 0.5473729315425672,
+          "draft_win_lift": 0.002739144645827918,
+          "draw_win_rate": 0.5491329479768786
+        },
+        {
+          "card": "Felothar, Dawn of the Abzan",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 447,
+          "draft_win_rate": 0.5336890353672076,
+          "draft_win_lift": -0.010944751529531671,
+          "draw_win_rate": 0.4931972789115646
+        },
+        {
+          "card": "Yathan Roadwatcher",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 341,
+          "draft_win_rate": 0.5420185095813932,
+          "draft_win_lift": -0.002615277315346054,
+          "draw_win_rate": 0.5193798449612403
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Elspeth, Storm Slayer",
+          "pick_priority_score": 9.648937586593526,
+          "pick_priority_score_raw": 291.0650566920399,
+          "draft_drafts": 575,
+          "draft_win_rate": 0.591384501123141,
+          "draft_win_lift": 0.04675071422640176,
+          "draw_win_rate": 0.6711772665764547
+        },
+        {
+          "card": "All-Out Assault",
+          "pick_priority_score": 8.839096955732485,
+          "pick_priority_score_raw": 180.36377349722204,
+          "draft_drafts": 1050,
+          "draft_win_rate": 0.5557263588264802,
+          "draft_win_lift": 0.011092571929741002,
+          "draw_win_rate": 0.6077654516640254
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Elspeth, Storm Slayer",
+        "standalone_delta": 0.12282558688672673,
+        "win_rate": 0.6711772665764547,
+        "draw_games": 739
+      },
+      {
+        "card": "Sage of the Skies",
+        "standalone_delta": 0.0803725372697831,
+        "win_rate": 0.6287242169595111,
+        "draw_games": 1309
+      },
+      {
+        "card": "Inevitable Defeat",
+        "standalone_delta": 0.06855815944233334,
+        "win_rate": 0.6169098391320613,
+        "draw_games": 2673
+      },
+      {
+        "card": "Sonic Shrieker",
+        "standalone_delta": 0.06550335558929699,
+        "win_rate": 0.613855035279025,
+        "draw_games": 6236
+      },
+      {
+        "card": "All-Out Assault",
+        "standalone_delta": 0.059413771974297425,
+        "win_rate": 0.6077654516640254,
+        "draw_games": 1262
+      },
+      {
+        "card": "Mardu Monument",
+        "standalone_delta": 0.03965048208292565,
+        "win_rate": 0.5880021617726536,
+        "draw_games": 5551
+      },
+      {
+        "card": "Rally the Monastery",
+        "standalone_delta": 0.03237582509648773,
+        "win_rate": 0.5807275047862157,
+        "draw_games": 3134
+      },
+      {
+        "card": "Salt Road Packbeast",
+        "standalone_delta": 0.021709500495786127,
+        "win_rate": 0.5700611801855141,
+        "draw_games": 10134
+      },
+      {
+        "card": "Venerated Stormsinger",
+        "standalone_delta": 0.02103646931625547,
+        "win_rate": 0.5693881490059834,
+        "draw_games": 5181
+      },
+      {
+        "card": "Mardu Devotee",
+        "standalone_delta": 0.011058130746074202,
+        "win_rate": 0.5594098104358022,
+        "draw_games": 10234
+      },
+      {
+        "card": "Defibrillating Current",
+        "standalone_delta": 0.004879252513661836,
+        "win_rate": 0.5532309322033898,
+        "draw_games": 3776
+      },
+      {
+        "card": "Fortress Kin-Guard",
+        "standalone_delta": 0.0038084889087968143,
+        "win_rate": 0.5521601685985248,
+        "draw_games": 8541
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Unburied Earthcarver",
+        "dependency_score": 0.8704719202372255,
+        "standalone_delta": -0.047970872378227614,
+        "draw_games": 3939
+      },
+      {
+        "card": "Nightblade Brigade",
+        "dependency_score": 0.8506881204116783,
+        "standalone_delta": -0.022028997657250193,
+        "draw_games": 7636
+      },
+      {
+        "card": "Worthy Cost",
+        "dependency_score": 0.7841152158228187,
+        "standalone_delta": -0.028181435426219426,
+        "draw_games": 5404
+      },
+      {
+        "card": "Reigning Victor",
+        "dependency_score": 0.585534631774543,
+        "standalone_delta": 0.0002489823626343757,
+        "draw_games": 9969
+      },
+      {
+        "card": "Venerated Stormsinger",
+        "dependency_score": 0.48820622116816675,
+        "standalone_delta": 0.02103646931625547,
+        "draw_games": 5181
+      },
+      {
+        "card": "Marshal of the Lost",
+        "dependency_score": 0.2771851890893127,
+        "standalone_delta": -0.001691009575043867,
+        "draw_games": 4447
+      },
+      {
+        "card": "Sonic Shrieker",
+        "dependency_score": 0.27183494253598794,
+        "standalone_delta": 0.06550335558929699,
+        "draw_games": 6236
+      },
+      {
+        "card": "Mardu Monument",
+        "dependency_score": 0.26977246977667724,
+        "standalone_delta": 0.03965048208292565,
+        "draw_games": 5551
+      },
+      {
+        "card": "Dragonback Lancer",
+        "dependency_score": 0.23826316034648926,
+        "standalone_delta": -0.032538762095073226,
+        "draw_games": 4490
+      },
+      {
+        "card": "Inevitable Defeat",
+        "dependency_score": 0.17014871777408624,
+        "standalone_delta": 0.06855815944233334,
+        "draw_games": 2673
+      },
+      {
+        "card": "Rally the Monastery",
+        "dependency_score": 0.13699877644923525,
+        "standalone_delta": 0.03237582509648773,
+        "draw_games": 3134
+      },
+      {
+        "card": "Hardened Tactician",
+        "dependency_score": 0.12954230702797342,
+        "standalone_delta": -0.009776947715794848,
+        "draw_games": 4757
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Inevitable Defeat",
+          "Rally the Monastery"
+        ],
+        "quality_score": 2.6553066119622044,
+        "pair_win_rate": 0.7899159663865546,
+        "pair_games": 119,
+        "synergy_delta_logit": 0.7162188672062768
+      },
+      {
+        "cards": [
+          "Hardened Tactician",
+          "Sage of the Skies"
+        ],
+        "quality_score": 0.9951079405324491,
+        "pair_win_rate": 0.7115384615384616,
+        "pair_games": 104,
+        "synergy_delta_logit": 0.4155269856089352
+      },
+      {
+        "cards": [
+          "Defibrillating Current",
+          "Inevitable Defeat"
+        ],
+        "quality_score": 0.705987355219621,
+        "pair_win_rate": 0.6823529411764706,
+        "pair_games": 170,
+        "synergy_delta_logit": 0.26843295636225206
+      },
+      {
+        "cards": [
+          "All-Out Assault",
+          "Fortress Kin-Guard"
+        ],
+        "quality_score": 0.6389201067548992,
+        "pair_win_rate": 0.6766917293233082,
+        "pair_games": 133,
+        "synergy_delta_logit": 0.2852910082324157
+      },
+      {
+        "cards": [
+          "Mardu Devotee",
+          "Sonic Shrieker"
+        ],
+        "quality_score": 0.5903717528806928,
+        "pair_win_rate": 0.649949849548646,
+        "pair_games": 997,
+        "synergy_delta_logit": 0.11051868579526336
+      },
+      {
+        "cards": [
+          "Rally the Monastery",
+          "Sonic Shrieker"
+        ],
+        "quality_score": 0.5780458575275297,
+        "pair_win_rate": 0.6812080536912751,
+        "pair_games": 298,
+        "synergy_delta_logit": 0.1640355680617327
+      },
+      {
+        "cards": [
+          "Inevitable Defeat",
+          "Unburied Earthcarver"
+        ],
+        "quality_score": 0.541928297759428,
+        "pair_win_rate": 0.6413793103448275,
+        "pair_games": 145,
+        "synergy_delta_logit": 0.297393035862066
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Venerated Stormsinger"
+        ],
+        "quality_score": 0.46784119785686573,
+        "pair_win_rate": 0.6432038834951457,
+        "pair_games": 412,
+        "synergy_delta_logit": 0.1482424700358409
+      },
+      {
+        "cards": [
+          "Inevitable Defeat",
+          "Mardu Devotee"
+        ],
+        "quality_score": 0.4415897629935513,
+        "pair_win_rate": 0.6558139534883721,
+        "pair_games": 430,
+        "synergy_delta_logit": 0.12348813800340175
+      },
+      {
+        "cards": [
+          "Hardened Tactician",
+          "Marshal of the Lost"
+        ],
+        "quality_score": 0.38805586483006366,
+        "pair_win_rate": 0.5946745562130178,
+        "pair_games": 338,
+        "synergy_delta_logit": 0.23554348794958366
+      },
+      {
+        "cards": [
+          "Defibrillating Current",
+          "Sonic Shrieker"
+        ],
+        "quality_score": 0.3672096705230129,
+        "pair_win_rate": 0.6468926553672316,
+        "pair_games": 354,
+        "synergy_delta_logit": 0.12214164888811285
+      },
+      {
+        "cards": [
+          "Inevitable Defeat",
+          "Marshal of the Lost"
+        ],
+        "quality_score": 0.3619904231299642,
+        "pair_win_rate": 0.6571428571428571,
+        "pair_games": 140,
+        "synergy_delta_logit": 0.1809607118470441
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Sonic Shrieker",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 469.3231372307506,
+        "draft_drafts": 4397,
+        "draft_win_lift": 0.022387237258345127,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Mardu Monument",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 365.29376994475484,
+        "draft_drafts": 4414,
+        "draft_win_lift": 0.02234159444167494,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Inevitable Defeat",
+        "pick_priority_score": 9.921036870405112,
+        "pick_priority_score_raw": 341.77246814495714,
+        "draft_drafts": 2044,
+        "draft_win_lift": 0.022203686493880714,
+        "rarity": "rare"
+      },
+      {
+        "card": "Elspeth, Storm Slayer",
+        "pick_priority_score": 9.648937586593526,
+        "pick_priority_score_raw": 291.0650566920399,
+        "draft_drafts": 575,
+        "draft_win_lift": 0.04675071422640176,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Sage of the Skies",
+        "pick_priority_score": 9.46445327121441,
+        "pick_priority_score_raw": 261.02364970601155,
+        "draft_drafts": 1007,
+        "draft_win_lift": 0.03574735624524361,
+        "rarity": "rare"
+      },
+      {
+        "card": "Salt Road Packbeast",
+        "pick_priority_score": 8.973493479643079,
+        "pick_priority_score_raw": 195.28689594434772,
+        "draft_drafts": 6716,
+        "draft_win_lift": 0.009262595225284165,
+        "rarity": "common"
+      },
+      {
+        "card": "Mardu Devotee",
+        "pick_priority_score": 8.911553445337065,
+        "pick_priority_score_raw": 188.2624676906407,
+        "draft_drafts": 7497,
+        "draft_win_lift": 0.012375526285095195,
+        "rarity": "common"
+      },
+      {
+        "card": "Venerated Stormsinger",
+        "pick_priority_score": 8.887554516452807,
+        "pick_priority_score_raw": 185.60889195300777,
+        "draft_drafts": 3783,
+        "draft_win_lift": 0.010436224256876847,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "All-Out Assault",
+        "pick_priority_score": 8.839096955732485,
+        "pick_priority_score_raw": 180.36377349722204,
+        "draft_drafts": 1050,
+        "draft_win_lift": 0.011092571929741002,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Rally the Monastery",
+        "pick_priority_score": 8.493095278991902,
+        "pick_priority_score_raw": 146.95880054484394,
+        "draft_drafts": 2558,
+        "draft_win_lift": 0.009490776542315449,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Fortress Kin-Guard",
+        "pick_priority_score": 8.27593600202274,
+        "pick_priority_score_raw": 129.21249023199567,
+        "draft_drafts": 6360,
+        "draft_win_lift": 0.012236972697028947,
+        "rarity": "common"
+      },
+      {
+        "card": "Reigning Victor",
+        "pick_priority_score": 7.455735989999803,
+        "pick_priority_score_raw": 79.3667816114196,
+        "draft_drafts": 7703,
+        "draft_win_lift": 0.006450021418043406,
+        "rarity": "common"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Mardu Devotee",
+          "Sonic Shrieker"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 5.642293072390332,
+        "pair_win_rate": 0.649949849548646,
+        "pair_games": 997,
+        "draft_pair_events": 2503
+      },
+      {
+        "cards": [
+          "Reigning Victor",
+          "Sonic Shrieker"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.812799832596021,
+        "pair_win_rate": 0.6269487750556793,
+        "pair_games": 898,
+        "draft_pair_events": 2590
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Salt Road Packbeast"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.146945863775478,
+        "pair_win_rate": 0.6221248630887185,
+        "pair_games": 913,
+        "draft_pair_events": 2266
+      },
+      {
+        "cards": [
+          "Inevitable Defeat",
+          "Rally the Monastery"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.8782087105604397,
+        "pair_win_rate": 0.7899159663865546,
+        "pair_games": 119,
+        "draft_pair_events": 397
+      },
+      {
+        "cards": [
+          "Coordinated Maneuver",
+          "Sonic Shrieker"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.851726679243447,
+        "pair_win_rate": 0.6359143327841845,
+        "pair_games": 607,
+        "draft_pair_events": 1914
+      },
+      {
+        "cards": [
+          "Inevitable Defeat",
+          "Mardu Devotee"
+        ],
+        "pick_score": 9.866756220274167,
+        "pick_score_raw": 3.7625401004602326,
+        "pair_win_rate": 0.6558139534883721,
+        "pair_games": 430,
+        "draft_pair_events": 1162
+      },
+      {
+        "cards": [
+          "Fortress Kin-Guard",
+          "Salt Road Packbeast"
+        ],
+        "pick_score": 9.762951763797087,
+        "pick_score_raw": 3.7077862153859997,
+        "pair_win_rate": 0.5901538461538461,
+        "pair_games": 1625,
+        "draft_pair_events": 3421
+      },
+      {
+        "cards": [
+          "Rally the Monastery",
+          "Sonic Shrieker"
+        ],
+        "pick_score": 9.749896590036387,
+        "pick_score_raw": 3.7009446975295486,
+        "pair_win_rate": 0.6812080536912751,
+        "pair_games": 298,
+        "draft_pair_events": 819
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Reigning Victor"
+        ],
+        "pick_score": 9.739635992631541,
+        "pick_score_raw": 3.6955746460482524,
+        "pair_win_rate": 0.6085858585858586,
+        "pair_games": 792,
+        "draft_pair_events": 2594
+      },
+      {
+        "cards": [
+          "Inevitable Defeat",
+          "Sonic Shrieker"
+        ],
+        "pick_score": 9.514313770167465,
+        "pick_score_raw": 3.5791827821400424,
+        "pair_win_rate": 0.6904761904761905,
+        "pair_games": 252,
+        "draft_pair_events": 672
+      },
+      {
+        "cards": [
+          "Mardu Monument",
+          "Venerated Stormsinger"
+        ],
+        "pick_score": 8.993041078518198,
+        "pick_score_raw": 3.3208535326980426,
+        "pair_win_rate": 0.6432038834951457,
+        "pair_games": 412,
+        "draft_pair_events": 1181
+      },
+      {
+        "cards": [
+          "Defibrillating Current",
+          "Sonic Shrieker"
+        ],
+        "pick_score": 8.656016677044814,
+        "pick_score_raw": 3.1616426144281644,
+        "pair_win_rate": 0.6468926553672316,
+        "pair_games": 354,
+        "draft_pair_events": 1052
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 6,
+      "title": "Boros Go-Wide | Shock Brigade / Mardu Devotee",
+      "color_name": "Boros Go-Wide",
+      "deck_count": 16554,
+      "games": 74760,
+      "win_rate": 0.5793472445157838,
+      "signposts": [
+        "Shock Brigade",
+        "Mardu Devotee",
+        "Fortress Kin-Guard",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sage of the Skies",
+        "Elspeth, Storm Slayer",
+        "Rally the Monastery",
+        "Shocking Sharpshooter"
+      ]
+    },
+    {
+      "cluster_id": 7,
+      "title": "Temur | Temur Tawnyback / Sibsig Appraiser",
+      "color_name": "Temur",
+      "deck_count": 11891,
+      "games": 53510,
+      "win_rate": 0.575686787516352,
+      "signposts": [
+        "Temur Tawnyback",
+        "Sibsig Appraiser",
+        "Dispelling Exhale",
+        "Riverwalk Technique"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Karakyk Guardian"
+      ]
+    },
+    {
+      "cluster_id": 8,
+      "title": "Sultai | Gurmag Nightwatch / Lie in Wait",
+      "color_name": "Sultai",
+      "deck_count": 16514,
+      "games": 71231,
+      "win_rate": 0.5484550266035855,
+      "signposts": [
+        "Gurmag Nightwatch",
+        "Lie in Wait",
+        "Sultai Devotee",
+        "Sultai Monument"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Fangkeeper's Familiar",
+        "Awaken the Honored Dead",
+        "Sibsig Appraiser"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "Mardu Humans | Reigning Victor / Nightblade Brigade",
+      "color_name": "Mardu Humans",
+      "deck_count": 15854,
+      "games": 70132,
+      "win_rate": 0.548351679689728,
+      "signposts": [
+        "Reigning Victor",
+        "Nightblade Brigade",
+        "Mardu Devotee",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sonic Shrieker",
+        "Mardu Monument",
+        "Inevitable Defeat",
+        "Elspeth, Storm Slayer"
+      ]
+    },
+    {
+      "cluster_id": 1,
+      "title": "Jeskai | Monastery Messenger / Jeskai Devotee",
+      "color_name": "Jeskai",
+      "deck_count": 18554,
+      "games": 78954,
+      "win_rate": 0.5454568482914102,
+      "signposts": [
+        "Monastery Messenger",
+        "Jeskai Devotee",
+        "Narset's Rebuke",
+        "Jeskai Monument"
+      ],
+      "pick_cards": [
+        "Jeskai Revelation",
+        "Marang River Regent",
+        "Jeskai Shrinekeeper",
+        "Sage of the Skies"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Golgari Counters | Champion of Dusan / Trade Route Envoy",
+      "color_name": "Golgari Counters",
+      "deck_count": 7372,
+      "games": 31688,
+      "win_rate": 0.5407409745013886,
+      "signposts": [
+        "Champion of Dusan",
+        "Trade Route Envoy",
+        "Snakeskin Veil",
+        "Formation Breaker"
+      ],
+      "pick_cards": [
+        "Synchronized Charge",
+        "Qarsi Revenant",
+        "Knockout Maneuver",
+        "Marang River Regent"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Five-Color Dragons | Dragonstorm Globe / Boulderborn Dragon",
+      "color_name": "Five-Color Dragons",
+      "deck_count": 14930,
+      "games": 63631,
+      "win_rate": 0.5379296254970062,
+      "signposts": [
+        "Dragonstorm Globe",
+        "Boulderborn Dragon",
+        "Dragonstorm Forecaster",
+        "Dragonbroods' Relic"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Sonic Shrieker",
+        "Roar of Endless Song",
+        "Jeskai Revelation"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Temur | Temur Tawnyback / Mammoth Bellow",
+      "color_name": "Temur",
+      "deck_count": 12416,
+      "games": 52886,
+      "win_rate": 0.5349809023181938,
+      "signposts": [
+        "Temur Tawnyback",
+        "Mammoth Bellow",
+        "Temur Devotee",
+        "Dragonclaw Strike"
+      ],
+      "pick_cards": [
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Marang River Regent",
+        "Dragonback Assault"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Abzan Counters | Abzan Devotee / Reputable Merchant",
+      "color_name": "Abzan Counters",
+      "deck_count": 12817,
+      "games": 55636,
+      "win_rate": 0.531382558055935,
+      "signposts": [
+        "Abzan Devotee",
+        "Reputable Merchant",
+        "Skirmish Rhino",
+        "Armament Dragon"
+      ],
+      "pick_cards": [
+        "Revival of the Ancestors",
+        "Betor, Kin to All",
+        "Yathan Roadwatcher",
+        "Qarsi Revenant"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

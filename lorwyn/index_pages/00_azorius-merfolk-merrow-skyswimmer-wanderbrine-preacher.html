@@ -1,0 +1,4654 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Azorius Merfolk | Merrow Skyswimmer / Wanderbrine Preacher | Lorwyn Eclipsed Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "ECL",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 82906,
+      "cluster_feature_count": 263,
+      "svd_components": 48,
+      "svd_explained_variance": 0.41585496068000793,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.192540243268013,
+          "dominant_main_color_share": 0.7279459549142004,
+          "objective": 0.23621700056286504
+        },
+        {
+          "k": 8,
+          "silhouette": 0.17198492586612701,
+          "dominant_main_color_share": 0.6955971152387095,
+          "objective": 0.21372075278044958
+        },
+        {
+          "k": 9,
+          "silhouette": 0.15807880461215973,
+          "dominant_main_color_share": 0.7346713431984758,
+          "objective": 0.20215908520406828
+        },
+        {
+          "k": 10,
+          "silhouette": 0.1304016262292862,
+          "dominant_main_color_share": 0.7372495498149798,
+          "objective": 0.17463659921818497
+        },
+        {
+          "k": 11,
+          "silhouette": 0.12515881657600403,
+          "dominant_main_color_share": 0.7103820495023637,
+          "objective": 0.16778173954614584
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "4": 17005,
+        "2": 15634,
+        "0": 14756,
+        "3": 11302,
+        "6": 10159,
+        "5": 5824,
+        "1": 8226
+      }
+    },
+    "deck_count": 82906,
+    "game_count": 362682
+  },
+  "segment": {
+    "cluster_id": 0,
+    "title": "Azorius Merfolk | Merrow Skyswimmer / Wanderbrine Preacher",
+    "color_signature": "WU",
+    "color_name": "Azorius Merfolk",
+    "deck_count": 14756,
+    "draft_count": 11792,
+    "games": 65697,
+    "wins": 36688,
+    "win_rate": 0.5584425468438438,
+    "draft_match_win_rate": 0.5560226380528658,
+    "top_deck_colors": [
+      {
+        "colors": "WU",
+        "count": 10771
+      },
+      {
+        "colors": "WUR",
+        "count": 822
+      },
+      {
+        "colors": "WUG",
+        "count": 708
+      },
+      {
+        "colors": "WUB",
+        "count": 702
+      },
+      {
+        "colors": "WUBR",
+        "count": 424
+      },
+      {
+        "colors": "WUBG",
+        "count": 367
+      },
+      {
+        "colors": "WUBRG",
+        "count": 323
+      },
+      {
+        "colors": "WURG",
+        "count": 264
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "WU",
+        "count": 13612
+      },
+      {
+        "colors": "WUR",
+        "count": 268
+      },
+      {
+        "colors": "UB",
+        "count": 244
+      },
+      {
+        "colors": "WUB",
+        "count": 170
+      },
+      {
+        "colors": "WUG",
+        "count": 156
+      },
+      {
+        "colors": "U",
+        "count": 128
+      },
+      {
+        "colors": "UR",
+        "count": 78
+      },
+      {
+        "colors": "UG",
+        "count": 32
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Merrow Skyswimmer",
+        "score": 13920.255659804063,
+        "z_score": 139.11911015837183,
+        "log_odds": 3.0921623163889986,
+        "cluster_prevalence": 0.6775588257297611,
+        "global_prevalence": 0.19232160698900655,
+        "lift": 3.5230509787103204,
+        "support_decks": 10012
+      },
+      {
+        "card": "Wanderbrine Preacher",
+        "score": 13320.295660632302,
+        "z_score": 139.9348219188517,
+        "log_odds": 3.431873561096833,
+        "cluster_prevalence": 0.6131597986646495,
+        "global_prevalence": 0.14932213734753916,
+        "lift": 4.106288655898043,
+        "support_decks": 9061
+      },
+      {
+        "card": "Gravelgill Scoundrel",
+        "score": 12541.026822915026,
+        "z_score": 132.19402985892205,
+        "log_odds": 4.492244141778791,
+        "cluster_prevalence": 0.6089836809766733,
+        "global_prevalence": 0.12260577682696407,
+        "lift": 4.967006422838819,
+        "support_decks": 9000
+      },
+      {
+        "card": "Silvergill Peddler",
+        "score": 12067.110664617776,
+        "z_score": 130.93241164844085,
+        "log_odds": 4.195550863154481,
+        "cluster_prevalence": 0.5747549478633778,
+        "global_prevalence": 0.11881844626106762,
+        "lift": 4.837253523754447,
+        "support_decks": 8494
+      },
+      {
+        "card": "Unexpected Assistance",
+        "score": 9906.03187739939,
+        "z_score": 107.55994887826174,
+        "log_odds": 2.1574419873209796,
+        "cluster_prevalence": 0.5741219656938314,
+        "global_prevalence": 0.21312780197681339,
+        "lift": 2.6937919894481497,
+        "support_decks": 8482
+      },
+      {
+        "card": "Tributary Vaulter",
+        "score": 9566.095409136455,
+        "z_score": 106.39508249680956,
+        "log_odds": 5.102753954883626,
+        "cluster_prevalence": 0.5469969380774412,
+        "global_prevalence": 0.1034640774381818,
+        "lift": 5.28682951243888,
+        "support_decks": 8084
+      },
+      {
+        "card": "Temporal Cleansing",
+        "score": 8886.353774061106,
+        "z_score": 102.67239680157785,
+        "log_odds": 2.0995310957731155,
+        "cluster_prevalence": 0.5070407694781659,
+        "global_prevalence": 0.18232257183254752,
+        "lift": 2.781009308841106,
+        "support_decks": 7491
+      },
+      {
+        "card": "Eclipsed Merrow",
+        "score": 8417.571978799797,
+        "z_score": 103.86524902036021,
+        "log_odds": 4.396736509809948,
+        "cluster_prevalence": 0.4444294112070898,
+        "global_prevalence": 0.08721500306708971,
+        "lift": 5.095790810959608,
+        "support_decks": 6568
+      },
+      {
+        "card": "Silvergill Mentor",
+        "score": 8181.494594755642,
+        "z_score": 103.662930593945,
+        "log_odds": 4.185962870051666,
+        "cluster_prevalence": 0.4214964164872994,
+        "global_prevalence": 0.08411525093384252,
+        "lift": 5.010939298258892,
+        "support_decks": 6229
+      },
+      {
+        "card": "Shore Lurker",
+        "score": 7979.153952588549,
+        "z_score": 106.26599397522546,
+        "log_odds": 3.34860316049398,
+        "cluster_prevalence": 0.3815360124108556,
+        "global_prevalence": 0.0854199802197708,
+        "lift": 4.4665898005271085,
+        "support_decks": 5638
+      },
+      {
+        "card": "Blossombind",
+        "score": 7322.454451608429,
+        "z_score": 86.21217660544553,
+        "log_odds": 1.6942674398928437,
+        "cluster_prevalence": 0.48835856757967233,
+        "global_prevalence": 0.20964201046871123,
+        "lift": 2.329488094909103,
+        "support_decks": 7214
+      },
+      {
+        "card": "Wanderbrine Trapper",
+        "score": 7270.791846641531,
+        "z_score": 99.62793539992688,
+        "log_odds": 2.558521468651116,
+        "cluster_prevalence": 0.3604503622145431,
+        "global_prevalence": 0.09858880619694438,
+        "lift": 3.6560982541415004,
+        "support_decks": 5326
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Merrow Skyswimmer",
+        "label": "Merrow Skyswimmer",
+        "color_identity": "WU",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Merfolk Soldier",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 15891,
+        "win_rate": 0.5906487949153609,
+        "standalone_delta": 0.032206248071517174,
+        "dependency_score": 0.03518561062487356,
+        "degree": 6,
+        "signpost_score": 13920.255659804063,
+        "signpost_lift": 3.5230509787103204,
+        "deck_prevalence": 0.6775588257297611,
+        "draft_weight": 13223.0,
+        "draft_drafts": 8098,
+        "draft_presence": 0.6867367706919946,
+        "draft_win_rate": 0.5624346017497879,
+        "draft_win_lift": 0.006411963696922096,
+        "analysis_score_raw": 13925.397875525323,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 271.8776828462356,
+        "pick_priority_score": 9.040309004800248,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Merrow%20Skyswimmer%22",
+        "community": 3,
+        "x": 682.6330140878636,
+        "y": 781.4535582742468,
+        "analysis_radius": 14.038025626428894,
+        "pick_radius": 30.0,
+        "radius": 14.038025626428894
+      },
+      {
+        "id": "Wanderbrine Preacher",
+        "label": "Wanderbrine Preacher",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Merfolk Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 13346,
+        "win_rate": 0.5603176981867226,
+        "standalone_delta": 0.0018751513428788558,
+        "dependency_score": 0.06564985539860962,
+        "degree": 9,
+        "signpost_score": 13320.295660632302,
+        "signpost_lift": 4.106288655898043,
+        "deck_prevalence": 0.6131597986646495,
+        "draft_weight": 12071.0,
+        "draft_drafts": 7593,
+        "draft_presence": 0.6439111261872456,
+        "draft_win_rate": 0.5591763353195802,
+        "draft_win_lift": 0.003153697266714439,
+        "analysis_score_raw": 13321.739879217479,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 47.7952851126104,
+        "pick_priority_score": 6.265869442584147,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Wanderbrine%20Preacher%22",
+        "community": 0,
+        "x": 1143.9451474350126,
+        "y": 611.0821714544661,
+        "analysis_radius": 13.466528118208284,
+        "pick_radius": 30.0,
+        "radius": 13.466528118208284
+      },
+      {
+        "id": "Gravelgill Scoundrel",
+        "label": "Gravelgill Scoundrel",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Merfolk Rogue",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 13460,
+        "win_rate": 0.5598811292719168,
+        "standalone_delta": 0.001438582428073043,
+        "dependency_score": 0.13472745355706237,
+        "degree": 8,
+        "signpost_score": 12541.026822915026,
+        "signpost_lift": 4.967006422838819,
+        "deck_prevalence": 0.6089836809766733,
+        "draft_weight": 13063.0,
+        "draft_drafts": 8047,
+        "draft_presence": 0.6824118046132972,
+        "draft_win_rate": 0.5582095086019562,
+        "draft_win_lift": 0.0021868705490903917,
+        "analysis_score_raw": 12543.653318618984,
+        "analysis_score": 9.974619023938061,
+        "pick_priority_score_raw": 37.31283784968391,
+        "pick_priority_score": 5.876071368252688,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Gravelgill%20Scoundrel%22",
+        "community": 0,
+        "x": 1117.6432343491033,
+        "y": 553.5593561546114,
+        "analysis_radius": 15.929310361598262,
+        "pick_radius": 30.0,
+        "radius": 15.929310361598262
+      },
+      {
+        "id": "Silvergill Peddler",
+        "label": "Silvergill Peddler",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Merfolk Citizen",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 11167,
+        "win_rate": 0.5628190203277514,
+        "standalone_delta": 0.0043764734839076835,
+        "dependency_score": 0.05873455905185916,
+        "degree": 14,
+        "signpost_score": 12067.110664617776,
+        "signpost_lift": 4.837253523754447,
+        "deck_prevalence": 0.5747549478633778,
+        "draft_weight": 11764.0,
+        "draft_drafts": 7816,
+        "draft_presence": 0.6628222523744912,
+        "draft_win_rate": 0.5575928218760364,
+        "draft_win_lift": 0.0015701838231706455,
+        "analysis_score_raw": 12068.780592968456,
+        "analysis_score": 9.949579276519247,
+        "pick_priority_score_raw": 48.654659200889945,
+        "pick_priority_score": 6.294008128430931,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Silvergill%20Peddler%22",
+        "community": 2,
+        "x": 930.0249620283506,
+        "y": 806.5775226864315,
+        "analysis_radius": 13.355150167481852,
+        "pick_radius": 30.0,
+        "radius": 13.355150167481852
+      },
+      {
+        "id": "Unexpected Assistance",
+        "label": "Unexpected Assistance",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 11035,
+        "win_rate": 0.5782510194834617,
+        "standalone_delta": 0.019808472639617936,
+        "dependency_score": 0.18349778811519768,
+        "degree": 11,
+        "signpost_score": 9906.03187739939,
+        "signpost_lift": 2.6937919894481497,
+        "deck_prevalence": 0.5741219656938314,
+        "draft_weight": 9798.0,
+        "draft_drafts": 7181,
+        "draft_presence": 0.6089721845318861,
+        "draft_win_rate": 0.5576994507540282,
+        "draft_win_lift": 0.001676812701162378,
+        "analysis_score_raw": 9912.10802375501,
+        "analysis_score": 9.82185091647609,
+        "pick_priority_score_raw": 124.57588543177647,
+        "pick_priority_score": 7.7894130459330055,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Unexpected%20Assistance%22",
+        "community": 0,
+        "x": 1211.1845534141164,
+        "y": 593.8549185721824,
+        "analysis_radius": 18.6953863673261,
+        "pick_radius": 30.0,
+        "radius": 18.6953863673261
+      },
+      {
+        "id": "Tributary Vaulter",
+        "label": "Tributary Vaulter",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Merfolk Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 11985,
+        "win_rate": 0.5558614935335836,
+        "standalone_delta": -0.0025810533102601507,
+        "dependency_score": 0.04928885871571985,
+        "degree": 8,
+        "signpost_score": 9566.095409136455,
+        "signpost_lift": 5.28682951243888,
+        "deck_prevalence": 0.5469969380774412,
+        "draft_weight": 11954.0,
+        "draft_drafts": 7543,
+        "draft_presence": 0.6396709633649932,
+        "draft_win_rate": 0.5583969263522324,
+        "draft_win_lift": 0.0023742882993665892,
+        "analysis_score_raw": 9566.982608593338,
+        "analysis_score": 9.798857802302022,
+        "pick_priority_score_raw": 29.460585134872336,
+        "pick_priority_score": 5.5064155542323014,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Tributary%20Vaulter%22",
+        "community": 0,
+        "x": 1075.2148065441163,
+        "y": 616.7491388730749,
+        "analysis_radius": 12.774398913765914,
+        "pick_radius": 30.0,
+        "radius": 12.774398913765914
+      },
+      {
+        "id": "Temporal Cleansing",
+        "label": "Temporal Cleansing",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 10409,
+        "win_rate": 0.5747910462100105,
+        "standalone_delta": 0.01634849936616678,
+        "dependency_score": 0.044072310190861025,
+        "degree": 9,
+        "signpost_score": 8886.353774061106,
+        "signpost_lift": 2.781009308841106,
+        "deck_prevalence": 0.5070407694781659,
+        "draft_weight": 9852.0,
+        "draft_drafts": 6931,
+        "draft_presence": 0.5877713704206241,
+        "draft_win_rate": 0.5621792305566153,
+        "draft_win_lift": 0.006156592503749558,
+        "analysis_score_raw": 8889.435865555804,
+        "analysis_score": 9.751200591553001,
+        "pick_priority_score_raw": 148.5742013155359,
+        "pick_priority_score": 8.071278601136031,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temporal%20Cleansing%22",
+        "community": 1,
+        "x": 1043.887542704649,
+        "y": 712.6916334148352,
+        "analysis_radius": 13.485770632010171,
+        "pick_radius": 30.0,
+        "radius": 13.485770632010171
+      },
+      {
+        "id": "Eclipsed Merrow",
+        "label": "Eclipsed Merrow",
+        "color_identity": "WU",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Merfolk Scout",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 9100,
+        "win_rate": 0.614065934065934,
+        "standalone_delta": 0.05562338722209026,
+        "dependency_score": 0.056152030338656,
+        "degree": 4,
+        "signpost_score": 8417.571978799797,
+        "signpost_lift": 5.095790810959608,
+        "deck_prevalence": 0.4444294112070898,
+        "draft_weight": 6693.0,
+        "draft_drafts": 5123,
+        "draft_presence": 0.4344470827679783,
+        "draft_win_rate": 0.5800141657549849,
+        "draft_win_lift": 0.023991527702119098,
+        "analysis_score_raw": 8426.369989556984,
+        "analysis_score": 9.716491589373085,
+        "pick_priority_score_raw": 550.70635802013,
+        "pick_priority_score": 10.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Eclipsed%20Merrow%22",
+        "community": 3,
+        "x": 797.359216511675,
+        "y": 792.3022855263334,
+        "analysis_radius": 16.08075938940658,
+        "pick_radius": 30.0,
+        "radius": 16.08075938940658
+      },
+      {
+        "id": "Silvergill Mentor",
+        "label": "Silvergill Mentor",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Merfolk Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 8345,
+        "win_rate": 0.5902935889754344,
+        "standalone_delta": 0.03185104213159062,
+        "dependency_score": 0.1647541878493782,
+        "degree": 6,
+        "signpost_score": 8181.494594755642,
+        "signpost_lift": 5.010939298258892,
+        "deck_prevalence": 0.4214964164872994,
+        "draft_weight": 6464.0,
+        "draft_drafts": 4991,
+        "draft_presence": 0.42325305291723203,
+        "draft_win_rate": 0.5710912987473181,
+        "draft_win_lift": 0.01506866069445234,
+        "analysis_score_raw": 8188.9193160353525,
+        "analysis_score": 9.697946391741517,
+        "pick_priority_score_raw": 322.55358279714017,
+        "pick_priority_score": 9.314855195173907,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Silvergill%20Mentor%22",
+        "community": 1,
+        "x": 1110.1507639163474,
+        "y": 641.0923815930859,
+        "analysis_radius": 18.682958079815098,
+        "pick_radius": 30.0,
+        "radius": 18.682958079815098
+      },
+      {
+        "id": "Shore Lurker",
+        "label": "Shore Lurker",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Merfolk Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 7449,
+        "win_rate": 0.555242314404618,
+        "standalone_delta": -0.0032002324392257364,
+        "dependency_score": 0.07390383730948374,
+        "degree": 11,
+        "signpost_score": 7979.153952588549,
+        "signpost_lift": 4.4665898005271085,
+        "deck_prevalence": 0.3815360124108556,
+        "draft_weight": 8786.0,
+        "draft_drafts": 6308,
+        "draft_presence": 0.5349389416553596,
+        "draft_win_rate": 0.5526732358654507,
+        "draft_win_lift": -0.0033494021874150848,
+        "analysis_score_raw": 7980.48422166012,
+        "analysis_score": 9.681218706051181,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Shore%20Lurker%22",
+        "community": 0,
+        "x": 1181.4841863747754,
+        "y": 545.2712807240397,
+        "analysis_radius": 13.660538143141416,
+        "pick_radius": 30.0,
+        "radius": 13.660538143141416
+      },
+      {
+        "id": "Blossombind",
+        "label": "Blossombind",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Enchantment - Aura",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 10036,
+        "win_rate": 0.5732363491430849,
+        "standalone_delta": 0.014793802299241099,
+        "dependency_score": 0.047518768567399,
+        "degree": 5,
+        "signpost_score": 7322.454451608429,
+        "signpost_lift": 2.329488094909103,
+        "deck_prevalence": 0.48835856757967233,
+        "draft_weight": 8413.0,
+        "draft_drafts": 6032,
+        "draft_presence": 0.5115332428765265,
+        "draft_win_rate": 0.5589955829197929,
+        "draft_win_lift": 0.0029729448669271186,
+        "analysis_score_raw": 7325.380921764536,
+        "analysis_score": 9.625647582672565,
+        "pick_priority_score_raw": 97.75452720695333,
+        "pick_priority_score": 7.40215454303187,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Blossombind%22",
+        "community": 3,
+        "x": 737.3747553125979,
+        "y": 786.5985194702627,
+        "analysis_radius": 13.524334794884624,
+        "pick_radius": 30.0,
+        "radius": 13.524334794884624
+      },
+      {
+        "id": "Wanderbrine Trapper",
+        "label": "Wanderbrine Trapper",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 1.0,
+        "types": "Creature - Merfolk Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 6802,
+        "win_rate": 0.576301087915319,
+        "standalone_delta": 0.01785854107147522,
+        "dependency_score": 0.049411544763416027,
+        "degree": 5,
+        "signpost_score": 7270.791846641531,
+        "signpost_lift": 3.6560982541415004,
+        "deck_prevalence": 0.3604503622145431,
+        "draft_weight": 5179.0,
+        "draft_drafts": 4213,
+        "draft_presence": 0.3572761194029851,
+        "draft_win_rate": 0.5697315082919818,
+        "draft_win_lift": 0.013708870239116044,
+        "analysis_score_raw": 7274.181450197279,
+        "analysis_score": 9.621097108958017,
+        "pick_priority_score_raw": 193.30238079585578,
+        "pick_priority_score": 8.492947861525728,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Wanderbrine%20Trapper%22",
+        "community": 2,
+        "x": 978.4027580283062,
+        "y": 843.0400143207141,
+        "analysis_radius": 13.761035370414113,
+        "pick_radius": 30.0,
+        "radius": 13.761035370414113
+      },
+      {
+        "id": "Wanderwine Farewell",
+        "label": "Wanderwine Farewell",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 7.0,
+        "types": "Kindred Sorcery - Merfolk",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6615,
+        "win_rate": 0.5980347694633409,
+        "standalone_delta": 0.03959222261949713,
+        "dependency_score": 0.2388355260183995,
+        "degree": 5,
+        "signpost_score": 7089.441661336277,
+        "signpost_lift": 4.663512361519422,
+        "deck_prevalence": 0.34688040358878647,
+        "draft_weight": 5281.0,
+        "draft_drafts": 4375,
+        "draft_presence": 0.3710142469470828,
+        "draft_win_rate": 0.566279698907409,
+        "draft_win_lift": 0.010257060854543254,
+        "analysis_score_raw": 7099.283611971338,
+        "analysis_score": 9.605307453729287,
+        "pick_priority_score_raw": 289.4983270809054,
+        "pick_priority_score": 9.141162535907531,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Wanderwine%20Farewell%22",
+        "community": 2,
+        "x": 864.9745177830837,
+        "y": 821.6722489917645,
+        "analysis_radius": 21.775651180734727,
+        "pick_radius": 30.0,
+        "radius": 21.775651180734727
+      },
+      {
+        "id": "Pestered Wellguard",
+        "label": "Pestered Wellguard",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Merfolk Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6150,
+        "win_rate": 0.5608130081300813,
+        "standalone_delta": 0.002370461286237524,
+        "dependency_score": 0.12101417692610576,
+        "degree": 8,
+        "signpost_score": 6794.219677940674,
+        "signpost_lift": 4.40638713183344,
+        "deck_prevalence": 0.32780811508587127,
+        "draft_weight": 4674.0,
+        "draft_drafts": 3902,
+        "draft_presence": 0.3309023066485753,
+        "draft_win_rate": 0.5515390891955765,
+        "draft_win_lift": -0.004483548857289299,
+        "analysis_score_raw": 6796.729797705418,
+        "analysis_score": 9.577051679897247,
+        "pick_priority_score_raw": 10.918197478528086,
+        "pick_priority_score": 3.9940081716198397,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Pestered%20Wellguard%22",
+        "community": 1,
+        "x": 1115.3367257829218,
+        "y": 736.7535530230631,
+        "analysis_radius": 15.486885740082872,
+        "pick_radius": 30.0,
+        "radius": 15.486885740082872
+      },
+      {
+        "id": "Deepchannel Duelist",
+        "label": "Deepchannel Duelist",
+        "color_identity": "WU",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Merfolk Soldier",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 9588,
+        "win_rate": 0.6253650396328744,
+        "standalone_delta": 0.06692249278903062,
+        "dependency_score": 0.02918106108152171,
+        "degree": 5,
+        "signpost_score": 6410.439478591481,
+        "signpost_lift": 5.4401169360718225,
+        "deck_prevalence": 0.45057601405735975,
+        "draft_weight": 6700.0,
+        "draft_drafts": 5123,
+        "draft_presence": 0.4344470827679783,
+        "draft_win_rate": 0.58027131835899,
+        "draft_win_lift": 0.02424868030612426,
+        "analysis_score_raw": 6420.333886681413,
+        "analysis_score": 9.54009012003649,
+        "pick_priority_score_raw": 631.0468482091068,
+        "pick_priority_score": 10.0,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Deepchannel%20Duelist%22",
+        "community": 0,
+        "x": 1180.3132653387595,
+        "y": 476.73019955274555,
+        "analysis_radius": 15.731255302331466,
+        "pick_radius": 30.0,
+        "radius": 15.731255302331466
+      },
+      {
+        "id": "Liminal Hold",
+        "label": "Liminal Hold",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 9200,
+        "win_rate": 0.5842391304347826,
+        "standalone_delta": 0.025796583590938837,
+        "dependency_score": 0.11620580143915937,
+        "degree": 6,
+        "signpost_score": 6276.848243367325,
+        "signpost_lift": 2.182379029010437,
+        "deck_prevalence": 0.4513587684952644,
+        "draft_weight": 7068.0,
+        "draft_drafts": 5394,
+        "draft_presence": 0.45742876526458615,
+        "draft_win_rate": 0.5583472664892212,
+        "draft_win_lift": 0.0023246284363553915,
+        "analysis_score_raw": 6282.551469495962,
+        "analysis_score": 9.52601575680261,
+        "pick_priority_score_raw": 135.615418985748,
+        "pick_priority_score": 7.925217895598632,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Liminal%20Hold%22",
+        "community": 2,
+        "x": 965.2635527792283,
+        "y": 807.2520203945542,
+        "analysis_radius": 16.602220949311373,
+        "pick_radius": 30.0,
+        "radius": 16.602220949311373
+      },
+      {
+        "id": "Encumbered Reejerey",
+        "label": "Encumbered Reejerey",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Merfolk Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 5890,
+        "win_rate": 0.5555178268251273,
+        "standalone_delta": -0.0029247200187164646,
+        "dependency_score": 0.1762100928534276,
+        "degree": 5,
+        "signpost_score": 6217.178514599118,
+        "signpost_lift": 3.6483400101915437,
+        "deck_prevalence": 0.3113254084633307,
+        "draft_weight": 4464.0,
+        "draft_drafts": 3638,
+        "draft_presence": 0.3085142469470828,
+        "draft_win_rate": 0.567480632982134,
+        "draft_win_lift": 0.011457994929268245,
+        "analysis_score_raw": 6220.35029627048,
+        "analysis_score": 9.519560544157628,
+        "pick_priority_score_raw": 87.41249265995843,
+        "pick_priority_score": 7.223857049245052,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Encumbered%20Reejerey%22",
+        "community": 1,
+        "x": 1154.5318839941667,
+        "y": 776.0863707922992,
+        "analysis_radius": 17.343563342723392,
+        "pick_radius": 30.0,
+        "radius": 17.343563342723392
+      },
+      {
+        "id": "Spiral into Solitude",
+        "label": "Spiral into Solitude",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Enchantment - Aura",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 8057,
+        "win_rate": 0.5660915973687477,
+        "standalone_delta": 0.007649050524903944,
+        "dependency_score": 0.04542909840404891,
+        "degree": 10,
+        "signpost_score": 5825.44204607418,
+        "signpost_lift": 2.2268558094064663,
+        "deck_prevalence": 0.4135804178207017,
+        "draft_weight": 6656.0,
+        "draft_drafts": 5107,
+        "draft_presence": 0.4330902306648575,
+        "draft_win_rate": 0.553759161619718,
+        "draft_win_lift": -0.0022634764331477264,
+        "analysis_score_raw": 5827.3306369189395,
+        "analysis_score": 9.477217557748244,
+        "pick_priority_score_raw": 33.75291555895487,
+        "pick_priority_score": 5.71889159602467,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Spiral%20into%20Solitude%22",
+        "community": 3,
+        "x": 852.6330140878636,
+        "y": 797.6325647406619,
+        "analysis_radius": 13.056145321415478,
+        "pick_radius": 30.0,
+        "radius": 13.056145321415478
+      },
+      {
+        "id": "Kinbinding",
+        "label": "Kinbinding",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1744,
+        "win_rate": 0.6915137614678899,
+        "standalone_delta": 0.13307121462404614,
+        "dependency_score": 0.05280930615024247,
+        "degree": 7,
+        "signpost_score": 887.3973832229045,
+        "signpost_lift": 1.8135747453490236,
+        "deck_prevalence": 0.09016050353569253,
+        "draft_weight": 811.0,
+        "draft_drafts": 789,
+        "draft_presence": 0.06690976933514246,
+        "draft_win_rate": 0.6061009081918924,
+        "draft_win_lift": 0.05007827013902666,
+        "analysis_score_raw": 906.9779207809753,
+        "analysis_score": 8.27079298889195,
+        "pick_priority_score_raw": 374.4175166178279,
+        "pick_priority_score": 9.554479670407474,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kinbinding%22",
+        "community": 0,
+        "x": 1245.2148065441165,
+        "y": 522.75293466888,
+        "analysis_radius": 20.220051825731268,
+        "pick_radius": 30.0,
+        "radius": 20.220051825731268
+      },
+      {
+        "id": "Champions of the Shoal",
+        "label": "Champions of the Shoal",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Creature - Merfolk Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 3439,
+        "win_rate": 0.6333236405931957,
+        "standalone_delta": 0.07488109374935192,
+        "dependency_score": 0.0743159946457838,
+        "degree": 6,
+        "signpost_score": 3721.7014463268292,
+        "signpost_lift": 4.4651741312614766,
+        "deck_prevalence": 0.18557791297042442,
+        "draft_weight": 1669.0,
+        "draft_drafts": 1579,
+        "draft_presence": 0.13390434192672998,
+        "draft_win_rate": 0.5902655155877978,
+        "draft_win_lift": 0.03424287753493205,
+        "analysis_score_raw": 3733.5224873553625,
+        "analysis_score": 9.18839794848086,
+        "pick_priority_score_raw": 403.5827843484615,
+        "pick_priority_score": 9.675066455728057,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Champions%20of%20the%20Shoal%22",
+        "community": 2,
+        "x": 902.4602940883669,
+        "y": 828.9731734722851,
+        "analysis_radius": 17.793835963462573,
+        "pick_radius": 30.0,
+        "radius": 17.793835963462573
+      },
+      {
+        "id": "Rimekin Recluse",
+        "label": "Rimekin Recluse",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Elemental Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 4796,
+        "win_rate": 0.6155129274395329,
+        "standalone_delta": 0.05707038059568914,
+        "dependency_score": 0.03955027872307417,
+        "degree": 3,
+        "signpost_score": 2775.610324259466,
+        "signpost_lift": 1.9448590185498527,
+        "deck_prevalence": 0.24301952502567767,
+        "draft_weight": 3233.0,
+        "draft_drafts": 2801,
+        "draft_presence": 0.23753392130257803,
+        "draft_win_rate": 0.578042585388813,
+        "draft_win_lift": 0.022019947335947254,
+        "analysis_score_raw": 2784.3120825598776,
+        "analysis_score": 8.998109875295416,
+        "pick_priority_score_raw": 309.37013076770813,
+        "pick_priority_score": 9.247807976368168,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Rimekin%20Recluse%22",
+        "community": 2,
+        "x": 1034.9745177830837,
+        "y": 818.3293474236614,
+        "analysis_radius": 15.562680966793572,
+        "pick_radius": 30.0,
+        "radius": 15.562680966793572
+      },
+      {
+        "id": "Disruptor of Currents",
+        "label": "Disruptor of Currents",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Creature - Merfolk Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2570,
+        "win_rate": 0.6342412451361867,
+        "standalone_delta": 0.07579869829234298,
+        "dependency_score": 0.051844942342703274,
+        "degree": 8,
+        "signpost_score": 2520.8054336963464,
+        "signpost_lift": 2.8889521766133375,
+        "deck_prevalence": 0.14954538487650493,
+        "draft_weight": 1381.0,
+        "draft_drafts": 1330,
+        "draft_presence": 0.11278833107191316,
+        "draft_win_rate": 0.5817104482565802,
+        "draft_win_lift": 0.025687810203714467,
+        "analysis_score_raw": 2532.3504604194427,
+        "analysis_score": 8.936585694699142,
+        "pick_priority_score_raw": 292.1337126377294,
+        "pick_priority_score": 9.15571826579745,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Disruptor%20of%20Currents%22",
+        "community": 1,
+        "x": 1057.8909026715537,
+        "y": 811.0923815930859,
+        "analysis_radius": 17.035346330416182,
+        "pick_radius": 30.0,
+        "radius": 17.035346330416182
+      },
+      {
+        "id": "Slumbering Walker",
+        "label": "Slumbering Walker",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Creature - Giant Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1653,
+        "win_rate": 0.6412583182093164,
+        "standalone_delta": 0.08281577136547269,
+        "dependency_score": 0.1378398778454538,
+        "degree": 11,
+        "signpost_score": 1116.158842377899,
+        "signpost_lift": 2.104363048047473,
+        "deck_prevalence": 0.09177444562803001,
+        "draft_weight": 893.0,
+        "draft_drafts": 868,
+        "draft_presence": 0.07360922659430122,
+        "draft_win_rate": 0.5894748467055078,
+        "draft_win_lift": 0.03345220865264198,
+        "analysis_score_raw": 1130.2341681702835,
+        "analysis_score": 8.413443774001172,
+        "pick_priority_score_raw": 258.4553103180009,
+        "pick_priority_score": 8.95901398053328,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Slumbering%20Walker%22",
+        "community": 1,
+        "x": 1136.212845489536,
+        "y": 704.3159789852282,
+        "analysis_radius": 20.517103027537335,
+        "pick_radius": 30.0,
+        "radius": 20.517103027537335
+      },
+      {
+        "id": "Catharsis",
+        "label": "Catharsis",
+        "color_identity": "WR",
+        "rarity": "mythic",
+        "mana_value": 6.0,
+        "types": "Creature - Elemental Incarnation",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "WR"
+        },
+        "draw_games": 187,
+        "win_rate": 0.5561497326203209,
+        "standalone_delta": -0.0022928142235228988,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -98.12918414371485,
+        "signpost_lift": 0.5767939073140061,
+        "deck_prevalence": 0.010914574880481158,
+        "draft_weight": 174.0,
+        "draft_drafts": 173,
+        "draft_presence": 0.014670963364993215,
+        "draft_win_rate": 0.5277250719706883,
+        "draft_win_lift": -0.028297566082177483,
+        "analysis_score_raw": -98.12918414371485,
+        "analysis_score": 0.8686982113405677,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Catharsis%22",
+        "community": 4,
+        "x": 650.9814554917343,
+        "y": 650.6353379813022,
+        "analysis_radius": 11.0,
+        "pick_radius": 29.729419656948856,
+        "radius": 11.0
+      },
+      {
+        "id": "Cinder Strike",
+        "label": "Cinder Strike",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 204,
+        "win_rate": 0.5637254901960784,
+        "standalone_delta": 0.00528294335223467,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -519.1822400962961,
+        "signpost_lift": 0.046414675917041306,
+        "deck_prevalence": 0.010223679293071573,
+        "draft_weight": 914.0,
+        "draft_drafts": 833,
+        "draft_presence": 0.07064111261872456,
+        "draft_win_rate": 0.543040823637644,
+        "draft_win_lift": -0.012981814415221726,
+        "analysis_score_raw": -518.4426280269832,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 8.386121380336004,
+        "pick_priority_score": 3.609068500876905,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Cinder%20Strike%22",
+        "community": 5,
+        "x": 650.9814554917343,
+        "y": 469.3646620186978,
+        "analysis_radius": 11.290561884372908,
+        "pick_radius": 30.0,
+        "radius": 11.290561884372908
+      },
+      {
+        "id": "End-Blaze Epiphany",
+        "label": "End-Blaze Epiphany",
+        "color_identity": "R",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 133,
+        "win_rate": 0.6240601503759399,
+        "standalone_delta": 0.06561760353209611,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -216.18513199140307,
+        "signpost_lift": 0.12243263947363528,
+        "deck_prevalence": 0.00643513131055908,
+        "draft_weight": 185.0,
+        "draft_drafts": 179,
+        "draft_presence": 0.015179782903663501,
+        "draft_win_rate": 0.5814133585194665,
+        "draft_win_lift": 0.025390720466600736,
+        "analysis_score_raw": -206.9986674969096,
+        "analysis_score": 0.3878145093656351,
+        "pick_priority_score_raw": 82.25517239616438,
+        "pick_priority_score": 7.126986377813731,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22End-Blaze%20Epiphany%22",
+        "community": 6,
+        "x": 767.4999999999999,
+        "y": 330.5032679971238,
+        "analysis_radius": 14.608968194265287,
+        "pick_radius": 30.0,
+        "radius": 14.608968194265287
+      },
+      {
+        "id": "Tweeze",
+        "label": "Tweeze",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 177,
+        "win_rate": 0.519774011299435,
+        "standalone_delta": -0.038668535544408744,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -465.48370131909144,
+        "signpost_lift": 0.0501052807893197,
+        "deck_prevalence": 0.009488867216238395,
+        "draft_weight": 857.0,
+        "draft_drafts": 760,
+        "draft_presence": 0.06445047489823609,
+        "draft_win_rate": 0.5469307328976735,
+        "draft_win_lift": -0.009091905155192315,
+        "analysis_score_raw": -465.48370131909144,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Tweeze%22",
+        "community": 7,
+        "x": 946.0167670817365,
+        "y": 299.02594545176487,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Dream Seizer",
+        "label": "Dream Seizer",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Faerie Rogue",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 110,
+        "win_rate": 0.5272727272727272,
+        "standalone_delta": -0.03116981957111653,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -254.9999629837233,
+        "signpost_lift": 0.11737338344961581,
+        "deck_prevalence": 0.007423963769423455,
+        "draft_weight": 1474.0,
+        "draft_drafts": 1313,
+        "draft_presence": 0.11134667571234735,
+        "draft_win_rate": 0.5411015666916439,
+        "draft_win_lift": -0.014921071361221894,
+        "analysis_score_raw": -254.9999629837233,
+        "analysis_score": 0.2530791850729025,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dream%20Seizer%22",
+        "community": 8,
+        "x": 1103.001777426529,
+        "y": 389.661283433067,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      }
+    ],
+    "edges": [
+      {
+        "from": "Pestered Wellguard",
+        "to": "Slumbering Walker",
+        "pair_games": 126,
+        "pair_win_rate": 0.7619047619047619,
+        "pair_expected_win_rate": 0.6434680338277569,
+        "pair_lift_vs_baseline": 0.2034622150609181,
+        "synergy_delta_logit": 0.5727023620015512,
+        "synergy_delta_prob": 0.118436728077005,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 258,
+        "quality_score": 1.8356729221884915,
+        "pick_score_raw": 3.3446677045827466,
+        "pick_score": 5.507297795991231
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Silvergill Peddler",
+        "pair_games": 1804,
+        "pair_win_rate": 0.6286031042128604,
+        "pair_expected_win_rate": 0.5885483045358795,
+        "pair_lift_vs_baseline": 0.07016055736901661,
+        "synergy_delta_logit": 0.16826139454449957,
+        "synergy_delta_prob": 0.04005479967698089,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3561,
+        "quality_score": 0.9078219965353581,
+        "pick_score_raw": 5.70848196411707,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Encumbered Reejerey",
+        "to": "Slumbering Walker",
+        "pair_games": 155,
+        "pair_win_rate": 0.7096774193548387,
+        "pair_expected_win_rate": 0.6385270758760356,
+        "pair_lift_vs_baseline": 0.151234872510995,
+        "synergy_delta_logit": 0.32484093610940024,
+        "synergy_delta_prob": 0.07115034347880311,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 270,
+        "quality_score": 0.8864918155276647,
+        "pick_score_raw": 2.848431933886571,
+        "pick_score": 4.205430216932115
+      },
+      {
+        "from": "Silvergill Mentor",
+        "to": "Slumbering Walker",
+        "pair_games": 216,
+        "pair_win_rate": 0.7222222222222222,
+        "pair_expected_win_rate": 0.670658614525183,
+        "pair_lift_vs_baseline": 0.16377967537837845,
+        "synergy_delta_logit": 0.24434606732635022,
+        "synergy_delta_prob": 0.05156360769703916,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 377,
+        "quality_score": 0.8558234735374659,
+        "pick_score_raw": 3.662807025828783,
+        "pick_score": 6.265858010796666
+      },
+      {
+        "from": "Shore Lurker",
+        "to": "Slumbering Walker",
+        "pair_games": 201,
+        "pair_win_rate": 0.681592039800995,
+        "pair_expected_win_rate": 0.6382695124746192,
+        "pair_lift_vs_baseline": 0.12314949295715127,
+        "synergy_delta_logit": 0.1932366399201798,
+        "synergy_delta_prob": 0.04332252732637587,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 447,
+        "quality_score": 0.5118793171829797,
+        "pick_score_raw": 2.7728729279585878,
+        "pick_score": 3.9925838667884332
+      },
+      {
+        "from": "Champions of the Shoal",
+        "to": "Silvergill Peddler",
+        "pair_games": 684,
+        "pair_win_rate": 0.6637426900584795,
+        "pair_expected_win_rate": 0.6374397829954027,
+        "pair_lift_vs_baseline": 0.10530014321463577,
+        "synergy_delta_logit": 0.11574865096720721,
+        "synergy_delta_prob": 0.026302907063076808,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1055,
+        "quality_score": 0.5113539165560305,
+        "pick_score_raw": 4.645950294889349,
+        "pick_score": 8.319512982007828
+      },
+      {
+        "from": "Shore Lurker",
+        "to": "Silvergill Peddler",
+        "pair_games": 1361,
+        "pair_win_rate": 0.5966201322556943,
+        "pair_expected_win_rate": 0.5596254940261649,
+        "pair_lift_vs_baseline": 0.03817758541185057,
+        "synergy_delta_logit": 0.1517596141408193,
+        "synergy_delta_prob": 0.03699463822952942,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4192,
+        "quality_score": 0.46156064856690904,
+        "pick_score_raw": 3.220417366357576,
+        "pick_score": 5.195845567654041
+      },
+      {
+        "from": "Champions of the Shoal",
+        "to": "Wanderwine Farewell",
+        "pair_games": 347,
+        "pair_win_rate": 0.6945244956772334,
+        "pair_expected_win_rate": 0.670167265314522,
+        "pair_lift_vs_baseline": 0.13608194883338964,
+        "synergy_delta_logit": 0.11241616979950186,
+        "synergy_delta_prob": 0.024357230362711424,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 594,
+        "quality_score": 0.43125279198733657,
+        "pick_score_raw": 4.0219631722153375,
+        "pick_score": 7.062362574992268
+      },
+      {
+        "from": "Gravelgill Scoundrel",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 2798,
+        "pair_win_rate": 0.588277340957827,
+        "pair_expected_win_rate": 0.5617549656902338,
+        "pair_lift_vs_baseline": 0.029834794113983265,
+        "synergy_delta_logit": 0.10856098228696565,
+        "synergy_delta_prob": 0.026522375267593268,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5061,
+        "quality_score": 0.4082204060385761,
+        "pick_score_raw": 3.9851304136417873,
+        "pick_score": 6.983345068167549
+      },
+      {
+        "from": "Champions of the Shoal",
+        "to": "Eclipsed Merrow",
+        "pair_games": 411,
+        "pair_win_rate": 0.7031630170316302,
+        "pair_expected_win_rate": 0.6848377004425393,
+        "pair_lift_vs_baseline": 0.14472047018778644,
+        "synergy_delta_logit": 0.08631150967782786,
+        "synergy_delta_prob": 0.018325316589090868,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 632,
+        "quality_score": 0.3811892125808743,
+        "pick_score_raw": 4.631842497149379,
+        "pick_score": 8.29265765675702
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Unexpected Assistance",
+        "pair_games": 274,
+        "pair_win_rate": 0.7262773722627737,
+        "pair_expected_win_rate": 0.7084690042423625,
+        "pair_lift_vs_baseline": 0.1678348254189299,
+        "synergy_delta_logit": 0.08785673350520906,
+        "synergy_delta_prob": 0.01780836802041119,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 457,
+        "quality_score": 0.35684845790520053,
+        "pick_score_raw": 4.252206507075953,
+        "pick_score": 7.543543194398086
+      },
+      {
+        "from": "Blossombind",
+        "to": "Eclipsed Merrow",
+        "pair_games": 1450,
+        "pair_win_rate": 0.6427586206896552,
+        "pair_expected_win_rate": 0.628236765528638,
+        "pair_lift_vs_baseline": 0.08431607384581141,
+        "synergy_delta_logit": 0.06269764700482428,
+        "synergy_delta_prob": 0.014521855161017116,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2587,
+        "quality_score": 0.3469096672920225,
+        "pick_score_raw": 5.845221092380448,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Blossombind",
+        "to": "Merrow Skyswimmer",
+        "pair_games": 2491,
+        "pair_win_rate": 0.6194299478121237,
+        "pair_expected_win_rate": 0.6051265474475781,
+        "pair_lift_vs_baseline": 0.060987400968279926,
+        "synergy_delta_logit": 0.060257084900942726,
+        "synergy_delta_prob": 0.014303400364545582,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4087,
+        "quality_score": 0.34483509150513814,
+        "pick_score_raw": 6.058862353033132,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Slumbering Walker",
+        "to": "Unexpected Assistance",
+        "pair_games": 296,
+        "pair_win_rate": 0.6824324324324325,
+        "pair_expected_win_rate": 0.659616110738755,
+        "pair_lift_vs_baseline": 0.1239898855885887,
+        "synergy_delta_logit": 0.10338896646518714,
+        "synergy_delta_prob": 0.02281632169367742,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 525,
+        "quality_score": 0.3363600637203226,
+        "pick_score_raw": 3.40855587291886,
+        "pick_score": 5.663992819622023
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Wanderbrine Trapper",
+        "pair_games": 1076,
+        "pair_win_rate": 0.6226765799256505,
+        "pair_expected_win_rate": 0.6017982964080845,
+        "pair_lift_vs_baseline": 0.06423403308180675,
+        "synergy_delta_logit": 0.0879608892714942,
+        "synergy_delta_prob": 0.020878283517566043,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1976,
+        "quality_score": 0.3352699208269762,
+        "pick_score_raw": 4.021279033974666,
+        "pick_score": 7.060900178936308
+      },
+      {
+        "from": "Eclipsed Merrow",
+        "to": "Spiral into Solitude",
+        "pair_games": 1171,
+        "pair_win_rate": 0.6379163108454312,
+        "pair_expected_win_rate": 0.6214046694522883,
+        "pair_lift_vs_baseline": 0.07947376400158745,
+        "synergy_delta_logit": 0.07081712379122324,
+        "synergy_delta_prob": 0.016511641393142873,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2230,
+        "quality_score": 0.33399120393677806,
+        "pick_score_raw": 4.978703049608844,
+        "pick_score": 8.934201900876303
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Merrow Skyswimmer",
+        "pair_games": 619,
+        "pair_win_rate": 0.678513731825525,
+        "pair_expected_win_rate": 0.6642429023476032,
+        "pair_lift_vs_baseline": 0.12007118498168123,
+        "synergy_delta_logit": 0.06468996205688893,
+        "synergy_delta_prob": 0.014270829477921798,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 909,
+        "quality_score": 0.3022411808532408,
+        "pick_score_raw": 4.909593419962433,
+        "pick_score": 8.809400658911258
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Temporal Cleansing",
+        "pair_games": 431,
+        "pair_win_rate": 0.6682134570765661,
+        "pair_expected_win_rate": 0.6495445183913592,
+        "pair_lift_vs_baseline": 0.10977091023272234,
+        "synergy_delta_logit": 0.08307815800872675,
+        "synergy_delta_prob": 0.018668938685206915,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 778,
+        "quality_score": 0.2983325173438902,
+        "pick_score_raw": 3.770360595718391,
+        "pick_score": 6.5106409666581255
+      },
+      {
+        "from": "Silvergill Peddler",
+        "to": "Temporal Cleansing",
+        "pair_games": 2116,
+        "pair_win_rate": 0.5973534971644613,
+        "pair_expected_win_rate": 0.5791276024372956,
+        "pair_lift_vs_baseline": 0.03891095032061753,
+        "synergy_delta_logit": 0.07525690447549138,
+        "synergy_delta_prob": 0.018225894727165737,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4585,
+        "quality_score": 0.28990702374247257,
+        "pick_score_raw": 4.0806971484092776,
+        "pick_score": 7.187173792940893
+      },
+      {
+        "from": "Deepchannel Duelist",
+        "to": "Kinbinding",
+        "pair_games": 249,
+        "pair_win_rate": 0.7590361445783133,
+        "pair_expected_win_rate": 0.7473910020727066,
+        "pair_lift_vs_baseline": 0.2005935977344695,
+        "synergy_delta_logit": 0.06265680536028118,
+        "synergy_delta_prob": 0.011645142505606665,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 355,
+        "quality_score": 0.2821694720250885,
+        "pick_score_raw": 4.707913952623977,
+        "pick_score": 8.436676590043158
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Shore Lurker",
+        "pair_games": 175,
+        "pair_win_rate": 0.7085714285714285,
+        "pair_expected_win_rate": 0.688740421473297,
+        "pair_lift_vs_baseline": 0.15012888172758476,
+        "synergy_delta_logit": 0.09421870131547905,
+        "synergy_delta_prob": 0.01983100709813157,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 429,
+        "quality_score": 0.27633867936688244,
+        "pick_score_raw": 3.0694205155802803,
+        "pick_score": 4.804766145498253
+      },
+      {
+        "from": "Slumbering Walker",
+        "to": "Temporal Cleansing",
+        "pair_games": 284,
+        "pair_win_rate": 0.676056338028169,
+        "pair_expected_win_rate": 0.6564270398946501,
+        "pair_lift_vs_baseline": 0.11761379118432524,
+        "synergy_delta_logit": 0.08829473353980033,
+        "synergy_delta_prob": 0.01962929813351888,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 507,
+        "quality_score": 0.2685543529288259,
+        "pick_score_raw": 3.186058703440738,
+        "pick_score": 5.108101094967461
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Encumbered Reejerey",
+        "pair_games": 225,
+        "pair_win_rate": 0.6577777777777778,
+        "pair_expected_win_rate": 0.6314872801448279,
+        "pair_lift_vs_baseline": 0.09933523093393404,
+        "synergy_delta_logit": 0.11480428156936429,
+        "synergy_delta_prob": 0.026290497632949883,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 393,
+        "quality_score": 0.2669108134653642,
+        "pick_score_raw": 2.4318987583219767,
+        "pick_score": 2.975818164115328
+      },
+      {
+        "from": "Shore Lurker",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 1524,
+        "pair_win_rate": 0.5833333333333334,
+        "pair_expected_win_rate": 0.557120278103397,
+        "pair_lift_vs_baseline": 0.024890786489489614,
+        "synergy_delta_logit": 0.10698930590714073,
+        "synergy_delta_prob": 0.026213055229936333,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4128,
+        "quality_score": 0.26554743534422287,
+        "pick_score_raw": 2.6279064759190174,
+        "pick_score": 3.572011551777128
+      },
+      {
+        "from": "Silvergill Mentor",
+        "to": "Temporal Cleansing",
+        "pair_games": 1530,
+        "pair_win_rate": 0.6196078431372549,
+        "pair_expected_win_rate": 0.6062942108446383,
+        "pair_lift_vs_baseline": 0.061165296293411164,
+        "synergy_delta_logit": 0.056122592151848893,
+        "synergy_delta_prob": 0.013313632292616617,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3021,
+        "quality_score": 0.24957086969849,
+        "pick_score_raw": 4.701305752410617,
+        "pick_score": 8.424242260468834
+      },
+      {
+        "from": "Silvergill Mentor",
+        "to": "Wanderwine Farewell",
+        "pair_games": 892,
+        "pair_win_rate": 0.6412556053811659,
+        "pair_expected_win_rate": 0.628927585103933,
+        "pair_lift_vs_baseline": 0.08281305853732213,
+        "synergy_delta_logit": 0.05319910449374399,
+        "synergy_delta_prob": 0.012328020277232898,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.4190189573169212,
+        "draft_pair_events": 1888,
+        "quality_score": 0.2419404147080475,
+        "pick_score_raw": 4.647420795082111,
+        "pick_score": 8.322308334408378
+      },
+      {
+        "from": "Champions of the Shoal",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 714,
+        "pair_win_rate": 0.6484593837535014,
+        "pair_expected_win_rate": 0.6350885888818386,
+        "pair_lift_vs_baseline": 0.09001683690965767,
+        "synergy_delta_logit": 0.0581642306007607,
+        "synergy_delta_prob": 0.013370794871662817,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1008,
+        "quality_score": 0.23012102971937537,
+        "pick_score_raw": 4.159734293624214,
+        "pick_score": 7.35287157344868
+      },
+      {
+        "from": "Deepchannel Duelist",
+        "to": "Gravelgill Scoundrel",
+        "pair_games": 1994,
+        "pair_win_rate": 0.6354062186559679,
+        "pair_expected_win_rate": 0.6267313249655729,
+        "pair_lift_vs_baseline": 0.07696367181212416,
+        "synergy_delta_logit": 0.03726123156719563,
+        "synergy_delta_prob": 0.00867489369039498,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3494,
+        "quality_score": 0.22715245484236435,
+        "pick_score_raw": 6.449489663728144,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Rimekin Recluse",
+        "to": "Slumbering Walker",
+        "pair_games": 115,
+        "pair_win_rate": 0.7130434782608696,
+        "pair_expected_win_rate": 0.693499678163051,
+        "pair_lift_vs_baseline": 0.1546009314170258,
+        "synergy_delta_logit": 0.09367971553404497,
+        "synergy_delta_prob": 0.01954380009781853,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 190,
+        "quality_score": 0.2214682771069674,
+        "pick_score_raw": 2.462443510677106,
+        "pick_score": 3.07093155964728
+      },
+      {
+        "from": "Unexpected Assistance",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 2565,
+        "pair_win_rate": 0.5933723196881091,
+        "pair_expected_win_rate": 0.5801053008777151,
+        "pair_lift_vs_baseline": 0.03492977284426535,
+        "synergy_delta_logit": 0.054718406589045365,
+        "synergy_delta_prob": 0.013267018810394049,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4574,
+        "quality_score": 0.2163748455754488,
+        "pick_score_raw": 4.188807803109867,
+        "pick_score": 7.413185070103203
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Tributary Vaulter",
+        "pair_games": 1780,
+        "pair_win_rate": 0.596629213483146,
+        "pair_expected_win_rate": 0.5816959170961556,
+        "pair_lift_vs_baseline": 0.03818666663930226,
+        "synergy_delta_logit": 0.06170043988604834,
+        "synergy_delta_prob": 0.014933296386990369,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3487,
+        "quality_score": 0.21324527510577615,
+        "pick_score_raw": 3.6563867508467935,
+        "pick_score": 6.251067933891077
+      },
+      {
+        "from": "Deepchannel Duelist",
+        "to": "Shore Lurker",
+        "pair_games": 1124,
+        "pair_win_rate": 0.6334519572953736,
+        "pair_expected_win_rate": 0.6223218075753909,
+        "pair_lift_vs_baseline": 0.07500941045152987,
+        "synergy_delta_logit": 0.04763971782216575,
+        "synergy_delta_prob": 0.011130149719982718,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2838,
+        "quality_score": 0.2120750277694601,
+        "pick_score_raw": 4.7049127127609065,
+        "pick_score": 8.431031087970233
+      },
+      {
+        "from": "Encumbered Reejerey",
+        "to": "Pestered Wellguard",
+        "pair_games": 564,
+        "pair_win_rate": 0.5886524822695035,
+        "pair_expected_win_rate": 0.5578915589453516,
+        "pair_lift_vs_baseline": 0.03020993542565975,
+        "synergy_delta_logit": 0.1257881863016444,
+        "synergy_delta_prob": 0.030760923324151923,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.16515770548901282,
+        "draft_pair_events": 1202,
+        "quality_score": 0.209224251763123,
+        "pick_score_raw": 1.727933949613147,
+        "pick_score": 0.5116030619338378
+      },
+      {
+        "from": "Gravelgill Scoundrel",
+        "to": "Tributary Vaulter",
+        "pair_games": 2839,
+        "pair_win_rate": 0.5748502994011976,
+        "pair_expected_win_rate": 0.5573018188351555,
+        "pair_lift_vs_baseline": 0.016407752557353827,
+        "synergy_delta_logit": 0.07144958742562713,
+        "synergy_delta_prob": 0.01754848056604208,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5245,
+        "quality_score": 0.19796293665552842,
+        "pick_score_raw": 2.9368215801384094,
+        "pick_score": 4.449178954103975
+      },
+      {
+        "from": "Spiral into Solitude",
+        "to": "Unexpected Assistance",
+        "pair_games": 1511,
+        "pair_win_rate": 0.599602911978822,
+        "pair_expected_win_rate": 0.5858114318750995,
+        "pair_lift_vs_baseline": 0.04116036513497823,
+        "synergy_delta_logit": 0.05713424751823715,
+        "synergy_delta_prob": 0.013791480103722442,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3027,
+        "quality_score": 0.19026970249820935,
+        "pick_score_raw": 3.520785816119853,
+        "pick_score": 5.933833391028043
+      },
+      {
+        "from": "Spiral into Solitude",
+        "to": "Wanderbrine Trapper",
+        "pair_games": 942,
+        "pair_win_rate": 0.6008492569002123,
+        "pair_expected_win_rate": 0.5838713005583679,
+        "pair_lift_vs_baseline": 0.042406710056368535,
+        "synergy_delta_logit": 0.07031893810045658,
+        "synergy_delta_prob": 0.016977956341844402,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1888,
+        "quality_score": 0.18549104549357576,
+        "pick_score_raw": 2.7823464239096505,
+        "pick_score": 4.019502840603568
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Pestered Wellguard",
+        "pair_games": 117,
+        "pair_win_rate": 0.7094017094017094,
+        "pair_expected_win_rate": 0.6935618492158555,
+        "pair_lift_vs_baseline": 0.15095916255786568,
+        "synergy_delta_logit": 0.07565560635934843,
+        "synergy_delta_prob": 0.015839860185853927,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 225,
+        "quality_score": 0.17782021041427906,
+        "pick_score_raw": 2.450627256436142,
+        "pick_score": 3.0342367766763396
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Merrow Skyswimmer",
+        "pair_games": 405,
+        "pair_win_rate": 0.725925925925926,
+        "pair_expected_win_rate": 0.718899703950089,
+        "pair_lift_vs_baseline": 0.16748337908208222,
+        "synergy_delta_logit": 0.03503924294172733,
+        "synergy_delta_prob": 0.0070262219758370215,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 537,
+        "quality_score": 0.17376816378976717,
+        "pick_score_raw": 5.19648704545163,
+        "pick_score": 9.318255300130504
+      },
+      {
+        "from": "Spiral into Solitude",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 1805,
+        "pair_win_rate": 0.5833795013850416,
+        "pair_expected_win_rate": 0.5679593962649034,
+        "pair_lift_vs_baseline": 0.02493695454119782,
+        "synergy_delta_logit": 0.06313183142215789,
+        "synergy_delta_prob": 0.015420105120138139,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3331,
+        "quality_score": 0.16941115147003571,
+        "pick_score_raw": 2.8383088074536422,
+        "pick_score": 4.177157486328021
+      },
+      {
+        "from": "Slumbering Walker",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 403,
+        "pair_win_rate": 0.6550868486352357,
+        "pair_expected_win_rate": 0.6430066024279972,
+        "pair_lift_vs_baseline": 0.09664430179139194,
+        "synergy_delta_logit": 0.053037465081533286,
+        "synergy_delta_prob": 0.012080246207238465,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 595,
+        "quality_score": 0.1638747963233336,
+        "pick_score_raw": 3.2394281771598044,
+        "pick_score": 5.244088535055012
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Silvergill Peddler",
+        "pair_games": 488,
+        "pair_win_rate": 0.6495901639344263,
+        "pair_expected_win_rate": 0.6383529688885773,
+        "pair_lift_vs_baseline": 0.0911476170905825,
+        "synergy_delta_logit": 0.049015528214903625,
+        "synergy_delta_prob": 0.011237195045848969,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 885,
+        "quality_score": 0.16118820068001746,
+        "pick_score_raw": 3.4551493513470297,
+        "pick_score": 5.776844727572998
+      },
+      {
+        "from": "Champions of the Shoal",
+        "to": "Unexpected Assistance",
+        "pair_games": 598,
+        "pair_win_rate": 0.6605351170568562,
+        "pair_expected_win_rate": 0.6518670375276117,
+        "pair_lift_vs_baseline": 0.10209257021301243,
+        "synergy_delta_logit": 0.03842365777372214,
+        "synergy_delta_prob": 0.008668079529244532,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 942,
+        "quality_score": 0.1540060298418385,
+        "pick_score_raw": 4.212593936222599,
+        "pick_score": 7.462279001081019
+      },
+      {
+        "from": "Gravelgill Scoundrel",
+        "to": "Unexpected Assistance",
+        "pair_games": 2589,
+        "pair_win_rate": 0.5886442641946698,
+        "pair_expected_win_rate": 0.5796736407459026,
+        "pair_lift_vs_baseline": 0.030201717350825996,
+        "synergy_delta_logit": 0.03692985667693022,
+        "synergy_delta_prob": 0.008970623448767201,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5403522802952876,
+        "draft_pair_events": 4932,
+        "quality_score": 0.14751779131672588,
+        "pick_score_raw": 4.0661234779493105,
+        "pick_score": 7.156339475656637
+      },
+      {
+        "from": "Unexpected Assistance",
+        "to": "Wanderwine Farewell",
+        "pair_games": 1249,
+        "pair_win_rate": 0.6244995996797438,
+        "pair_expected_win_rate": 0.6172843430462617,
+        "pair_lift_vs_baseline": 0.06605705283590002,
+        "synergy_delta_logit": 0.030653689180148713,
+        "synergy_delta_prob": 0.007215256633482103,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.39329546222651074,
+        "draft_pair_events": 2697,
+        "quality_score": 0.13926256310371113,
+        "pick_score_raw": 4.65932654057779,
+        "pick_score": 8.344913835795289
+      },
+      {
+        "from": "Shore Lurker",
+        "to": "Unexpected Assistance",
+        "pair_games": 1333,
+        "pair_win_rate": 0.5881470367591898,
+        "pair_expected_win_rate": 0.5750851142170189,
+        "pair_lift_vs_baseline": 0.029704489915346022,
+        "synergy_delta_logit": 0.053681404394882004,
+        "synergy_delta_prob": 0.013061922542170867,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3778,
+        "quality_score": 0.1375391783355649,
+        "pick_score_raw": 2.7116209791350596,
+        "pick_score": 3.8168877171262094
+      },
+      {
+        "from": "Blossombind",
+        "to": "Shore Lurker",
+        "pair_games": 1142,
+        "pair_win_rate": 0.5849387040280211,
+        "pair_expected_win_rate": 0.5700607890254248,
+        "pair_lift_vs_baseline": 0.026496157184177305,
+        "synergy_delta_logit": 0.0609816781537616,
+        "synergy_delta_prob": 0.014877915002596276,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3177,
+        "quality_score": 0.13445259043871163,
+        "pick_score_raw": 2.331510179684217,
+        "pick_score": 2.657144898406854
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Unexpected Assistance",
+        "pair_games": 1763,
+        "pair_win_rate": 0.6108905275099262,
+        "pair_expected_win_rate": 0.6037115750819769,
+        "pair_lift_vs_baseline": 0.05244798066608247,
+        "synergy_delta_logit": 0.03010278213764961,
+        "synergy_delta_prob": 0.007178952427949303,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.19818391004213667,
+        "draft_pair_events": 3255,
+        "quality_score": 0.1331915073104169,
+        "pick_score_raw": 4.607741245889861,
+        "pick_score": 8.246622979271214
+      },
+      {
+        "from": "Merrow Skyswimmer",
+        "to": "Silvergill Peddler",
+        "pair_games": 2875,
+        "pair_win_rate": 0.6013913043478261,
+        "pair_expected_win_rate": 0.5949375949987387,
+        "pair_lift_vs_baseline": 0.042948757503982304,
+        "synergy_delta_logit": 0.026850212377888982,
+        "synergy_delta_prob": 0.0064537093490874,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5299,
+        "quality_score": 0.1294842896425098,
+        "pick_score_raw": 5.111911365647667,
+        "pick_score": 9.170737012179007
+      },
+      {
+        "from": "Pestered Wellguard",
+        "to": "Tributary Vaulter",
+        "pair_games": 1072,
+        "pair_win_rate": 0.5764925373134329,
+        "pair_expected_win_rate": 0.5582348498350552,
+        "pair_lift_vs_baseline": 0.018049990469589106,
+        "synergy_delta_logit": 0.0743899141397335,
+        "synergy_delta_prob": 0.018257687478377638,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2449,
+        "quality_score": 0.12883706984255583,
+        "pick_score_raw": 1.8291369192514413,
+        "pick_score": 0.9026153601669008
+      },
+      {
+        "from": "Silvergill Peddler",
+        "to": "Spiral into Solitude",
+        "pair_games": 1503,
+        "pair_win_rate": 0.5828343313373253,
+        "pair_expected_win_rate": 0.5704505725531125,
+        "pair_lift_vs_baseline": 0.02439178449348156,
+        "synergy_delta_logit": 0.05072983974423695,
+        "synergy_delta_prob": 0.012383758784212828,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3349,
+        "quality_score": 0.12273832067278648,
+        "pick_score_raw": 2.559139264636134,
+        "pick_score": 3.36659315558589
+      },
+      {
+        "from": "Tributary Vaulter",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 2585,
+        "pair_win_rate": 0.5702127659574469,
+        "pair_expected_win_rate": 0.5577389252419324,
+        "pair_lift_vs_baseline": 0.011770219113603098,
+        "synergy_delta_logit": 0.05072868070308134,
+        "synergy_delta_prob": 0.012473840715514495,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4996,
+        "quality_score": 0.11683465846811407,
+        "pick_score_raw": 2.440695935585048,
+        "pick_score": 3.003298239779473
+      },
+      {
+        "from": "Deepchannel Duelist",
+        "to": "Merrow Skyswimmer",
+        "pair_games": 2374,
+        "pair_win_rate": 0.6588037068239259,
+        "pair_expected_win_rate": 0.655699534676277,
+        "pair_lift_vs_baseline": 0.1003611599800821,
+        "synergy_delta_logit": 0.013779737679100124,
+        "synergy_delta_prob": 0.0031041721476489093,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3561,
+        "quality_score": 0.11385419449499742,
+        "pick_score_raw": 8.74203419068649,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Silvergill Peddler",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 2602,
+        "pair_win_rate": 0.5749423520368947,
+        "pair_expected_win_rate": 0.5646900737076543,
+        "pair_lift_vs_baseline": 0.016499805193050943,
+        "synergy_delta_logit": 0.04182618955499673,
+        "synergy_delta_prob": 0.01025227832924036,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5003,
+        "quality_score": 0.11104051170112196,
+        "pick_score_raw": 2.813400285624528,
+        "pick_score": 4.107272140993086
+      },
+      {
+        "from": "Eclipsed Merrow",
+        "to": "Silvergill Peddler",
+        "pair_games": 1631,
+        "pair_win_rate": 0.6235438381361128,
+        "pair_expected_win_rate": 0.6182679545772957,
+        "pair_lift_vs_baseline": 0.06510129129226905,
+        "synergy_delta_logit": 0.02241443165661333,
+        "synergy_delta_prob": 0.0052758835588171404,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3336,
+        "quality_score": 0.108284275107747,
+        "pick_score_raw": 5.1098342997294575,
+        "pick_score": 9.167088530931851
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Wanderbrine Preacher",
+        "pair_games": 558,
+        "pair_win_rate": 0.6433691756272402,
+        "pair_expected_win_rate": 0.6360043151446967,
+        "pair_lift_vs_baseline": 0.08492662878339641,
+        "synergy_delta_logit": 0.031954228401325,
+        "synergy_delta_prob": 0.007364860482543478,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 844,
+        "quality_score": 0.10588922924359068,
+        "pick_score_raw": 3.480818120816805,
+        "pick_score": 5.838512710182706
+      },
+      {
+        "from": "Champions of the Shoal",
+        "to": "Wanderbrine Trapper",
+        "pair_games": 348,
+        "pair_win_rate": 0.6580459770114943,
+        "pair_expected_win_rate": 0.6500514851188629,
+        "pair_lift_vs_baseline": 0.0996034301676505,
+        "synergy_delta_logit": 0.03533298613816682,
+        "synergy_delta_prob": 0.00799449189263135,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 566,
+        "quality_score": 0.10382580315203575,
+        "pick_score_raw": 3.0799593900075557,
+        "pick_score": 4.832529055433911
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Slumbering Walker",
+        "pair_games": 257,
+        "pair_win_rate": 0.6731517509727627,
+        "pair_expected_win_rate": 0.6651180128830408,
+        "pair_lift_vs_baseline": 0.11470920412891894,
+        "synergy_delta_logit": 0.03628850025933428,
+        "synergy_delta_prob": 0.008033738089721854,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 405,
+        "quality_score": 0.1019019071399614,
+        "pick_score_raw": 2.937815041982033,
+        "pick_score": 4.451887372456924
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Rimekin Recluse",
+        "pair_games": 712,
+        "pair_win_rate": 0.6460674157303371,
+        "pair_expected_win_rate": 0.6401239790310144,
+        "pair_lift_vs_baseline": 0.08762486888649335,
+        "synergy_delta_logit": 0.02589511308114989,
+        "synergy_delta_prob": 0.005943436699322735,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1204,
+        "quality_score": 0.1007435705985304,
+        "pick_score_raw": 4.094178721132074,
+        "pick_score": 7.215618847401112
+      },
+      {
+        "from": "Silvergill Peddler",
+        "to": "Wanderwine Farewell",
+        "pair_games": 1313,
+        "pair_win_rate": 0.6085300837776085,
+        "pair_expected_win_rate": 0.6022982907476913,
+        "pair_lift_vs_baseline": 0.050087536933764776,
+        "synergy_delta_logit": 0.026087108188567576,
+        "synergy_delta_prob": 0.006231793029917276,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2927,
+        "quality_score": 0.09269344409502046,
+        "pick_score_raw": 3.755944466416974,
+        "pick_score": 6.478153219841057
+      },
+      {
+        "from": "Rimekin Recluse",
+        "to": "Wanderbrine Trapper",
+        "pair_games": 516,
+        "pair_win_rate": 0.6395348837209303,
+        "pair_expected_win_rate": 0.632581917819565,
+        "pair_lift_vs_baseline": 0.0810923368770865,
+        "synergy_delta_logit": 0.0300366423669437,
+        "synergy_delta_prob": 0.006952965901365293,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 962,
+        "quality_score": 0.09266868588293231,
+        "pick_score_raw": 3.2429501993477836,
+        "pick_score": 5.2530024717942645
+      },
+      {
+        "from": "Pestered Wellguard",
+        "to": "Temporal Cleansing",
+        "pair_games": 994,
+        "pair_win_rate": 0.5875251509054326,
+        "pair_expected_win_rate": 0.5771401991635754,
+        "pair_lift_vs_baseline": 0.0290826040615888,
+        "synergy_delta_logit": 0.0426992906550947,
+        "synergy_delta_prob": 0.010384951741857162,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2266,
+        "quality_score": 0.0916013770919577,
+        "pick_score_raw": 2.264827375120412,
+        "pick_score": 2.4401143556530367
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Wanderwine Farewell",
+        "pair_games": 273,
+        "pair_win_rate": 0.6776556776556777,
+        "pair_expected_win_rate": 0.6710405597438924,
+        "pair_lift_vs_baseline": 0.11921313081183393,
+        "synergy_delta_logit": 0.03012389001226068,
+        "synergy_delta_prob": 0.006615117911785262,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 512,
+        "quality_score": 0.09090985767119766,
+        "pick_score_raw": 3.1614032861370167,
+        "pick_score": 5.044691606936709
+      },
+      {
+        "from": "Pestered Wellguard",
+        "to": "Shore Lurker",
+        "pair_games": 582,
+        "pair_win_rate": 0.5756013745704467,
+        "pair_expected_win_rate": 0.5576163461748876,
+        "pair_lift_vs_baseline": 0.017158827726602932,
+        "synergy_delta_logit": 0.07324852161297829,
+        "synergy_delta_prob": 0.017985028395559044,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2044,
+        "quality_score": 0.09069129741679152,
+        "pick_score_raw": 1.3064687888349056,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Silvergill Peddler",
+        "to": "Slumbering Walker",
+        "pair_games": 297,
+        "pair_win_rate": 0.6531986531986532,
+        "pair_expected_win_rate": 0.645335269822994,
+        "pair_lift_vs_baseline": 0.09475610635480947,
+        "synergy_delta_logit": 0.03453211210234575,
+        "synergy_delta_prob": 0.007863383375659172,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 559,
+        "quality_score": 0.08990089222306469,
+        "pick_score_raw": 2.728545522040656,
+        "pick_score": 3.8657225964700865
+      },
+      {
+        "from": "Pestered Wellguard",
+        "to": "Spiral into Solitude",
+        "pair_games": 742,
+        "pair_win_rate": 0.5808625336927223,
+        "pair_expected_win_rate": 0.5684527278281896,
+        "pair_lift_vs_baseline": 0.02241998684887858,
+        "synergy_delta_logit": 0.05077407829249703,
+        "synergy_delta_prob": 0.012409805864532775,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1637,
+        "quality_score": 0.08038122361016693,
+        "pick_score_raw": 1.6686370933296166,
+        "pick_score": 0.27570393925751085
+      },
+      {
+        "from": "Temporal Cleansing",
+        "to": "Tributary Vaulter",
+        "pair_games": 1949,
+        "pair_win_rate": 0.5797845048742946,
+        "pair_expected_win_rate": 0.5722323544202892,
+        "pair_lift_vs_baseline": 0.021341958030450803,
+        "synergy_delta_logit": 0.030923868941896082,
+        "synergy_delta_prob": 0.0075521504540053686,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4374,
+        "quality_score": 0.0800993908072868,
+        "pick_score_raw": 2.743226304343263,
+        "pick_score": 3.907904020086453
+      },
+      {
+        "from": "Shore Lurker",
+        "to": "Tributary Vaulter",
+        "pair_games": 1508,
+        "pair_win_rate": 0.5656498673740054,
+        "pair_expected_win_rate": 0.5526575395159304,
+        "pair_lift_vs_baseline": 0.007207320530161598,
+        "synergy_delta_logit": 0.05271021183567448,
+        "synergy_delta_prob": 0.012992327858074915,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4127,
+        "quality_score": 0.07887321344643776,
+        "pick_score_raw": 1.5843183125514078,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Gravelgill Scoundrel",
+        "to": "Spiral into Solitude",
+        "pair_games": 1710,
+        "pair_win_rate": 0.5760233918128655,
+        "pair_expected_win_rate": 0.5675245585363213,
+        "pair_lift_vs_baseline": 0.01758084496902179,
+        "synergy_delta_logit": 0.03471150496111369,
+        "synergy_delta_prob": 0.008498833276544215,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3445,
+        "quality_score": 0.07591171876061348,
+        "pick_score_raw": 2.313509295597129,
+        "pick_score": 2.598989007130969
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Tributary Vaulter",
+        "pair_games": 433,
+        "pair_win_rate": 0.6374133949191686,
+        "pair_expected_win_rate": 0.6318111393811613,
+        "pair_lift_vs_baseline": 0.07897084807532484,
+        "synergy_delta_logit": 0.02416055569969966,
+        "synergy_delta_prob": 0.005602255538007306,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 832,
+        "quality_score": 0.06648848293439925,
+        "pick_score_raw": 2.8904421483634226,
+        "pick_score": 4.321970605228511
+      },
+      {
+        "from": "Gravelgill Scoundrel",
+        "to": "Temporal Cleansing",
+        "pair_games": 2352,
+        "pair_win_rate": 0.5816326530612245,
+        "pair_expected_win_rate": 0.5762167851382957,
+        "pair_lift_vs_baseline": 0.023190106217380713,
+        "synergy_delta_logit": 0.022217286931179303,
+        "synergy_delta_prob": 0.005415867922928808,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4750,
+        "quality_score": 0.06623569358705626,
+        "pick_score_raw": 3.15860021197335,
+        "pick_score": 5.037458811664076
+      },
+      {
+        "from": "Encumbered Reejerey",
+        "to": "Silvergill Peddler",
+        "pair_games": 1052,
+        "pair_win_rate": 0.5703422053231939,
+        "pair_expected_win_rate": 0.559900443378397,
+        "pair_lift_vs_baseline": 0.01189965847935015,
+        "synergy_delta_logit": 0.042489453508163744,
+        "synergy_delta_prob": 0.010441761944796957,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2384,
+        "quality_score": 0.061056187017042705,
+        "pick_score_raw": 1.5174370943437316,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Blossombind",
+        "to": "Silvergill Peddler",
+        "pair_games": 1992,
+        "pair_win_rate": 0.5828313253012049,
+        "pair_expected_win_rate": 0.5775771084979594,
+        "pair_lift_vs_baseline": 0.024388778457361093,
+        "synergy_delta_logit": 0.021572156971562007,
+        "synergy_delta_prob": 0.005254216803245448,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3995,
+        "quality_score": 0.06045903218591353,
+        "pick_score_raw": 2.9669398878406112,
+        "pick_score": 4.530986604505661
+      },
+      {
+        "from": "Tributary Vaulter",
+        "to": "Unexpected Assistance",
+        "pair_games": 2224,
+        "pair_win_rate": 0.5804856115107914,
+        "pair_expected_win_rate": 0.5756977787739884,
+        "pair_lift_vs_baseline": 0.02204306466694761,
+        "synergy_delta_logit": 0.019630343860804977,
+        "synergy_delta_prob": 0.004787832736802944,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4541,
+        "quality_score": 0.05530964851302747,
+        "pick_score_raw": 2.984526248069078,
+        "pick_score": 4.578468116002726
+      },
+      {
+        "from": "Disruptor of Currents",
+        "to": "Pestered Wellguard",
+        "pair_games": 257,
+        "pair_win_rate": 0.642023346303502,
+        "pair_expected_win_rate": 0.6364696803819091,
+        "pair_lift_vs_baseline": 0.08358079945965824,
+        "synergy_delta_logit": 0.02408281861904027,
+        "synergy_delta_prob": 0.0055536659215928985,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 463,
+        "quality_score": 0.052266907483597344,
+        "pick_score_raw": 2.272253010248228,
+        "pick_score": 2.464500606862797
+      },
+      {
+        "from": "Blossombind",
+        "to": "Kinbinding",
+        "pair_games": 246,
+        "pair_win_rate": 0.7073170731707317,
+        "pair_expected_win_rate": 0.7042106484055803,
+        "pair_lift_vs_baseline": 0.1488745263268879,
+        "synergy_delta_logit": 0.014959203273688382,
+        "synergy_delta_prob": 0.0031064247651513277,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 389,
+        "quality_score": 0.051441979554706196,
+        "pick_score_raw": 3.5968430763260857,
+        "pick_score": 6.112920330898387
+      },
+      {
+        "from": "Silvergill Mentor",
+        "to": "Spiral into Solitude",
+        "pair_games": 1000,
+        "pair_win_rate": 0.602,
+        "pair_expected_win_rate": 0.5977882804173831,
+        "pair_lift_vs_baseline": 0.04355745315615622,
+        "synergy_delta_logit": 0.0175474104954102,
+        "synergy_delta_prob": 0.004211719582616902,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2064,
+        "quality_score": 0.04872768329540919,
+        "pick_score_raw": 2.9303264574354126,
+        "pick_score": 4.431454812439105
+      },
+      {
+        "from": "Gravelgill Scoundrel",
+        "to": "Silvergill Peddler",
+        "pair_games": 2719,
+        "pair_win_rate": 0.5693269584406032,
+        "pair_expected_win_rate": 0.5642544699942901,
+        "pair_lift_vs_baseline": 0.010884411596759458,
+        "synergy_delta_logit": 0.020658779060486576,
+        "synergy_delta_prob": 0.005072488446313139,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5362,
+        "quality_score": 0.04755447681165883,
+        "pick_score_raw": 2.440194388856851,
+        "pick_score": 3.0017334289494624
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Silvergill Mentor",
+        "pair_games": 208,
+        "pair_win_rate": 0.7211538461538461,
+        "pair_expected_win_rate": 0.7186027656163173,
+        "pair_lift_vs_baseline": 0.1627112993100024,
+        "synergy_delta_logit": 0.012650876831791669,
+        "synergy_delta_prob": 0.002551080537528838,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 316,
+        "quality_score": 0.0429353540338322,
+        "pick_score_raw": 3.545616699257962,
+        "pick_score": 5.9926301425105715
+      },
+      {
+        "from": "Shore Lurker",
+        "to": "Spiral into Solitude",
+        "pair_games": 1044,
+        "pair_win_rate": 0.5699233716475096,
+        "pair_expected_win_rate": 0.5629034110901076,
+        "pair_lift_vs_baseline": 0.011480824803665857,
+        "synergy_delta_logit": 0.028584663427215662,
+        "synergy_delta_prob": 0.007019960557402061,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2880,
+        "quality_score": 0.040656325674086585,
+        "pick_score_raw": 1.50333975024781,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Shore Lurker",
+        "to": "Temporal Cleansing",
+        "pair_games": 1156,
+        "pair_win_rate": 0.5769896193771626,
+        "pair_expected_win_rate": 0.5716184094216652,
+        "pair_lift_vs_baseline": 0.018547072533318887,
+        "synergy_delta_logit": 0.02197026922182932,
+        "synergy_delta_prob": 0.005371209955497447,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3596,
+        "quality_score": 0.04058240090077016,
+        "pick_score_raw": 1.9544608958009912,
+        "pick_score": 1.3678790329679416
+      },
+      {
+        "from": "Encumbered Reejerey",
+        "to": "Gravelgill Scoundrel",
+        "pair_games": 1217,
+        "pair_win_rate": 0.5645028759244043,
+        "pair_expected_win_rate": 0.5569583783298435,
+        "pair_lift_vs_baseline": 0.006060329080560534,
+        "synergy_delta_logit": 0.030630493003363457,
+        "synergy_delta_prob": 0.007544497594560773,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.16515770548901282,
+        "draft_pair_events": 2440,
+        "quality_score": 0.03985833973736417,
+        "pick_score_raw": 1.3566513633398465,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Silvergill Mentor",
+        "to": "Unexpected Assistance",
+        "pair_games": 1600,
+        "pair_win_rate": 0.611875,
+        "pair_expected_win_rate": 0.6096719174868613,
+        "pair_lift_vs_baseline": 0.05343245315615619,
+        "synergy_delta_logit": 0.009267210998223196,
+        "synergy_delta_prob": 0.00220308251313861,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.17411982335092546,
+        "draft_pair_events": 3053,
+        "quality_score": 0.03933715490011541,
+        "pick_score_raw": 4.427235178295551,
+        "pick_score": 7.8954232186173705
+      },
+      {
+        "from": "Merrow Skyswimmer",
+        "to": "Slumbering Walker",
+        "pair_games": 401,
+        "pair_win_rate": 0.6733167082294265,
+        "pair_expected_win_rate": 0.6709829809922151,
+        "pair_lift_vs_baseline": 0.11487416138558271,
+        "synergy_delta_logit": 0.010590341729561747,
+        "synergy_delta_prob": 0.0023337272372113693,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 602,
+        "quality_score": 0.037758643778037566,
+        "pick_score_raw": 3.7382912041125445,
+        "pick_score": 6.43823597633219
+      },
+      {
+        "from": "Temporal Cleansing",
+        "to": "Wanderbrine Trapper",
+        "pair_games": 1108,
+        "pair_win_rate": 0.5956678700361011,
+        "pair_expected_win_rate": 0.5924709031027908,
+        "pair_lift_vs_baseline": 0.037225323192257354,
+        "synergy_delta_logit": 0.01325717304989199,
+        "synergy_delta_prob": 0.0031969669333102857,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2461,
+        "quality_score": 0.035112375200131815,
+        "pick_score_raw": 2.7973004257778906,
+        "pick_score": 4.061857783341801
+      },
+      {
+        "from": "Deepchannel Duelist",
+        "to": "Spiral into Solitude",
+        "pair_games": 1206,
+        "pair_win_rate": 0.6343283582089553,
+        "pair_expected_win_rate": 0.6326174618440443,
+        "pair_lift_vs_baseline": 0.07588581136511152,
+        "synergy_delta_logit": 0.007368688091501263,
+        "synergy_delta_prob": 0.001710896364910952,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2260,
+        "quality_score": 0.03401239512942129,
+        "pick_score_raw": 4.87298564689488,
+        "pick_score": 8.74270010790117
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Encumbered Reejerey",
+          "Gravelgill Scoundrel",
+          "Pestered Wellguard"
+        ],
+        "games": 129,
+        "win_rate": 0.6356589147286822,
+        "expected_win_rate": 0.5593305199529104,
+        "synergy_delta_logit": 0.3181261931856343,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 826,
+        "quality": 5.0695929554998305
+      },
+      {
+        "cards": [
+          "Encumbered Reejerey",
+          "Gravelgill Scoundrel",
+          "Wanderwine Farewell"
+        ],
+        "games": 154,
+        "win_rate": 0.6558441558441559,
+        "expected_win_rate": 0.5965875449039507,
+        "synergy_delta_logit": 0.25356210856521977,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 888,
+        "quality": 4.4285755909280144
+      },
+      {
+        "cards": [
+          "Encumbered Reejerey",
+          "Pestered Wellguard",
+          "Wanderwine Farewell"
+        ],
+        "games": 60,
+        "win_rate": 0.6833333333333333,
+        "expected_win_rate": 0.5974975772762295,
+        "synergy_delta_logit": 0.3740839745382336,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 464,
+        "quality": 3.9654875426166667
+      },
+      {
+        "cards": [
+          "Merrow Skyswimmer",
+          "Unexpected Assistance",
+          "Wanderwine Farewell"
+        ],
+        "games": 359,
+        "win_rate": 0.6768802228412256,
+        "expected_win_rate": 0.6479047520060098,
+        "synergy_delta_logit": 0.12962928421770037,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1849,
+        "quality": 3.564761023883435
+      },
+      {
+        "cards": [
+          "Encumbered Reejerey",
+          "Pestered Wellguard",
+          "Unexpected Assistance"
+        ],
+        "games": 117,
+        "win_rate": 0.6324786324786325,
+        "expected_win_rate": 0.5777060577431335,
+        "synergy_delta_logit": 0.2295014060044468,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 731,
+        "quality": 3.4648539403808
+      },
+      {
+        "cards": [
+          "Encumbered Reejerey",
+          "Gravelgill Scoundrel",
+          "Unexpected Assistance"
+        ],
+        "games": 253,
+        "win_rate": 0.6086956521739131,
+        "expected_win_rate": 0.5767829732749378,
+        "synergy_delta_logit": 0.13225179904859474,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1437,
+        "quality": 3.021308479291078
+      },
+      {
+        "cards": [
+          "Blossombind",
+          "Encumbered Reejerey",
+          "Unexpected Assistance"
+        ],
+        "games": 181,
+        "win_rate": 0.6187845303867403,
+        "expected_win_rate": 0.5900008936771058,
+        "synergy_delta_logit": 0.12042329508797761,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1044,
+        "quality": 2.29589610780412
+      },
+      {
+        "cards": [
+          "Silvergill Mentor",
+          "Unexpected Assistance",
+          "Wanderwine Farewell"
+        ],
+        "games": 189,
+        "win_rate": 0.671957671957672,
+        "expected_win_rate": 0.6475695838997704,
+        "synergy_delta_logit": 0.1086796497635919,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1160,
+        "quality": 2.126732524753212
+      },
+      {
+        "cards": [
+          "Gravelgill Scoundrel",
+          "Unexpected Assistance",
+          "Wanderwine Farewell"
+        ],
+        "games": 311,
+        "win_rate": 0.6366559485530546,
+        "expected_win_rate": 0.6186621280782573,
+        "synergy_delta_logit": 0.07700570850495925,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1836,
+        "quality": 1.9704098216662485
+      },
+      {
+        "cards": [
+          "Blossombind",
+          "Gravelgill Scoundrel",
+          "Pestered Wellguard"
+        ],
+        "games": 224,
+        "win_rate": 0.5982142857142857,
+        "expected_win_rate": 0.5770127826549803,
+        "synergy_delta_logit": 0.08750766925695558,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1327,
+        "quality": 1.8748095536554914
+      },
+      {
+        "cards": [
+          "Pestered Wellguard",
+          "Silvergill Mentor",
+          "Unexpected Assistance"
+        ],
+        "games": 170,
+        "win_rate": 0.6352941176470588,
+        "expected_win_rate": 0.6119584601546177,
+        "synergy_delta_logit": 0.09944483278457794,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1017,
+        "quality": 1.8353864154183832
+      },
+      {
+        "cards": [
+          "Blossombind",
+          "Gravelgill Scoundrel",
+          "Merrow Skyswimmer"
+        ],
+        "games": 549,
+        "win_rate": 0.6156648451730419,
+        "expected_win_rate": 0.6065202012657871,
+        "synergy_delta_logit": 0.03847945537972952,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2745,
+        "quality": 1.3299303813457912
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 7,
+        "top_cards": [
+          "Wanderbrine Preacher",
+          "Gravelgill Scoundrel",
+          "Unexpected Assistance",
+          "Tributary Vaulter",
+          "Shore Lurker"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 6,
+        "top_cards": [
+          "Temporal Cleansing",
+          "Silvergill Mentor",
+          "Pestered Wellguard",
+          "Encumbered Reejerey",
+          "Disruptor of Currents"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 6,
+        "top_cards": [
+          "Silvergill Peddler",
+          "Wanderbrine Trapper",
+          "Wanderwine Farewell",
+          "Liminal Hold",
+          "Champions of the Shoal"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 4,
+        "top_cards": [
+          "Merrow Skyswimmer",
+          "Eclipsed Merrow",
+          "Blossombind",
+          "Spiral into Solitude"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Catharsis"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Cinder Strike"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "End-Blaze Epiphany"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Tweeze"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Dream Seizer"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Merrow Skyswimmer",
+          "pick_priority_score": 9.040309004800248,
+          "pick_priority_score_raw": 271.8776828462356,
+          "draft_drafts": 8098,
+          "draft_win_rate": 0.5624346017497879,
+          "draft_win_lift": 0.006411963696922096,
+          "draw_win_rate": 0.5906487949153609
+        },
+        {
+          "card": "Temporal Cleansing",
+          "pick_priority_score": 8.071278601136031,
+          "pick_priority_score_raw": 148.5742013155359,
+          "draft_drafts": 6931,
+          "draft_win_rate": 0.5621792305566153,
+          "draft_win_lift": 0.006156592503749558,
+          "draw_win_rate": 0.5747910462100105
+        },
+        {
+          "card": "Liminal Hold",
+          "pick_priority_score": 7.925217895598632,
+          "pick_priority_score_raw": 135.615418985748,
+          "draft_drafts": 5394,
+          "draft_win_rate": 0.5583472664892212,
+          "draft_win_lift": 0.0023246284363553915,
+          "draw_win_rate": 0.5842391304347826
+        },
+        {
+          "card": "Unexpected Assistance",
+          "pick_priority_score": 7.7894130459330055,
+          "pick_priority_score_raw": 124.57588543177647,
+          "draft_drafts": 7181,
+          "draft_win_rate": 0.5576994507540282,
+          "draft_win_lift": 0.001676812701162378,
+          "draw_win_rate": 0.5782510194834617
+        },
+        {
+          "card": "Blossombind",
+          "pick_priority_score": 7.40215454303187,
+          "pick_priority_score_raw": 97.75452720695333,
+          "draft_drafts": 6032,
+          "draft_win_rate": 0.5589955829197929,
+          "draft_win_lift": 0.0029729448669271186,
+          "draw_win_rate": 0.5732363491430849
+        },
+        {
+          "card": "Silvergill Peddler",
+          "pick_priority_score": 6.294008128430931,
+          "pick_priority_score_raw": 48.654659200889945,
+          "draft_drafts": 7816,
+          "draft_win_rate": 0.5575928218760364,
+          "draft_win_lift": 0.0015701838231706455,
+          "draw_win_rate": 0.5628190203277514
+        },
+        {
+          "card": "Wanderbrine Preacher",
+          "pick_priority_score": 6.265869442584147,
+          "pick_priority_score_raw": 47.7952851126104,
+          "draft_drafts": 7593,
+          "draft_win_rate": 0.5591763353195802,
+          "draft_win_lift": 0.003153697266714439,
+          "draw_win_rate": 0.5603176981867226
+        },
+        {
+          "card": "Gravelgill Scoundrel",
+          "pick_priority_score": 5.876071368252688,
+          "pick_priority_score_raw": 37.31283784968391,
+          "draft_drafts": 8047,
+          "draft_win_rate": 0.5582095086019562,
+          "draft_win_lift": 0.0021868705490903917,
+          "draw_win_rate": 0.5598811292719168
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Deepchannel Duelist",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 631.0468482091068,
+          "draft_drafts": 5123,
+          "draft_win_rate": 0.58027131835899,
+          "draft_win_lift": 0.02424868030612426,
+          "draw_win_rate": 0.6253650396328744
+        },
+        {
+          "card": "Eclipsed Merrow",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 550.70635802013,
+          "draft_drafts": 5123,
+          "draft_win_rate": 0.5800141657549849,
+          "draft_win_lift": 0.023991527702119098,
+          "draw_win_rate": 0.614065934065934
+        },
+        {
+          "card": "Silvergill Mentor",
+          "pick_priority_score": 9.314855195173907,
+          "pick_priority_score_raw": 322.55358279714017,
+          "draft_drafts": 4991,
+          "draft_win_rate": 0.5710912987473181,
+          "draft_win_lift": 0.01506866069445234,
+          "draw_win_rate": 0.5902935889754344
+        },
+        {
+          "card": "Rimekin Recluse",
+          "pick_priority_score": 9.247807976368168,
+          "pick_priority_score_raw": 309.37013076770813,
+          "draft_drafts": 2801,
+          "draft_win_rate": 0.578042585388813,
+          "draft_win_lift": 0.022019947335947254,
+          "draw_win_rate": 0.6155129274395329
+        },
+        {
+          "card": "Wanderwine Farewell",
+          "pick_priority_score": 9.141162535907531,
+          "pick_priority_score_raw": 289.4983270809054,
+          "draft_drafts": 4375,
+          "draft_win_rate": 0.566279698907409,
+          "draft_win_lift": 0.010257060854543254,
+          "draw_win_rate": 0.5980347694633409
+        },
+        {
+          "card": "Wanderbrine Trapper",
+          "pick_priority_score": 8.492947861525728,
+          "pick_priority_score_raw": 193.30238079585578,
+          "draft_drafts": 4213,
+          "draft_win_rate": 0.5697315082919818,
+          "draft_win_lift": 0.013708870239116044,
+          "draw_win_rate": 0.576301087915319
+        },
+        {
+          "card": "Encumbered Reejerey",
+          "pick_priority_score": 7.223857049245052,
+          "pick_priority_score_raw": 87.41249265995843,
+          "draft_drafts": 3638,
+          "draft_win_rate": 0.567480632982134,
+          "draft_win_lift": 0.011457994929268245,
+          "draw_win_rate": 0.5555178268251273
+        },
+        {
+          "card": "Pestered Wellguard",
+          "pick_priority_score": 3.9940081716198397,
+          "pick_priority_score_raw": 10.918197478528086,
+          "draft_drafts": 3902,
+          "draft_win_rate": 0.5515390891955765,
+          "draft_win_lift": -0.004483548857289299,
+          "draw_win_rate": 0.5608130081300813
+        }
+      ],
+      "rare": [
+        {
+          "card": "Champions of the Shoal",
+          "pick_priority_score": 9.675066455728057,
+          "pick_priority_score_raw": 403.5827843484615,
+          "draft_drafts": 1579,
+          "draft_win_rate": 0.5902655155877978,
+          "draft_win_lift": 0.03424287753493205,
+          "draw_win_rate": 0.6333236405931957
+        },
+        {
+          "card": "Kinbinding",
+          "pick_priority_score": 9.554479670407474,
+          "pick_priority_score_raw": 374.4175166178279,
+          "draft_drafts": 789,
+          "draft_win_rate": 0.6061009081918924,
+          "draft_win_lift": 0.05007827013902666,
+          "draw_win_rate": 0.6915137614678899
+        },
+        {
+          "card": "Disruptor of Currents",
+          "pick_priority_score": 9.15571826579745,
+          "pick_priority_score_raw": 292.1337126377294,
+          "draft_drafts": 1330,
+          "draft_win_rate": 0.5817104482565802,
+          "draft_win_lift": 0.025687810203714467,
+          "draw_win_rate": 0.6342412451361867
+        },
+        {
+          "card": "Slumbering Walker",
+          "pick_priority_score": 8.95901398053328,
+          "pick_priority_score_raw": 258.4553103180009,
+          "draft_drafts": 868,
+          "draft_win_rate": 0.5894748467055078,
+          "draft_win_lift": 0.03345220865264198,
+          "draw_win_rate": 0.6412583182093164
+        },
+        {
+          "card": "End-Blaze Epiphany",
+          "pick_priority_score": 7.126986377813731,
+          "pick_priority_score_raw": 82.25517239616438,
+          "draft_drafts": 179,
+          "draft_win_rate": 0.5814133585194665,
+          "draft_win_lift": 0.025390720466600736,
+          "draw_win_rate": 0.6240601503759399
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Catharsis",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 173,
+          "draft_win_rate": 0.5277250719706883,
+          "draft_win_lift": -0.028297566082177483,
+          "draw_win_rate": 0.5561497326203209
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Kinbinding",
+        "standalone_delta": 0.13307121462404614,
+        "win_rate": 0.6915137614678899,
+        "draw_games": 1744
+      },
+      {
+        "card": "Slumbering Walker",
+        "standalone_delta": 0.08281577136547269,
+        "win_rate": 0.6412583182093164,
+        "draw_games": 1653
+      },
+      {
+        "card": "Disruptor of Currents",
+        "standalone_delta": 0.07579869829234298,
+        "win_rate": 0.6342412451361867,
+        "draw_games": 2570
+      },
+      {
+        "card": "Champions of the Shoal",
+        "standalone_delta": 0.07488109374935192,
+        "win_rate": 0.6333236405931957,
+        "draw_games": 3439
+      },
+      {
+        "card": "Deepchannel Duelist",
+        "standalone_delta": 0.06692249278903062,
+        "win_rate": 0.6253650396328744,
+        "draw_games": 9588
+      },
+      {
+        "card": "End-Blaze Epiphany",
+        "standalone_delta": 0.06561760353209611,
+        "win_rate": 0.6240601503759399,
+        "draw_games": 133
+      },
+      {
+        "card": "Rimekin Recluse",
+        "standalone_delta": 0.05707038059568914,
+        "win_rate": 0.6155129274395329,
+        "draw_games": 4796
+      },
+      {
+        "card": "Eclipsed Merrow",
+        "standalone_delta": 0.05562338722209026,
+        "win_rate": 0.614065934065934,
+        "draw_games": 9100
+      },
+      {
+        "card": "Wanderwine Farewell",
+        "standalone_delta": 0.03959222261949713,
+        "win_rate": 0.5980347694633409,
+        "draw_games": 6615
+      },
+      {
+        "card": "Merrow Skyswimmer",
+        "standalone_delta": 0.032206248071517174,
+        "win_rate": 0.5906487949153609,
+        "draw_games": 15891
+      },
+      {
+        "card": "Silvergill Mentor",
+        "standalone_delta": 0.03185104213159062,
+        "win_rate": 0.5902935889754344,
+        "draw_games": 8345
+      },
+      {
+        "card": "Liminal Hold",
+        "standalone_delta": 0.025796583590938837,
+        "win_rate": 0.5842391304347826,
+        "draw_games": 9200
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Wanderwine Farewell",
+        "dependency_score": 0.2388355260183995,
+        "standalone_delta": 0.03959222261949713,
+        "draw_games": 6615
+      },
+      {
+        "card": "Unexpected Assistance",
+        "dependency_score": 0.18349778811519768,
+        "standalone_delta": 0.019808472639617936,
+        "draw_games": 11035
+      },
+      {
+        "card": "Encumbered Reejerey",
+        "dependency_score": 0.1762100928534276,
+        "standalone_delta": -0.0029247200187164646,
+        "draw_games": 5890
+      },
+      {
+        "card": "Silvergill Mentor",
+        "dependency_score": 0.1647541878493782,
+        "standalone_delta": 0.03185104213159062,
+        "draw_games": 8345
+      },
+      {
+        "card": "Slumbering Walker",
+        "dependency_score": 0.1378398778454538,
+        "standalone_delta": 0.08281577136547269,
+        "draw_games": 1653
+      },
+      {
+        "card": "Gravelgill Scoundrel",
+        "dependency_score": 0.13472745355706237,
+        "standalone_delta": 0.001438582428073043,
+        "draw_games": 13460
+      },
+      {
+        "card": "Pestered Wellguard",
+        "dependency_score": 0.12101417692610576,
+        "standalone_delta": 0.002370461286237524,
+        "draw_games": 6150
+      },
+      {
+        "card": "Liminal Hold",
+        "dependency_score": 0.11620580143915937,
+        "standalone_delta": 0.025796583590938837,
+        "draw_games": 9200
+      },
+      {
+        "card": "Champions of the Shoal",
+        "dependency_score": 0.0743159946457838,
+        "standalone_delta": 0.07488109374935192,
+        "draw_games": 3439
+      },
+      {
+        "card": "Shore Lurker",
+        "dependency_score": 0.07390383730948374,
+        "standalone_delta": -0.0032002324392257364,
+        "draw_games": 7449
+      },
+      {
+        "card": "Wanderbrine Preacher",
+        "dependency_score": 0.06564985539860962,
+        "standalone_delta": 0.0018751513428788558,
+        "draw_games": 13346
+      },
+      {
+        "card": "Silvergill Peddler",
+        "dependency_score": 0.05873455905185916,
+        "standalone_delta": 0.0043764734839076835,
+        "draw_games": 11167
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Pestered Wellguard",
+          "Slumbering Walker"
+        ],
+        "quality_score": 1.8356729221884915,
+        "pair_win_rate": 0.7619047619047619,
+        "pair_games": 126,
+        "synergy_delta_logit": 0.5727023620015512
+      },
+      {
+        "cards": [
+          "Liminal Hold",
+          "Silvergill Peddler"
+        ],
+        "quality_score": 0.9078219965353581,
+        "pair_win_rate": 0.6286031042128604,
+        "pair_games": 1804,
+        "synergy_delta_logit": 0.16826139454449957
+      },
+      {
+        "cards": [
+          "Encumbered Reejerey",
+          "Slumbering Walker"
+        ],
+        "quality_score": 0.8864918155276647,
+        "pair_win_rate": 0.7096774193548387,
+        "pair_games": 155,
+        "synergy_delta_logit": 0.32484093610940024
+      },
+      {
+        "cards": [
+          "Silvergill Mentor",
+          "Slumbering Walker"
+        ],
+        "quality_score": 0.8558234735374659,
+        "pair_win_rate": 0.7222222222222222,
+        "pair_games": 216,
+        "synergy_delta_logit": 0.24434606732635022
+      },
+      {
+        "cards": [
+          "Shore Lurker",
+          "Slumbering Walker"
+        ],
+        "quality_score": 0.5118793171829797,
+        "pair_win_rate": 0.681592039800995,
+        "pair_games": 201,
+        "synergy_delta_logit": 0.1932366399201798
+      },
+      {
+        "cards": [
+          "Champions of the Shoal",
+          "Silvergill Peddler"
+        ],
+        "quality_score": 0.5113539165560305,
+        "pair_win_rate": 0.6637426900584795,
+        "pair_games": 684,
+        "synergy_delta_logit": 0.11574865096720721
+      },
+      {
+        "cards": [
+          "Shore Lurker",
+          "Silvergill Peddler"
+        ],
+        "quality_score": 0.46156064856690904,
+        "pair_win_rate": 0.5966201322556943,
+        "pair_games": 1361,
+        "synergy_delta_logit": 0.1517596141408193
+      },
+      {
+        "cards": [
+          "Champions of the Shoal",
+          "Wanderwine Farewell"
+        ],
+        "quality_score": 0.43125279198733657,
+        "pair_win_rate": 0.6945244956772334,
+        "pair_games": 347,
+        "synergy_delta_logit": 0.11241616979950186
+      },
+      {
+        "cards": [
+          "Gravelgill Scoundrel",
+          "Wanderbrine Preacher"
+        ],
+        "quality_score": 0.4082204060385761,
+        "pair_win_rate": 0.588277340957827,
+        "pair_games": 2798,
+        "synergy_delta_logit": 0.10856098228696565
+      },
+      {
+        "cards": [
+          "Champions of the Shoal",
+          "Eclipsed Merrow"
+        ],
+        "quality_score": 0.3811892125808743,
+        "pair_win_rate": 0.7031630170316302,
+        "pair_games": 411,
+        "synergy_delta_logit": 0.08631150967782786
+      },
+      {
+        "cards": [
+          "Kinbinding",
+          "Unexpected Assistance"
+        ],
+        "quality_score": 0.35684845790520053,
+        "pair_win_rate": 0.7262773722627737,
+        "pair_games": 274,
+        "synergy_delta_logit": 0.08785673350520906
+      },
+      {
+        "cards": [
+          "Blossombind",
+          "Eclipsed Merrow"
+        ],
+        "quality_score": 0.3469096672920225,
+        "pair_win_rate": 0.6427586206896552,
+        "pair_games": 1450,
+        "synergy_delta_logit": 0.06269764700482428
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Deepchannel Duelist",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 631.0468482091068,
+        "draft_drafts": 5123,
+        "draft_win_lift": 0.02424868030612426,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Eclipsed Merrow",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 550.70635802013,
+        "draft_drafts": 5123,
+        "draft_win_lift": 0.023991527702119098,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Champions of the Shoal",
+        "pick_priority_score": 9.675066455728057,
+        "pick_priority_score_raw": 403.5827843484615,
+        "draft_drafts": 1579,
+        "draft_win_lift": 0.03424287753493205,
+        "rarity": "rare"
+      },
+      {
+        "card": "Kinbinding",
+        "pick_priority_score": 9.554479670407474,
+        "pick_priority_score_raw": 374.4175166178279,
+        "draft_drafts": 789,
+        "draft_win_lift": 0.05007827013902666,
+        "rarity": "rare"
+      },
+      {
+        "card": "Silvergill Mentor",
+        "pick_priority_score": 9.314855195173907,
+        "pick_priority_score_raw": 322.55358279714017,
+        "draft_drafts": 4991,
+        "draft_win_lift": 0.01506866069445234,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Rimekin Recluse",
+        "pick_priority_score": 9.247807976368168,
+        "pick_priority_score_raw": 309.37013076770813,
+        "draft_drafts": 2801,
+        "draft_win_lift": 0.022019947335947254,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Disruptor of Currents",
+        "pick_priority_score": 9.15571826579745,
+        "pick_priority_score_raw": 292.1337126377294,
+        "draft_drafts": 1330,
+        "draft_win_lift": 0.025687810203714467,
+        "rarity": "rare"
+      },
+      {
+        "card": "Wanderwine Farewell",
+        "pick_priority_score": 9.141162535907531,
+        "pick_priority_score_raw": 289.4983270809054,
+        "draft_drafts": 4375,
+        "draft_win_lift": 0.010257060854543254,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Merrow Skyswimmer",
+        "pick_priority_score": 9.040309004800248,
+        "pick_priority_score_raw": 271.8776828462356,
+        "draft_drafts": 8098,
+        "draft_win_lift": 0.006411963696922096,
+        "rarity": "common"
+      },
+      {
+        "card": "Slumbering Walker",
+        "pick_priority_score": 8.95901398053328,
+        "pick_priority_score_raw": 258.4553103180009,
+        "draft_drafts": 868,
+        "draft_win_lift": 0.03345220865264198,
+        "rarity": "rare"
+      },
+      {
+        "card": "Wanderbrine Trapper",
+        "pick_priority_score": 8.492947861525728,
+        "pick_priority_score_raw": 193.30238079585578,
+        "draft_drafts": 4213,
+        "draft_win_lift": 0.013708870239116044,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Temporal Cleansing",
+        "pick_priority_score": 8.071278601136031,
+        "pick_priority_score_raw": 148.5742013155359,
+        "draft_drafts": 6931,
+        "draft_win_lift": 0.006156592503749558,
+        "rarity": "common"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Deepchannel Duelist",
+          "Merrow Skyswimmer"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 8.74203419068649,
+        "pair_win_rate": 0.6588037068239259,
+        "pair_games": 2374,
+        "draft_pair_events": 3561
+      },
+      {
+        "cards": [
+          "Deepchannel Duelist",
+          "Gravelgill Scoundrel"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 6.449489663728144,
+        "pair_win_rate": 0.6354062186559679,
+        "pair_games": 1994,
+        "draft_pair_events": 3494
+      },
+      {
+        "cards": [
+          "Blossombind",
+          "Merrow Skyswimmer"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 6.058862353033132,
+        "pair_win_rate": 0.6194299478121237,
+        "pair_games": 2491,
+        "draft_pair_events": 4087
+      },
+      {
+        "cards": [
+          "Blossombind",
+          "Eclipsed Merrow"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 5.845221092380448,
+        "pair_win_rate": 0.6427586206896552,
+        "pair_games": 1450,
+        "draft_pair_events": 2587
+      },
+      {
+        "cards": [
+          "Liminal Hold",
+          "Silvergill Peddler"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 5.70848196411707,
+        "pair_win_rate": 0.6286031042128604,
+        "pair_games": 1804,
+        "draft_pair_events": 3561
+      },
+      {
+        "cards": [
+          "Kinbinding",
+          "Merrow Skyswimmer"
+        ],
+        "pick_score": 9.318255300130504,
+        "pick_score_raw": 5.19648704545163,
+        "pair_win_rate": 0.725925925925926,
+        "pair_games": 405,
+        "draft_pair_events": 537
+      },
+      {
+        "cards": [
+          "Merrow Skyswimmer",
+          "Silvergill Peddler"
+        ],
+        "pick_score": 9.170737012179007,
+        "pick_score_raw": 5.111911365647667,
+        "pair_win_rate": 0.6013913043478261,
+        "pair_games": 2875,
+        "draft_pair_events": 5299
+      },
+      {
+        "cards": [
+          "Eclipsed Merrow",
+          "Silvergill Peddler"
+        ],
+        "pick_score": 9.167088530931851,
+        "pick_score_raw": 5.1098342997294575,
+        "pair_win_rate": 0.6235438381361128,
+        "pair_games": 1631,
+        "draft_pair_events": 3336
+      },
+      {
+        "cards": [
+          "Eclipsed Merrow",
+          "Spiral into Solitude"
+        ],
+        "pick_score": 8.934201900876303,
+        "pick_score_raw": 4.978703049608844,
+        "pair_win_rate": 0.6379163108454312,
+        "pair_games": 1171,
+        "draft_pair_events": 2230
+      },
+      {
+        "cards": [
+          "Disruptor of Currents",
+          "Merrow Skyswimmer"
+        ],
+        "pick_score": 8.809400658911258,
+        "pick_score_raw": 4.909593419962433,
+        "pair_win_rate": 0.678513731825525,
+        "pair_games": 619,
+        "draft_pair_events": 909
+      },
+      {
+        "cards": [
+          "Deepchannel Duelist",
+          "Spiral into Solitude"
+        ],
+        "pick_score": 8.74270010790117,
+        "pick_score_raw": 4.87298564689488,
+        "pair_win_rate": 0.6343283582089553,
+        "pair_games": 1206,
+        "draft_pair_events": 2260
+      },
+      {
+        "cards": [
+          "Deepchannel Duelist",
+          "Kinbinding"
+        ],
+        "pick_score": 8.436676590043158,
+        "pick_score_raw": 4.707913952623977,
+        "pair_win_rate": 0.7590361445783133,
+        "pair_games": 249,
+        "draft_pair_events": 355
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Selesnya Kithkin | Mistmeadow Council / Crossroads Watcher",
+      "color_name": "Selesnya Kithkin",
+      "deck_count": 8226,
+      "games": 38928,
+      "win_rate": 0.5777332511302918,
+      "signposts": [
+        "Mistmeadow Council",
+        "Crossroads Watcher",
+        "Surly Farrier",
+        "Wary Farmer"
+      ],
+      "pick_cards": [
+        "Eclipsed Kithkin",
+        "Brigid's Command",
+        "Thoughtweft Imbuer",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Golgari Elves | Scarblade Scout / Safewright Cavalry",
+      "color_name": "Golgari Elves",
+      "deck_count": 17005,
+      "games": 79178,
+      "win_rate": 0.5701710070979312,
+      "signposts": [
+        "Scarblade Scout",
+        "Safewright Cavalry",
+        "Lys Alana Informant",
+        "Dawnhand Eulogist"
+      ],
+      "pick_cards": [
+        "Gloom Ripper",
+        "Eclipsed Elf",
+        "Morcant's Loyalist",
+        "Trystan's Command"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Azorius Merfolk | Merrow Skyswimmer / Wanderbrine Preacher",
+      "color_name": "Azorius Merfolk",
+      "deck_count": 14756,
+      "games": 65697,
+      "win_rate": 0.5584425468438438,
+      "signposts": [
+        "Merrow Skyswimmer",
+        "Wanderbrine Preacher",
+        "Gravelgill Scoundrel",
+        "Silvergill Peddler"
+      ],
+      "pick_cards": [
+        "Deepchannel Duelist",
+        "Eclipsed Merrow",
+        "Champions of the Shoal",
+        "Kinbinding"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Izzet Elementals | Kulrath Zealot / Flamekin Gildweaver",
+      "color_name": "Izzet Elementals",
+      "deck_count": 15634,
+      "games": 67280,
+      "win_rate": 0.5508323424494649,
+      "signposts": [
+        "Kulrath Zealot",
+        "Flamekin Gildweaver",
+        "Flaring Cinder",
+        "Flame-Chain Mauler"
+      ],
+      "pick_cards": [
+        "Ashling's Command",
+        "Sunderflock",
+        "Eclipsed Flamekin",
+        "Rimekin Recluse"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Rakdos Goblins | Gristle Glutton / Elder Auntie",
+      "color_name": "Rakdos Goblins",
+      "deck_count": 10159,
+      "games": 43081,
+      "win_rate": 0.5284232028040203,
+      "signposts": [
+        "Gristle Glutton",
+        "Elder Auntie",
+        "Bile-Vial Boggart",
+        "Boggart Prankster"
+      ],
+      "pick_cards": [
+        "Grub's Command",
+        "Eclipsed Boggart",
+        "Boggart Mischief",
+        "Boggart Cursecrafter"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "White Base Kithkin | Timid Shieldbearer / Reluctant Dounguard",
+      "color_name": "White Base Kithkin",
+      "deck_count": 5824,
+      "games": 24407,
+      "win_rate": 0.516286311304134,
+      "signposts": [
+        "Timid Shieldbearer",
+        "Reluctant Dounguard",
+        "Spiral into Solitude",
+        "Sun-Dappled Celebrant"
+      ],
+      "pick_cards": [
+        "Kinbinding",
+        "Thoughtweft Imbuer",
+        "Pyrrhic Strike",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "Five-Color | Great Forest Druid / Foraging Wickermaw",
+      "color_name": "Five-Color",
+      "deck_count": 11302,
+      "games": 44111,
+      "win_rate": 0.5071524109632518,
+      "signposts": [
+        "Great Forest Druid",
+        "Foraging Wickermaw",
+        "Wildvine Pummeler",
+        "Tend the Sprigs"
+      ],
+      "pick_cards": [
+        "Shinestriker",
+        "Explosive Prodigy",
+        "Prismabasher",
+        "Noggle Robber"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

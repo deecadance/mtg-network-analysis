@@ -1,0 +1,4505 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Selesnya Kithkin | Mistmeadow Council / Crossroads Watcher | Lorwyn Eclipsed Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "ECL",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 82906,
+      "cluster_feature_count": 263,
+      "svd_components": 48,
+      "svd_explained_variance": 0.41585496068000793,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.192540243268013,
+          "dominant_main_color_share": 0.7279459549142004,
+          "objective": 0.23621700056286504
+        },
+        {
+          "k": 8,
+          "silhouette": 0.17198492586612701,
+          "dominant_main_color_share": 0.6955971152387095,
+          "objective": 0.21372075278044958
+        },
+        {
+          "k": 9,
+          "silhouette": 0.15807880461215973,
+          "dominant_main_color_share": 0.7346713431984758,
+          "objective": 0.20215908520406828
+        },
+        {
+          "k": 10,
+          "silhouette": 0.1304016262292862,
+          "dominant_main_color_share": 0.7372495498149798,
+          "objective": 0.17463659921818497
+        },
+        {
+          "k": 11,
+          "silhouette": 0.12515881657600403,
+          "dominant_main_color_share": 0.7103820495023637,
+          "objective": 0.16778173954614584
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "4": 17005,
+        "2": 15634,
+        "0": 14756,
+        "3": 11302,
+        "6": 10159,
+        "5": 5824,
+        "1": 8226
+      }
+    },
+    "deck_count": 82906,
+    "game_count": 362682
+  },
+  "segment": {
+    "cluster_id": 1,
+    "title": "Selesnya Kithkin | Mistmeadow Council / Crossroads Watcher",
+    "color_signature": "WG",
+    "color_name": "Selesnya Kithkin",
+    "deck_count": 8226,
+    "draft_count": 4567,
+    "games": 38928,
+    "wins": 22490,
+    "win_rate": 0.5777332511302918,
+    "draft_match_win_rate": 0.58189204408334,
+    "top_deck_colors": [
+      {
+        "colors": "WG",
+        "count": 5338
+      },
+      {
+        "colors": "WBG",
+        "count": 701
+      },
+      {
+        "colors": "WRG",
+        "count": 612
+      },
+      {
+        "colors": "WBRG",
+        "count": 500
+      },
+      {
+        "colors": "WURG",
+        "count": 299
+      },
+      {
+        "colors": "WUBRG",
+        "count": 295
+      },
+      {
+        "colors": "WUG",
+        "count": 241
+      },
+      {
+        "colors": "WUBG",
+        "count": 206
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "WG",
+        "count": 7766
+      },
+      {
+        "colors": "WBG",
+        "count": 161
+      },
+      {
+        "colors": "WRG",
+        "count": 153
+      },
+      {
+        "colors": "WUG",
+        "count": 49
+      },
+      {
+        "colors": "G",
+        "count": 36
+      },
+      {
+        "colors": "RG",
+        "count": 26
+      },
+      {
+        "colors": "BG",
+        "count": 19
+      },
+      {
+        "colors": "UG",
+        "count": 15
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Mistmeadow Council",
+        "score": 10099.038437289717,
+        "z_score": 124.9081518808137,
+        "log_odds": 3.786398655157069,
+        "cluster_prevalence": 0.7924196033071544,
+        "global_prevalence": 0.15058860139027525,
+        "lift": 5.262148635363629,
+        "support_decks": 6537
+      },
+      {
+        "card": "Crossroads Watcher",
+        "score": 10004.375832776794,
+        "z_score": 130.21277873464828,
+        "log_odds": 3.842290501968913,
+        "cluster_prevalence": 0.7155139812773859,
+        "global_prevalence": 0.11727456628516082,
+        "lift": 6.101186335130556,
+        "support_decks": 5903
+      },
+      {
+        "card": "Surly Farrier",
+        "score": 9002.698133260783,
+        "z_score": 123.35935988318056,
+        "log_odds": 3.4781364774245676,
+        "cluster_prevalence": 0.6456081115354888,
+        "global_prevalence": 0.11217252542728123,
+        "lift": 5.755492346064911,
+        "support_decks": 5326
+      },
+      {
+        "card": "Wary Farmer",
+        "score": 8680.850966828631,
+        "z_score": 115.95099822334481,
+        "log_odds": 3.1297417358811375,
+        "cluster_prevalence": 0.6795097118488727,
+        "global_prevalence": 0.14401504993035946,
+        "lift": 4.718324315253574,
+        "support_decks": 5605
+      },
+      {
+        "card": "Gallant Fowlknight",
+        "score": 8351.908653202521,
+        "z_score": 120.90256597454274,
+        "log_odds": 3.5600871195660933,
+        "cluster_prevalence": 0.5784348330097203,
+        "global_prevalence": 0.09136633043947442,
+        "lift": 6.330940842512047,
+        "support_decks": 4772
+      },
+      {
+        "card": "Timid Shieldbearer",
+        "score": 7896.272796794473,
+        "z_score": 109.0412451805887,
+        "log_odds": 2.8517690360054417,
+        "cluster_prevalence": 0.6357897046052156,
+        "global_prevalence": 0.14571573021631934,
+        "lift": 4.36321942498155,
+        "support_decks": 5244
+      },
+      {
+        "card": "Thoughtweft Lieutenant",
+        "score": 7180.943434534209,
+        "z_score": 112.65697731837741,
+        "log_odds": 3.963090794414252,
+        "cluster_prevalence": 0.492460503191027,
+        "global_prevalence": 0.06529964600974673,
+        "lift": 7.541549354149968,
+        "support_decks": 4063
+      },
+      {
+        "card": "Eclipsed Kithkin",
+        "score": 6543.704027981988,
+        "z_score": 105.28373754337453,
+        "log_odds": 3.0304271952993145,
+        "cluster_prevalence": 0.4682938241330192,
+        "global_prevalence": 0.08333126701351025,
+        "lift": 5.619665233904293,
+        "support_decks": 3863
+      },
+      {
+        "card": "Kinsbaile Aspirant",
+        "score": 5873.947845549583,
+        "z_score": 101.4258268778337,
+        "log_odds": 3.3020914076659778,
+        "cluster_prevalence": 0.40657331550261316,
+        "global_prevalence": 0.06259791969341419,
+        "lift": 6.494997237829742,
+        "support_decks": 3354
+      },
+      {
+        "card": "Thoughtweft Imbuer",
+        "score": 5853.9597603817165,
+        "z_score": 100.42412249016111,
+        "log_odds": 3.0921684181072746,
+        "cluster_prevalence": 0.41192270600806136,
+        "global_prevalence": 0.06873711086615314,
+        "lift": 5.99272650272091,
+        "support_decks": 3398
+      },
+      {
+        "card": "Goldmeadow Nomad",
+        "score": 5124.88929477628,
+        "z_score": 90.34236772963065,
+        "log_odds": 2.5716119141960228,
+        "cluster_prevalence": 0.39017221299194366,
+        "global_prevalence": 0.08078834029205033,
+        "lift": 4.829560943837548,
+        "support_decks": 3218
+      },
+      {
+        "card": "Assert Perfection",
+        "score": 4760.906555813987,
+        "z_score": 69.86240819996715,
+        "log_odds": 1.6796642549014593,
+        "cluster_prevalence": 0.5634034789703928,
+        "global_prevalence": 0.23068943670275346,
+        "lift": 2.4422595460941974,
+        "support_decks": 4644
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Mistmeadow Council",
+        "label": "Mistmeadow Council",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Kithkin Advisor",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 10281,
+        "win_rate": 0.5982881042700127,
+        "standalone_delta": 0.02055485313972083,
+        "dependency_score": 0.1428012837284931,
+        "degree": 8,
+        "signpost_score": 10099.038437289717,
+        "signpost_lift": 5.262148635363629,
+        "deck_prevalence": 0.7924196033071544,
+        "draft_weight": 7342.0,
+        "draft_drafts": 3968,
+        "draft_presence": 0.868841690387563,
+        "draft_win_rate": 0.5820307989194624,
+        "draft_win_lift": 0.00013875483612235673,
+        "analysis_score_raw": 10104.48653983639,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 102.81246157029801,
+        "pick_priority_score": 8.115029820169001,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mistmeadow%20Council%22",
+        "community": 3,
+        "x": 673.4298445306938,
+        "y": 676.4216905029398,
+        "analysis_radius": 17.271363136910395,
+        "pick_radius": 30.0,
+        "radius": 17.271363136910395
+      },
+      {
+        "id": "Crossroads Watcher",
+        "label": "Crossroads Watcher",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Kithkin Ranger",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 8648,
+        "win_rate": 0.5772432932469935,
+        "standalone_delta": -0.0004899578832983087,
+        "dependency_score": 0.10144226214179841,
+        "degree": 8,
+        "signpost_score": 10004.375832776794,
+        "signpost_lift": 6.101186335130556,
+        "deck_prevalence": 0.7155139812773859,
+        "draft_weight": 6132.0,
+        "draft_drafts": 3676,
+        "draft_presence": 0.8049047514779943,
+        "draft_win_rate": 0.5813004141409597,
+        "draft_win_lift": -0.0005916299423803784,
+        "analysis_score_raw": 10006.201793495346,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Crossroads%20Watcher%22",
+        "community": 2,
+        "x": 787.8704960279748,
+        "y": 911.7616110545628,
+        "analysis_radius": 14.651921437104743,
+        "pick_radius": 30.0,
+        "radius": 14.651921437104743
+      },
+      {
+        "id": "Surly Farrier",
+        "label": "Surly Farrier",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Kithkin Citizen",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 7081,
+        "win_rate": 0.5571246999011439,
+        "standalone_delta": -0.020608551229147953,
+        "dependency_score": 0.07284716610507924,
+        "degree": 8,
+        "signpost_score": 9002.698133260783,
+        "signpost_lift": 5.755492346064911,
+        "deck_prevalence": 0.6456081115354888,
+        "draft_weight": 5480.0,
+        "draft_drafts": 3434,
+        "draft_presence": 0.7519159185460915,
+        "draft_win_rate": 0.5787575255496199,
+        "draft_win_lift": -0.003134518533720154,
+        "analysis_score_raw": 9004.009382250675,
+        "analysis_score": 9.925426265218757,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Surly%20Farrier%22",
+        "community": 3,
+        "x": 769.2121638902396,
+        "y": 679.988418528147,
+        "analysis_radius": 13.622497979782853,
+        "pick_radius": 30.0,
+        "radius": 13.622497979782853
+      },
+      {
+        "id": "Wary Farmer",
+        "label": "Wary Farmer",
+        "color_identity": "WG",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Kithkin Citizen",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "WG"
+        },
+        "draw_games": 7829,
+        "win_rate": 0.5810448333120449,
+        "standalone_delta": 0.003311582181753092,
+        "dependency_score": 0.05507907884537888,
+        "degree": 6,
+        "signpost_score": 8680.850966828631,
+        "signpost_lift": 4.718324315253574,
+        "deck_prevalence": 0.6795097118488727,
+        "draft_weight": 5207.0,
+        "draft_drafts": 3321,
+        "draft_presence": 0.7271731990365666,
+        "draft_win_rate": 0.581149211267464,
+        "draft_win_lift": -0.00074283281587606,
+        "analysis_score_raw": 8682.306011753293,
+        "analysis_score": 9.891147873217555,
+        "pick_priority_score_raw": 14.39904636936524,
+        "pick_priority_score": 4.247487620125356,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Wary%20Farmer%22",
+        "community": 4,
+        "x": 579.4523459161107,
+        "y": 413.6036303711912,
+        "analysis_radius": 13.164983858430059,
+        "pick_radius": 30.0,
+        "radius": 13.164983858430059
+      },
+      {
+        "id": "Gallant Fowlknight",
+        "label": "Gallant Fowlknight",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Kithkin Knight",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 6523,
+        "win_rate": 0.5802544841330676,
+        "standalone_delta": 0.0025212330027757357,
+        "dependency_score": 0.05722834587433395,
+        "degree": 4,
+        "signpost_score": 8351.908653202521,
+        "signpost_lift": 6.330940842512047,
+        "deck_prevalence": 0.5784348330097203,
+        "draft_weight": 4747.0,
+        "draft_drafts": 3113,
+        "draft_presence": 0.6816290781694767,
+        "draft_win_rate": 0.5810650736598606,
+        "draft_win_lift": -0.0008269704234794562,
+        "analysis_score_raw": 8353.291736048648,
+        "analysis_score": 9.85475102421497,
+        "pick_priority_score_raw": 11.861347814026354,
+        "pick_priority_score": 3.88251852814472,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Gallant%20Fowlknight%22",
+        "community": 1,
+        "x": 958.7181804427113,
+        "y": 749.560433181059,
+        "analysis_radius": 13.198888266628687,
+        "pick_radius": 30.0,
+        "radius": 13.198888266628687
+      },
+      {
+        "id": "Timid Shieldbearer",
+        "label": "Timid Shieldbearer",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Kithkin Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 7247,
+        "win_rate": 0.5718228232372016,
+        "standalone_delta": -0.005910427893090264,
+        "dependency_score": 0.08728568905972758,
+        "degree": 8,
+        "signpost_score": 7896.272796794473,
+        "signpost_lift": 4.36321942498155,
+        "deck_prevalence": 0.6357897046052156,
+        "draft_weight": 4505.0,
+        "draft_drafts": 2941,
+        "draft_presence": 0.6439675936063061,
+        "draft_win_rate": 0.5848219259456391,
+        "draft_win_lift": 0.002929881862299033,
+        "analysis_score_raw": 7897.843939197548,
+        "analysis_score": 9.80192857063814,
+        "pick_priority_score_raw": 21.232870994488287,
+        "pick_priority_score": 4.9918320223801995,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Timid%20Shieldbearer%22",
+        "community": 3,
+        "x": 603.1188277122629,
+        "y": 712.4299817656828,
+        "analysis_radius": 14.142284806150194,
+        "pick_radius": 30.0,
+        "radius": 14.142284806150194
+      },
+      {
+        "id": "Thoughtweft Lieutenant",
+        "label": "Thoughtweft Lieutenant",
+        "color_identity": "WG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Kithkin Soldier",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "WG"
+        },
+        "draw_games": 5594,
+        "win_rate": 0.6052913836253129,
+        "standalone_delta": 0.027558132495021037,
+        "dependency_score": 0.08462075491395338,
+        "degree": 7,
+        "signpost_score": 7180.943434534209,
+        "signpost_lift": 7.541549354149968,
+        "deck_prevalence": 0.492460503191027,
+        "draft_weight": 3100.0,
+        "draft_drafts": 2331,
+        "draft_presence": 0.5104007006787825,
+        "draft_win_rate": 0.5888804347428236,
+        "draft_win_lift": 0.006988390659483534,
+        "analysis_score_raw": 7186.324746671962,
+        "analysis_score": 9.71298114182343,
+        "pick_priority_score_raw": 176.86020975081385,
+        "pick_priority_score": 9.206237723159395,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Thoughtweft%20Lieutenant%22",
+        "community": 0,
+        "x": 1156.896730233256,
+        "y": 490.7167079989314,
+        "analysis_radius": 15.562044464128478,
+        "pick_radius": 30.0,
+        "radius": 15.562044464128478
+      },
+      {
+        "id": "Eclipsed Kithkin",
+        "label": "Eclipsed Kithkin",
+        "color_identity": "WG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Kithkin Scout",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "WG"
+        },
+        "draw_games": 5178,
+        "win_rate": 0.6349942062572422,
+        "standalone_delta": 0.0572609551269504,
+        "dependency_score": 0.06751256688252845,
+        "degree": 8,
+        "signpost_score": 6543.704027981988,
+        "signpost_lift": 5.619665233904293,
+        "deck_prevalence": 0.4682938241330192,
+        "draft_weight": 2909.0,
+        "draft_drafts": 2225,
+        "draft_presence": 0.48719071600613095,
+        "draft_win_rate": 0.6047915866268729,
+        "draft_win_lift": 0.02289954254353288,
+        "analysis_score_raw": 6552.935787903646,
+        "analysis_score": 9.62605404322087,
+        "pick_priority_score_raw": 375.0990724634871,
+        "pick_priority_score": 10.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Eclipsed%20Kithkin%22",
+        "community": 1,
+        "x": 1083.949647010321,
+        "y": 781.865118264431,
+        "analysis_radius": 16.579804939753295,
+        "pick_radius": 30.0,
+        "radius": 16.579804939753295
+      },
+      {
+        "id": "Kinsbaile Aspirant",
+        "label": "Kinsbaile Aspirant",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 1.0,
+        "types": "Creature - Kithkin Citizen",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 4400,
+        "win_rate": 0.5845454545454546,
+        "standalone_delta": 0.006812203415162754,
+        "dependency_score": 0.04938354942718729,
+        "degree": 8,
+        "signpost_score": 5873.947845549583,
+        "signpost_lift": 6.494997237829742,
+        "deck_prevalence": 0.40657331550261316,
+        "draft_weight": 2519.0,
+        "draft_drafts": 1928,
+        "draft_presence": 0.4221589664987957,
+        "draft_win_rate": 0.5903862548663849,
+        "draft_win_lift": 0.008494210783044798,
+        "analysis_score_raw": 5875.7904579173955,
+        "analysis_score": 9.523295267876728,
+        "pick_priority_score_raw": 83.28353908739014,
+        "pick_priority_score": 7.692663377976019,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kinsbaile%20Aspirant%22",
+        "community": 0,
+        "x": 1225.655233709264,
+        "y": 660.7167079989314,
+        "analysis_radius": 13.152478967212694,
+        "pick_radius": 30.0,
+        "radius": 13.152478967212694
+      },
+      {
+        "id": "Thoughtweft Imbuer",
+        "label": "Thoughtweft Imbuer",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Kithkin Advisor",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 4542,
+        "win_rate": 0.6259357111404668,
+        "standalone_delta": 0.04820246001017492,
+        "dependency_score": 0.08413119647896793,
+        "degree": 9,
+        "signpost_score": 5853.9597603817165,
+        "signpost_lift": 5.99272650272091,
+        "deck_prevalence": 0.41192270600806136,
+        "draft_weight": 2396.0,
+        "draft_drafts": 1905,
+        "draft_presence": 0.4171228377490694,
+        "draft_win_rate": 0.586912768706661,
+        "draft_win_lift": 0.005020724623320927,
+        "analysis_score_raw": 5862.222466319762,
+        "analysis_score": 9.52111730438512,
+        "pick_priority_score_raw": 206.33870272499072,
+        "pick_priority_score": 9.517046349246469,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Thoughtweft%20Imbuer%22",
+        "community": 1,
+        "x": 1120.5884812943468,
+        "y": 806.4360238341799,
+        "analysis_radius": 16.679858373802464,
+        "pick_radius": 30.0,
+        "radius": 16.679858373802464
+      },
+      {
+        "id": "Goldmeadow Nomad",
+        "label": "Goldmeadow Nomad",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Creature - Kithkin Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 4017,
+        "win_rate": 0.5586258401792382,
+        "standalone_delta": -0.019107410951053616,
+        "dependency_score": 0.09750526993979496,
+        "degree": 5,
+        "signpost_score": 5124.88929477628,
+        "signpost_lift": 4.829560943837548,
+        "deck_prevalence": 0.39017221299194366,
+        "draft_weight": 3591.0,
+        "draft_drafts": 2537,
+        "draft_presence": 0.555506897306766,
+        "draft_win_rate": 0.5838338225023065,
+        "draft_win_lift": 0.0019417784189664777,
+        "analysis_score_raw": 5126.644389635196,
+        "analysis_score": 9.394803759367067,
+        "pick_priority_score_raw": 13.525966146385082,
+        "pick_priority_score": 4.129192742048226,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Goldmeadow%20Nomad%22",
+        "community": 1,
+        "x": 1128.7181804427114,
+        "y": 766.6677030498956,
+        "analysis_radius": 14.510189717832619,
+        "pick_radius": 30.0,
+        "radius": 14.510189717832619
+      },
+      {
+        "id": "Assert Perfection",
+        "label": "Assert Perfection",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 6886,
+        "win_rate": 0.5964275341272146,
+        "standalone_delta": 0.018694282996922773,
+        "dependency_score": 0.0765681835905693,
+        "degree": 5,
+        "signpost_score": 4760.906555813987,
+        "signpost_lift": 2.4422595460941974,
+        "deck_prevalence": 0.5634034789703928,
+        "draft_weight": 4122.0,
+        "draft_drafts": 2791,
+        "draft_presence": 0.6111232756733085,
+        "draft_win_rate": 0.5840043613392697,
+        "draft_win_lift": 0.002112317255929641,
+        "analysis_score_raw": 4764.901982738186,
+        "analysis_score": 9.325868012066488,
+        "pick_priority_score_raw": 74.9219829718093,
+        "pick_priority_score": 7.480911484070334,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Assert%20Perfection%22",
+        "community": 2,
+        "x": 806.3143275630154,
+        "y": 741.7616110545628,
+        "analysis_radius": 14.784640174091248,
+        "pick_radius": 30.0,
+        "radius": 14.784640174091248
+      },
+      {
+        "id": "Bristlebane Outrider",
+        "label": "Bristlebane Outrider",
+        "color_identity": "G",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Kithkin Knight",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 3660,
+        "win_rate": 0.5994535519125683,
+        "standalone_delta": 0.02172030078227649,
+        "dependency_score": 0.098539922229541,
+        "degree": 7,
+        "signpost_score": 4733.602688067705,
+        "signpost_lift": 5.012458684903661,
+        "deck_prevalence": 0.3553636736656135,
+        "draft_weight": 2166.0,
+        "draft_drafts": 1811,
+        "draft_presence": 0.3965403985110576,
+        "draft_win_rate": 0.5833647809416718,
+        "draft_win_lift": 0.0014727368583317135,
+        "analysis_score_raw": 4738.417248777355,
+        "analysis_score": 9.320617115748968,
+        "pick_priority_score_raw": 80.01852852518007,
+        "pick_priority_score": 7.6125904607131165,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bristlebane%20Outrider%22",
+        "community": 2,
+        "x": 818.0997817532159,
+        "y": 820.7667130993838,
+        "analysis_radius": 15.742053743288682,
+        "pick_radius": 30.0,
+        "radius": 15.742053743288682
+      },
+      {
+        "id": "Spiral into Solitude",
+        "label": "Spiral into Solitude",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Enchantment - Aura",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 5477,
+        "win_rate": 0.5829833850648165,
+        "standalone_delta": 0.00525013393452467,
+        "dependency_score": 0.07867175484539045,
+        "degree": 4,
+        "signpost_score": 4174.623577177307,
+        "signpost_lift": 2.5683855588875115,
+        "deck_prevalence": 0.477010665927434,
+        "draft_weight": 2900.0,
+        "draft_drafts": 2114,
+        "draft_presence": 0.4628859207357127,
+        "draft_win_rate": 0.5790014375429091,
+        "draft_win_lift": -0.00289060654043094,
+        "analysis_score_raw": 4176.774687515358,
+        "analysis_score": 9.201763997172334,
+        "pick_priority_score_raw": 15.358836539554181,
+        "pick_priority_score": 4.370028188705717,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Spiral%20into%20Solitude%22",
+        "community": 1,
+        "x": 1018.5678658892315,
+        "y": 757.3719887618967,
+        "analysis_radius": 14.120940540832912,
+        "pick_radius": 30.0,
+        "radius": 14.120940540832912
+      },
+      {
+        "id": "Reluctant Dounguard",
+        "label": "Reluctant Dounguard",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Kithkin Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3293,
+        "win_rate": 0.5645308229577892,
+        "standalone_delta": -0.013202428172502612,
+        "dependency_score": 0.10485642381121575,
+        "degree": 8,
+        "signpost_score": 4137.028654786378,
+        "signpost_lift": 4.469136656134699,
+        "deck_prevalence": 0.32801050881945876,
+        "draft_weight": 2790.0,
+        "draft_drafts": 2111,
+        "draft_presence": 0.46222903437705276,
+        "draft_win_rate": 0.5842398085143025,
+        "draft_win_lift": 0.002347764430962407,
+        "analysis_score_raw": 4138.91607041498,
+        "analysis_score": 9.193186345885264,
+        "pick_priority_score_raw": 14.52908935058532,
+        "pick_priority_score": 4.264531112609091,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Reluctant%20Dounguard%22",
+        "community": 3,
+        "x": 599.2121638902396,
+        "y": 631.0766726678423,
+        "analysis_radius": 14.774831257203767,
+        "pick_radius": 30.0,
+        "radius": 14.774831257203767
+      },
+      {
+        "id": "Clachan Festival",
+        "label": "Clachan Festival",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Kindred Enchantment - Kithkin",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3269,
+        "win_rate": 0.6093606607525237,
+        "standalone_delta": 0.03162740962223187,
+        "dependency_score": 0.12082272490972522,
+        "degree": 9,
+        "signpost_score": 4071.501700838034,
+        "signpost_lift": 4.405784289993273,
+        "deck_prevalence": 0.3252125752394256,
+        "draft_weight": 1721.0,
+        "draft_drafts": 1446,
+        "draft_presence": 0.31661922487409677,
+        "draft_win_rate": 0.5959856948477841,
+        "draft_win_lift": 0.014093650764444021,
+        "analysis_score_raw": 4078.104347233522,
+        "analysis_score": 9.179242628012185,
+        "pick_priority_score_raw": 160.52085493631023,
+        "pick_priority_score": 9.010936014343386,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Clachan%20Festival%22",
+        "community": 0,
+        "x": 1178.4326733334838,
+        "y": 552.801565269621,
+        "analysis_radius": 17.089125625972862,
+        "pick_radius": 30.0,
+        "radius": 17.089125625972862
+      },
+      {
+        "id": "Liminal Hold",
+        "label": "Liminal Hold",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 5315,
+        "win_rate": 0.5905926622765757,
+        "standalone_delta": 0.012859411146283861,
+        "dependency_score": 0.09583055270544458,
+        "degree": 9,
+        "signpost_score": 3777.654107113939,
+        "signpost_lift": 2.3085122196505212,
+        "deck_prevalence": 0.47744558514667873,
+        "draft_weight": 2849.0,
+        "draft_drafts": 2186,
+        "draft_presence": 0.47865119334355155,
+        "draft_win_rate": 0.5841763450163815,
+        "draft_win_lift": 0.0022843009330414388,
+        "analysis_score_raw": 3781.179374623117,
+        "analysis_score": 9.108028966335809,
+        "pick_priority_score_raw": 49.472757241473275,
+        "pick_priority_score": 6.653459050260704,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Liminal%20Hold%22",
+        "community": 4,
+        "x": 749.4523459161107,
+        "y": 478.90330771391046,
+        "analysis_radius": 15.157167510441617,
+        "pick_radius": 30.0,
+        "radius": 15.157167510441617
+      },
+      {
+        "id": "Dundoolin Weaver",
+        "label": "Dundoolin Weaver",
+        "color_identity": "G",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Kithkin Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 3381,
+        "win_rate": 0.6095829636202307,
+        "standalone_delta": 0.03184971248993884,
+        "dependency_score": 0.090503802680384,
+        "degree": 9,
+        "signpost_score": 3358.377683880212,
+        "signpost_lift": 3.29220674145107,
+        "deck_prevalence": 0.32056419465963565,
+        "draft_weight": 1898.0,
+        "draft_drafts": 1591,
+        "draft_presence": 0.3483687322093278,
+        "draft_win_rate": 0.5838626667369751,
+        "draft_win_lift": 0.0019706226536350124,
+        "analysis_score_raw": 3364.4657120770503,
+        "analysis_score": 8.99803447104721,
+        "pick_priority_score_raw": 95.55016165985359,
+        "pick_priority_score": 7.968045629801796,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dundoolin%20Weaver%22",
+        "community": 2,
+        "x": 870.2457686992095,
+        "y": 802.6478957101882,
+        "analysis_radius": 16.00987108344046,
+        "pick_radius": 30.0,
+        "radius": 16.00987108344046
+      },
+      {
+        "id": "Figure of Fable",
+        "label": "Figure of Fable",
+        "color_identity": "WG",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Creature - Kithkin",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "WG"
+        },
+        "draw_games": 1203,
+        "win_rate": 0.6733167082294265,
+        "standalone_delta": 0.09558345709913463,
+        "dependency_score": 0.10411651398547091,
+        "degree": 8,
+        "signpost_score": 1079.9128529634597,
+        "signpost_lift": 2.5632451030761847,
+        "deck_prevalence": 0.13095407417478902,
+        "draft_weight": 372.0,
+        "draft_drafts": 366,
+        "draft_presence": 0.08014013575651412,
+        "draft_win_rate": 0.6125042022520649,
+        "draft_win_lift": 0.030612158168724868,
+        "analysis_score_raw": 1095.168634209077,
+        "analysis_score": 7.941052258266041,
+        "pick_priority_score_raw": 184.0158212596386,
+        "pick_priority_score": 9.286178365059037,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Figure%20of%20Fable%22",
+        "community": 4,
+        "x": 654.8250581853554,
+        "y": 442.5554893164398,
+        "analysis_radius": 20.005284643929357,
+        "pick_radius": 30.0,
+        "radius": 20.005284643929357
+      },
+      {
+        "id": "Brigid's Command",
+        "label": "Brigid's Command",
+        "color_identity": "WG",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Kindred Sorcery - Kithkin",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "WG"
+        },
+        "draw_games": 1910,
+        "win_rate": 0.6518324607329843,
+        "standalone_delta": 0.07409920960269245,
+        "dependency_score": 0.09903414805468627,
+        "degree": 7,
+        "signpost_score": 2626.154835873765,
+        "signpost_lift": 5.881174799213555,
+        "deck_prevalence": 0.18952776612972214,
+        "draft_weight": 784.0,
+        "draft_drafts": 727,
+        "draft_presence": 0.15918546091526167,
+        "draft_win_rate": 0.611888872629868,
+        "draft_win_lift": 0.029996828546527965,
+        "analysis_score_raw": 2638.3113398831265,
+        "analysis_score": 8.769018353132298,
+        "pick_priority_score_raw": 283.8830244875142,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Brigid%27s%20Command%22",
+        "community": 2,
+        "x": 922.629388464468,
+        "y": 814.8416527222191,
+        "analysis_radius": 18.64068585811679,
+        "pick_radius": 30.0,
+        "radius": 18.64068585811679
+      },
+      {
+        "id": "Pyrrhic Strike",
+        "label": "Pyrrhic Strike",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 2744,
+        "win_rate": 0.630466472303207,
+        "standalone_delta": 0.05273322117291512,
+        "dependency_score": 0.11437054812881801,
+        "degree": 6,
+        "signpost_score": 2007.0292804776445,
+        "signpost_lift": 2.4324396277877933,
+        "deck_prevalence": 0.25081321512508714,
+        "draft_weight": 1274.0,
+        "draft_drafts": 1093,
+        "draft_presence": 0.23932559667177578,
+        "draft_win_rate": 0.5924162139067334,
+        "draft_win_lift": 0.010524169823393326,
+        "analysis_score_raw": 2016.4706013081714,
+        "analysis_score": 8.515856531130927,
+        "pick_priority_score_raw": 149.399003894666,
+        "pick_priority_score": 8.86634508222394,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Pyrrhic%20Strike%22",
+        "community": 0,
+        "x": 1132.593079986227,
+        "y": 557.9600474185708,
+        "analysis_radius": 18.01766689714778,
+        "pick_radius": 30.0,
+        "radius": 18.01766689714778
+      },
+      {
+        "id": "Kinbinding",
+        "label": "Kinbinding",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1368,
+        "win_rate": 0.6513157894736842,
+        "standalone_delta": 0.07358253834339235,
+        "dependency_score": 0.08999794205030595,
+        "degree": 6,
+        "signpost_score": 1168.1852038750253,
+        "signpost_lift": 2.704718193478467,
+        "deck_prevalence": 0.13446302936868285,
+        "draft_weight": 373.0,
+        "draft_drafts": 367,
+        "draft_presence": 0.08035909787606745,
+        "draft_win_rate": 0.6124622904020974,
+        "draft_win_lift": 0.030570246318757377,
+        "analysis_score_raw": 1180.1067222000058,
+        "analysis_score": 8.011374362310837,
+        "pick_priority_score_raw": 159.29453412537404,
+        "pick_priority_score": 8.995489793071247,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kinbinding%22",
+        "community": 1,
+        "x": 1080.8064298760646,
+        "y": 741.2107900327054,
+        "analysis_radius": 18.286965522697592,
+        "pick_radius": 30.0,
+        "radius": 18.286965522697592
+      },
+      {
+        "id": "Pitiless Fists",
+        "label": "Pitiless Fists",
+        "color_identity": "G",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Enchantment - Aura",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 2442,
+        "win_rate": 0.6224406224406225,
+        "standalone_delta": 0.044707371310330646,
+        "dependency_score": 0.09448089060773672,
+        "degree": 7,
+        "signpost_score": 1812.2423324718475,
+        "signpost_lift": 2.3039626094398997,
+        "deck_prevalence": 0.24040017616414497,
+        "draft_weight": 1442.0,
+        "draft_drafts": 1223,
+        "draft_presence": 0.267790672213707,
+        "draft_win_rate": 0.587843579984615,
+        "draft_win_lift": 0.005951535901274951,
+        "analysis_score_raw": 1820.2020204862329,
+        "analysis_score": 8.41941768791943,
+        "pick_priority_score_raw": 120.73171373622394,
+        "pick_priority_score": 8.437750956000746,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Pitiless%20Fists%22",
+        "community": 0,
+        "x": 1086.0237368436658,
+        "y": 507.7217439523742,
+        "analysis_radius": 16.860217483946705,
+        "pick_radius": 30.0,
+        "radius": 16.860217483946705
+      },
+      {
+        "id": "Brigid, Clachan's Heart",
+        "label": "Brigid, Clachan's Heart",
+        "color_identity": "WG",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Kithkin Warrior",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "WG"
+        },
+        "draw_games": 1541,
+        "win_rate": 0.6327060350421804,
+        "standalone_delta": 0.054972783911888534,
+        "dependency_score": 0.12086062706741438,
+        "degree": 6,
+        "signpost_score": 1795.7065752939504,
+        "signpost_lift": 3.851490207891077,
+        "deck_prevalence": 0.15733182642783472,
+        "draft_weight": 483.0,
+        "draft_drafts": 459,
+        "draft_presence": 0.10050361287497263,
+        "draft_win_rate": 0.6118722844492023,
+        "draft_win_lift": 0.02998024036586222,
+        "analysis_score_raw": 1805.5782563288283,
+        "analysis_score": 8.411821005645766,
+        "pick_priority_score_raw": 165.79311119929508,
+        "pick_priority_score": 9.076033969844461,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Brigid%2C%20Clachan%27s%20Heart%22",
+        "community": 0,
+        "x": 1210.3985458941036,
+        "y": 590.0832273615713,
+        "analysis_radius": 18.374485689580787,
+        "pick_radius": 30.0,
+        "radius": 18.374485689580787
+      },
+      {
+        "id": "Bogslither's Embrace",
+        "label": "Bogslither's Embrace",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 125,
+        "win_rate": 0.6,
+        "standalone_delta": 0.02226674886970814,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -322.29366953809983,
+        "signpost_lift": 0.06543517985371937,
+        "deck_prevalence": 0.013285453386360606,
+        "draft_weight": 263.0,
+        "draft_drafts": 239,
+        "draft_presence": 0.05233194657324283,
+        "draft_win_rate": 0.5707868335467419,
+        "draft_win_lift": -0.011105210536598187,
+        "analysis_score_raw": -319.1763246963407,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 18.932957108603944,
+        "pick_priority_score": 4.770519979410842,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bogslither%27s%20Embrace%22",
+        "community": 5,
+        "x": 841.0319525015766,
+        "y": 301.64410327181673,
+        "analysis_radius": 12.224671187833948,
+        "pick_radius": 30.0,
+        "radius": 12.224671187833948
+      },
+      {
+        "id": "Wistfulness",
+        "label": "Wistfulness",
+        "color_identity": "UG",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Creature - Elemental Incarnation",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "UG"
+        },
+        "draw_games": 139,
+        "win_rate": 0.6690647482014388,
+        "standalone_delta": 0.09133149707114696,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -81.00312687218536,
+        "signpost_lift": 0.5544613843643644,
+        "deck_prevalence": 0.01569451932013737,
+        "draft_weight": 68.0,
+        "draft_drafts": 68,
+        "draft_presence": 0.014889424129625574,
+        "draft_win_rate": 0.5802744551988834,
+        "draft_win_lift": -0.0016175888844566222,
+        "analysis_score_raw": -68.21671728222479,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 41.42263503071419,
+        "pick_priority_score": 6.301313796355211,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Wistfulness%22",
+        "community": 6,
+        "x": 1065.2247974925644,
+        "y": 352.8146571459721,
+        "analysis_radius": 16.023232338913083,
+        "pick_radius": 23.377527084269815,
+        "radius": 16.023232338913083
+      }
+    ],
+    "edges": [
+      {
+        "from": "Clachan Festival",
+        "to": "Pyrrhic Strike",
+        "pair_games": 234,
+        "pair_win_rate": 0.7350427350427351,
+        "pair_expected_win_rate": 0.6604654371271399,
+        "pair_lift_vs_baseline": 0.15730948391244326,
+        "synergy_delta_logit": 0.3549910445605775,
+        "synergy_delta_prob": 0.0745772979155952,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 367,
+        "quality_score": 1.2472760253339232,
+        "pick_score_raw": 3.67378796156587,
+        "pick_score": 9.025951685916448
+      },
+      {
+        "from": "Brigid's Command",
+        "to": "Dundoolin Weaver",
+        "pair_games": 186,
+        "pair_win_rate": 0.7473118279569892,
+        "pair_expected_win_rate": 0.681177477978956,
+        "pair_lift_vs_baseline": 0.1695785768266974,
+        "synergy_delta_logit": 0.3251380361125531,
+        "synergy_delta_prob": 0.06613434997803325,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 261,
+        "quality_score": 1.074697212944145,
+        "pick_score_raw": 3.4493267237899317,
+        "pick_score": 8.432226947271655
+      },
+      {
+        "from": "Clachan Festival",
+        "to": "Thoughtweft Lieutenant",
+        "pair_games": 508,
+        "pair_win_rate": 0.687007874015748,
+        "pair_expected_win_rate": 0.6361546314191798,
+        "pair_lift_vs_baseline": 0.1092746228854562,
+        "synergy_delta_logit": 0.2274550208190127,
+        "synergy_delta_prob": 0.050853242596568204,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 743,
+        "quality_score": 0.8818380870530139,
+        "pick_score_raw": 4.069633065094409,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Figure of Fable",
+        "to": "Wary Farmer",
+        "pair_games": 271,
+        "pair_win_rate": 0.7195571955719557,
+        "pair_expected_win_rate": 0.6762986865096411,
+        "pair_lift_vs_baseline": 0.1418239444416639,
+        "synergy_delta_logit": 0.205452614533294,
+        "synergy_delta_prob": 0.043258509062314654,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 282,
+        "quality_score": 0.7018097161074304,
+        "pick_score_raw": 3.5663124558095163,
+        "pick_score": 8.745310333593206
+      },
+      {
+        "from": "Pitiless Fists",
+        "to": "Pyrrhic Strike",
+        "pair_games": 163,
+        "pair_win_rate": 0.7239263803680982,
+        "pair_expected_win_rate": 0.6727531857939959,
+        "pair_lift_vs_baseline": 0.14619312923780636,
+        "synergy_delta_logit": 0.24335827931583676,
+        "synergy_delta_prob": 0.0511731945741023,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 284,
+        "quality_score": 0.6622965776043752,
+        "pick_score_raw": 2.841422940891878,
+        "pick_score": 6.659995529908261
+      },
+      {
+        "from": "Brigid, Clachan's Heart",
+        "to": "Clachan Festival",
+        "pair_games": 131,
+        "pair_win_rate": 0.7175572519083969,
+        "pair_expected_win_rate": 0.6626204816843901,
+        "pair_lift_vs_baseline": 0.13982400077810508,
+        "synergy_delta_logit": 0.25738293296402703,
+        "synergy_delta_prob": 0.05493677022400678,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 145,
+        "quality_score": 0.5881424531588665,
+        "pick_score_raw": 2.3762508152550783,
+        "pick_score": 5.102889816926869
+      },
+      {
+        "from": "Bristlebane Outrider",
+        "to": "Dundoolin Weaver",
+        "pair_games": 295,
+        "pair_win_rate": 0.6779661016949152,
+        "pair_expected_win_rate": 0.6307121800217766,
+        "pair_lift_vs_baseline": 0.10023285056462339,
+        "synergy_delta_logit": 0.20916718949379054,
+        "synergy_delta_prob": 0.04725392167313858,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 583,
+        "quality_score": 0.5695163756738011,
+        "pick_score_raw": 2.8543233723090706,
+        "pick_score": 6.700439443106021
+      },
+      {
+        "from": "Eclipsed Kithkin",
+        "to": "Thoughtweft Imbuer",
+        "pair_games": 580,
+        "pair_win_rate": 0.7051724137931035,
+        "pair_expected_win_rate": 0.6802775497565248,
+        "pair_lift_vs_baseline": 0.12743916266281163,
+        "synergy_delta_logit": 0.11700399968360742,
+        "synergy_delta_prob": 0.0248948640365787,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 898,
+        "quality_score": 0.5567409292826875,
+        "pick_score_raw": 4.999807131383058,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Thoughtweft Imbuer",
+        "pair_games": 643,
+        "pair_win_rate": 0.6687402799377916,
+        "pair_expected_win_rate": 0.6382463542850524,
+        "pair_lift_vs_baseline": 0.09100702880749978,
+        "synergy_delta_logit": 0.1347321423779112,
+        "synergy_delta_prob": 0.03049392565273923,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 915,
+        "quality_score": 0.5085764235910669,
+        "pick_score_raw": 3.966695852849194,
+        "pick_score": 9.759223859678048
+      },
+      {
+        "from": "Mistmeadow Council",
+        "to": "Timid Shieldbearer",
+        "pair_games": 2068,
+        "pair_win_rate": 0.620889748549323,
+        "pair_expected_win_rate": 0.5924624318189198,
+        "pair_lift_vs_baseline": 0.04315649741903116,
+        "synergy_delta_logit": 0.11917211940018602,
+        "synergy_delta_prob": 0.028427316730403218,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2569,
+        "quality_score": 0.4766384509312002,
+        "pick_score_raw": 4.225084528725961,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Bristlebane Outrider",
+        "pair_games": 655,
+        "pair_win_rate": 0.6473282442748092,
+        "pair_expected_win_rate": 0.6178223501489033,
+        "pair_lift_vs_baseline": 0.06959499314451734,
+        "synergy_delta_logit": 0.12700034035244673,
+        "synergy_delta_prob": 0.029505894125905874,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1079,
+        "quality_score": 0.3929136680348737,
+        "pick_score_raw": 3.253959787594154,
+        "pick_score": 7.890550418009011
+      },
+      {
+        "from": "Goldmeadow Nomad",
+        "to": "Thoughtweft Imbuer",
+        "pair_games": 482,
+        "pair_win_rate": 0.6431535269709544,
+        "pair_expected_win_rate": 0.6075277245360006,
+        "pair_lift_vs_baseline": 0.06542027584066257,
+        "synergy_delta_logit": 0.15214590836320857,
+        "synergy_delta_prob": 0.035625802434953835,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1079,
+        "quality_score": 0.3849750883056624,
+        "pick_score_raw": 2.6612904756967386,
+        "pick_score": 6.080625035684709
+      },
+      {
+        "from": "Clachan Festival",
+        "to": "Thoughtweft Imbuer",
+        "pair_games": 381,
+        "pair_win_rate": 0.6824146981627297,
+        "pair_expected_win_rate": 0.6561018580686426,
+        "pair_lift_vs_baseline": 0.10468144703243787,
+        "synergy_delta_logit": 0.11892055157263093,
+        "synergy_delta_prob": 0.026312840094087075,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 625,
+        "quality_score": 0.3825974059343165,
+        "pick_score_raw": 3.3739656863740506,
+        "pick_score": 8.22615160557326
+      },
+      {
+        "from": "Figure of Fable",
+        "to": "Liminal Hold",
+        "pair_games": 152,
+        "pair_win_rate": 0.7171052631578947,
+        "pair_expected_win_rate": 0.6848531136046228,
+        "pair_lift_vs_baseline": 0.13937201202760285,
+        "synergy_delta_logit": 0.1539822201171538,
+        "synergy_delta_prob": 0.032252149553271936,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 170,
+        "quality_score": 0.3803368814806706,
+        "pick_score_raw": 2.5710321922236794,
+        "pick_score": 5.7795109333125145
+      },
+      {
+        "from": "Brigid, Clachan's Heart",
+        "to": "Pyrrhic Strike",
+        "pair_games": 104,
+        "pair_win_rate": 0.7211538461538461,
+        "pair_expected_win_rate": 0.682348760830076,
+        "pair_lift_vs_baseline": 0.1434205950235543,
+        "synergy_delta_logit": 0.18560542565939242,
+        "synergy_delta_prob": 0.03880508532377014,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 95,
+        "quality_score": 0.37991756550001937,
+        "pick_score_raw": 2.122977843893721,
+        "pick_score": 4.162200330309732
+      },
+      {
+        "from": "Eclipsed Kithkin",
+        "to": "Kinbinding",
+        "pair_games": 160,
+        "pair_win_rate": 0.73125,
+        "pair_expected_win_rate": 0.7037158195602109,
+        "pair_lift_vs_baseline": 0.15351674886970812,
+        "synergy_delta_logit": 0.13591827264425893,
+        "synergy_delta_prob": 0.027534180439789058,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 181,
+        "quality_score": 0.3759402537415671,
+        "pick_score_raw": 2.880147951889226,
+        "pick_score": 6.780996485278784
+      },
+      {
+        "from": "Mistmeadow Council",
+        "to": "Reluctant Dounguard",
+        "pair_games": 948,
+        "pair_win_rate": 0.619198312236287,
+        "pair_expected_win_rate": 0.5852669946329218,
+        "pair_lift_vs_baseline": 0.04146506110599513,
+        "synergy_delta_logit": 0.14171366992496365,
+        "synergy_delta_prob": 0.03393131760336521,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1864,
+        "quality_score": 0.36917856704956,
+        "pick_score_raw": 2.747625382531581,
+        "pick_score": 6.3617831955001005
+      },
+      {
+        "from": "Mistmeadow Council",
+        "to": "Surly Farrier",
+        "pair_games": 1929,
+        "pair_win_rate": 0.6070502851218248,
+        "pair_expected_win_rate": 0.5779498798693552,
+        "pair_lift_vs_baseline": 0.02931703399153296,
+        "synergy_delta_logit": 0.12056690113729579,
+        "synergy_delta_prob": 0.029100405252469597,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2939,
+        "quality_score": 0.3654302999943414,
+        "pick_score_raw": 3.2039160021111326,
+        "pick_score": 7.747794805909228
+      },
+      {
+        "from": "Pitiless Fists",
+        "to": "Thoughtweft Lieutenant",
+        "pair_games": 325,
+        "pair_win_rate": 0.676923076923077,
+        "pair_expected_win_rate": 0.6488544257952036,
+        "pair_lift_vs_baseline": 0.09918982579278512,
+        "synergy_delta_logit": 0.12565968885993128,
+        "synergy_delta_prob": 0.02806865112787338,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 618,
+        "quality_score": 0.35679016789963397,
+        "pick_score_raw": 2.9774590269562786,
+        "pick_score": 7.079805326821518
+      },
+      {
+        "from": "Figure of Fable",
+        "to": "Reluctant Dounguard",
+        "pair_games": 107,
+        "pair_win_rate": 0.7009345794392523,
+        "pair_expected_win_rate": 0.6613510054513135,
+        "pair_lift_vs_baseline": 0.12320132830896047,
+        "synergy_delta_logit": 0.1824316466223984,
+        "synergy_delta_prob": 0.03958357398793877,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 176,
+        "quality_score": 0.3401718959136675,
+        "pick_score_raw": 1.941327564123156,
+        "pick_score": 3.4392903552213636
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Dundoolin Weaver",
+        "pair_games": 620,
+        "pair_win_rate": 0.6516129032258065,
+        "pair_expected_win_rate": 0.6277756775140247,
+        "pair_lift_vs_baseline": 0.07387965209551461,
+        "synergy_delta_logit": 0.10345025899780413,
+        "synergy_delta_prob": 0.023837225711781707,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 978,
+        "quality_score": 0.3250900556324148,
+        "pick_score_raw": 3.30345545746572,
+        "pick_score": 8.03010005607645
+      },
+      {
+        "from": "Dundoolin Weaver",
+        "to": "Thoughtweft Lieutenant",
+        "pair_games": 491,
+        "pair_win_rate": 0.6578411405295316,
+        "pair_expected_win_rate": 0.6363707854568428,
+        "pair_lift_vs_baseline": 0.08010788939923974,
+        "synergy_delta_logit": 0.0940416614581765,
+        "synergy_delta_prob": 0.021470355072688796,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 793,
+        "quality_score": 0.27825161669545456,
+        "pick_score_raw": 3.1069261286892322,
+        "pick_score": 7.466215749768094
+      },
+      {
+        "from": "Gallant Fowlknight",
+        "to": "Spiral into Solitude",
+        "pair_games": 982,
+        "pair_win_rate": 0.6130346232179226,
+        "pair_expected_win_rate": 0.5854957614789997,
+        "pair_lift_vs_baseline": 0.035301372087630734,
+        "synergy_delta_logit": 0.11471044887126941,
+        "synergy_delta_prob": 0.027538861738922837,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1448,
+        "quality_score": 0.2711359923914312,
+        "pick_score_raw": 2.489792210553663,
+        "pick_score": 5.501902380223093
+      },
+      {
+        "from": "Pitiless Fists",
+        "to": "Timid Shieldbearer",
+        "pair_games": 478,
+        "pair_win_rate": 0.6422594142259415,
+        "pair_expected_win_rate": 0.616740836830709,
+        "pair_lift_vs_baseline": 0.06452616309564962,
+        "synergy_delta_logit": 0.10944671955478652,
+        "synergy_delta_prob": 0.025518577395232445,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 758,
+        "quality_score": 0.2693281005532097,
+        "pick_score_raw": 2.5833750165156726,
+        "pick_score": 5.821134624770969
+      },
+      {
+        "from": "Brigid's Command",
+        "to": "Timid Shieldbearer",
+        "pair_games": 390,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6463242659058706,
+        "pair_lift_vs_baseline": 0.0889334155363748,
+        "synergy_delta_logit": 0.09022633107096878,
+        "synergy_delta_prob": 0.020342400760796076,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 462,
+        "quality_score": 0.253667334219043,
+        "pick_score_raw": 2.9434943417571064,
+        "pick_score": 6.976350187382529
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Mistmeadow Council",
+        "pair_games": 1629,
+        "pair_win_rate": 0.6261510128913443,
+        "pair_expected_win_rate": 0.6109430882289283,
+        "pair_lift_vs_baseline": 0.0484177617610525,
+        "synergy_delta_logit": 0.0644614646939255,
+        "synergy_delta_prob": 0.01520792466241605,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.15431243102634637,
+        "draft_pair_events": 1910,
+        "quality_score": 0.25206037955632077,
+        "pick_score_raw": 4.075135446919553,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Eclipsed Kithkin",
+        "to": "Goldmeadow Nomad",
+        "pair_games": 535,
+        "pair_win_rate": 0.6392523364485981,
+        "pair_expected_win_rate": 0.6167590606590583,
+        "pair_lift_vs_baseline": 0.0615190853183063,
+        "synergy_delta_logit": 0.09630597771187405,
+        "synergy_delta_prob": 0.022493275789539857,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1230,
+        "quality_score": 0.24619451355753869,
+        "pick_score_raw": 2.690545603363272,
+        "pick_score": 6.176633107220523
+      },
+      {
+        "from": "Reluctant Dounguard",
+        "to": "Timid Shieldbearer",
+        "pair_games": 608,
+        "pair_win_rate": 0.600328947368421,
+        "pair_expected_win_rate": 0.5585767950783413,
+        "pair_lift_vs_baseline": 0.02259569623812918,
+        "synergy_delta_logit": 0.17144786243404214,
+        "synergy_delta_prob": 0.04175215229007967,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1334,
+        "quality_score": 0.24487000287897986,
+        "pick_score_raw": 1.5038351487379678,
+        "pick_score": 1.4966336161812337
+      },
+      {
+        "from": "Brigid, Clachan's Heart",
+        "to": "Wary Farmer",
+        "pair_games": 294,
+        "pair_win_rate": 0.6598639455782312,
+        "pair_expected_win_rate": 0.635858230205187,
+        "pair_lift_vs_baseline": 0.08213069444793941,
+        "synergy_delta_logit": 0.10525561233367409,
+        "synergy_delta_prob": 0.0240057153730443,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 315,
+        "quality_score": 0.23736642356496918,
+        "pick_score_raw": 2.355935890789069,
+        "pick_score": 5.030085077856952
+      },
+      {
+        "from": "Goldmeadow Nomad",
+        "to": "Kinbinding",
+        "pair_games": 138,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6334253238958386,
+        "pair_lift_vs_baseline": 0.0889334155363748,
+        "synergy_delta_logit": 0.1462073216540145,
+        "synergy_delta_prob": 0.03324134277082802,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 213,
+        "quality_score": 0.23729651892927592,
+        "pick_score_raw": 1.6916811329268098,
+        "pick_score": 2.3693272788197346
+      },
+      {
+        "from": "Brigid's Command",
+        "to": "Mistmeadow Council",
+        "pair_games": 535,
+        "pair_win_rate": 0.6841121495327103,
+        "pair_expected_win_rate": 0.670835426827413,
+        "pair_lift_vs_baseline": 0.10637889840241843,
+        "synergy_delta_logit": 0.060768625226965134,
+        "synergy_delta_prob": 0.013276722705297228,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 636,
+        "quality_score": 0.23498367324230293,
+        "pick_score_raw": 4.05559968764336,
+        "pick_score": 9.973248586907765
+      },
+      {
+        "from": "Eclipsed Kithkin",
+        "to": "Figure of Fable",
+        "pair_games": 150,
+        "pair_win_rate": 0.74,
+        "pair_expected_win_rate": 0.7238124695382336,
+        "pair_lift_vs_baseline": 0.16226674886970816,
+        "synergy_delta_logit": 0.08251630950799749,
+        "synergy_delta_prob": 0.016187530461766353,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 178,
+        "quality_score": 0.2319775575849715,
+        "pick_score_raw": 2.927091566702731,
+        "pick_score": 6.926068462704777
+      },
+      {
+        "from": "Clachan Festival",
+        "to": "Kinsbaile Aspirant",
+        "pair_games": 441,
+        "pair_win_rate": 0.6394557823129252,
+        "pair_expected_win_rate": 0.6160017660985899,
+        "pair_lift_vs_baseline": 0.06172253118263338,
+        "synergy_delta_logit": 0.10039099150737923,
+        "synergy_delta_prob": 0.023454016214335294,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 639,
+        "quality_score": 0.2279501009442347,
+        "pick_score_raw": 2.3815130483401523,
+        "pick_score": 5.1216772059371785
+      },
+      {
+        "from": "Brigid's Command",
+        "to": "Bristlebane Outrider",
+        "pair_games": 160,
+        "pair_win_rate": 0.69375,
+        "pair_expected_win_rate": 0.6719058217217281,
+        "pair_lift_vs_baseline": 0.11601674886970814,
+        "synergy_delta_logit": 0.10089241481509059,
+        "synergy_delta_prob": 0.021844178278271897,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 268,
+        "quality_score": 0.22214223598812058,
+        "pick_score_raw": 2.2980299082668503,
+        "pick_score": 4.820117080508724
+      },
+      {
+        "from": "Bristlebane Outrider",
+        "to": "Crossroads Watcher",
+        "pair_games": 801,
+        "pair_win_rate": 0.6204744069912609,
+        "pair_expected_win_rate": 0.5989713023198389,
+        "pair_lift_vs_baseline": 0.04274115586096905,
+        "synergy_delta_logit": 0.09038162707152114,
+        "synergy_delta_prob": 0.021503104671422024,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1437,
+        "quality_score": 0.21883668753546331,
+        "pick_score_raw": 2.5503629684174043,
+        "pick_score": 5.709484892308048
+      },
+      {
+        "from": "Eclipsed Kithkin",
+        "to": "Spiral into Solitude",
+        "pair_games": 757,
+        "pair_win_rate": 0.6538969616908851,
+        "pair_expected_win_rate": 0.6399760580764244,
+        "pair_lift_vs_baseline": 0.07616371056059323,
+        "synergy_delta_logit": 0.060953026991245385,
+        "synergy_delta_prob": 0.013920903614460634,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1037,
+        "quality_score": 0.21727184170582892,
+        "pick_score_raw": 3.7483314383464337,
+        "pick_score": 9.216835618755534
+      },
+      {
+        "from": "Bristlebane Outrider",
+        "to": "Clachan Festival",
+        "pair_games": 298,
+        "pair_win_rate": 0.6510067114093959,
+        "pair_expected_win_rate": 0.6304946154095953,
+        "pair_lift_vs_baseline": 0.07327346027910409,
+        "synergy_delta_logit": 0.08912795766628823,
+        "synergy_delta_prob": 0.02051209599980064,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 585,
+        "quality_score": 0.18924088952180956,
+        "pick_score_raw": 2.2258694584826437,
+        "pick_score": 4.553241423289341
+      },
+      {
+        "from": "Crossroads Watcher",
+        "to": "Thoughtweft Lieutenant",
+        "pair_games": 1158,
+        "pair_win_rate": 0.6200345423143351,
+        "pair_expected_win_rate": 0.6048115290526073,
+        "pair_lift_vs_baseline": 0.042301291184043244,
+        "synergy_delta_logit": 0.06414074760951571,
+        "synergy_delta_prob": 0.015223013261727814,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1841,
+        "quality_score": 0.18710345130149797,
+        "pick_score_raw": 3.0764763962579975,
+        "pick_score": 7.37644169465353
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Figure of Fable",
+        "pair_games": 180,
+        "pair_win_rate": 0.7055555555555556,
+        "pair_expected_win_rate": 0.6900496186886024,
+        "pair_lift_vs_baseline": 0.12782230442526377,
+        "synergy_delta_logit": 0.07354389114010784,
+        "synergy_delta_prob": 0.01550593686695323,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 204,
+        "quality_score": 0.18467502035740357,
+        "pick_score_raw": 2.6166540885626137,
+        "pick_score": 5.932651173492313
+      },
+      {
+        "from": "Thoughtweft Imbuer",
+        "to": "Thoughtweft Lieutenant",
+        "pair_games": 583,
+        "pair_win_rate": 0.6638078902229846,
+        "pair_expected_win_rate": 0.6522416107490345,
+        "pair_lift_vs_baseline": 0.08607463909269275,
+        "synergy_delta_logit": 0.05140292676901814,
+        "synergy_delta_prob": 0.011566279473950059,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 929,
+        "quality_score": 0.17664781866406168,
+        "pick_score_raw": 3.611596003581864,
+        "pick_score": 8.864352142783988
+      },
+      {
+        "from": "Crossroads Watcher",
+        "to": "Eclipsed Kithkin",
+        "pair_games": 1083,
+        "pair_win_rate": 0.644506001846722,
+        "pair_expected_win_rate": 0.6345286587886084,
+        "pair_lift_vs_baseline": 0.06677275071643018,
+        "synergy_delta_logit": 0.04328118112189838,
+        "synergy_delta_prob": 0.009977343058113597,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1774,
+        "quality_score": 0.16982749962906418,
+        "pick_score_raw": 4.137461923007242,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Pitiless Fists",
+        "to": "Surly Farrier",
+        "pair_games": 475,
+        "pair_win_rate": 0.6231578947368421,
+        "pair_expected_win_rate": 0.6025128062780495,
+        "pair_lift_vs_baseline": 0.0454246436065503,
+        "synergy_delta_logit": 0.0870274446348171,
+        "synergy_delta_prob": 0.02064508845879265,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 921,
+        "quality_score": 0.16644821927789796,
+        "pick_score_raw": 2.00993409103959,
+        "pick_score": 3.717437688683349
+      },
+      {
+        "from": "Brigid, Clachan's Heart",
+        "to": "Liminal Hold",
+        "pair_games": 217,
+        "pair_win_rate": 0.663594470046083,
+        "pair_expected_win_rate": 0.6449202614060772,
+        "pair_lift_vs_baseline": 0.08586121891579113,
+        "synergy_delta_logit": 0.08256955501174135,
+        "synergy_delta_prob": 0.018674208640005796,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 213,
+        "quality_score": 0.16330830945650715,
+        "pick_score_raw": 2.061505979544699,
+        "pick_score": 3.922379721325068
+      },
+      {
+        "from": "Goldmeadow Nomad",
+        "to": "Mistmeadow Council",
+        "pair_games": 1145,
+        "pair_win_rate": 0.5991266375545852,
+        "pair_expected_win_rate": 0.5794337182136627,
+        "pair_lift_vs_baseline": 0.021393386424293337,
+        "synergy_delta_logit": 0.08137823208858735,
+        "synergy_delta_prob": 0.019692919340922432,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2212,
+        "quality_score": 0.15787912723819067,
+        "pick_score_raw": 2.0479463650628715,
+        "pick_score": 3.868831500558132
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Spiral into Solitude",
+        "pair_games": 193,
+        "pair_win_rate": 0.6735751295336787,
+        "pair_expected_win_rate": 0.6561954863073923,
+        "pair_lift_vs_baseline": 0.09584187840338687,
+        "synergy_delta_logit": 0.07801420378761637,
+        "synergy_delta_prob": 0.01737964322628638,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 169,
+        "quality_score": 0.15779041394873858,
+        "pick_score_raw": 2.1052374934657063,
+        "pick_score": 4.093477819123263
+      },
+      {
+        "from": "Crossroads Watcher",
+        "to": "Timid Shieldbearer",
+        "pair_games": 1648,
+        "pair_win_rate": 0.5910194174757282,
+        "pair_expected_win_rate": 0.5713310959083376,
+        "pair_lift_vs_baseline": 0.013286166345436334,
+        "synergy_delta_logit": 0.08089713400898252,
+        "synergy_delta_prob": 0.019688321567390532,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2343,
+        "quality_score": 0.15172562962290873,
+        "pick_score_raw": 1.980391159394419,
+        "pick_score": 3.598448917710071
+      },
+      {
+        "from": "Brigid's Command",
+        "to": "Surly Farrier",
+        "pair_games": 330,
+        "pair_win_rate": 0.6484848484848484,
+        "pair_expected_win_rate": 0.6325401374355116,
+        "pair_lift_vs_baseline": 0.0707515973545566,
+        "synergy_delta_logit": 0.06925624210777281,
+        "synergy_delta_prob": 0.015944711049336813,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 542,
+        "quality_score": 0.15012332913097878,
+        "pick_score_raw": 2.271463695450897,
+        "pick_score": 4.722550880139593
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Reluctant Dounguard",
+        "pair_games": 127,
+        "pair_win_rate": 0.6614173228346457,
+        "pair_expected_win_rate": 0.6389763248123278,
+        "pair_lift_vs_baseline": 0.08368407170435388,
+        "synergy_delta_logit": 0.0986928182503215,
+        "synergy_delta_prob": 0.022440998022317915,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 168,
+        "quality_score": 0.14489726815543003,
+        "pick_score_raw": 1.5281050788169372,
+        "pick_score": 1.613002184360568
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Surly Farrier",
+        "pair_games": 1271,
+        "pair_win_rate": 0.5948072383949646,
+        "pair_expected_win_rate": 0.5760618588711822,
+        "pair_lift_vs_baseline": 0.017073987264672796,
+        "synergy_delta_logit": 0.0772469777369823,
+        "synergy_delta_prob": 0.018745379523782413,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2067,
+        "quality_score": 0.1410725855325619,
+        "pick_score_raw": 1.9271589543044954,
+        "pick_score": 3.381039642322866
+      },
+      {
+        "from": "Thoughtweft Imbuer",
+        "to": "Timid Shieldbearer",
+        "pair_games": 890,
+        "pair_win_rate": 0.6303370786516854,
+        "pair_expected_win_rate": 0.6202564985557142,
+        "pair_lift_vs_baseline": 0.05260382752139359,
+        "synergy_delta_logit": 0.043026083532234305,
+        "synergy_delta_prob": 0.010080580095971237,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1268,
+        "quality_score": 0.1264916729110728,
+        "pick_score_raw": 3.094664118877178,
+        "pick_score": 7.430144334162535
+      },
+      {
+        "from": "Brigid's Command",
+        "to": "Pitiless Fists",
+        "pair_games": 119,
+        "pair_win_rate": 0.7058823529411765,
+        "pair_expected_win_rate": 0.6928652842213324,
+        "pair_lift_vs_baseline": 0.12814910181088468,
+        "synergy_delta_logit": 0.06191961707213389,
+        "synergy_delta_prob": 0.013017068719844094,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 191,
+        "quality_score": 0.12637496601705533,
+        "pick_score_raw": 2.1259192141266827,
+        "pick_score": 4.173556859623808
+      },
+      {
+        "from": "Brigid, Clachan's Heart",
+        "to": "Kinsbaile Aspirant",
+        "pair_games": 191,
+        "pair_win_rate": 0.6544502617801047,
+        "pair_expected_win_rate": 0.639185258799491,
+        "pair_lift_vs_baseline": 0.07671701064981284,
+        "synergy_delta_logit": 0.06682930738271264,
+        "synergy_delta_prob": 0.015265002980613729,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 183,
+        "quality_score": 0.11261970331108727,
+        "pick_score_raw": 1.7548900908552691,
+        "pick_score": 2.6493377119027697
+      },
+      {
+        "from": "Kinsbaile Aspirant",
+        "to": "Thoughtweft Imbuer",
+        "pair_games": 487,
+        "pair_win_rate": 0.6427104722792608,
+        "pair_expected_win_rate": 0.6324649893510089,
+        "pair_lift_vs_baseline": 0.06497722114896898,
+        "synergy_delta_logit": 0.04434160624805783,
+        "synergy_delta_prob": 0.010245482928251892,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 842,
+        "quality_score": 0.11116307979244701,
+        "pick_score_raw": 2.6333073227145176,
+        "pick_score": 5.988070715040792
+      },
+      {
+        "from": "Figure of Fable",
+        "to": "Surly Farrier",
+        "pair_games": 216,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6545840040121088,
+        "pair_lift_vs_baseline": 0.0889334155363748,
+        "synergy_delta_logit": 0.0538967311979619,
+        "synergy_delta_prob": 0.012082662654557819,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 272,
+        "quality_score": 0.11048951015129656,
+        "pick_score_raw": 2.1398294262231103,
+        "pick_score": 4.227119350887567
+      },
+      {
+        "from": "Crossroads Watcher",
+        "to": "Dundoolin Weaver",
+        "pair_games": 748,
+        "pair_win_rate": 0.6203208556149733,
+        "pair_expected_win_rate": 0.6091049570524302,
+        "pair_lift_vs_baseline": 0.04258760448468146,
+        "synergy_delta_logit": 0.04735880952470012,
+        "synergy_delta_prob": 0.011215898562543125,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1275,
+        "quality_score": 0.11005341019291069,
+        "pick_score_raw": 2.4462365092738954,
+        "pick_score": 5.350393144267758
+      },
+      {
+        "from": "Bristlebane Outrider",
+        "to": "Liminal Hold",
+        "pair_games": 530,
+        "pair_win_rate": 0.6245283018867924,
+        "pair_expected_win_rate": 0.612095625419216,
+        "pair_lift_vs_baseline": 0.04679505075650059,
+        "synergy_delta_logit": 0.05268388164278731,
+        "synergy_delta_prob": 0.012432676467576398,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 845,
+        "quality_score": 0.10831779901870832,
+        "pick_score_raw": 2.1596465309288555,
+        "pick_score": 4.303018426303807
+      },
+      {
+        "from": "Bristlebane Outrider",
+        "to": "Thoughtweft Lieutenant",
+        "pair_games": 504,
+        "pair_win_rate": 0.6369047619047619,
+        "pair_expected_win_rate": 0.62651055456659,
+        "pair_lift_vs_baseline": 0.059171510774470026,
+        "synergy_delta_logit": 0.04467909484883703,
+        "synergy_delta_prob": 0.010394207338171868,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 897,
+        "quality_score": 0.10641335138298634,
+        "pick_score_raw": 2.502591716927964,
+        "pick_score": 5.546066310103924
+      },
+      {
+        "from": "Figure of Fable",
+        "to": "Thoughtweft Imbuer",
+        "pair_games": 138,
+        "pair_win_rate": 0.7246376811594203,
+        "pair_expected_win_rate": 0.7159722750047365,
+        "pair_lift_vs_baseline": 0.14690443002912845,
+        "synergy_delta_logit": 0.04301443873033062,
+        "synergy_delta_prob": 0.008665406154683808,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 135,
+        "quality_score": 0.10505378003463466,
+        "pick_score_raw": 2.538612674777683,
+        "pick_score": 5.6694936491385155
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Kinsbaile Aspirant",
+        "pair_games": 149,
+        "pair_win_rate": 0.6711409395973155,
+        "pair_expected_win_rate": 0.6576443628352759,
+        "pair_lift_vs_baseline": 0.09340768846702363,
+        "synergy_delta_logit": 0.060535656196498366,
+        "synergy_delta_prob": 0.013496576762039525,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 149,
+        "quality_score": 0.1047952540614099,
+        "pick_score_raw": 1.800495790750623,
+        "pick_score": 2.8474055321430565
+      },
+      {
+        "from": "Kinsbaile Aspirant",
+        "to": "Mistmeadow Council",
+        "pair_games": 1164,
+        "pair_win_rate": 0.6142611683848798,
+        "pair_expected_win_rate": 0.6049954272572569,
+        "pair_lift_vs_baseline": 0.03652791725458793,
+        "synergy_delta_logit": 0.03893609659996483,
+        "synergy_delta_prob": 0.009265741127622906,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1657,
+        "quality_score": 0.10292580566838319,
+        "pick_score_raw": 2.786427969054676,
+        "pick_score": 6.486044267579723
+      },
+      {
+        "from": "Brigid's Command",
+        "to": "Eclipsed Kithkin",
+        "pair_games": 252,
+        "pair_win_rate": 0.7103174603174603,
+        "pair_expected_win_rate": 0.704190110057215,
+        "pair_lift_vs_baseline": 0.1325842091871685,
+        "synergy_delta_logit": 0.029594986571943704,
+        "synergy_delta_prob": 0.006127350260245357,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 370,
+        "quality_score": 0.09289008719203198,
+        "pick_score_raw": 3.2820124335176053,
+        "pick_score": 7.969841012149604
+      },
+      {
+        "from": "Pitiless Fists",
+        "to": "Wary Farmer",
+        "pair_games": 501,
+        "pair_win_rate": 0.6347305389221557,
+        "pair_expected_win_rate": 0.6256287889499265,
+        "pair_lift_vs_baseline": 0.05699728779186386,
+        "synergy_delta_logit": 0.039055871708129075,
+        "synergy_delta_prob": 0.009101749972229234,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 891,
+        "quality_score": 0.09017362525327294,
+        "pick_score_raw": 2.425917386173893,
+        "pick_score": 5.279056508860493
+      },
+      {
+        "from": "Dundoolin Weaver",
+        "to": "Surly Farrier",
+        "pair_games": 571,
+        "pair_win_rate": 0.6024518388791593,
+        "pair_expected_win_rate": 0.5894241553307692,
+        "pair_lift_vs_baseline": 0.024718587748867482,
+        "synergy_delta_logit": 0.05410626101719296,
+        "synergy_delta_prob": 0.013027683548390123,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1167,
+        "quality_score": 0.0782348711980454,
+        "pick_score_raw": 1.521422740684313,
+        "pick_score": 1.581073780851047
+      },
+      {
+        "from": "Crossroads Watcher",
+        "to": "Reluctant Dounguard",
+        "pair_games": 696,
+        "pair_win_rate": 0.5833333333333334,
+        "pair_expected_win_rate": 0.5640371059756243,
+        "pair_lift_vs_baseline": 0.005600082203041534,
+        "synergy_delta_logit": 0.07890933082902796,
+        "synergy_delta_prob": 0.019296227357709084,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1690,
+        "quality_score": 0.07310024639494751,
+        "pick_score_raw": 0.9765840424934711,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Brigid, Clachan's Heart",
+        "to": "Reluctant Dounguard",
+        "pair_games": 126,
+        "pair_win_rate": 0.6349206349206349,
+        "pair_expected_win_rate": 0.6200921378434708,
+        "pair_lift_vs_baseline": 0.05718738379034305,
+        "synergy_delta_logit": 0.06344591707316033,
+        "synergy_delta_prob": 0.014828497077164049,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 208,
+        "quality_score": 0.06965493510577798,
+        "pick_score_raw": 1.1441505470326125,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Pitiless Fists",
+        "to": "Thoughtweft Imbuer",
+        "pair_games": 246,
+        "pair_win_rate": 0.6747967479674797,
+        "pair_expected_win_rate": 0.6684682550542447,
+        "pair_lift_vs_baseline": 0.09706349683718785,
+        "synergy_delta_logit": 0.028695811664781634,
+        "synergy_delta_prob": 0.0063284929132350065,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 489,
+        "quality_score": 0.06900588158941706,
+        "pick_score_raw": 2.5184706232491707,
+        "pick_score": 5.600631763648428
+      },
+      {
+        "from": "Dundoolin Weaver",
+        "to": "Kinsbaile Aspirant",
+        "pair_games": 387,
+        "pair_win_rate": 0.6253229974160207,
+        "pair_expected_win_rate": 0.616222669887906,
+        "pair_lift_vs_baseline": 0.04758974628572887,
+        "synergy_delta_logit": 0.03865812332757096,
+        "synergy_delta_prob": 0.009100327528114738,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 645,
+        "quality_score": 0.06803213947734223,
+        "pick_score_raw": 1.845879496797944,
+        "pick_score": 3.0413327833077113
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Wary Farmer",
+        "pair_games": 1482,
+        "pair_win_rate": 0.6059379217273954,
+        "pair_expected_win_rate": 0.5996940916274005,
+        "pair_lift_vs_baseline": 0.02820467059710352,
+        "synergy_delta_logit": 0.026078433313019067,
+        "synergy_delta_prob": 0.0062438300999948515,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2000,
+        "quality_score": 0.06678760508231577,
+        "pick_score_raw": 2.7020892694551373,
+        "pick_score": 6.214307314586295
+      },
+      {
+        "from": "Kinsbaile Aspirant",
+        "to": "Liminal Hold",
+        "pair_games": 618,
+        "pair_win_rate": 0.6067961165048543,
+        "pair_expected_win_rate": 0.5973419992040444,
+        "pair_lift_vs_baseline": 0.029062865374562485,
+        "synergy_delta_logit": 0.03946233866524318,
+        "synergy_delta_prob": 0.009454117300809917,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 933,
+        "quality_score": 0.06459129759378242,
+        "pick_score_raw": 1.7202032824869362,
+        "pick_score": 2.4964833301000633
+      },
+      {
+        "from": "Clachan Festival",
+        "to": "Gallant Fowlknight",
+        "pair_games": 591,
+        "pair_win_rate": 0.6192893401015228,
+        "pair_expected_win_rate": 0.6118199363174193,
+        "pair_lift_vs_baseline": 0.041556088971230976,
+        "synergy_delta_logit": 0.03156422730670305,
+        "synergy_delta_prob": 0.0074694037841035454,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 996,
+        "quality_score": 0.06354171013520137,
+        "pick_score_raw": 2.1164192769867527,
+        "pick_score": 4.136839366364468
+      },
+      {
+        "from": "Kinbinding",
+        "to": "Surly Farrier",
+        "pair_games": 245,
+        "pair_win_rate": 0.6408163265306123,
+        "pair_expected_win_rate": 0.6320109994200498,
+        "pair_lift_vs_baseline": 0.06308307540032043,
+        "synergy_delta_logit": 0.038055240722873696,
+        "synergy_delta_prob": 0.008805327110562478,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 276,
+        "quality_score": 0.06340555470528769,
+        "pick_score_raw": 1.7392830120711655,
+        "pick_score": 2.5808015588239845
+      },
+      {
+        "from": "Eclipsed Kithkin",
+        "to": "Thoughtweft Lieutenant",
+        "pair_games": 677,
+        "pair_win_rate": 0.6646971935007385,
+        "pair_expected_win_rate": 0.6610080741250635,
+        "pair_lift_vs_baseline": 0.08696394237044669,
+        "synergy_delta_logit": 0.016507800109401116,
+        "synergy_delta_prob": 0.003689119375675065,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1102,
+        "quality_score": 0.06203657488708312,
+        "pick_score_raw": 3.952995302991066,
+        "pick_score": 9.725901220210698
+      },
+      {
+        "from": "Crossroads Watcher",
+        "to": "Mistmeadow Council",
+        "pair_games": 2282,
+        "pair_win_rate": 0.6025416301489921,
+        "pair_expected_win_rate": 0.597805392942151,
+        "pair_lift_vs_baseline": 0.024808379018700255,
+        "synergy_delta_logit": 0.019737357501938113,
+        "synergy_delta_prob": 0.004736237206841132,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.25992120514906814,
+        "draft_pair_events": 3122,
+        "quality_score": 0.06201736804700734,
+        "pick_score_raw": 3.256428856710442,
+        "pick_score": 7.897550177812458
+      },
+      {
+        "from": "Figure of Fable",
+        "to": "Spiral into Solitude",
+        "pair_games": 168,
+        "pair_win_rate": 0.6845238095238095,
+        "pair_expected_win_rate": 0.6780407095821279,
+        "pair_lift_vs_baseline": 0.1067905583935177,
+        "synergy_delta_logit": 0.029857995319939934,
+        "synergy_delta_prob": 0.006483099941681614,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 161,
+        "quality_score": 0.061550453694036604,
+        "pick_score_raw": 2.1450488177692932,
+        "pick_score": 4.247155874871211
+      },
+      {
+        "from": "Clachan Festival",
+        "to": "Liminal Hold",
+        "pair_games": 428,
+        "pair_win_rate": 0.6285046728971962,
+        "pair_expected_win_rate": 0.6218872777676271,
+        "pair_lift_vs_baseline": 0.05077142176690441,
+        "synergy_delta_logit": 0.028240684648399184,
+        "synergy_delta_prob": 0.006617395129569159,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 695,
+        "quality_score": 0.05487992142584394,
+        "pick_score_raw": 2.0391253453070446,
+        "pick_score": 3.8338683989630433
+      },
+      {
+        "from": "Dundoolin Weaver",
+        "to": "Liminal Hold",
+        "pair_games": 516,
+        "pair_win_rate": 0.627906976744186,
+        "pair_expected_win_rate": 0.622106872823022,
+        "pair_lift_vs_baseline": 0.050173725613894216,
+        "synergy_delta_logit": 0.024747667833301346,
+        "synergy_delta_prob": 0.005800103921164035,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 749,
+        "quality_score": 0.05250648106367057,
+        "pick_score_raw": 2.2272005617532975,
+        "pick_score": 4.558218159831174
+      },
+      {
+        "from": "Gallant Fowlknight",
+        "to": "Reluctant Dounguard",
+        "pair_games": 605,
+        "pair_win_rate": 0.5818181818181818,
+        "pair_expected_win_rate": 0.5670718136566447,
+        "pair_lift_vs_baseline": 0.004084930687889954,
+        "synergy_delta_logit": 0.060327598530459714,
+        "synergy_delta_prob": 0.014746368161537071,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1490,
+        "quality_score": 0.04879623768624055,
+        "pick_score_raw": 0.8521429711484115,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Liminal Hold",
+        "to": "Reluctant Dounguard",
+        "pair_games": 504,
+        "pair_win_rate": 0.5892857142857143,
+        "pair_expected_win_rate": 0.5774982631501163,
+        "pair_lift_vs_baseline": 0.011552463155422465,
+        "synergy_delta_logit": 0.048501468354248345,
+        "synergy_delta_prob": 0.011787451135597982,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1032,
+        "quality_score": 0.046278002520915386,
+        "pick_score_raw": 1.0033178696724037,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Clachan Festival",
+        "to": "Timid Shieldbearer",
+        "pair_games": 661,
+        "pair_win_rate": 0.6096822995461422,
+        "pair_expected_win_rate": 0.6035891704646226,
+        "pair_lift_vs_baseline": 0.031949048415850334,
+        "synergy_delta_logit": 0.025534313667038455,
+        "synergy_delta_prob": 0.006093129081519599,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 934,
+        "quality_score": 0.0457682044229129,
+        "pick_score_raw": 1.8837823477607503,
+        "pick_score": 3.200938518536501
+      },
+      {
+        "from": "Kinsbaile Aspirant",
+        "to": "Wary Farmer",
+        "pair_games": 818,
+        "pair_win_rate": 0.5953545232273839,
+        "pair_expected_win_rate": 0.5878417257256914,
+        "pair_lift_vs_baseline": 0.017621272097092078,
+        "synergy_delta_logit": 0.031095446415213668,
+        "synergy_delta_prob": 0.007512797501692536,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1383,
+        "quality_score": 0.04555836805682257,
+        "pick_score_raw": 1.5429376372628294,
+        "pick_score": 1.6835720530736957
+      },
+      {
+        "from": "Goldmeadow Nomad",
+        "to": "Timid Shieldbearer",
+        "pair_games": 849,
+        "pair_win_rate": 0.5665488810365136,
+        "pair_expected_win_rate": 0.5526550528525859,
+        "pair_lift_vs_baseline": -0.011184370093778262,
+        "synergy_delta_logit": 0.056380290122428844,
+        "synergy_delta_prob": 0.013893828183927703,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1649,
+        "quality_score": 0.04502636671505778,
+        "pick_score_raw": 0.8417922922850075,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Dundoolin Weaver",
+        "to": "Pyrrhic Strike",
+        "pair_games": 236,
+        "pair_win_rate": 0.6652542372881356,
+        "pair_expected_win_rate": 0.6606748522464125,
+        "pair_lift_vs_baseline": 0.08752098615784376,
+        "synergy_delta_logit": 0.02049492247546414,
+        "synergy_delta_prob": 0.004579385041723061,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 383,
+        "quality_score": 0.043925189155389684,
+        "pick_score_raw": 2.241513849224212,
+        "pick_score": 4.611603424028709
+      },
+      {
+        "from": "Crossroads Watcher",
+        "to": "Pyrrhic Strike",
+        "pair_games": 606,
+        "pair_win_rate": 0.6336633663366337,
+        "pair_expected_win_rate": 0.6299985148775732,
+        "pair_lift_vs_baseline": 0.055930115206341835,
+        "synergy_delta_logit": 0.015754728144444452,
+        "synergy_delta_prob": 0.003664851459060481,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 868,
+        "quality_score": 0.039412733337702,
+        "pick_score_raw": 2.628138379043345,
+        "pick_score": 5.97089645437922
+      },
+      {
+        "from": "Gallant Fowlknight",
+        "to": "Wary Farmer",
+        "pair_games": 1346,
+        "pair_win_rate": 0.5891530460624071,
+        "pair_expected_win_rate": 0.5835605461513527,
+        "pair_lift_vs_baseline": 0.011419794932115312,
+        "synergy_delta_logit": 0.023058092142459907,
+        "synergy_delta_prob": 0.005592499911054483,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2255,
+        "quality_score": 0.03684118621643015,
+        "pick_score_raw": 1.6867611317895457,
+        "pick_score": 2.347256986530991
+      },
+      {
+        "from": "Pyrrhic Strike",
+        "to": "Surly Farrier",
+        "pair_games": 533,
+        "pair_win_rate": 0.6153846153846154,
+        "pair_expected_win_rate": 0.6106973209121123,
+        "pair_lift_vs_baseline": 0.03765136425432358,
+        "synergy_delta_logit": 0.01975931234027961,
+        "synergy_delta_prob": 0.004687294472503156,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 832,
+        "quality_score": 0.035142551063701045,
+        "pick_score_raw": 1.868040272998146,
+        "pick_score": 3.1349061550707438
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Crossroads Watcher",
+          "Mistmeadow Council",
+          "Wary Farmer"
+        ],
+        "games": 458,
+        "win_rate": 0.62882096069869,
+        "expected_win_rate": 0.6010682574903674,
+        "synergy_delta_logit": 0.11724387265518887,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2165,
+        "quality": 3.6654307973806826
+      },
+      {
+        "cards": [
+          "Assert Perfection",
+          "Crossroads Watcher",
+          "Liminal Hold"
+        ],
+        "games": 201,
+        "win_rate": 0.6417910447761194,
+        "expected_win_rate": 0.6086246186906065,
+        "synergy_delta_logit": 0.14161175128005088,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1038,
+        "quality": 2.8444209350836784
+      },
+      {
+        "cards": [
+          "Crossroads Watcher",
+          "Liminal Hold",
+          "Wary Farmer"
+        ],
+        "games": 264,
+        "win_rate": 0.6136363636363636,
+        "expected_win_rate": 0.5933898782642985,
+        "synergy_delta_logit": 0.0846266659047874,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1258,
+        "quality": 1.9639204018813032
+      },
+      {
+        "cards": [
+          "Assert Perfection",
+          "Mistmeadow Council",
+          "Wary Farmer"
+        ],
+        "games": 460,
+        "win_rate": 0.6282608695652174,
+        "expected_win_rate": 0.6198832890408859,
+        "synergy_delta_logit": 0.0357102544404454,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1674,
+        "quality": 1.1070421313511747
+      },
+      {
+        "cards": [
+          "Crossroads Watcher",
+          "Liminal Hold",
+          "Mistmeadow Council"
+        ],
+        "games": 394,
+        "win_rate": 0.6192893401015228,
+        "expected_win_rate": 0.6104656827928994,
+        "synergy_delta_logit": 0.03726281809214499,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1506,
+        "quality": 1.0644040126422267
+      },
+      {
+        "cards": [
+          "Assert Perfection",
+          "Liminal Hold",
+          "Wary Farmer"
+        ],
+        "games": 234,
+        "win_rate": 0.6153846153846154,
+        "expected_win_rate": 0.6123334829038354,
+        "synergy_delta_logit": 0.012872066463578358,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 947,
+        "quality": 0.277884053556163
+      },
+      {
+        "cards": [
+          "Liminal Hold",
+          "Mistmeadow Council",
+          "Wary Farmer"
+        ],
+        "games": 385,
+        "win_rate": 0.6155844155844156,
+        "expected_win_rate": 0.6141681604323248,
+        "synergy_delta_logit": 0.0059807255496236444,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1368,
+        "quality": 0.16819938922006553
+      },
+      {
+        "cards": [
+          "Assert Perfection",
+          "Liminal Hold",
+          "Mistmeadow Council"
+        ],
+        "games": 308,
+        "win_rate": 0.6298701298701299,
+        "expected_win_rate": 0.6291109847378997,
+        "synergy_delta_logit": 0.0032548908252001407,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1115,
+        "quality": 0.0811748053672761
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 6,
+        "top_cards": [
+          "Thoughtweft Lieutenant",
+          "Kinsbaile Aspirant",
+          "Clachan Festival",
+          "Pyrrhic Strike",
+          "Pitiless Fists"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 6,
+        "top_cards": [
+          "Gallant Fowlknight",
+          "Eclipsed Kithkin",
+          "Thoughtweft Imbuer",
+          "Goldmeadow Nomad",
+          "Spiral into Solitude"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 5,
+        "top_cards": [
+          "Crossroads Watcher",
+          "Assert Perfection",
+          "Bristlebane Outrider",
+          "Dundoolin Weaver",
+          "Brigid's Command"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 4,
+        "top_cards": [
+          "Mistmeadow Council",
+          "Surly Farrier",
+          "Timid Shieldbearer",
+          "Reluctant Dounguard"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 3,
+        "top_cards": [
+          "Wary Farmer",
+          "Liminal Hold",
+          "Figure of Fable"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Bogslither's Embrace"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Wistfulness"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Mistmeadow Council",
+          "pick_priority_score": 8.115029820169001,
+          "pick_priority_score_raw": 102.81246157029801,
+          "draft_drafts": 3968,
+          "draft_win_rate": 0.5820307989194624,
+          "draft_win_lift": 0.00013875483612235673,
+          "draw_win_rate": 0.5982881042700127
+        },
+        {
+          "card": "Assert Perfection",
+          "pick_priority_score": 7.480911484070334,
+          "pick_priority_score_raw": 74.9219829718093,
+          "draft_drafts": 2791,
+          "draft_win_rate": 0.5840043613392697,
+          "draft_win_lift": 0.002112317255929641,
+          "draw_win_rate": 0.5964275341272146
+        },
+        {
+          "card": "Liminal Hold",
+          "pick_priority_score": 6.653459050260704,
+          "pick_priority_score_raw": 49.472757241473275,
+          "draft_drafts": 2186,
+          "draft_win_rate": 0.5841763450163815,
+          "draft_win_lift": 0.0022843009330414388,
+          "draw_win_rate": 0.5905926622765757
+        },
+        {
+          "card": "Timid Shieldbearer",
+          "pick_priority_score": 4.9918320223801995,
+          "pick_priority_score_raw": 21.232870994488287,
+          "draft_drafts": 2941,
+          "draft_win_rate": 0.5848219259456391,
+          "draft_win_lift": 0.002929881862299033,
+          "draw_win_rate": 0.5718228232372016
+        },
+        {
+          "card": "Bogslither's Embrace",
+          "pick_priority_score": 4.770519979410842,
+          "pick_priority_score_raw": 18.932957108603944,
+          "draft_drafts": 239,
+          "draft_win_rate": 0.5707868335467419,
+          "draft_win_lift": -0.011105210536598187,
+          "draw_win_rate": 0.6
+        },
+        {
+          "card": "Spiral into Solitude",
+          "pick_priority_score": 4.370028188705717,
+          "pick_priority_score_raw": 15.358836539554181,
+          "draft_drafts": 2114,
+          "draft_win_rate": 0.5790014375429091,
+          "draft_win_lift": -0.00289060654043094,
+          "draw_win_rate": 0.5829833850648165
+        },
+        {
+          "card": "Reluctant Dounguard",
+          "pick_priority_score": 4.264531112609091,
+          "pick_priority_score_raw": 14.52908935058532,
+          "draft_drafts": 2111,
+          "draft_win_rate": 0.5842398085143025,
+          "draft_win_lift": 0.002347764430962407,
+          "draw_win_rate": 0.5645308229577892
+        },
+        {
+          "card": "Wary Farmer",
+          "pick_priority_score": 4.247487620125356,
+          "pick_priority_score_raw": 14.39904636936524,
+          "draft_drafts": 3321,
+          "draft_win_rate": 0.581149211267464,
+          "draft_win_lift": -0.00074283281587606,
+          "draw_win_rate": 0.5810448333120449
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Eclipsed Kithkin",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 375.0990724634871,
+          "draft_drafts": 2225,
+          "draft_win_rate": 0.6047915866268729,
+          "draft_win_lift": 0.02289954254353288,
+          "draw_win_rate": 0.6349942062572422
+        },
+        {
+          "card": "Thoughtweft Imbuer",
+          "pick_priority_score": 9.517046349246469,
+          "pick_priority_score_raw": 206.33870272499072,
+          "draft_drafts": 1905,
+          "draft_win_rate": 0.586912768706661,
+          "draft_win_lift": 0.005020724623320927,
+          "draw_win_rate": 0.6259357111404668
+        },
+        {
+          "card": "Thoughtweft Lieutenant",
+          "pick_priority_score": 9.206237723159395,
+          "pick_priority_score_raw": 176.86020975081385,
+          "draft_drafts": 2331,
+          "draft_win_rate": 0.5888804347428236,
+          "draft_win_lift": 0.006988390659483534,
+          "draw_win_rate": 0.6052913836253129
+        },
+        {
+          "card": "Clachan Festival",
+          "pick_priority_score": 9.010936014343386,
+          "pick_priority_score_raw": 160.52085493631023,
+          "draft_drafts": 1446,
+          "draft_win_rate": 0.5959856948477841,
+          "draft_win_lift": 0.014093650764444021,
+          "draw_win_rate": 0.6093606607525237
+        },
+        {
+          "card": "Pyrrhic Strike",
+          "pick_priority_score": 8.86634508222394,
+          "pick_priority_score_raw": 149.399003894666,
+          "draft_drafts": 1093,
+          "draft_win_rate": 0.5924162139067334,
+          "draft_win_lift": 0.010524169823393326,
+          "draw_win_rate": 0.630466472303207
+        },
+        {
+          "card": "Pitiless Fists",
+          "pick_priority_score": 8.437750956000746,
+          "pick_priority_score_raw": 120.73171373622394,
+          "draft_drafts": 1223,
+          "draft_win_rate": 0.587843579984615,
+          "draft_win_lift": 0.005951535901274951,
+          "draw_win_rate": 0.6224406224406225
+        },
+        {
+          "card": "Dundoolin Weaver",
+          "pick_priority_score": 7.968045629801796,
+          "pick_priority_score_raw": 95.55016165985359,
+          "draft_drafts": 1591,
+          "draft_win_rate": 0.5838626667369751,
+          "draft_win_lift": 0.0019706226536350124,
+          "draw_win_rate": 0.6095829636202307
+        },
+        {
+          "card": "Kinsbaile Aspirant",
+          "pick_priority_score": 7.692663377976019,
+          "pick_priority_score_raw": 83.28353908739014,
+          "draft_drafts": 1928,
+          "draft_win_rate": 0.5903862548663849,
+          "draft_win_lift": 0.008494210783044798,
+          "draw_win_rate": 0.5845454545454546
+        }
+      ],
+      "rare": [
+        {
+          "card": "Brigid's Command",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 283.8830244875142,
+          "draft_drafts": 727,
+          "draft_win_rate": 0.611888872629868,
+          "draft_win_lift": 0.029996828546527965,
+          "draw_win_rate": 0.6518324607329843
+        },
+        {
+          "card": "Figure of Fable",
+          "pick_priority_score": 9.286178365059037,
+          "pick_priority_score_raw": 184.0158212596386,
+          "draft_drafts": 366,
+          "draft_win_rate": 0.6125042022520649,
+          "draft_win_lift": 0.030612158168724868,
+          "draw_win_rate": 0.6733167082294265
+        },
+        {
+          "card": "Brigid, Clachan's Heart",
+          "pick_priority_score": 9.076033969844461,
+          "pick_priority_score_raw": 165.79311119929508,
+          "draft_drafts": 459,
+          "draft_win_rate": 0.6118722844492023,
+          "draft_win_lift": 0.02998024036586222,
+          "draw_win_rate": 0.6327060350421804
+        },
+        {
+          "card": "Kinbinding",
+          "pick_priority_score": 8.995489793071247,
+          "pick_priority_score_raw": 159.29453412537404,
+          "draft_drafts": 367,
+          "draft_win_rate": 0.6124622904020974,
+          "draft_win_lift": 0.030570246318757377,
+          "draw_win_rate": 0.6513157894736842
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Wistfulness",
+          "pick_priority_score": 6.301313796355211,
+          "pick_priority_score_raw": 41.42263503071419,
+          "draft_drafts": 68,
+          "draft_win_rate": 0.5802744551988834,
+          "draft_win_lift": -0.0016175888844566222,
+          "draw_win_rate": 0.6690647482014388
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Figure of Fable",
+        "standalone_delta": 0.09558345709913463,
+        "win_rate": 0.6733167082294265,
+        "draw_games": 1203
+      },
+      {
+        "card": "Wistfulness",
+        "standalone_delta": 0.09133149707114696,
+        "win_rate": 0.6690647482014388,
+        "draw_games": 139
+      },
+      {
+        "card": "Brigid's Command",
+        "standalone_delta": 0.07409920960269245,
+        "win_rate": 0.6518324607329843,
+        "draw_games": 1910
+      },
+      {
+        "card": "Kinbinding",
+        "standalone_delta": 0.07358253834339235,
+        "win_rate": 0.6513157894736842,
+        "draw_games": 1368
+      },
+      {
+        "card": "Eclipsed Kithkin",
+        "standalone_delta": 0.0572609551269504,
+        "win_rate": 0.6349942062572422,
+        "draw_games": 5178
+      },
+      {
+        "card": "Brigid, Clachan's Heart",
+        "standalone_delta": 0.054972783911888534,
+        "win_rate": 0.6327060350421804,
+        "draw_games": 1541
+      },
+      {
+        "card": "Pyrrhic Strike",
+        "standalone_delta": 0.05273322117291512,
+        "win_rate": 0.630466472303207,
+        "draw_games": 2744
+      },
+      {
+        "card": "Thoughtweft Imbuer",
+        "standalone_delta": 0.04820246001017492,
+        "win_rate": 0.6259357111404668,
+        "draw_games": 4542
+      },
+      {
+        "card": "Pitiless Fists",
+        "standalone_delta": 0.044707371310330646,
+        "win_rate": 0.6224406224406225,
+        "draw_games": 2442
+      },
+      {
+        "card": "Dundoolin Weaver",
+        "standalone_delta": 0.03184971248993884,
+        "win_rate": 0.6095829636202307,
+        "draw_games": 3381
+      },
+      {
+        "card": "Clachan Festival",
+        "standalone_delta": 0.03162740962223187,
+        "win_rate": 0.6093606607525237,
+        "draw_games": 3269
+      },
+      {
+        "card": "Thoughtweft Lieutenant",
+        "standalone_delta": 0.027558132495021037,
+        "win_rate": 0.6052913836253129,
+        "draw_games": 5594
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Mistmeadow Council",
+        "dependency_score": 0.1428012837284931,
+        "standalone_delta": 0.02055485313972083,
+        "draw_games": 10281
+      },
+      {
+        "card": "Brigid, Clachan's Heart",
+        "dependency_score": 0.12086062706741438,
+        "standalone_delta": 0.054972783911888534,
+        "draw_games": 1541
+      },
+      {
+        "card": "Clachan Festival",
+        "dependency_score": 0.12082272490972522,
+        "standalone_delta": 0.03162740962223187,
+        "draw_games": 3269
+      },
+      {
+        "card": "Pyrrhic Strike",
+        "dependency_score": 0.11437054812881801,
+        "standalone_delta": 0.05273322117291512,
+        "draw_games": 2744
+      },
+      {
+        "card": "Reluctant Dounguard",
+        "dependency_score": 0.10485642381121575,
+        "standalone_delta": -0.013202428172502612,
+        "draw_games": 3293
+      },
+      {
+        "card": "Figure of Fable",
+        "dependency_score": 0.10411651398547091,
+        "standalone_delta": 0.09558345709913463,
+        "draw_games": 1203
+      },
+      {
+        "card": "Crossroads Watcher",
+        "dependency_score": 0.10144226214179841,
+        "standalone_delta": -0.0004899578832983087,
+        "draw_games": 8648
+      },
+      {
+        "card": "Brigid's Command",
+        "dependency_score": 0.09903414805468627,
+        "standalone_delta": 0.07409920960269245,
+        "draw_games": 1910
+      },
+      {
+        "card": "Bristlebane Outrider",
+        "dependency_score": 0.098539922229541,
+        "standalone_delta": 0.02172030078227649,
+        "draw_games": 3660
+      },
+      {
+        "card": "Goldmeadow Nomad",
+        "dependency_score": 0.09750526993979496,
+        "standalone_delta": -0.019107410951053616,
+        "draw_games": 4017
+      },
+      {
+        "card": "Liminal Hold",
+        "dependency_score": 0.09583055270544458,
+        "standalone_delta": 0.012859411146283861,
+        "draw_games": 5315
+      },
+      {
+        "card": "Pitiless Fists",
+        "dependency_score": 0.09448089060773672,
+        "standalone_delta": 0.044707371310330646,
+        "draw_games": 2442
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Clachan Festival",
+          "Pyrrhic Strike"
+        ],
+        "quality_score": 1.2472760253339232,
+        "pair_win_rate": 0.7350427350427351,
+        "pair_games": 234,
+        "synergy_delta_logit": 0.3549910445605775
+      },
+      {
+        "cards": [
+          "Brigid's Command",
+          "Dundoolin Weaver"
+        ],
+        "quality_score": 1.074697212944145,
+        "pair_win_rate": 0.7473118279569892,
+        "pair_games": 186,
+        "synergy_delta_logit": 0.3251380361125531
+      },
+      {
+        "cards": [
+          "Clachan Festival",
+          "Thoughtweft Lieutenant"
+        ],
+        "quality_score": 0.8818380870530139,
+        "pair_win_rate": 0.687007874015748,
+        "pair_games": 508,
+        "synergy_delta_logit": 0.2274550208190127
+      },
+      {
+        "cards": [
+          "Figure of Fable",
+          "Wary Farmer"
+        ],
+        "quality_score": 0.7018097161074304,
+        "pair_win_rate": 0.7195571955719557,
+        "pair_games": 271,
+        "synergy_delta_logit": 0.205452614533294
+      },
+      {
+        "cards": [
+          "Pitiless Fists",
+          "Pyrrhic Strike"
+        ],
+        "quality_score": 0.6622965776043752,
+        "pair_win_rate": 0.7239263803680982,
+        "pair_games": 163,
+        "synergy_delta_logit": 0.24335827931583676
+      },
+      {
+        "cards": [
+          "Brigid, Clachan's Heart",
+          "Clachan Festival"
+        ],
+        "quality_score": 0.5881424531588665,
+        "pair_win_rate": 0.7175572519083969,
+        "pair_games": 131,
+        "synergy_delta_logit": 0.25738293296402703
+      },
+      {
+        "cards": [
+          "Bristlebane Outrider",
+          "Dundoolin Weaver"
+        ],
+        "quality_score": 0.5695163756738011,
+        "pair_win_rate": 0.6779661016949152,
+        "pair_games": 295,
+        "synergy_delta_logit": 0.20916718949379054
+      },
+      {
+        "cards": [
+          "Eclipsed Kithkin",
+          "Thoughtweft Imbuer"
+        ],
+        "quality_score": 0.5567409292826875,
+        "pair_win_rate": 0.7051724137931035,
+        "pair_games": 580,
+        "synergy_delta_logit": 0.11700399968360742
+      },
+      {
+        "cards": [
+          "Liminal Hold",
+          "Thoughtweft Imbuer"
+        ],
+        "quality_score": 0.5085764235910669,
+        "pair_win_rate": 0.6687402799377916,
+        "pair_games": 643,
+        "synergy_delta_logit": 0.1347321423779112
+      },
+      {
+        "cards": [
+          "Mistmeadow Council",
+          "Timid Shieldbearer"
+        ],
+        "quality_score": 0.4766384509312002,
+        "pair_win_rate": 0.620889748549323,
+        "pair_games": 2068,
+        "synergy_delta_logit": 0.11917211940018602
+      },
+      {
+        "cards": [
+          "Assert Perfection",
+          "Bristlebane Outrider"
+        ],
+        "quality_score": 0.3929136680348737,
+        "pair_win_rate": 0.6473282442748092,
+        "pair_games": 655,
+        "synergy_delta_logit": 0.12700034035244673
+      },
+      {
+        "cards": [
+          "Goldmeadow Nomad",
+          "Thoughtweft Imbuer"
+        ],
+        "quality_score": 0.3849750883056624,
+        "pair_win_rate": 0.6431535269709544,
+        "pair_games": 482,
+        "synergy_delta_logit": 0.15214590836320857
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Eclipsed Kithkin",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 375.0990724634871,
+        "draft_drafts": 2225,
+        "draft_win_lift": 0.02289954254353288,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Brigid's Command",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 283.8830244875142,
+        "draft_drafts": 727,
+        "draft_win_lift": 0.029996828546527965,
+        "rarity": "rare"
+      },
+      {
+        "card": "Thoughtweft Imbuer",
+        "pick_priority_score": 9.517046349246469,
+        "pick_priority_score_raw": 206.33870272499072,
+        "draft_drafts": 1905,
+        "draft_win_lift": 0.005020724623320927,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Figure of Fable",
+        "pick_priority_score": 9.286178365059037,
+        "pick_priority_score_raw": 184.0158212596386,
+        "draft_drafts": 366,
+        "draft_win_lift": 0.030612158168724868,
+        "rarity": "rare"
+      },
+      {
+        "card": "Thoughtweft Lieutenant",
+        "pick_priority_score": 9.206237723159395,
+        "pick_priority_score_raw": 176.86020975081385,
+        "draft_drafts": 2331,
+        "draft_win_lift": 0.006988390659483534,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Brigid, Clachan's Heart",
+        "pick_priority_score": 9.076033969844461,
+        "pick_priority_score_raw": 165.79311119929508,
+        "draft_drafts": 459,
+        "draft_win_lift": 0.02998024036586222,
+        "rarity": "rare"
+      },
+      {
+        "card": "Clachan Festival",
+        "pick_priority_score": 9.010936014343386,
+        "pick_priority_score_raw": 160.52085493631023,
+        "draft_drafts": 1446,
+        "draft_win_lift": 0.014093650764444021,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Kinbinding",
+        "pick_priority_score": 8.995489793071247,
+        "pick_priority_score_raw": 159.29453412537404,
+        "draft_drafts": 367,
+        "draft_win_lift": 0.030570246318757377,
+        "rarity": "rare"
+      },
+      {
+        "card": "Pyrrhic Strike",
+        "pick_priority_score": 8.86634508222394,
+        "pick_priority_score_raw": 149.399003894666,
+        "draft_drafts": 1093,
+        "draft_win_lift": 0.010524169823393326,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Pitiless Fists",
+        "pick_priority_score": 8.437750956000746,
+        "pick_priority_score_raw": 120.73171373622394,
+        "draft_drafts": 1223,
+        "draft_win_lift": 0.005951535901274951,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Mistmeadow Council",
+        "pick_priority_score": 8.115029820169001,
+        "pick_priority_score_raw": 102.81246157029801,
+        "draft_drafts": 3968,
+        "draft_win_lift": 0.00013875483612235673,
+        "rarity": "common"
+      },
+      {
+        "card": "Dundoolin Weaver",
+        "pick_priority_score": 7.968045629801796,
+        "pick_priority_score_raw": 95.55016165985359,
+        "draft_drafts": 1591,
+        "draft_win_lift": 0.0019706226536350124,
+        "rarity": "uncommon"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Eclipsed Kithkin",
+          "Thoughtweft Imbuer"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.999807131383058,
+        "pair_win_rate": 0.7051724137931035,
+        "pair_games": 580,
+        "draft_pair_events": 898
+      },
+      {
+        "cards": [
+          "Mistmeadow Council",
+          "Timid Shieldbearer"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.225084528725961,
+        "pair_win_rate": 0.620889748549323,
+        "pair_games": 2068,
+        "draft_pair_events": 2569
+      },
+      {
+        "cards": [
+          "Crossroads Watcher",
+          "Eclipsed Kithkin"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.137461923007242,
+        "pair_win_rate": 0.644506001846722,
+        "pair_games": 1083,
+        "draft_pair_events": 1774
+      },
+      {
+        "cards": [
+          "Liminal Hold",
+          "Mistmeadow Council"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.075135446919553,
+        "pair_win_rate": 0.6261510128913443,
+        "pair_games": 1629,
+        "draft_pair_events": 1910
+      },
+      {
+        "cards": [
+          "Clachan Festival",
+          "Thoughtweft Lieutenant"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.069633065094409,
+        "pair_win_rate": 0.687007874015748,
+        "pair_games": 508,
+        "draft_pair_events": 743
+      },
+      {
+        "cards": [
+          "Brigid's Command",
+          "Mistmeadow Council"
+        ],
+        "pick_score": 9.973248586907765,
+        "pick_score_raw": 4.05559968764336,
+        "pair_win_rate": 0.6841121495327103,
+        "pair_games": 535,
+        "draft_pair_events": 636
+      },
+      {
+        "cards": [
+          "Liminal Hold",
+          "Thoughtweft Imbuer"
+        ],
+        "pick_score": 9.759223859678048,
+        "pick_score_raw": 3.966695852849194,
+        "pair_win_rate": 0.6687402799377916,
+        "pair_games": 643,
+        "draft_pair_events": 915
+      },
+      {
+        "cards": [
+          "Eclipsed Kithkin",
+          "Thoughtweft Lieutenant"
+        ],
+        "pick_score": 9.725901220210698,
+        "pick_score_raw": 3.952995302991066,
+        "pair_win_rate": 0.6646971935007385,
+        "pair_games": 677,
+        "draft_pair_events": 1102
+      },
+      {
+        "cards": [
+          "Eclipsed Kithkin",
+          "Spiral into Solitude"
+        ],
+        "pick_score": 9.216835618755534,
+        "pick_score_raw": 3.7483314383464337,
+        "pair_win_rate": 0.6538969616908851,
+        "pair_games": 757,
+        "draft_pair_events": 1037
+      },
+      {
+        "cards": [
+          "Clachan Festival",
+          "Pyrrhic Strike"
+        ],
+        "pick_score": 9.025951685916448,
+        "pick_score_raw": 3.67378796156587,
+        "pair_win_rate": 0.7350427350427351,
+        "pair_games": 234,
+        "draft_pair_events": 367
+      },
+      {
+        "cards": [
+          "Thoughtweft Imbuer",
+          "Thoughtweft Lieutenant"
+        ],
+        "pick_score": 8.864352142783988,
+        "pick_score_raw": 3.611596003581864,
+        "pair_win_rate": 0.6638078902229846,
+        "pair_games": 583,
+        "draft_pair_events": 929
+      },
+      {
+        "cards": [
+          "Figure of Fable",
+          "Wary Farmer"
+        ],
+        "pick_score": 8.745310333593206,
+        "pick_score_raw": 3.5663124558095163,
+        "pair_win_rate": 0.7195571955719557,
+        "pair_games": 271,
+        "draft_pair_events": 282
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Selesnya Kithkin | Mistmeadow Council / Crossroads Watcher",
+      "color_name": "Selesnya Kithkin",
+      "deck_count": 8226,
+      "games": 38928,
+      "win_rate": 0.5777332511302918,
+      "signposts": [
+        "Mistmeadow Council",
+        "Crossroads Watcher",
+        "Surly Farrier",
+        "Wary Farmer"
+      ],
+      "pick_cards": [
+        "Eclipsed Kithkin",
+        "Brigid's Command",
+        "Thoughtweft Imbuer",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Golgari Elves | Scarblade Scout / Safewright Cavalry",
+      "color_name": "Golgari Elves",
+      "deck_count": 17005,
+      "games": 79178,
+      "win_rate": 0.5701710070979312,
+      "signposts": [
+        "Scarblade Scout",
+        "Safewright Cavalry",
+        "Lys Alana Informant",
+        "Dawnhand Eulogist"
+      ],
+      "pick_cards": [
+        "Gloom Ripper",
+        "Eclipsed Elf",
+        "Morcant's Loyalist",
+        "Trystan's Command"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Azorius Merfolk | Merrow Skyswimmer / Wanderbrine Preacher",
+      "color_name": "Azorius Merfolk",
+      "deck_count": 14756,
+      "games": 65697,
+      "win_rate": 0.5584425468438438,
+      "signposts": [
+        "Merrow Skyswimmer",
+        "Wanderbrine Preacher",
+        "Gravelgill Scoundrel",
+        "Silvergill Peddler"
+      ],
+      "pick_cards": [
+        "Deepchannel Duelist",
+        "Eclipsed Merrow",
+        "Champions of the Shoal",
+        "Kinbinding"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Izzet Elementals | Kulrath Zealot / Flamekin Gildweaver",
+      "color_name": "Izzet Elementals",
+      "deck_count": 15634,
+      "games": 67280,
+      "win_rate": 0.5508323424494649,
+      "signposts": [
+        "Kulrath Zealot",
+        "Flamekin Gildweaver",
+        "Flaring Cinder",
+        "Flame-Chain Mauler"
+      ],
+      "pick_cards": [
+        "Ashling's Command",
+        "Sunderflock",
+        "Eclipsed Flamekin",
+        "Rimekin Recluse"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Rakdos Goblins | Gristle Glutton / Elder Auntie",
+      "color_name": "Rakdos Goblins",
+      "deck_count": 10159,
+      "games": 43081,
+      "win_rate": 0.5284232028040203,
+      "signposts": [
+        "Gristle Glutton",
+        "Elder Auntie",
+        "Bile-Vial Boggart",
+        "Boggart Prankster"
+      ],
+      "pick_cards": [
+        "Grub's Command",
+        "Eclipsed Boggart",
+        "Boggart Mischief",
+        "Boggart Cursecrafter"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "White Base Kithkin | Timid Shieldbearer / Reluctant Dounguard",
+      "color_name": "White Base Kithkin",
+      "deck_count": 5824,
+      "games": 24407,
+      "win_rate": 0.516286311304134,
+      "signposts": [
+        "Timid Shieldbearer",
+        "Reluctant Dounguard",
+        "Spiral into Solitude",
+        "Sun-Dappled Celebrant"
+      ],
+      "pick_cards": [
+        "Kinbinding",
+        "Thoughtweft Imbuer",
+        "Pyrrhic Strike",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "Five-Color | Great Forest Druid / Foraging Wickermaw",
+      "color_name": "Five-Color",
+      "deck_count": 11302,
+      "games": 44111,
+      "win_rate": 0.5071524109632518,
+      "signposts": [
+        "Great Forest Druid",
+        "Foraging Wickermaw",
+        "Wildvine Pummeler",
+        "Tend the Sprigs"
+      ],
+      "pick_cards": [
+        "Shinestriker",
+        "Explosive Prodigy",
+        "Prismabasher",
+        "Noggle Robber"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

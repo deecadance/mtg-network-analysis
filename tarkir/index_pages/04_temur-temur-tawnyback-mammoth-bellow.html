@@ -1,0 +1,4578 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Temur | Temur Tawnyback / Mammoth Bellow | Tarkir Dragonstorm Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "TDM",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 9,
+    "fit_summary": {
+      "deck_count": 126902,
+      "cluster_feature_count": 274,
+      "svd_components": 48,
+      "svd_explained_variance": 0.36968672275543213,
+      "k_search": [],
+      "chosen_k": 9,
+      "label_counts": {
+        "3": 15854,
+        "2": 12817,
+        "8": 16514,
+        "5": 7372,
+        "1": 18554,
+        "4": 12416,
+        "6": 16554,
+        "0": 14930,
+        "7": 11891
+      }
+    },
+    "deck_count": 126902,
+    "game_count": 552428
+  },
+  "segment": {
+    "cluster_id": 4,
+    "title": "Temur | Temur Tawnyback / Mammoth Bellow",
+    "color_signature": "URG",
+    "color_name": "Temur",
+    "deck_count": 12416,
+    "draft_count": 12648,
+    "games": 52886,
+    "wins": 28293,
+    "win_rate": 0.5349809023181938,
+    "draft_match_win_rate": 0.5377780558771079,
+    "top_deck_colors": [
+      {
+        "colors": "URG",
+        "count": 5448
+      },
+      {
+        "colors": "WURG",
+        "count": 2397
+      },
+      {
+        "colors": "WUBRG",
+        "count": 2382
+      },
+      {
+        "colors": "UBRG",
+        "count": 2155
+      },
+      {
+        "colors": "RG",
+        "count": 16
+      },
+      {
+        "colors": "WBRG",
+        "count": 6
+      },
+      {
+        "colors": "WRG",
+        "count": 6
+      },
+      {
+        "colors": "UG",
+        "count": 3
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "URG",
+        "count": 9799
+      },
+      {
+        "colors": "WURG",
+        "count": 781
+      },
+      {
+        "colors": "UBRG",
+        "count": 709
+      },
+      {
+        "colors": "UG",
+        "count": 437
+      },
+      {
+        "colors": "WUBRG",
+        "count": 286
+      },
+      {
+        "colors": "RG",
+        "count": 170
+      },
+      {
+        "colors": "UBG",
+        "count": 79
+      },
+      {
+        "colors": "UR",
+        "count": 74
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Temur Tawnyback",
+        "score": 11476.60333235015,
+        "z_score": 125.15298002294222,
+        "log_odds": 2.637623788127719,
+        "cluster_prevalence": 0.6761318498599488,
+        "global_prevalence": 0.1834693930872981,
+        "lift": 3.6852569166031572,
+        "support_decks": 8409
+      },
+      {
+        "card": "Mammoth Bellow",
+        "score": 7982.033816319145,
+        "z_score": 111.79275212722936,
+        "log_odds": 2.5129990107611655,
+        "cluster_prevalence": 0.4098789725902823,
+        "global_prevalence": 0.08823062842327306,
+        "lift": 4.645540668983451,
+        "support_decks": 5098
+      },
+      {
+        "card": "Temur Devotee",
+        "score": 6337.812919245232,
+        "z_score": 84.52671572032455,
+        "log_odds": 1.6917853609911897,
+        "cluster_prevalence": 0.45215920632327,
+        "global_prevalence": 0.163343943858912,
+        "lift": 2.7681418462249305,
+        "support_decks": 5622
+      },
+      {
+        "card": "Dragonclaw Strike",
+        "score": 6153.570400755344,
+        "z_score": 95.59106499973147,
+        "log_odds": 2.223439319815826,
+        "cluster_prevalence": 0.33320683588378786,
+        "global_prevalence": 0.07894027764049051,
+        "lift": 4.220999036781667,
+        "support_decks": 4144
+      },
+      {
+        "card": "Temur Monument",
+        "score": 4722.4321041471285,
+        "z_score": 74.67754299939826,
+        "log_odds": 1.638381750597002,
+        "cluster_prevalence": 0.3216173193615074,
+        "global_prevalence": 0.10759932543232215,
+        "lift": 2.989027283110602,
+        "support_decks": 3999
+      },
+      {
+        "card": "Karakyk Guardian",
+        "score": 4618.019750607983,
+        "z_score": 71.37665215772901,
+        "log_odds": 1.5265115513710446,
+        "cluster_prevalence": 0.3366744646681288,
+        "global_prevalence": 0.12259470898039383,
+        "lift": 2.746239764082902,
+        "support_decks": 4186
+      },
+      {
+        "card": "Piercing Exhale",
+        "score": 3597.140079211908,
+        "z_score": 49.42917502784825,
+        "log_odds": 0.9626546758302523,
+        "cluster_prevalence": 0.4261408499861796,
+        "global_prevalence": 0.24104047063725453,
+        "lift": 1.767922410952663,
+        "support_decks": 5296
+      },
+      {
+        "card": "Temur Battlecrier",
+        "score": 3585.9350438164015,
+        "z_score": 72.62490340745931,
+        "log_odds": 2.0677881371305515,
+        "cluster_prevalence": 0.19605211669777406,
+        "global_prevalence": 0.046198137613232465,
+        "lift": 4.243723379914327,
+        "support_decks": 2438
+      },
+      {
+        "card": "Undergrowth Leopard",
+        "score": 3364.0944476673035,
+        "z_score": 54.7749939386806,
+        "log_odds": 1.1798648201968371,
+        "cluster_prevalence": 0.3034561057088081,
+        "global_prevalence": 0.13624471915397085,
+        "lift": 2.227287102158219,
+        "support_decks": 3772
+      },
+      {
+        "card": "Sagu Pummeler",
+        "score": 3363.7416138330877,
+        "z_score": 48.81657130179367,
+        "log_odds": 0.9729168416163774,
+        "cluster_prevalence": 0.38203696190454933,
+        "global_prevalence": 0.20829130580046024,
+        "lift": 1.834147423659318,
+        "support_decks": 4748
+      },
+      {
+        "card": "Roamer's Routine",
+        "score": 3291.291134273705,
+        "z_score": 58.62369599209063,
+        "log_odds": 1.3668179841198975,
+        "cluster_prevalence": 0.2535519981124845,
+        "global_prevalence": 0.0967266581201587,
+        "lift": 2.6213249071161906,
+        "support_decks": 3152
+      },
+      {
+        "card": "Sagu Wildling",
+        "score": 3018.391574536933,
+        "z_score": 42.48727987650943,
+        "log_odds": 0.8309509838946016,
+        "cluster_prevalence": 0.4061475054829732,
+        "global_prevalence": 0.24685589018719536,
+        "lift": 1.6452818086495082,
+        "support_decks": 5047
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Temur Tawnyback",
+        "label": "Temur Tawnyback",
+        "color_identity": "URG",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Beast",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 13254,
+        "win_rate": 0.561264523917308,
+        "standalone_delta": 0.026283621599114126,
+        "dependency_score": 0.1694464583878399,
+        "degree": 6,
+        "signpost_score": 11476.60333235015,
+        "signpost_lift": 3.6852569166031572,
+        "deck_prevalence": 0.6761318498599488,
+        "draft_weight": 14408.0,
+        "draft_drafts": 8965,
+        "draft_presence": 0.7088077166350412,
+        "draft_win_rate": 0.543668466563088,
+        "draft_win_lift": 0.005890410685980063,
+        "analysis_score_raw": 11483.333075625007,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 244.3779669422442,
+        "pick_priority_score": 8.824399172983174,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temur%20Tawnyback%22",
+        "community": 1,
+        "x": 1051.5733653633313,
+        "y": 790.4553169952654,
+        "analysis_radius": 18.54567168991351,
+        "pick_radius": 30.0,
+        "radius": 18.54567168991351
+      },
+      {
+        "id": "Mammoth Bellow",
+        "label": "Mammoth Bellow",
+        "color_identity": "URG",
+        "rarity": "uncommon",
+        "mana_value": 5.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 6852,
+        "win_rate": 0.5528312901342674,
+        "standalone_delta": 0.01785038781607351,
+        "dependency_score": 0.1509570285549702,
+        "degree": 12,
+        "signpost_score": 7982.033816319145,
+        "signpost_lift": 4.645540668983451,
+        "deck_prevalence": 0.4098789725902823,
+        "draft_weight": 6081.0,
+        "draft_drafts": 4939,
+        "draft_presence": 0.3904965211891208,
+        "draft_win_rate": 0.5354584479510465,
+        "draft_win_lift": -0.002319607926061451,
+        "analysis_score_raw": 7987.250097127386,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 94.15006121095023,
+        "pick_priority_score": 7.2198317622259225,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mammoth%20Bellow%22",
+        "community": 0,
+        "x": 1137.8880645211166,
+        "y": 535.2947664016465,
+        "analysis_radius": 17.416224357862973,
+        "pick_radius": 30.0,
+        "radius": 17.416224357862973
+      },
+      {
+        "id": "Temur Devotee",
+        "label": "Temur Devotee",
+        "color_identity": "URG",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Human Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 7292,
+        "win_rate": 0.5349698299506308,
+        "standalone_delta": -1.1072367563036423e-05,
+        "dependency_score": 0.07584099649043975,
+        "degree": 11,
+        "signpost_score": 6337.812919245232,
+        "signpost_lift": 2.7681418462249305,
+        "deck_prevalence": 0.45215920632327,
+        "draft_weight": 9127.0,
+        "draft_drafts": 6718,
+        "draft_presence": 0.5311511701454775,
+        "draft_win_rate": 0.5380088624742453,
+        "draft_win_lift": 0.0002308065971373674,
+        "analysis_score_raw": 6339.178057182059,
+        "analysis_score": 9.87682301024355,
+        "pick_priority_score_raw": 2.2262611742097085,
+        "pick_priority_score": 1.4879498962949154,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temur%20Devotee%22",
+        "community": 0,
+        "x": 1119.4370423302869,
+        "y": 595.7666473273598,
+        "analysis_radius": 13.730275873655831,
+        "pick_radius": 30.0,
+        "radius": 13.730275873655831
+      },
+      {
+        "id": "Dragonclaw Strike",
+        "label": "Dragonclaw Strike",
+        "color_identity": "URG",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 5569,
+        "win_rate": 0.5816124977554319,
+        "standalone_delta": 0.04663159543723805,
+        "dependency_score": 0.12879277266142813,
+        "degree": 6,
+        "signpost_score": 6153.570400755344,
+        "signpost_lift": 4.220999036781667,
+        "deck_prevalence": 0.33320683588378786,
+        "draft_weight": 5176.0,
+        "draft_drafts": 4327,
+        "draft_presence": 0.34210942441492725,
+        "draft_win_rate": 0.5411176340479857,
+        "draft_win_lift": 0.0033395781708778216,
+        "analysis_score_raw": 6162.417094024464,
+        "analysis_score": 9.856725383170916,
+        "pick_priority_score_raw": 252.09273347764142,
+        "pick_priority_score": 8.876831345534047,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dragonclaw%20Strike%22",
+        "community": 1,
+        "x": 1142.3541828861205,
+        "y": 686.7483882347775,
+        "analysis_radius": 18.201277564859506,
+        "pick_radius": 30.0,
+        "radius": 18.201277564859506
+      },
+      {
+        "id": "Temur Monument",
+        "label": "Temur Monument",
+        "color_identity": "URG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 4934,
+        "win_rate": 0.5628293473854884,
+        "standalone_delta": 0.027848445067294558,
+        "dependency_score": 0.08317137578425746,
+        "degree": 9,
+        "signpost_score": 4722.4321041471285,
+        "signpost_lift": 2.989027283110602,
+        "deck_prevalence": 0.3216173193615074,
+        "draft_weight": 4953.0,
+        "draft_drafts": 4263,
+        "draft_presence": 0.3370493358633776,
+        "draft_win_rate": 0.5398973058744266,
+        "draft_win_lift": 0.0021192499973187173,
+        "analysis_score_raw": 4727.827971220667,
+        "analysis_score": 9.668401753992708,
+        "pick_priority_score_raw": 136.48529239002832,
+        "pick_priority_score": 7.843237313772517,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temur%20Monument%22",
+        "community": 2,
+        "x": 922.4831825207772,
+        "y": 814.4000817078958,
+        "analysis_radius": 15.525834006934469,
+        "pick_radius": 30.0,
+        "radius": 15.525834006934469
+      },
+      {
+        "id": "Karakyk Guardian",
+        "label": "Karakyk Guardian",
+        "color_identity": "URG",
+        "rarity": "uncommon",
+        "mana_value": 6.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 5638,
+        "win_rate": 0.6041149343738914,
+        "standalone_delta": 0.06913403205569757,
+        "dependency_score": 0.2777762512985684,
+        "degree": 7,
+        "signpost_score": 4618.019750607983,
+        "signpost_lift": 2.746239764082902,
+        "deck_prevalence": 0.3366744646681288,
+        "draft_weight": 5102.0,
+        "draft_drafts": 4322,
+        "draft_presence": 0.34171410499683746,
+        "draft_win_rate": 0.5462218628789448,
+        "draft_win_lift": 0.00844380700183689,
+        "analysis_score_raw": 4632.698487619155,
+        "analysis_score": 9.653957290322198,
+        "pick_priority_score_raw": 358.8316817367672,
+        "pick_priority_score": 9.472829782410448,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Karakyk%20Guardian%22",
+        "community": 1,
+        "x": 1129.065325580131,
+        "y": 804.6762967574089,
+        "analysis_radius": 24.802316809811828,
+        "pick_radius": 30.0,
+        "radius": 24.802316809811828
+      },
+      {
+        "id": "Piercing Exhale",
+        "label": "Piercing Exhale",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 7542,
+        "win_rate": 0.5819411296738266,
+        "standalone_delta": 0.046960227355632767,
+        "dependency_score": 0.06487489838888008,
+        "degree": 6,
+        "signpost_score": 3597.140079211908,
+        "signpost_lift": 1.767922410952663,
+        "deck_prevalence": 0.4261408499861796,
+        "draft_weight": 7649.0,
+        "draft_drafts": 5765,
+        "draft_presence": 0.4558032890575585,
+        "draft_win_rate": 0.5418593015988975,
+        "draft_win_lift": 0.004081245721789584,
+        "analysis_score_raw": 3604.882259212696,
+        "analysis_score": 9.475701894910243,
+        "pick_priority_score_raw": 244.53377357505326,
+        "pick_priority_score": 8.825474306892549,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Piercing%20Exhale%22",
+        "community": 0,
+        "x": 1171.4199842281173,
+        "y": 557.2136901131056,
+        "analysis_radius": 15.918308846559485,
+        "pick_radius": 30.0,
+        "radius": 15.918308846559485
+      },
+      {
+        "id": "Temur Battlecrier",
+        "label": "Temur Battlecrier",
+        "color_identity": "URG",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Orc Ranger",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 3098,
+        "win_rate": 0.5690768237572628,
+        "standalone_delta": 0.03409592143906892,
+        "dependency_score": 0.08264894849691015,
+        "degree": 9,
+        "signpost_score": 3585.9350438164015,
+        "signpost_lift": 4.243723379914327,
+        "deck_prevalence": 0.19605211669777406,
+        "draft_weight": 2721.0,
+        "draft_drafts": 2491,
+        "draft_presence": 0.19694813409234663,
+        "draft_win_rate": 0.5394563411077167,
+        "draft_win_lift": 0.001678285230608756,
+        "analysis_score_raw": 3592.1961538908154,
+        "analysis_score": 9.473196845756863,
+        "pick_priority_score_raw": 135.04779012232737,
+        "pick_priority_score": 7.825434743910921,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temur%20Battlecrier%22",
+        "community": 0,
+        "x": 1241.9436883296207,
+        "y": 573.4531593181249,
+        "analysis_radius": 15.850637825037555,
+        "pick_radius": 30.0,
+        "radius": 15.850637825037555
+      },
+      {
+        "id": "Undergrowth Leopard",
+        "label": "Undergrowth Leopard",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Cat",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 4585,
+        "win_rate": 0.5509269356597601,
+        "standalone_delta": 0.0159460333415663,
+        "dependency_score": 0.41476315993112783,
+        "degree": 8,
+        "signpost_score": 3364.0944476673035,
+        "signpost_lift": 2.227287102158219,
+        "deck_prevalence": 0.3034561057088081,
+        "draft_weight": 6321.0,
+        "draft_drafts": 5168,
+        "draft_presence": 0.40860215053763443,
+        "draft_win_rate": 0.5345644669035629,
+        "draft_win_lift": -0.0032135889735450673,
+        "analysis_score_raw": 3373.792629213883,
+        "analysis_score": 9.428625178829476,
+        "pick_priority_score_raw": 70.78666281204794,
+        "pick_priority_score": 6.742605845734181,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Undergrowth%20Leopard%22",
+        "community": 1,
+        "x": 1153.836603271971,
+        "y": 754.4606912011334,
+        "analysis_radius": 26.808505591306748,
+        "pick_radius": 30.0,
+        "radius": 26.808505591306748
+      },
+      {
+        "id": "Sagu Pummeler",
+        "label": "Sagu Pummeler",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Beast",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 6395,
+        "win_rate": 0.5499609069585614,
+        "standalone_delta": 0.014980004640367528,
+        "dependency_score": 0.21998192254508891,
+        "degree": 11,
+        "signpost_score": 3363.7416138330877,
+        "signpost_lift": 1.834147423659318,
+        "deck_prevalence": 0.38203696190454933,
+        "draft_weight": 6691.0,
+        "draft_drafts": 5318,
+        "draft_presence": 0.4204617330803289,
+        "draft_win_rate": 0.5367657870372056,
+        "draft_win_lift": -0.0010122688399023527,
+        "analysis_score_raw": 3369.7984890885505,
+        "analysis_score": 9.427783458670723,
+        "pick_priority_score_raw": 65.09438747922994,
+        "pick_priority_score": 6.60267667773864,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sagu%20Pummeler%22",
+        "community": 2,
+        "x": 827.6714842502765,
+        "y": 811.7028552729046,
+        "analysis_radius": 19.743249466843416,
+        "pick_radius": 30.0,
+        "radius": 19.743249466843416
+      },
+      {
+        "id": "Roamer's Routine",
+        "label": "Roamer's Routine",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 3848,
+        "win_rate": 0.5387214137214137,
+        "standalone_delta": 0.0037405114032198483,
+        "dependency_score": 0.3162117618987462,
+        "degree": 15,
+        "signpost_score": 3291.291134273705,
+        "signpost_lift": 2.6213249071161906,
+        "deck_prevalence": 0.2535519981124845,
+        "draft_weight": 5930.0,
+        "draft_drafts": 4946,
+        "draft_presence": 0.39104996837444655,
+        "draft_win_rate": 0.5389079401990007,
+        "draft_win_lift": 0.0011298843218927601,
+        "analysis_score_raw": 3297.506617584333,
+        "analysis_score": 9.412373896985754,
+        "pick_priority_score_raw": 26.048776395416773,
+        "pick_priority_score": 5.089406679990483,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Roamer%27s%20Routine%22",
+        "community": 1,
+        "x": 1091.9035321986908,
+        "y": 728.4769845853517,
+        "analysis_radius": 22.589351555531955,
+        "pick_radius": 30.0,
+        "radius": 22.589351555531955
+      },
+      {
+        "id": "Sagu Wildling",
+        "label": "Sagu Wildling",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 7668,
+        "win_rate": 0.5612936880542514,
+        "standalone_delta": 0.026312785736057553,
+        "dependency_score": 0.32778196251420466,
+        "degree": 10,
+        "signpost_score": 3018.391574536933,
+        "signpost_lift": 1.6452818086495082,
+        "deck_prevalence": 0.4061475054829732,
+        "draft_weight": 7018.0,
+        "draft_drafts": 5464,
+        "draft_presence": 0.43200506008855155,
+        "draft_win_rate": 0.5377806784664182,
+        "draft_win_lift": 2.6225893102749254e-06,
+        "analysis_score_raw": 3027.975439865237,
+        "analysis_score": 9.35178328174502,
+        "pick_priority_score_raw": 113.89921259104315,
+        "pick_priority_score": 7.539273700764994,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sagu%20Wildling%22",
+        "community": 2,
+        "x": 913.9162839845507,
+        "y": 882.0415728599405,
+        "analysis_radius": 24.247353865994533,
+        "pick_radius": 30.0,
+        "radius": 24.247353865994533
+      },
+      {
+        "id": "Songcrafter Mage",
+        "label": "Songcrafter Mage",
+        "color_identity": "URG",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Human Bard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 2625,
+        "win_rate": 0.572952380952381,
+        "standalone_delta": 0.03797147863418715,
+        "dependency_score": 0.09813170601232045,
+        "degree": 13,
+        "signpost_score": 2984.5565477896203,
+        "signpost_lift": 3.975635712552891,
+        "deck_prevalence": 0.16985197304539665,
+        "draft_weight": 2393.0,
+        "draft_drafts": 2215,
+        "draft_presence": 0.17512650221378875,
+        "draft_win_rate": 0.5392209732301668,
+        "draft_win_lift": 0.0014429173530589035,
+        "analysis_score_raw": 2991.6389255066283,
+        "analysis_score": 9.34320500623241,
+        "pick_priority_score_raw": 136.3485009418692,
+        "pick_priority_score": 7.841551269894159,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Songcrafter%20Mage%22",
+        "community": 0,
+        "x": 1175.8826972814456,
+        "y": 593.2401555088467,
+        "analysis_radius": 16.62117274132383,
+        "pick_radius": 30.0,
+        "radius": 16.62117274132383
+      },
+      {
+        "id": "Eshki Dragonclaw",
+        "label": "Eshki Dragonclaw",
+        "color_identity": "URG",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Legendary Creature - Human Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 2918,
+        "win_rate": 0.6017820424948594,
+        "standalone_delta": 0.06680114017666561,
+        "dependency_score": 0.058901398823733964,
+        "degree": 7,
+        "signpost_score": 2891.7762197683846,
+        "signpost_lift": 3.2684265985261858,
+        "deck_prevalence": 0.18715382432735436,
+        "draft_weight": 2428.0,
+        "draft_drafts": 2276,
+        "draft_presence": 0.17994939911448452,
+        "draft_win_rate": 0.5506589489862159,
+        "draft_win_lift": 0.012880893109108005,
+        "analysis_score_raw": 2902.1886045719452,
+        "analysis_score": 9.321635765783128,
+        "pick_priority_score_raw": 290.43239951852445,
+        "pick_priority_score": 9.115738762306606,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Eshki%20Dragonclaw%22",
+        "community": 0,
+        "x": 1127.8882156991674,
+        "y": 465.23021456818765,
+        "analysis_radius": 16.79451306737103,
+        "pick_radius": 30.0,
+        "radius": 16.79451306737103
+      },
+      {
+        "id": "Sarkhan's Resolve",
+        "label": "Sarkhan's Resolve",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 4227,
+        "win_rate": 0.576768393659806,
+        "standalone_delta": 0.04178749134161219,
+        "dependency_score": 0.14672815070421139,
+        "degree": 7,
+        "signpost_score": 2836.791482033393,
+        "signpost_lift": 2.041523307932338,
+        "deck_prevalence": 0.28538598592858155,
+        "draft_weight": 6338.0,
+        "draft_drafts": 5239,
+        "draft_presence": 0.41421568627450983,
+        "draft_win_rate": 0.5376567314743362,
+        "draft_win_lift": -0.0001213244027716831,
+        "analysis_score_raw": 2845.282837533895,
+        "analysis_score": 9.307565349836194,
+        "pick_priority_score_raw": 183.6801316061085,
+        "pick_priority_score": 8.343077930293575,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sarkhan%27s%20Resolve%22",
+        "community": 0,
+        "x": 1202.6718271443654,
+        "y": 524.5711521945412,
+        "analysis_radius": 18.580525449140282,
+        "pick_radius": 30.0,
+        "radius": 18.580525449140282
+      },
+      {
+        "id": "Molten Exhale",
+        "label": "Molten Exhale",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 7923,
+        "win_rate": 0.5759182127981826,
+        "standalone_delta": 0.04093731047998872,
+        "dependency_score": 0.11915769845600342,
+        "degree": 7,
+        "signpost_score": 2727.393549605486,
+        "signpost_lift": 1.5121737275208937,
+        "deck_prevalence": 0.4298537075478988,
+        "draft_weight": 7127.0,
+        "draft_drafts": 5337,
+        "draft_presence": 0.4219639468690702,
+        "draft_win_rate": 0.5461030756447428,
+        "draft_win_lift": 0.00832501976763489,
+        "analysis_score_raw": 2735.2696116448924,
+        "analysis_score": 9.279547635034733,
+        "pick_priority_score_raw": 236.8443953693943,
+        "pick_priority_score": 8.771582735291224,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Molten%20Exhale%22",
+        "community": 2,
+        "x": 867.1170235635474,
+        "y": 755.8031376312824,
+        "analysis_radius": 17.541229220815502,
+        "pick_radius": 30.0,
+        "radius": 17.541229220815502
+      },
+      {
+        "id": "Champion of Dusan",
+        "label": "Champion of Dusan",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Human Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 5405,
+        "win_rate": 0.5478260869565217,
+        "standalone_delta": 0.012845184638327845,
+        "dependency_score": 0.13149027369331737,
+        "degree": 5,
+        "signpost_score": 2670.0691440280584,
+        "signpost_lift": 1.7582312635496413,
+        "deck_prevalence": 0.3291210948667552,
+        "draft_weight": 6506.0,
+        "draft_drafts": 5000,
+        "draft_presence": 0.3953194180898166,
+        "draft_win_rate": 0.537827420793848,
+        "draft_win_lift": 4.936491674012444e-05,
+        "analysis_score_raw": 2674.234294803904,
+        "analysis_score": 9.263513481511973,
+        "pick_priority_score_raw": 54.11939756208749,
+        "pick_priority_score": 6.295121425465246,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Champion%20of%20Dusan%22",
+        "community": 1,
+        "x": 983.836603271971,
+        "y": 722.244604527177,
+        "analysis_radius": 16.440135008067458,
+        "pick_radius": 30.0,
+        "radius": 16.440135008067458
+      },
+      {
+        "id": "Roar of Endless Song",
+        "label": "Roar of Endless Song",
+        "color_identity": "URG",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Enchantment - Saga",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 3029,
+        "win_rate": 0.6540112248266755,
+        "standalone_delta": 0.11903032250848167,
+        "dependency_score": 0.0796781281136233,
+        "degree": 4,
+        "signpost_score": 2631.6182813862683,
+        "signpost_lift": 3.0038773520154542,
+        "deck_prevalence": 0.18201761387191287,
+        "draft_weight": 2396.0,
+        "draft_drafts": 2250,
+        "draft_presence": 0.17789373814041745,
+        "draft_win_rate": 0.5730319157044313,
+        "draft_win_lift": 0.03525385982732343,
+        "analysis_score_raw": 2649.716732843501,
+        "analysis_score": 9.256969416966445,
+        "pick_priority_score_raw": 573.4965926730581,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Roar%20of%20Endless%20Song%22",
+        "community": 0,
+        "x": 1142.8684804658799,
+        "y": 635.2302145681876,
+        "analysis_radius": 20.41508035005693,
+        "pick_radius": 30.0,
+        "radius": 20.41508035005693
+      },
+      {
+        "id": "Ureni, the Song Unending",
+        "label": "Ureni, the Song Unending",
+        "color_identity": "URG",
+        "rarity": "mythic",
+        "mana_value": 8.0,
+        "types": "Legendary Creature - Spirit Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 1310,
+        "win_rate": 0.7061068702290076,
+        "standalone_delta": 0.1711259679108138,
+        "dependency_score": 0.2077929362918856,
+        "degree": 7,
+        "signpost_score": 1091.766558278896,
+        "signpost_lift": 2.7876414257049644,
+        "deck_prevalence": 0.08184240704996677,
+        "draft_weight": 994.0,
+        "draft_drafts": 974,
+        "draft_presence": 0.07700822264389627,
+        "draft_win_rate": 0.5800397588089606,
+        "draft_win_lift": 0.04226170293185272,
+        "analysis_score_raw": 1119.4644666396637,
+        "analysis_score": 8.644927293689413,
+        "pick_priority_score_raw": 501.7186193235919,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ureni%2C%20the%20Song%20Unending%22",
+        "community": 1,
+        "x": 1059.1134665288305,
+        "y": 744.620796799932,
+        "analysis_radius": 27.892473941602642,
+        "pick_radius": 30.0,
+        "radius": 27.892473941602642
+      },
+      {
+        "id": "Marang River Regent",
+        "label": "Marang River Regent",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1344,
+        "win_rate": 0.6882440476190477,
+        "standalone_delta": 0.15326314530085383,
+        "dependency_score": 0.10079049757219759,
+        "degree": 4,
+        "signpost_score": 371.89349276481175,
+        "signpost_lift": 1.3930063817809089,
+        "deck_prevalence": 0.083266595375555,
+        "draft_weight": 1092.0,
+        "draft_drafts": 1061,
+        "draft_presence": 0.08388678051865908,
+        "draft_win_rate": 0.5885540022346643,
+        "draft_win_lift": 0.050775946357556334,
+        "analysis_score_raw": 395.16456206323085,
+        "analysis_score": 7.905952799585309,
+        "pick_priority_score_raw": 457.25657625973747,
+        "pick_priority_score": 9.882367126187775,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Marang%20River%20Regent%22",
+        "community": 2,
+        "x": 997.6714842502765,
+        "y": 841.8038482887233,
+        "analysis_radius": 23.057930904146072,
+        "pick_radius": 30.0,
+        "radius": 23.057930904146072
+      },
+      {
+        "id": "Dragonback Assault",
+        "label": "Dragonback Assault",
+        "color_identity": "URG",
+        "rarity": "mythic",
+        "mana_value": 6.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 1347,
+        "win_rate": 0.676317743132888,
+        "standalone_delta": 0.1413368408146941,
+        "dependency_score": 0.1740012040758763,
+        "degree": 6,
+        "signpost_score": 1161.0511097419867,
+        "signpost_lift": 2.9465140348442334,
+        "deck_prevalence": 0.08288488322703892,
+        "draft_weight": 1009.0,
+        "draft_drafts": 995,
+        "draft_presence": 0.0786685641998735,
+        "draft_win_rate": 0.5702650287400827,
+        "draft_win_lift": 0.03248697286297475,
+        "analysis_score_raw": 1183.9702891294096,
+        "analysis_score": 8.684712704413329,
+        "pick_priority_score_raw": 415.35740004954147,
+        "pick_priority_score": 9.719961281149327,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dragonback%20Assault%22",
+        "community": 2,
+        "x": 871.1405414305717,
+        "y": 844.2485042392535,
+        "analysis_radius": 25.03756959153972,
+        "pick_radius": 30.0,
+        "radius": 25.03756959153972
+      },
+      {
+        "id": "Ugin, Eye of the Storms",
+        "label": "Ugin, Eye of the Storms",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 7.0,
+        "types": "Legendary Planeswalker - Ugin",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 466,
+        "win_rate": 0.7081545064377682,
+        "standalone_delta": 0.1731736041195744,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 15.407180785948748,
+        "signpost_lift": 1.0397545639776185,
+        "deck_prevalence": 0.02993629131392164,
+        "draft_weight": 408.0,
+        "draft_drafts": 405,
+        "draft_presence": 0.03202087286527514,
+        "draft_win_rate": 0.5790185942220504,
+        "draft_win_lift": 0.04124053834494246,
+        "analysis_score_raw": 39.651485362689165,
+        "analysis_score": 6.2876559248833805,
+        "pick_priority_score_raw": 275.7647678694214,
+        "pick_priority_score": 9.02827312829878,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ugin%2C%20Eye%20of%20the%20Storms%22",
+        "community": 3,
+        "x": 712.6167029855649,
+        "y": 747.3832970144351,
+        "analysis_radius": 20.52454822657659,
+        "pick_radius": 30.0,
+        "radius": 20.52454822657659
+      },
+      {
+        "id": "Elspeth, Storm Slayer",
+        "label": "Elspeth, Storm Slayer",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Legendary Planeswalker - Elspeth",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 132,
+        "win_rate": 0.6363636363636364,
+        "standalone_delta": 0.10138273404544251,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -127.38483426213021,
+        "signpost_lift": 0.3376895099133362,
+        "deck_prevalence": 0.008961654748703309,
+        "draft_weight": 136.0,
+        "draft_drafts": 135,
+        "draft_presence": 0.010673624288425047,
+        "draft_win_rate": 0.5270681262905825,
+        "draft_win_lift": -0.01070992958652539,
+        "analysis_score_raw": -113.19125149576826,
+        "analysis_score": 0.2866153794650856,
+        "pick_priority_score_raw": 64.7878506909108,
+        "pick_priority_score": 6.59480300975163,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Elspeth%2C%20Storm%20Slayer%22",
+        "community": 4,
+        "x": 635.0,
+        "y": 560.0,
+        "analysis_radius": 16.57605037249934,
+        "pick_radius": 28.483593539493633,
+        "radius": 16.57605037249934
+      },
+      {
+        "id": "Revival of the Ancestors",
+        "label": "Revival of the Ancestors",
+        "color_identity": "WBG",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Enchantment - Saga",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 169,
+        "win_rate": 0.5443786982248521,
+        "standalone_delta": 0.009397795906658235,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -195.80972514090288,
+        "signpost_lift": 0.26084154257530723,
+        "deck_prevalence": 0.011082331531554452,
+        "draft_weight": 260.0,
+        "draft_drafts": 256,
+        "draft_presence": 0.02024035420619861,
+        "draft_win_rate": 0.5302424590127782,
+        "draft_win_lift": -0.007535596864329697,
+        "analysis_score_raw": -194.49403371397074,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 8.270060397859247,
+        "pick_priority_score": 3.2756483198503976,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Revival%20of%20the%20Ancestors%22",
+        "community": 5,
+        "x": 712.6167029855649,
+        "y": 372.6167029855649,
+        "analysis_radius": 11.516878774866203,
+        "pick_radius": 30.0,
+        "radius": 11.516878774866203
+      },
+      {
+        "id": "Watcher of the Wayside",
+        "label": "Watcher of the Wayside",
+        "color_identity": "",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Artifact Creature - Golem",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 269,
+        "win_rate": 0.5130111524163569,
+        "standalone_delta": -0.021969749901836977,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 44.72630990683635,
+        "signpost_lift": 1.1884360030193344,
+        "deck_prevalence": 0.01972235681222106,
+        "draft_weight": 3531.0,
+        "draft_drafts": 3098,
+        "draft_presence": 0.24493991144845034,
+        "draft_win_rate": 0.5346800666824347,
+        "draft_win_lift": -0.0030979891946731897,
+        "analysis_score_raw": 44.72630990683635,
+        "analysis_score": 6.371270839338172,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Watcher%20of%20the%20Wayside%22",
+        "community": 6,
+        "x": 900.0,
+        "y": 295.0,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Abzan Monument",
+        "label": "Abzan Monument",
+        "color_identity": "WBG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 259,
+        "win_rate": 0.528957528957529,
+        "standalone_delta": -0.00602337336066483,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -277.76569251423854,
+        "signpost_lift": 0.3038935513312792,
+        "deck_prevalence": 0.017555053629657494,
+        "draft_weight": 648.0,
+        "draft_drafts": 615,
+        "draft_presence": 0.048624288425047436,
+        "draft_win_rate": 0.5289901962820838,
+        "draft_win_lift": -0.00878785959502415,
+        "analysis_score_raw": -277.76569251423854,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Abzan%20Monument%22",
+        "community": 7,
+        "x": 1087.3832970144351,
+        "y": 372.61670298556487,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      }
+    ],
+    "edges": [
+      {
+        "from": "Roamer's Routine",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 159,
+        "pair_win_rate": 0.8113207547169812,
+        "pair_expected_win_rate": 0.7092190579608492,
+        "pair_lift_vs_baseline": 0.27633985239878733,
+        "synergy_delta_logit": 0.5670207835785244,
+        "synergy_delta_prob": 0.10210169675613201,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 461,
+        "quality_score": 2.7687866727814328,
+        "pick_score_raw": 5.112310514883221,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Temur Devotee",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 219,
+        "pair_win_rate": 0.7534246575342466,
+        "pair_expected_win_rate": 0.7060976340018599,
+        "pair_lift_vs_baseline": 0.21844375521605275,
+        "synergy_delta_logit": 0.24045553136055875,
+        "synergy_delta_prob": 0.047327023532386714,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 536,
+        "quality_score": 1.1151601935653148,
+        "pick_score_raw": 4.859508814651672,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Dragonback Assault",
+        "to": "Sagu Wildling",
+        "pair_games": 188,
+        "pair_win_rate": 0.75,
+        "pair_expected_win_rate": 0.6991307852014752,
+        "pair_lift_vs_baseline": 0.21501909768180616,
+        "synergy_delta_logit": 0.2554501286383155,
+        "synergy_delta_prob": 0.0508692147985248,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 413,
+        "quality_score": 1.0711823254157726,
+        "pick_score_raw": 4.387491603447841,
+        "pick_score": 8.847135081212642
+      },
+      {
+        "from": "Champion of Dusan",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 129,
+        "pair_win_rate": 0.7674418604651163,
+        "pair_expected_win_rate": 0.7167279985813642,
+        "pair_lift_vs_baseline": 0.23246095814692247,
+        "synergy_delta_logit": 0.26563363206760027,
+        "synergy_delta_prob": 0.050713861883752154,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 385,
+        "quality_score": 0.9885011763707892,
+        "pick_score_raw": 3.8920732571990513,
+        "pick_score": 7.452105114523092
+      },
+      {
+        "from": "Dragonback Assault",
+        "to": "Roamer's Routine",
+        "pair_games": 189,
+        "pair_win_rate": 0.7301587301587301,
+        "pair_expected_win_rate": 0.6796022460679036,
+        "pair_lift_vs_baseline": 0.19517782784053628,
+        "synergy_delta_logit": 0.24348356262560267,
+        "synergy_delta_prob": 0.05055648409082647,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 476,
+        "quality_score": 0.9423898062776861,
+        "pick_score_raw": 4.0528931283661676,
+        "pick_score": 7.919865940798394
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Songcrafter Mage",
+        "pair_games": 353,
+        "pair_win_rate": 0.6430594900849859,
+        "pair_expected_win_rate": 0.5904609950123745,
+        "pair_lift_vs_baseline": 0.10807858776679202,
+        "synergy_delta_logit": 0.22279668027672406,
+        "synergy_delta_prob": 0.052598495072611384,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 892,
+        "quality_score": 0.7182732015075839,
+        "pick_score_raw": 3.3873988892939924,
+        "pick_score": 5.87751937171356
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Undergrowth Leopard",
+        "pair_games": 501,
+        "pair_win_rate": 0.6526946107784432,
+        "pair_expected_win_rate": 0.6193769549172992,
+        "pair_lift_vs_baseline": 0.11771370846024931,
+        "synergy_delta_logit": 0.14400031270855695,
+        "synergy_delta_prob": 0.03331765586114399,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.6035547930468359,
+        "draft_pair_events": 1775,
+        "quality_score": 0.6761922373238408,
+        "pick_score_raw": 4.7358077864256956,
+        "pick_score": 9.753142254040839
+      },
+      {
+        "from": "Roar of Endless Song",
+        "to": "Temur Devotee",
+        "pair_games": 474,
+        "pair_win_rate": 0.6835443037974683,
+        "pair_expected_win_rate": 0.6540011536332125,
+        "pair_lift_vs_baseline": 0.1485634014792745,
+        "synergy_delta_logit": 0.13343454712740355,
+        "synergy_delta_prob": 0.029543150164255794,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1216,
+        "quality_score": 0.6636306640716564,
+        "pick_score_raw": 5.234168533539554,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Temur Tawnyback",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 343,
+        "pair_win_rate": 0.749271137026239,
+        "pair_expected_win_rate": 0.7276423333761368,
+        "pair_lift_vs_baseline": 0.2142902347080452,
+        "synergy_delta_logit": 0.1120353148084059,
+        "synergy_delta_prob": 0.021628803650102224,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 700,
+        "quality_score": 0.6454041254905059,
+        "pick_score_raw": 6.0450413270137995,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Dragonback Assault",
+        "to": "Sagu Pummeler",
+        "pair_games": 182,
+        "pair_win_rate": 0.7252747252747253,
+        "pair_expected_win_rate": 0.6893882401888662,
+        "pair_lift_vs_baseline": 0.1902938229565314,
+        "synergy_delta_logit": 0.17351809285054265,
+        "synergy_delta_prob": 0.03588648508585901,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 436,
+        "quality_score": 0.6419237657967231,
+        "pick_score_raw": 3.8719518548004217,
+        "pick_score": 7.392500542943097
+      },
+      {
+        "from": "Marang River Regent",
+        "to": "Temur Monument",
+        "pair_games": 149,
+        "pair_win_rate": 0.7449664429530202,
+        "pair_expected_win_rate": 0.7118575989440046,
+        "pair_lift_vs_baseline": 0.20998554063482633,
+        "synergy_delta_logit": 0.1675209577079293,
+        "synergy_delta_prob": 0.03310884400901559,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 369,
+        "quality_score": 0.6093389549059508,
+        "pick_score_raw": 3.8034010147609685,
+        "pick_score": 7.187571820593065
+      },
+      {
+        "from": "Dragonback Assault",
+        "to": "Temur Monument",
+        "pair_games": 129,
+        "pair_win_rate": 0.7364341085271318,
+        "pair_expected_win_rate": 0.700441456715721,
+        "pair_lift_vs_baseline": 0.20145320620893792,
+        "synergy_delta_logit": 0.17811544678572377,
+        "synergy_delta_prob": 0.03599265181141076,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 333,
+        "quality_score": 0.578170088311533,
+        "pick_score_raw": 3.3922045208968474,
+        "pick_score": 5.893350986608199
+      },
+      {
+        "from": "Dragonclaw Strike",
+        "to": "Roamer's Routine",
+        "pair_games": 368,
+        "pair_win_rate": 0.6304347826086957,
+        "pair_expected_win_rate": 0.585268697849956,
+        "pair_lift_vs_baseline": 0.09545388029050184,
+        "synergy_delta_logit": 0.1896422774223232,
+        "synergy_delta_prob": 0.04516608475873962,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1590,
+        "quality_score": 0.5748387198079622,
+        "pick_score_raw": 3.1944507814177467,
+        "pick_score": 5.227116555614886
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Temur Devotee",
+        "pair_games": 1024,
+        "pair_win_rate": 0.61328125,
+        "pair_expected_win_rate": 0.5819303016593057,
+        "pair_lift_vs_baseline": 0.07830034768180616,
+        "synergy_delta_logit": 0.13042343231943837,
+        "synergy_delta_prob": 0.031350948340694296,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2994,
+        "quality_score": 0.5744623610687327,
+        "pick_score_raw": 4.656391436170573,
+        "pick_score": 9.551510473333378
+      },
+      {
+        "from": "Undergrowth Leopard",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 116,
+        "pair_win_rate": 0.75,
+        "pair_expected_win_rate": 0.7192641380066653,
+        "pair_lift_vs_baseline": 0.21501909768180616,
+        "synergy_delta_logit": 0.15779786419073316,
+        "synergy_delta_prob": 0.030735861993334668,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 373,
+        "quality_score": 0.5177374402846289,
+        "pick_score_raw": 3.430973506666606,
+        "pick_score": 6.020441106599081
+      },
+      {
+        "from": "Champion of Dusan",
+        "to": "Marang River Regent",
+        "pair_games": 112,
+        "pair_win_rate": 0.7321428571428571,
+        "pair_expected_win_rate": 0.6992357569720341,
+        "pair_lift_vs_baseline": 0.19716195482466325,
+        "synergy_delta_logit": 0.16186061483161618,
+        "synergy_delta_prob": 0.03290710017082299,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 389,
+        "quality_score": 0.48296032025852076,
+        "pick_score_raw": 3.1209193583207213,
+        "pick_score": 4.9713449656417446
+      },
+      {
+        "from": "Eshki Dragonclaw",
+        "to": "Mammoth Bellow",
+        "pair_games": 374,
+        "pair_win_rate": 0.6497326203208557,
+        "pair_expected_win_rate": 0.6188948781633815,
+        "pair_lift_vs_baseline": 0.11475171800266182,
+        "synergy_delta_logit": 0.13300393454061654,
+        "synergy_delta_prob": 0.030837742157474146,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 831,
+        "quality_score": 0.46313045945885334,
+        "pick_score_raw": 3.6573022340223336,
+        "pick_score": 6.740880725111711
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 115,
+        "pair_win_rate": 0.782608695652174,
+        "pair_expected_win_rate": 0.7611579370810839,
+        "pair_lift_vs_baseline": 0.2476277933339801,
+        "synergy_delta_logit": 0.12189547914590304,
+        "synergy_delta_prob": 0.021450758571090023,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 302,
+        "quality_score": 0.4497828203446712,
+        "pick_score_raw": 3.853889141423842,
+        "pick_score": 7.3387842638173275
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Sagu Wildling",
+        "pair_games": 1052,
+        "pair_win_rate": 0.6055133079847909,
+        "pair_expected_win_rate": 0.5789290122544084,
+        "pair_lift_vs_baseline": 0.07053240566659702,
+        "synergy_delta_logit": 0.11011270577710802,
+        "synergy_delta_prob": 0.026584295730382457,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2117,
+        "quality_score": 0.4471401977942433,
+        "pick_score_raw": 4.285624744834128,
+        "pick_score": 8.571074464027856
+      },
+      {
+        "from": "Roamer's Routine",
+        "to": "Temur Tawnyback",
+        "pair_games": 996,
+        "pair_win_rate": 0.5933734939759037,
+        "pair_expected_win_rate": 0.5649655373801981,
+        "pair_lift_vs_baseline": 0.058392591657709825,
+        "synergy_delta_logit": 0.11658946916463087,
+        "synergy_delta_prob": 0.028407956595705608,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.4572447378278465,
+        "draft_pair_events": 3411,
+        "quality_score": 0.43916837373488776,
+        "pick_score_raw": 3.8499494261114893,
+        "pick_score": 7.327041484519405
+      },
+      {
+        "from": "Champion of Dusan",
+        "to": "Temur Battlecrier",
+        "pair_games": 348,
+        "pair_win_rate": 0.6206896551724138,
+        "pair_expected_win_rate": 0.5817165636017141,
+        "pair_lift_vs_baseline": 0.08570875285421997,
+        "synergy_delta_logit": 0.16265244035408039,
+        "synergy_delta_prob": 0.038973091570699725,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1015,
+        "quality_score": 0.4317822155662669,
+        "pick_score_raw": 2.791162995351682,
+        "pick_score": 3.7651885491344714
+      },
+      {
+        "from": "Sagu Wildling",
+        "to": "Temur Monument",
+        "pair_games": 775,
+        "pair_win_rate": 0.6154838709677419,
+        "pair_expected_win_rate": 0.5887776027091157,
+        "pair_lift_vs_baseline": 0.08050296864954809,
+        "synergy_delta_logit": 0.11150865734642373,
+        "synergy_delta_prob": 0.02670626825862621,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1818,
+        "quality_score": 0.42907818698862665,
+        "pick_score_raw": 4.057946461202059,
+        "pick_score": 7.934321680416975
+      },
+      {
+        "from": "Sagu Wildling",
+        "to": "Undergrowth Leopard",
+        "pair_games": 783,
+        "pair_win_rate": 0.6015325670498084,
+        "pair_expected_win_rate": 0.5770507695033538,
+        "pair_lift_vs_baseline": 0.06655166473161456,
+        "synergy_delta_logit": 0.10117680420541791,
+        "synergy_delta_prob": 0.02448179754645463,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.2009214662999206,
+        "draft_pair_events": 2312,
+        "quality_score": 0.41343302555005745,
+        "pick_score_raw": 3.97357924971398,
+        "pick_score": 7.691064011075471
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Roamer's Routine",
+        "pair_games": 531,
+        "pair_win_rate": 0.5932203389830508,
+        "pair_expected_win_rate": 0.5565472361171063,
+        "pair_lift_vs_baseline": 0.05823943666485698,
+        "synergy_delta_logit": 0.15013347179962933,
+        "synergy_delta_prob": 0.036673102865944496,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.44257439384840097,
+        "draft_pair_events": 1919,
+        "quality_score": 0.40270717195372124,
+        "pick_score_raw": 2.736698221706164,
+        "pick_score": 3.555921295614596
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Temur Battlecrier",
+        "pair_games": 320,
+        "pair_win_rate": 0.6625,
+        "pair_expected_win_rate": 0.6365852439994,
+        "pair_lift_vs_baseline": 0.12751909768180614,
+        "synergy_delta_logit": 0.11388147289275208,
+        "synergy_delta_prob": 0.025914756000600003,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 821,
+        "quality_score": 0.4013733207073109,
+        "pick_score_raw": 3.701599289130173,
+        "pick_score": 6.877780526455352
+      },
+      {
+        "from": "Molten Exhale",
+        "to": "Temur Monument",
+        "pair_games": 860,
+        "pair_win_rate": 0.6244186046511628,
+        "pair_expected_win_rate": 0.603133734838162,
+        "pair_lift_vs_baseline": 0.089437702332969,
+        "synergy_delta_logit": 0.08980617702832394,
+        "synergy_delta_prob": 0.021284869813000817,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1774,
+        "quality_score": 0.39603513748035696,
+        "pick_score_raw": 4.6499963155022614,
+        "pick_score": 9.535150804366065
+      },
+      {
+        "from": "Songcrafter Mage",
+        "to": "Undergrowth Leopard",
+        "pair_games": 203,
+        "pair_win_rate": 0.6305418719211823,
+        "pair_expected_win_rate": 0.5885976376087669,
+        "pair_lift_vs_baseline": 0.09556096960298843,
+        "synergy_delta_logit": 0.1763710476929456,
+        "synergy_delta_prob": 0.04194423431241534,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 910,
+        "quality_score": 0.3893380892385607,
+        "pick_score_raw": 2.3196951312390945,
+        "pick_score": 1.844675400852529
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Temur Battlecrier",
+        "pair_games": 458,
+        "pair_win_rate": 0.6397379912663755,
+        "pair_expected_win_rate": 0.615071298428578,
+        "pair_lift_vs_baseline": 0.1047570889481817,
+        "synergy_delta_logit": 0.10554706803970448,
+        "synergy_delta_prob": 0.024666692837797544,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1132,
+        "quality_score": 0.3808924440946889,
+        "pick_score_raw": 3.7965102275101743,
+        "pick_score": 7.16681067587955
+      },
+      {
+        "from": "Dragonclaw Strike",
+        "to": "Undergrowth Leopard",
+        "pair_games": 496,
+        "pair_win_rate": 0.6229838709677419,
+        "pair_expected_win_rate": 0.5971635531755184,
+        "pair_lift_vs_baseline": 0.08800296864954804,
+        "synergy_delta_logit": 0.10857226617883986,
+        "synergy_delta_prob": 0.02582031779222349,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1707,
+        "quality_score": 0.3583424546075565,
+        "pick_score_raw": 3.4795285107008818,
+        "pick_score": 6.178051813753114
+      },
+      {
+        "from": "Sagu Wildling",
+        "to": "Songcrafter Mage",
+        "pair_games": 402,
+        "pair_win_rate": 0.6268656716417911,
+        "pair_expected_win_rate": 0.5987281644105117,
+        "pair_lift_vs_baseline": 0.09188476932359724,
+        "synergy_delta_logit": 0.1186252058586722,
+        "synergy_delta_prob": 0.02813750723127939,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 910,
+        "quality_score": 0.35678072100168323,
+        "pick_score_raw": 3.160499400337038,
+        "pick_score": 5.109582000331635
+      },
+      {
+        "from": "Dragonback Assault",
+        "to": "Molten Exhale",
+        "pair_games": 228,
+        "pair_win_rate": 0.7280701754385965,
+        "pair_expected_win_rate": 0.7115219786839788,
+        "pair_lift_vs_baseline": 0.1930892731204027,
+        "synergy_delta_logit": 0.0820659960602863,
+        "synergy_delta_prob": 0.016548196754617717,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 439,
+        "quality_score": 0.34441546871084616,
+        "pick_score_raw": 4.3926576153615216,
+        "pick_score": 8.860995624755041
+      },
+      {
+        "from": "Sagu Pummeler",
+        "to": "Temur Monument",
+        "pair_games": 582,
+        "pair_win_rate": 0.6048109965635738,
+        "pair_expected_win_rate": 0.5776205321298571,
+        "pair_lift_vs_baseline": 0.06983009424538,
+        "synergy_delta_logit": 0.11253885536050084,
+        "synergy_delta_prob": 0.027190464433716754,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1805,
+        "quality_score": 0.3353286722232878,
+        "pick_score_raw": 3.142179837998927,
+        "pick_score": 5.045763420413766
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Sagu Pummeler",
+        "pair_games": 669,
+        "pair_win_rate": 0.6352765321375187,
+        "pair_expected_win_rate": 0.6184561974939711,
+        "pair_lift_vs_baseline": 0.10029562981932483,
+        "synergy_delta_logit": 0.07192023551302529,
+        "synergy_delta_prob": 0.016820334643547596,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.39695721307976284,
+        "draft_pair_events": 1775,
+        "quality_score": 0.3294633194529679,
+        "pick_score_raw": 4.6872240333727,
+        "pick_score": 9.630126172269163
+      },
+      {
+        "from": "Roar of Endless Song",
+        "to": "Songcrafter Mage",
+        "pair_games": 128,
+        "pair_win_rate": 0.7109375,
+        "pair_expected_win_rate": 0.6879328169842772,
+        "pair_lift_vs_baseline": 0.17595659768180616,
+        "synergy_delta_logit": 0.10946890524734809,
+        "synergy_delta_prob": 0.023004683015722782,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 341,
+        "quality_score": 0.3134952311131187,
+        "pick_score_raw": 2.9931408871174083,
+        "pick_score": 4.515827575501687
+      },
+      {
+        "from": "Songcrafter Mage",
+        "to": "Temur Battlecrier",
+        "pair_games": 151,
+        "pair_win_rate": 0.6423841059602649,
+        "pair_expected_win_rate": 0.6063129859959246,
+        "pair_lift_vs_baseline": 0.10740320364207101,
+        "synergy_delta_logit": 0.15388681356787404,
+        "synergy_delta_prob": 0.036071119964340204,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 402,
+        "quality_score": 0.3131812968742331,
+        "pick_score_raw": 2.1290573239383574,
+        "pick_score": 0.9893931006481598
+      },
+      {
+        "from": "Champion of Dusan",
+        "to": "Sagu Pummeler",
+        "pair_games": 726,
+        "pair_win_rate": 0.5895316804407713,
+        "pair_expected_win_rate": 0.562730514789315,
+        "pair_lift_vs_baseline": 0.05455077812257747,
+        "synergy_delta_logit": 0.10977853086952932,
+        "synergy_delta_prob": 0.026801165651456293,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2257,
+        "quality_score": 0.3056582671052752,
+        "pick_score_raw": 2.9394358025765097,
+        "pick_score": 4.320007434962451
+      },
+      {
+        "from": "Molten Exhale",
+        "to": "Songcrafter Mage",
+        "pair_games": 456,
+        "pair_win_rate": 0.6337719298245614,
+        "pair_expected_win_rate": 0.6129652668786861,
+        "pair_lift_vs_baseline": 0.09879102750636759,
+        "synergy_delta_logit": 0.08863904091781039,
+        "synergy_delta_prob": 0.0208066629458753,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 960,
+        "quality_score": 0.30206196189214457,
+        "pick_score_raw": 3.581994295617778,
+        "pick_score": 6.50512564049094
+      },
+      {
+        "from": "Molten Exhale",
+        "to": "Sagu Pummeler",
+        "pair_games": 942,
+        "pair_win_rate": 0.60828025477707,
+        "pair_expected_win_rate": 0.5905886846555937,
+        "pair_lift_vs_baseline": 0.0732993524588762,
+        "synergy_delta_logit": 0.07368957430730166,
+        "synergy_delta_prob": 0.017691570121476374,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2199,
+        "quality_score": 0.2922136626643057,
+        "pick_score_raw": 4.185852734510606,
+        "pick_score": 8.295484435465939
+      },
+      {
+        "from": "Songcrafter Mage",
+        "to": "Temur Devotee",
+        "pair_games": 410,
+        "pair_win_rate": 0.6024390243902439,
+        "pair_expected_win_rate": 0.5729414909745996,
+        "pair_lift_vs_baseline": 0.06745812207205004,
+        "synergy_delta_logit": 0.12177556163248299,
+        "synergy_delta_prob": 0.029497533415644317,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1201,
+        "quality_score": 0.2921185623781701,
+        "pick_score_raw": 2.5244145634852027,
+        "pick_score": 2.7100841418249937
+      },
+      {
+        "from": "Dragonback Assault",
+        "to": "Sarkhan's Resolve",
+        "pair_games": 101,
+        "pair_win_rate": 0.7326732673267327,
+        "pair_expected_win_rate": 0.7122361410940063,
+        "pair_lift_vs_baseline": 0.19769236500853882,
+        "synergy_delta_logit": 0.10195892138633034,
+        "synergy_delta_prob": 0.02043712623272631,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 402,
+        "quality_score": 0.2899710930085416,
+        "pick_score_raw": 2.9752428269383975,
+        "pick_score": 4.45086158677528
+      },
+      {
+        "from": "Eshki Dragonclaw",
+        "to": "Undergrowth Leopard",
+        "pair_games": 281,
+        "pair_win_rate": 0.6405693950177936,
+        "pair_expected_win_rate": 0.6170769926967479,
+        "pair_lift_vs_baseline": 0.1055884926995998,
+        "synergy_delta_logit": 0.10067647601301022,
+        "synergy_delta_prob": 0.02349240232104577,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 941,
+        "quality_score": 0.2845201587654053,
+        "pick_score_raw": 2.970251217889021,
+        "pick_score": 4.432690984968489
+      },
+      {
+        "from": "Molten Exhale",
+        "to": "Roamer's Routine",
+        "pair_games": 570,
+        "pair_win_rate": 0.6017543859649123,
+        "pair_expected_win_rate": 0.5795882047784003,
+        "pair_lift_vs_baseline": 0.06677348364671842,
+        "synergy_delta_logit": 0.0916972658180325,
+        "synergy_delta_prob": 0.022166181186511924,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.38426257566103933,
+        "draft_pair_events": 1984,
+        "quality_score": 0.2802214105805378,
+        "pick_score_raw": 3.131431388687561,
+        "pick_score": 5.008188285849506
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Roamer's Routine",
+        "pair_games": 447,
+        "pair_win_rate": 0.6263982102908278,
+        "pair_expected_win_rate": 0.6077071252240527,
+        "pair_lift_vs_baseline": 0.09141730797263392,
+        "synergy_delta_logit": 0.07911141713471093,
+        "synergy_delta_prob": 0.01869108506677508,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.2578269694969055,
+        "draft_pair_events": 1741,
+        "quality_score": 0.2677698279966864,
+        "pick_score_raw": 3.498328350644597,
+        "pick_score": 6.238618206290538
+      },
+      {
+        "from": "Sagu Pummeler",
+        "to": "Temur Devotee",
+        "pair_games": 852,
+        "pair_win_rate": 0.5762910798122066,
+        "pair_expected_win_rate": 0.5499498912160428,
+        "pair_lift_vs_baseline": 0.04131017749401278,
+        "synergy_delta_logit": 0.10709793168386428,
+        "synergy_delta_prob": 0.026341188596163856,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2699,
+        "quality_score": 0.2673765638167097,
+        "pick_score_raw": 2.637956664554706,
+        "pick_score": 3.1686334904560267
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Temur Monument",
+        "pair_games": 709,
+        "pair_win_rate": 0.5994358251057827,
+        "pair_expected_win_rate": 0.5804490826951051,
+        "pair_lift_vs_baseline": 0.06445492278758891,
+        "synergy_delta_logit": 0.07849774102999219,
+        "synergy_delta_prob": 0.01898674241067766,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1698,
+        "quality_score": 0.24217229586796607,
+        "pick_score_raw": 3.2523462573557227,
+        "pick_score": 5.425364625504661
+      },
+      {
+        "from": "Roamer's Routine",
+        "to": "Songcrafter Mage",
+        "pair_games": 182,
+        "pair_win_rate": 0.6098901098901099,
+        "pair_expected_win_rate": 0.5766291713209533,
+        "pair_lift_vs_baseline": 0.0749092075719161,
+        "synergy_delta_logit": 0.13789940693704178,
+        "synergy_delta_prob": 0.033260938569156684,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 832,
+        "quality_score": 0.2359362675275804,
+        "pick_score_raw": 1.7970372641189145,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Marang River Regent",
+        "to": "Sagu Wildling",
+        "pair_games": 205,
+        "pair_win_rate": 0.7219512195121951,
+        "pair_expected_win_rate": 0.7105762377253136,
+        "pair_lift_vs_baseline": 0.18697031719400126,
+        "synergy_delta_logit": 0.05597668222040697,
+        "synergy_delta_prob": 0.011374981786881455,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 443,
+        "quality_score": 0.21643783349482582,
+        "pick_score_raw": 4.0472127784387055,
+        "pick_score": 7.903599265197899
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Songcrafter Mage",
+        "pair_games": 391,
+        "pair_win_rate": 0.6342710997442456,
+        "pair_expected_win_rate": 0.618810282249456,
+        "pair_lift_vs_baseline": 0.09929019742605172,
+        "synergy_delta_logit": 0.06608257895418779,
+        "synergy_delta_prob": 0.015460817494789558,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 994,
+        "quality_score": 0.20967501488595727,
+        "pick_score_raw": 3.3357468658376397,
+        "pick_score": 5.706254267405024
+      },
+      {
+        "from": "Roamer's Routine",
+        "to": "Temur Devotee",
+        "pair_games": 609,
+        "pair_win_rate": 0.5665024630541872,
+        "pair_expected_win_rate": 0.5387103536219806,
+        "pair_lift_vs_baseline": 0.031521560735993326,
+        "synergy_delta_logit": 0.11244341060767382,
+        "synergy_delta_prob": 0.027792109432206558,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2643,
+        "quality_score": 0.19929444404345587,
+        "pick_score_raw": 1.8725882121272526,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Sarkhan's Resolve",
+        "to": "Temur Battlecrier",
+        "pair_games": 250,
+        "pair_win_rate": 0.628,
+        "pair_expected_win_rate": 0.610033792077941,
+        "pair_lift_vs_baseline": 0.09301909768180616,
+        "synergy_delta_logit": 0.0761920487289457,
+        "synergy_delta_prob": 0.017966207922059052,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1048,
+        "quality_score": 0.18350604697298026,
+        "pick_score_raw": 2.532762820388584,
+        "pick_score": 2.7442989863953415
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Temur Devotee",
+        "pair_games": 1146,
+        "pair_win_rate": 0.5698080279232112,
+        "pair_expected_win_rate": 0.5528202875223693,
+        "pair_lift_vs_baseline": 0.03482712560501733,
+        "synergy_delta_logit": 0.06899553903714772,
+        "synergy_delta_prob": 0.016987740400841833,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2721,
+        "quality_score": 0.17870017592033174,
+        "pick_score_raw": 2.736821696614117,
+        "pick_score": 3.556399158291979
+      },
+      {
+        "from": "Dragonclaw Strike",
+        "to": "Temur Tawnyback",
+        "pair_games": 1561,
+        "pair_win_rate": 0.6143497757847534,
+        "pair_expected_win_rate": 0.6071956576211256,
+        "pair_lift_vs_baseline": 0.07936887346655952,
+        "synergy_delta_logit": 0.030094186354368946,
+        "synergy_delta_prob": 0.007154118163627765,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.24602409030830388,
+        "draft_pair_events": 3051,
+        "quality_score": 0.17288064713597545,
+        "pick_score_raw": 5.9591371931546355,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Roar of Endless Song",
+        "to": "Sarkhan's Resolve",
+        "pair_games": 234,
+        "pair_win_rate": 0.7008547008547008,
+        "pair_expected_win_rate": 0.6912750060131916,
+        "pair_lift_vs_baseline": 0.16587379853650697,
+        "synergy_delta_logit": 0.0452843520546895,
+        "synergy_delta_prob": 0.009579694841509223,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 900,
+        "quality_score": 0.17255830196840607,
+        "pick_score_raw": 4.003995902036765,
+        "pick_score": 7.779237362540873
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Sarkhan's Resolve",
+        "pair_games": 494,
+        "pair_win_rate": 0.6072874493927125,
+        "pair_expected_win_rate": 0.5942313556180941,
+        "pair_lift_vs_baseline": 0.07230654707451867,
+        "synergy_delta_logit": 0.05443874024479978,
+        "synergy_delta_prob": 0.01305609377461836,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.49691281790853403,
+        "draft_pair_events": 1985,
+        "quality_score": 0.16787724068886667,
+        "pick_score_raw": 3.134796582685531,
+        "pick_score": 5.019963053568263
+      },
+      {
+        "from": "Sagu Pummeler",
+        "to": "Temur Battlecrier",
+        "pair_games": 401,
+        "pair_win_rate": 0.600997506234414,
+        "pair_expected_win_rate": 0.5838129354600893,
+        "pair_lift_vs_baseline": 0.0660166039162201,
+        "synergy_delta_logit": 0.07117733629654999,
+        "synergy_delta_prob": 0.01718457077432467,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1046,
+        "quality_score": 0.16522826767078433,
+        "pick_score_raw": 2.4411365501217714,
+        "pick_score": 2.364268077452797
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Piercing Exhale",
+        "pair_games": 974,
+        "pair_win_rate": 0.608829568788501,
+        "pair_expected_win_rate": 0.5993389233792908,
+        "pair_lift_vs_baseline": 0.07384866647030719,
+        "synergy_delta_logit": 0.03968364491227577,
+        "synergy_delta_prob": 0.009490645409210186,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2227,
+        "quality_score": 0.16103037184137425,
+        "pick_score_raw": 4.283638721464266,
+        "pick_score": 8.565639593118872
+      },
+      {
+        "from": "Eshki Dragonclaw",
+        "to": "Roamer's Routine",
+        "pair_games": 220,
+        "pair_win_rate": 0.6227272727272727,
+        "pair_expected_win_rate": 0.6053815741233894,
+        "pair_lift_vs_baseline": 0.08774637040907884,
+        "synergy_delta_logit": 0.0732006453519698,
+        "synergy_delta_prob": 0.01734569860388324,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 870,
+        "quality_score": 0.1565818668971776,
+        "pick_score_raw": 2.2472658326272983,
+        "pick_score": 1.5256560307186533
+      },
+      {
+        "from": "Dragonclaw Strike",
+        "to": "Sagu Wildling",
+        "pair_games": 839,
+        "pair_win_rate": 0.6162097735399285,
+        "pair_expected_win_rate": 0.6072239052083472,
+        "pair_lift_vs_baseline": 0.08122887122173461,
+        "synergy_delta_logit": 0.0378334502335676,
+        "synergy_delta_prob": 0.008985868331581215,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1882,
+        "quality_score": 0.1527583872666251,
+        "pick_score_raw": 4.25875607014779,
+        "pick_score": 8.49737307039548
+      },
+      {
+        "from": "Dragonclaw Strike",
+        "to": "Eshki Dragonclaw",
+        "pair_games": 354,
+        "pair_win_rate": 0.655367231638418,
+        "pair_expected_win_rate": 0.6461456682433322,
+        "pair_lift_vs_baseline": 0.1203863293202242,
+        "synergy_delta_logit": 0.04057669216817639,
+        "synergy_delta_prob": 0.009221563395085841,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 795,
+        "quality_score": 0.14297246174617134,
+        "pick_score_raw": 3.699943794371999,
+        "pick_score": 6.872687472569594
+      },
+      {
+        "from": "Champion of Dusan",
+        "to": "Mammoth Bellow",
+        "pair_games": 655,
+        "pair_win_rate": 0.5801526717557252,
+        "pair_expected_win_rate": 0.5655837865714535,
+        "pair_lift_vs_baseline": 0.04517176943753132,
+        "synergy_delta_logit": 0.05954479842817956,
+        "synergy_delta_prob": 0.014568885184271685,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1823,
+        "quality_score": 0.1366046363303195,
+        "pick_score_raw": 2.41939093156639,
+        "pick_score": 2.2725900397373673
+      },
+      {
+        "from": "Sagu Pummeler",
+        "to": "Songcrafter Mage",
+        "pair_games": 325,
+        "pair_win_rate": 0.6030769230769231,
+        "pair_expected_win_rate": 0.5876519924624759,
+        "pair_lift_vs_baseline": 0.06809602075872923,
+        "synergy_delta_logit": 0.06403500303446202,
+        "synergy_delta_prob": 0.015424930614447163,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 906,
+        "quality_score": 0.13632783344013685,
+        "pick_score_raw": 2.237114907160726,
+        "pick_score": 1.4803780464924199
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Molten Exhale",
+        "pair_games": 1047,
+        "pair_win_rate": 0.6017191977077364,
+        "pair_expected_win_rate": 0.5933915239605908,
+        "pair_lift_vs_baseline": 0.06673829538954257,
+        "synergy_delta_logit": 0.03462992080104871,
+        "synergy_delta_prob": 0.008327673747145603,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1993,
+        "quality_score": 0.1341163516609114,
+        "pick_score_raw": 4.086090462682334,
+        "pick_score": 8.014568113108057
+      },
+      {
+        "from": "Roamer's Routine",
+        "to": "Sagu Wildling",
+        "pair_games": 585,
+        "pair_win_rate": 0.5777777777777777,
+        "pair_expected_win_rate": 0.564994646174182,
+        "pair_lift_vs_baseline": 0.04279687545958388,
+        "synergy_delta_logit": 0.05219964220990797,
+        "synergy_delta_prob": 0.012783131603595677,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.42807652958698794,
+        "draft_pair_events": 2216,
+        "quality_score": 0.11828562183739601,
+        "pick_score_raw": 2.315992976529957,
+        "pick_score": 1.8285385702194996
+      },
+      {
+        "from": "Sarkhan's Resolve",
+        "to": "Songcrafter Mage",
+        "pair_games": 193,
+        "pair_win_rate": 0.6269430051813472,
+        "pair_expected_win_rate": 0.6137909828680727,
+        "pair_lift_vs_baseline": 0.09196210286315332,
+        "synergy_delta_logit": 0.055848693240474256,
+        "synergy_delta_prob": 0.013152022313274503,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 853,
+        "quality_score": 0.11618642549121808,
+        "pick_score_raw": 2.1853688549858172,
+        "pick_score": 1.2473365812964279
+      },
+      {
+        "from": "Eshki Dragonclaw",
+        "to": "Piercing Exhale",
+        "pair_games": 444,
+        "pair_win_rate": 0.6531531531531531,
+        "pair_expected_win_rate": 0.6464544235382429,
+        "pair_lift_vs_baseline": 0.1181722508349593,
+        "synergy_delta_logit": 0.02943802827042341,
+        "synergy_delta_prob": 0.006698729614910248,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1059,
+        "quality_score": 0.1155601134355687,
+        "pick_score_raw": 4.128352206690803,
+        "pick_score": 8.134237982014112
+      },
+      {
+        "from": "Temur Monument",
+        "to": "Undergrowth Leopard",
+        "pair_games": 392,
+        "pair_win_rate": 0.5918367346938775,
+        "pair_expected_win_rate": 0.5785726846198023,
+        "pair_lift_vs_baseline": 0.0568558323756837,
+        "synergy_delta_logit": 0.05464669426210422,
+        "synergy_delta_prob": 0.013264050074075273,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1690,
+        "quality_score": 0.1140586586822042,
+        "pick_score_raw": 2.2003081526264725,
+        "pick_score": 1.3150030669979333
+      },
+      {
+        "from": "Dragonclaw Strike",
+        "to": "Temur Monument",
+        "pair_games": 553,
+        "pair_win_rate": 0.6166365280289331,
+        "pair_expected_win_rate": 0.6087108689191938,
+        "pair_lift_vs_baseline": 0.08165562571073925,
+        "synergy_delta_logit": 0.03339956371218966,
+        "synergy_delta_prob": 0.007925659109739303,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1431,
+        "quality_score": 0.10885274613205312,
+        "pick_score_raw": 3.4328224294649576,
+        "pick_score": 6.02647431923648
+      },
+      {
+        "from": "Eshki Dragonclaw",
+        "to": "Sarkhan's Resolve",
+        "pair_games": 274,
+        "pair_win_rate": 0.6496350364963503,
+        "pair_expected_win_rate": 0.641588298532402,
+        "pair_lift_vs_baseline": 0.11465413417815651,
+        "synergy_delta_logit": 0.03517087013845743,
+        "synergy_delta_prob": 0.008046737963948392,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 959,
+        "quality_score": 0.10530916940616372,
+        "pick_score_raw": 3.147274261776477,
+        "pick_score": 5.063538796147203
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Roar of Endless Song",
+        "pair_games": 330,
+        "pair_win_rate": 0.6757575757575758,
+        "pair_expected_win_rate": 0.670109981912405,
+        "pair_lift_vs_baseline": 0.14077667343938194,
+        "synergy_delta_logit": 0.025660406365073718,
+        "synergy_delta_prob": 0.005647593845170773,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 809,
+        "quality_score": 0.1000406629855129,
+        "pick_score_raw": 4.094236229627054,
+        "pick_score": 8.037711129101272
+      },
+      {
+        "from": "Mammoth Bellow",
+        "to": "Temur Battlecrier",
+        "pair_games": 399,
+        "pair_win_rate": 0.5964912280701754,
+        "pair_expected_win_rate": 0.5866296941266846,
+        "pair_lift_vs_baseline": 0.061510325751981565,
+        "synergy_delta_logit": 0.04081634830791597,
+        "synergy_delta_prob": 0.009861533943490763,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 918,
+        "quality_score": 0.0891282153432256,
+        "pick_score_raw": 2.2947346366687906,
+        "pick_score": 1.7355282419374811
+      },
+      {
+        "from": "Sagu Pummeler",
+        "to": "Sagu Wildling",
+        "pair_games": 1030,
+        "pair_win_rate": 0.5825242718446602,
+        "pair_expected_win_rate": 0.5760976977848896,
+        "pair_lift_vs_baseline": 0.04754336952646632,
+        "synergy_delta_logit": 0.026370195382998896,
+        "synergy_delta_prob": 0.00642657405977054,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.6109568339687879,
+        "draft_pair_events": 2326,
+        "quality_score": 0.08804330401679945,
+        "pick_score_raw": 3.37003988132835,
+        "pick_score": 5.820187257290404
+      },
+      {
+        "from": "Roamer's Routine",
+        "to": "Undergrowth Leopard",
+        "pair_games": 376,
+        "pair_win_rate": 0.5691489361702128,
+        "pair_expected_win_rate": 0.5546459582331318,
+        "pair_lift_vs_baseline": 0.03416803385201894,
+        "synergy_delta_logit": 0.05891924801046844,
+        "synergy_delta_prob": 0.014502977937080996,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2042,
+        "quality_score": 0.08547164456355129,
+        "pick_score_raw": 1.5307174799247203,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Sarkhan's Resolve",
+        "to": "Temur Devotee",
+        "pair_games": 590,
+        "pair_win_rate": 0.5847457627118644,
+        "pair_expected_win_rate": 0.5767575291088722,
+        "pair_lift_vs_baseline": 0.04976486039367056,
+        "synergy_delta_logit": 0.032809487203028675,
+        "synergy_delta_prob": 0.007988233602992167,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2709,
+        "quality_score": 0.07757282382439801,
+        "pick_score_raw": 2.4982929799056866,
+        "pick_score": 2.6025004312407387
+      },
+      {
+        "from": "Temur Battlecrier",
+        "to": "Temur Tawnyback",
+        "pair_games": 865,
+        "pair_win_rate": 0.6,
+        "pair_expected_win_rate": 0.5948926034359746,
+        "pair_lift_vs_baseline": 0.06501909768180614,
+        "synergy_delta_logit": 0.021236425935978798,
+        "synergy_delta_prob": 0.005107396564025368,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1788,
+        "quality_score": 0.07298631355068533,
+        "pick_score_raw": 3.6241171872455133,
+        "pick_score": 6.637466690176488
+      },
+      {
+        "from": "Roamer's Routine",
+        "to": "Temur Battlecrier",
+        "pair_games": 205,
+        "pair_win_rate": 0.5853658536585366,
+        "pair_expected_win_rate": 0.5727621002796844,
+        "pair_lift_vs_baseline": 0.05038495134034271,
+        "synergy_delta_logit": 0.05171103883185735,
+        "synergy_delta_prob": 0.012603753378852112,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 936,
+        "quality_score": 0.06994166056920034,
+        "pick_score_raw": 1.4215057355496072,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Songcrafter Mage",
+        "pair_games": 282,
+        "pair_win_rate": 0.6453900709219859,
+        "pair_expected_win_rate": 0.6402374849774578,
+        "pair_lift_vs_baseline": 0.11040916860379202,
+        "synergy_delta_logit": 0.022441456559558315,
+        "synergy_delta_prob": 0.005152585944528054,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 679,
+        "quality_score": 0.06517207014292162,
+        "pick_score_raw": 3.046922770370891,
+        "pick_score": 4.709306022758659
+      },
+      {
+        "from": "Marang River Regent",
+        "to": "Roamer's Routine",
+        "pair_games": 112,
+        "pair_win_rate": 0.6964285714285714,
+        "pair_expected_win_rate": 0.6914627401508613,
+        "pair_lift_vs_baseline": 0.16144766911037756,
+        "synergy_delta_logit": 0.023381648586790704,
+        "synergy_delta_prob": 0.004965831277710109,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 455,
+        "quality_score": 0.058643537044051314,
+        "pick_score_raw": 2.625668916456141,
+        "pick_score": 3.119704206329581
+      },
+      {
+        "from": "Eshki Dragonclaw",
+        "to": "Molten Exhale",
+        "pair_games": 486,
+        "pair_win_rate": 0.6440329218106996,
+        "pair_expected_win_rate": 0.6407872322565956,
+        "pair_lift_vs_baseline": 0.10905201949250576,
+        "synergy_delta_logit": 0.014129005918927628,
+        "synergy_delta_prob": 0.003245689554103981,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 930,
+        "quality_score": 0.05393696809435027,
+        "pick_score_raw": 4.011955638431027,
+        "pick_score": 7.802222979189257
+      },
+      {
+        "from": "Roamer's Routine",
+        "to": "Sagu Pummeler",
+        "pair_games": 460,
+        "pair_win_rate": 0.5608695652173913,
+        "pair_expected_win_rate": 0.5536814485898254,
+        "pair_lift_vs_baseline": 0.025888662899197445,
+        "synergy_delta_logit": 0.029135306597391525,
+        "synergy_delta_prob": 0.00718811662756591,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.30837842190076,
+        "draft_pair_events": 2083,
+        "quality_score": 0.041831713414030386,
+        "pick_score_raw": 1.4797483164053016,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Temur Devotee",
+        "pair_games": 854,
+        "pair_win_rate": 0.6065573770491803,
+        "pair_expected_win_rate": 0.6041042899673428,
+        "pair_lift_vs_baseline": 0.0715764747309865,
+        "synergy_delta_logit": 0.010268051823740632,
+        "synergy_delta_prob": 0.002453087081837557,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2359,
+        "quality_score": 0.03814966712529969,
+        "pick_score_raw": 3.923217513845279,
+        "pick_score": 7.543880423339806
+      },
+      {
+        "from": "Sagu Pummeler",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 154,
+        "pair_win_rate": 0.7207792207792207,
+        "pair_expected_win_rate": 0.7184751854807342,
+        "pair_lift_vs_baseline": 0.1857983184610269,
+        "synergy_delta_logit": 0.0114195119973729,
+        "synergy_delta_prob": 0.002304035298486551,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 405,
+        "quality_score": 0.037922694516783366,
+        "pick_score_raw": 3.4742638740679506,
+        "pick_score": 6.161045467048048
+      },
+      {
+        "from": "Songcrafter Mage",
+        "to": "Temur Tawnyback",
+        "pair_games": 750,
+        "pair_win_rate": 0.6013333333333334,
+        "pair_expected_win_rate": 0.598699709620854,
+        "pair_lift_vs_baseline": 0.06635243101513955,
+        "synergy_delta_logit": 0.010973614065701687,
+        "synergy_delta_prob": 0.002633623712479438,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1540,
+        "quality_score": 0.03547532353073618,
+        "pick_score_raw": 3.406369007928234,
+        "pick_score": 5.939913729526127
+      },
+      {
+        "from": "Sagu Wildling",
+        "to": "Temur Devotee",
+        "pair_games": 1092,
+        "pair_win_rate": 0.565018315018315,
+        "pair_expected_win_rate": 0.561282728422136,
+        "pair_lift_vs_baseline": 0.03003741270012117,
+        "synergy_delta_logit": 0.015184646370858701,
+        "synergy_delta_prob": 0.003735586596179008,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2899,
+        "quality_score": 0.03511653089264745,
+        "pick_score_raw": 2.44445941547546,
+        "pick_score": 2.3782260017650083
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Temur Monument",
+        "pair_games": 692,
+        "pair_win_rate": 0.611271676300578,
+        "pair_expected_win_rate": 0.6090325238819013,
+        "pair_lift_vs_baseline": 0.07629077398238415,
+        "synergy_delta_logit": 0.00941350301353372,
+        "synergy_delta_prob": 0.002239152418676671,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1849,
+        "quality_score": 0.03281359646763705,
+        "pick_score_raw": 3.6763580197956505,
+        "pick_score": 6.799931428346477
+      },
+      {
+        "from": "Temur Devotee",
+        "to": "Temur Tawnyback",
+        "pair_games": 2042,
+        "pair_win_rate": 0.5636630754162586,
+        "pair_expected_win_rate": 0.5612535641261239,
+        "pair_lift_vs_baseline": 0.028682173098064756,
+        "synergy_delta_logit": 0.009790843261390514,
+        "synergy_delta_prob": 0.0024095112901346694,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4727,
+        "quality_score": 0.03065081402655214,
+        "pick_score_raw": 3.3166961699137714,
+        "pick_score": 5.64257143144257
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Dragonclaw Strike",
+          "Roamer's Routine",
+          "Undergrowth Leopard"
+        ],
+        "games": 45,
+        "win_rate": 0.8444444444444444,
+        "expected_win_rate": 0.6007771367930695,
+        "synergy_delta_logit": 1.2829717809104018,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 622,
+        "quality": 11.92914724774379
+      },
+      {
+        "cards": [
+          "Mammoth Bellow",
+          "Sagu Wildling",
+          "Undergrowth Leopard"
+        ],
+        "games": 117,
+        "win_rate": 0.6923076923076923,
+        "expected_win_rate": 0.5945102715168207,
+        "synergy_delta_logit": 0.4282877653992361,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 866,
+        "quality": 6.51304010781701
+      },
+      {
+        "cards": [
+          "Karakyk Guardian",
+          "Molten Exhale",
+          "Sagu Pummeler"
+        ],
+        "games": 96,
+        "win_rate": 0.75,
+        "expected_win_rate": 0.6567597108802321,
+        "synergy_delta_logit": 0.44972482720967877,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 710,
+        "quality": 6.142502778664505
+      },
+      {
+        "cards": [
+          "Dragonclaw Strike",
+          "Sagu Wildling",
+          "Undergrowth Leopard"
+        ],
+        "games": 86,
+        "win_rate": 0.7209302325581395,
+        "expected_win_rate": 0.6224409772324516,
+        "synergy_delta_logit": 0.4491586547139568,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 784,
+        "quality": 5.83121075272113
+      },
+      {
+        "cards": [
+          "Mammoth Bellow",
+          "Roamer's Routine",
+          "Temur Tawnyback"
+        ],
+        "games": 135,
+        "win_rate": 0.6592592592592592,
+        "expected_win_rate": 0.5825630317484435,
+        "synergy_delta_logit": 0.3266911432925408,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1265,
+        "quality": 5.42275615354384
+      },
+      {
+        "cards": [
+          "Sagu Pummeler",
+          "Sagu Wildling",
+          "Undergrowth Leopard"
+        ],
+        "games": 131,
+        "win_rate": 0.6641221374045801,
+        "expected_win_rate": 0.5917098378047966,
+        "synergy_delta_logit": 0.31068021233804755,
+        "deck_log_lift": 0.19640142950753656,
+        "draft_triplet_events": 1031,
+        "quality": 5.234245917692744
+      },
+      {
+        "cards": [
+          "Dragonclaw Strike",
+          "Karakyk Guardian",
+          "Roamer's Routine"
+        ],
+        "games": 50,
+        "win_rate": 0.76,
+        "expected_win_rate": 0.6517926085560054,
+        "synergy_delta_logit": 0.5257513383389303,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 609,
+        "quality": 5.148192857972367
+      },
+      {
+        "cards": [
+          "Dragonclaw Strike",
+          "Roamer's Routine",
+          "Sarkhan's Resolve"
+        ],
+        "games": 33,
+        "win_rate": 0.7575757575757576,
+        "expected_win_rate": 0.6256989349341641,
+        "synergy_delta_logit": 0.6256254227778437,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 640,
+        "quality": 4.9876105591834525
+      },
+      {
+        "cards": [
+          "Roamer's Routine",
+          "Sagu Wildling",
+          "Temur Tawnyback"
+        ],
+        "games": 157,
+        "win_rate": 0.6496815286624203,
+        "expected_win_rate": 0.590879165436054,
+        "synergy_delta_logit": 0.25003864079800164,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1510,
+        "quality": 4.509076950091254
+      },
+      {
+        "cards": [
+          "Mammoth Bellow",
+          "Roamer's Routine",
+          "Sagu Pummeler"
+        ],
+        "games": 71,
+        "win_rate": 0.647887323943662,
+        "expected_win_rate": 0.5713891074528226,
+        "synergy_delta_logit": 0.32224464188229807,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 763,
+        "quality": 3.7968164806147935
+      },
+      {
+        "cards": [
+          "Mammoth Bellow",
+          "Molten Exhale",
+          "Sagu Pummeler"
+        ],
+        "games": 111,
+        "win_rate": 0.6666666666666666,
+        "expected_win_rate": 0.6078690993012655,
+        "synergy_delta_logit": 0.2547833333774592,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 736,
+        "quality": 3.7477121416526997
+      },
+      {
+        "cards": [
+          "Karakyk Guardian",
+          "Molten Exhale",
+          "Roamer's Routine"
+        ],
+        "games": 73,
+        "win_rate": 0.7123287671232876,
+        "expected_win_rate": 0.6464728981704839,
+        "synergy_delta_logit": 0.3031501538999791,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 695,
+        "quality": 3.607308962924371
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 8,
+        "top_cards": [
+          "Mammoth Bellow",
+          "Temur Devotee",
+          "Piercing Exhale",
+          "Temur Battlecrier",
+          "Songcrafter Mage"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 7,
+        "top_cards": [
+          "Temur Tawnyback",
+          "Dragonclaw Strike",
+          "Karakyk Guardian",
+          "Undergrowth Leopard",
+          "Roamer's Routine"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 6,
+        "top_cards": [
+          "Temur Monument",
+          "Sagu Pummeler",
+          "Sagu Wildling",
+          "Molten Exhale",
+          "Dragonback Assault"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 1,
+        "top_cards": [
+          "Ugin, Eye of the Storms"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Elspeth, Storm Slayer"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Revival of the Ancestors"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Watcher of the Wayside"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Abzan Monument"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Piercing Exhale",
+          "pick_priority_score": 8.825474306892549,
+          "pick_priority_score_raw": 244.53377357505326,
+          "draft_drafts": 5765,
+          "draft_win_rate": 0.5418593015988975,
+          "draft_win_lift": 0.004081245721789584,
+          "draw_win_rate": 0.5819411296738266
+        },
+        {
+          "card": "Temur Tawnyback",
+          "pick_priority_score": 8.824399172983174,
+          "pick_priority_score_raw": 244.3779669422442,
+          "draft_drafts": 8965,
+          "draft_win_rate": 0.543668466563088,
+          "draft_win_lift": 0.005890410685980063,
+          "draw_win_rate": 0.561264523917308
+        },
+        {
+          "card": "Molten Exhale",
+          "pick_priority_score": 8.771582735291224,
+          "pick_priority_score_raw": 236.8443953693943,
+          "draft_drafts": 5337,
+          "draft_win_rate": 0.5461030756447428,
+          "draft_win_lift": 0.00832501976763489,
+          "draw_win_rate": 0.5759182127981826
+        },
+        {
+          "card": "Sarkhan's Resolve",
+          "pick_priority_score": 8.343077930293575,
+          "pick_priority_score_raw": 183.6801316061085,
+          "draft_drafts": 5239,
+          "draft_win_rate": 0.5376567314743362,
+          "draft_win_lift": -0.0001213244027716831,
+          "draw_win_rate": 0.576768393659806
+        },
+        {
+          "card": "Sagu Wildling",
+          "pick_priority_score": 7.539273700764994,
+          "pick_priority_score_raw": 113.89921259104315,
+          "draft_drafts": 5464,
+          "draft_win_rate": 0.5377806784664182,
+          "draft_win_lift": 2.6225893102749254e-06,
+          "draw_win_rate": 0.5612936880542514
+        },
+        {
+          "card": "Undergrowth Leopard",
+          "pick_priority_score": 6.742605845734181,
+          "pick_priority_score_raw": 70.78666281204794,
+          "draft_drafts": 5168,
+          "draft_win_rate": 0.5345644669035629,
+          "draft_win_lift": -0.0032135889735450673,
+          "draw_win_rate": 0.5509269356597601
+        },
+        {
+          "card": "Sagu Pummeler",
+          "pick_priority_score": 6.60267667773864,
+          "pick_priority_score_raw": 65.09438747922994,
+          "draft_drafts": 5318,
+          "draft_win_rate": 0.5367657870372056,
+          "draft_win_lift": -0.0010122688399023527,
+          "draw_win_rate": 0.5499609069585614
+        },
+        {
+          "card": "Champion of Dusan",
+          "pick_priority_score": 6.295121425465246,
+          "pick_priority_score_raw": 54.11939756208749,
+          "draft_drafts": 5000,
+          "draft_win_rate": 0.537827420793848,
+          "draft_win_lift": 4.936491674012444e-05,
+          "draw_win_rate": 0.5478260869565217
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Karakyk Guardian",
+          "pick_priority_score": 9.472829782410448,
+          "pick_priority_score_raw": 358.8316817367672,
+          "draft_drafts": 4322,
+          "draft_win_rate": 0.5462218628789448,
+          "draft_win_lift": 0.00844380700183689,
+          "draw_win_rate": 0.6041149343738914
+        },
+        {
+          "card": "Dragonclaw Strike",
+          "pick_priority_score": 8.876831345534047,
+          "pick_priority_score_raw": 252.09273347764142,
+          "draft_drafts": 4327,
+          "draft_win_rate": 0.5411176340479857,
+          "draft_win_lift": 0.0033395781708778216,
+          "draw_win_rate": 0.5816124977554319
+        },
+        {
+          "card": "Temur Monument",
+          "pick_priority_score": 7.843237313772517,
+          "pick_priority_score_raw": 136.48529239002832,
+          "draft_drafts": 4263,
+          "draft_win_rate": 0.5398973058744266,
+          "draft_win_lift": 0.0021192499973187173,
+          "draw_win_rate": 0.5628293473854884
+        },
+        {
+          "card": "Mammoth Bellow",
+          "pick_priority_score": 7.2198317622259225,
+          "pick_priority_score_raw": 94.15006121095023,
+          "draft_drafts": 4939,
+          "draft_win_rate": 0.5354584479510465,
+          "draft_win_lift": -0.002319607926061451,
+          "draw_win_rate": 0.5528312901342674
+        },
+        {
+          "card": "Abzan Monument",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 615,
+          "draft_win_rate": 0.5289901962820838,
+          "draft_win_lift": -0.00878785959502415,
+          "draw_win_rate": 0.528957528957529
+        }
+      ],
+      "rare": [
+        {
+          "card": "Roar of Endless Song",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 573.4965926730581,
+          "draft_drafts": 2250,
+          "draft_win_rate": 0.5730319157044313,
+          "draft_win_lift": 0.03525385982732343,
+          "draw_win_rate": 0.6540112248266755
+        },
+        {
+          "card": "Marang River Regent",
+          "pick_priority_score": 9.882367126187775,
+          "pick_priority_score_raw": 457.25657625973747,
+          "draft_drafts": 1061,
+          "draft_win_rate": 0.5885540022346643,
+          "draft_win_lift": 0.050775946357556334,
+          "draw_win_rate": 0.6882440476190477
+        },
+        {
+          "card": "Eshki Dragonclaw",
+          "pick_priority_score": 9.115738762306606,
+          "pick_priority_score_raw": 290.43239951852445,
+          "draft_drafts": 2276,
+          "draft_win_rate": 0.5506589489862159,
+          "draft_win_lift": 0.012880893109108005,
+          "draw_win_rate": 0.6017820424948594
+        },
+        {
+          "card": "Songcrafter Mage",
+          "pick_priority_score": 7.841551269894159,
+          "pick_priority_score_raw": 136.3485009418692,
+          "draft_drafts": 2215,
+          "draft_win_rate": 0.5392209732301668,
+          "draft_win_lift": 0.0014429173530589035,
+          "draw_win_rate": 0.572952380952381
+        },
+        {
+          "card": "Temur Battlecrier",
+          "pick_priority_score": 7.825434743910921,
+          "pick_priority_score_raw": 135.04779012232737,
+          "draft_drafts": 2491,
+          "draft_win_rate": 0.5394563411077167,
+          "draft_win_lift": 0.001678285230608756,
+          "draw_win_rate": 0.5690768237572628
+        },
+        {
+          "card": "Revival of the Ancestors",
+          "pick_priority_score": 3.2756483198503976,
+          "pick_priority_score_raw": 8.270060397859247,
+          "draft_drafts": 256,
+          "draft_win_rate": 0.5302424590127782,
+          "draft_win_lift": -0.007535596864329697,
+          "draw_win_rate": 0.5443786982248521
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Ureni, the Song Unending",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 501.7186193235919,
+          "draft_drafts": 974,
+          "draft_win_rate": 0.5800397588089606,
+          "draft_win_lift": 0.04226170293185272,
+          "draw_win_rate": 0.7061068702290076
+        },
+        {
+          "card": "Dragonback Assault",
+          "pick_priority_score": 9.719961281149327,
+          "pick_priority_score_raw": 415.35740004954147,
+          "draft_drafts": 995,
+          "draft_win_rate": 0.5702650287400827,
+          "draft_win_lift": 0.03248697286297475,
+          "draw_win_rate": 0.676317743132888
+        },
+        {
+          "card": "Ugin, Eye of the Storms",
+          "pick_priority_score": 9.02827312829878,
+          "pick_priority_score_raw": 275.7647678694214,
+          "draft_drafts": 405,
+          "draft_win_rate": 0.5790185942220504,
+          "draft_win_lift": 0.04124053834494246,
+          "draw_win_rate": 0.7081545064377682
+        },
+        {
+          "card": "Elspeth, Storm Slayer",
+          "pick_priority_score": 6.59480300975163,
+          "pick_priority_score_raw": 64.7878506909108,
+          "draft_drafts": 135,
+          "draft_win_rate": 0.5270681262905825,
+          "draft_win_lift": -0.01070992958652539,
+          "draw_win_rate": 0.6363636363636364
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Ugin, Eye of the Storms",
+        "standalone_delta": 0.1731736041195744,
+        "win_rate": 0.7081545064377682,
+        "draw_games": 466
+      },
+      {
+        "card": "Ureni, the Song Unending",
+        "standalone_delta": 0.1711259679108138,
+        "win_rate": 0.7061068702290076,
+        "draw_games": 1310
+      },
+      {
+        "card": "Marang River Regent",
+        "standalone_delta": 0.15326314530085383,
+        "win_rate": 0.6882440476190477,
+        "draw_games": 1344
+      },
+      {
+        "card": "Dragonback Assault",
+        "standalone_delta": 0.1413368408146941,
+        "win_rate": 0.676317743132888,
+        "draw_games": 1347
+      },
+      {
+        "card": "Roar of Endless Song",
+        "standalone_delta": 0.11903032250848167,
+        "win_rate": 0.6540112248266755,
+        "draw_games": 3029
+      },
+      {
+        "card": "Elspeth, Storm Slayer",
+        "standalone_delta": 0.10138273404544251,
+        "win_rate": 0.6363636363636364,
+        "draw_games": 132
+      },
+      {
+        "card": "Karakyk Guardian",
+        "standalone_delta": 0.06913403205569757,
+        "win_rate": 0.6041149343738914,
+        "draw_games": 5638
+      },
+      {
+        "card": "Eshki Dragonclaw",
+        "standalone_delta": 0.06680114017666561,
+        "win_rate": 0.6017820424948594,
+        "draw_games": 2918
+      },
+      {
+        "card": "Piercing Exhale",
+        "standalone_delta": 0.046960227355632767,
+        "win_rate": 0.5819411296738266,
+        "draw_games": 7542
+      },
+      {
+        "card": "Dragonclaw Strike",
+        "standalone_delta": 0.04663159543723805,
+        "win_rate": 0.5816124977554319,
+        "draw_games": 5569
+      },
+      {
+        "card": "Sarkhan's Resolve",
+        "standalone_delta": 0.04178749134161219,
+        "win_rate": 0.576768393659806,
+        "draw_games": 4227
+      },
+      {
+        "card": "Molten Exhale",
+        "standalone_delta": 0.04093731047998872,
+        "win_rate": 0.5759182127981826,
+        "draw_games": 7923
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Undergrowth Leopard",
+        "dependency_score": 0.41476315993112783,
+        "standalone_delta": 0.0159460333415663,
+        "draw_games": 4585
+      },
+      {
+        "card": "Sagu Wildling",
+        "dependency_score": 0.32778196251420466,
+        "standalone_delta": 0.026312785736057553,
+        "draw_games": 7668
+      },
+      {
+        "card": "Roamer's Routine",
+        "dependency_score": 0.3162117618987462,
+        "standalone_delta": 0.0037405114032198483,
+        "draw_games": 3848
+      },
+      {
+        "card": "Karakyk Guardian",
+        "dependency_score": 0.2777762512985684,
+        "standalone_delta": 0.06913403205569757,
+        "draw_games": 5638
+      },
+      {
+        "card": "Sagu Pummeler",
+        "dependency_score": 0.21998192254508891,
+        "standalone_delta": 0.014980004640367528,
+        "draw_games": 6395
+      },
+      {
+        "card": "Ureni, the Song Unending",
+        "dependency_score": 0.2077929362918856,
+        "standalone_delta": 0.1711259679108138,
+        "draw_games": 1310
+      },
+      {
+        "card": "Dragonback Assault",
+        "dependency_score": 0.1740012040758763,
+        "standalone_delta": 0.1413368408146941,
+        "draw_games": 1347
+      },
+      {
+        "card": "Temur Tawnyback",
+        "dependency_score": 0.1694464583878399,
+        "standalone_delta": 0.026283621599114126,
+        "draw_games": 13254
+      },
+      {
+        "card": "Mammoth Bellow",
+        "dependency_score": 0.1509570285549702,
+        "standalone_delta": 0.01785038781607351,
+        "draw_games": 6852
+      },
+      {
+        "card": "Sarkhan's Resolve",
+        "dependency_score": 0.14672815070421139,
+        "standalone_delta": 0.04178749134161219,
+        "draw_games": 4227
+      },
+      {
+        "card": "Champion of Dusan",
+        "dependency_score": 0.13149027369331737,
+        "standalone_delta": 0.012845184638327845,
+        "draw_games": 5405
+      },
+      {
+        "card": "Dragonclaw Strike",
+        "dependency_score": 0.12879277266142813,
+        "standalone_delta": 0.04663159543723805,
+        "draw_games": 5569
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Roamer's Routine",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 2.7687866727814328,
+        "pair_win_rate": 0.8113207547169812,
+        "pair_games": 159,
+        "synergy_delta_logit": 0.5670207835785244
+      },
+      {
+        "cards": [
+          "Temur Devotee",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 1.1151601935653148,
+        "pair_win_rate": 0.7534246575342466,
+        "pair_games": 219,
+        "synergy_delta_logit": 0.24045553136055875
+      },
+      {
+        "cards": [
+          "Dragonback Assault",
+          "Sagu Wildling"
+        ],
+        "quality_score": 1.0711823254157726,
+        "pair_win_rate": 0.75,
+        "pair_games": 188,
+        "synergy_delta_logit": 0.2554501286383155
+      },
+      {
+        "cards": [
+          "Champion of Dusan",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 0.9885011763707892,
+        "pair_win_rate": 0.7674418604651163,
+        "pair_games": 129,
+        "synergy_delta_logit": 0.26563363206760027
+      },
+      {
+        "cards": [
+          "Dragonback Assault",
+          "Roamer's Routine"
+        ],
+        "quality_score": 0.9423898062776861,
+        "pair_win_rate": 0.7301587301587301,
+        "pair_games": 189,
+        "synergy_delta_logit": 0.24348356262560267
+      },
+      {
+        "cards": [
+          "Mammoth Bellow",
+          "Songcrafter Mage"
+        ],
+        "quality_score": 0.7182732015075839,
+        "pair_win_rate": 0.6430594900849859,
+        "pair_games": 353,
+        "synergy_delta_logit": 0.22279668027672406
+      },
+      {
+        "cards": [
+          "Karakyk Guardian",
+          "Undergrowth Leopard"
+        ],
+        "quality_score": 0.6761922373238408,
+        "pair_win_rate": 0.6526946107784432,
+        "pair_games": 501,
+        "synergy_delta_logit": 0.14400031270855695
+      },
+      {
+        "cards": [
+          "Roar of Endless Song",
+          "Temur Devotee"
+        ],
+        "quality_score": 0.6636306640716564,
+        "pair_win_rate": 0.6835443037974683,
+        "pair_games": 474,
+        "synergy_delta_logit": 0.13343454712740355
+      },
+      {
+        "cards": [
+          "Temur Tawnyback",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 0.6454041254905059,
+        "pair_win_rate": 0.749271137026239,
+        "pair_games": 343,
+        "synergy_delta_logit": 0.1120353148084059
+      },
+      {
+        "cards": [
+          "Dragonback Assault",
+          "Sagu Pummeler"
+        ],
+        "quality_score": 0.6419237657967231,
+        "pair_win_rate": 0.7252747252747253,
+        "pair_games": 182,
+        "synergy_delta_logit": 0.17351809285054265
+      },
+      {
+        "cards": [
+          "Marang River Regent",
+          "Temur Monument"
+        ],
+        "quality_score": 0.6093389549059508,
+        "pair_win_rate": 0.7449664429530202,
+        "pair_games": 149,
+        "synergy_delta_logit": 0.1675209577079293
+      },
+      {
+        "cards": [
+          "Dragonback Assault",
+          "Temur Monument"
+        ],
+        "quality_score": 0.578170088311533,
+        "pair_win_rate": 0.7364341085271318,
+        "pair_games": 129,
+        "synergy_delta_logit": 0.17811544678572377
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Roar of Endless Song",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 573.4965926730581,
+        "draft_drafts": 2250,
+        "draft_win_lift": 0.03525385982732343,
+        "rarity": "rare"
+      },
+      {
+        "card": "Ureni, the Song Unending",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 501.7186193235919,
+        "draft_drafts": 974,
+        "draft_win_lift": 0.04226170293185272,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Marang River Regent",
+        "pick_priority_score": 9.882367126187775,
+        "pick_priority_score_raw": 457.25657625973747,
+        "draft_drafts": 1061,
+        "draft_win_lift": 0.050775946357556334,
+        "rarity": "rare"
+      },
+      {
+        "card": "Dragonback Assault",
+        "pick_priority_score": 9.719961281149327,
+        "pick_priority_score_raw": 415.35740004954147,
+        "draft_drafts": 995,
+        "draft_win_lift": 0.03248697286297475,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Karakyk Guardian",
+        "pick_priority_score": 9.472829782410448,
+        "pick_priority_score_raw": 358.8316817367672,
+        "draft_drafts": 4322,
+        "draft_win_lift": 0.00844380700183689,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Eshki Dragonclaw",
+        "pick_priority_score": 9.115738762306606,
+        "pick_priority_score_raw": 290.43239951852445,
+        "draft_drafts": 2276,
+        "draft_win_lift": 0.012880893109108005,
+        "rarity": "rare"
+      },
+      {
+        "card": "Ugin, Eye of the Storms",
+        "pick_priority_score": 9.02827312829878,
+        "pick_priority_score_raw": 275.7647678694214,
+        "draft_drafts": 405,
+        "draft_win_lift": 0.04124053834494246,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Dragonclaw Strike",
+        "pick_priority_score": 8.876831345534047,
+        "pick_priority_score_raw": 252.09273347764142,
+        "draft_drafts": 4327,
+        "draft_win_lift": 0.0033395781708778216,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Piercing Exhale",
+        "pick_priority_score": 8.825474306892549,
+        "pick_priority_score_raw": 244.53377357505326,
+        "draft_drafts": 5765,
+        "draft_win_lift": 0.004081245721789584,
+        "rarity": "common"
+      },
+      {
+        "card": "Temur Tawnyback",
+        "pick_priority_score": 8.824399172983174,
+        "pick_priority_score_raw": 244.3779669422442,
+        "draft_drafts": 8965,
+        "draft_win_lift": 0.005890410685980063,
+        "rarity": "common"
+      },
+      {
+        "card": "Molten Exhale",
+        "pick_priority_score": 8.771582735291224,
+        "pick_priority_score_raw": 236.8443953693943,
+        "draft_drafts": 5337,
+        "draft_win_lift": 0.00832501976763489,
+        "rarity": "common"
+      },
+      {
+        "card": "Sarkhan's Resolve",
+        "pick_priority_score": 8.343077930293575,
+        "pick_priority_score_raw": 183.6801316061085,
+        "draft_drafts": 5239,
+        "draft_win_lift": -0.0001213244027716831,
+        "rarity": "common"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Temur Tawnyback",
+          "Ureni, the Song Unending"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 6.0450413270137995,
+        "pair_win_rate": 0.749271137026239,
+        "pair_games": 343,
+        "draft_pair_events": 700
+      },
+      {
+        "cards": [
+          "Dragonclaw Strike",
+          "Temur Tawnyback"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 5.9591371931546355,
+        "pair_win_rate": 0.6143497757847534,
+        "pair_games": 1561,
+        "draft_pair_events": 3051
+      },
+      {
+        "cards": [
+          "Roar of Endless Song",
+          "Temur Devotee"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 5.234168533539554,
+        "pair_win_rate": 0.6835443037974683,
+        "pair_games": 474,
+        "draft_pair_events": 1216
+      },
+      {
+        "cards": [
+          "Roamer's Routine",
+          "Ureni, the Song Unending"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 5.112310514883221,
+        "pair_win_rate": 0.8113207547169812,
+        "pair_games": 159,
+        "draft_pair_events": 461
+      },
+      {
+        "cards": [
+          "Temur Devotee",
+          "Ureni, the Song Unending"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.859508814651672,
+        "pair_win_rate": 0.7534246575342466,
+        "pair_games": 219,
+        "draft_pair_events": 536
+      },
+      {
+        "cards": [
+          "Karakyk Guardian",
+          "Undergrowth Leopard"
+        ],
+        "pick_score": 9.753142254040839,
+        "pick_score_raw": 4.7358077864256956,
+        "pair_win_rate": 0.6526946107784432,
+        "pair_games": 501,
+        "draft_pair_events": 1775
+      },
+      {
+        "cards": [
+          "Karakyk Guardian",
+          "Sagu Pummeler"
+        ],
+        "pick_score": 9.630126172269163,
+        "pick_score_raw": 4.6872240333727,
+        "pair_win_rate": 0.6352765321375187,
+        "pair_games": 669,
+        "draft_pair_events": 1775
+      },
+      {
+        "cards": [
+          "Piercing Exhale",
+          "Temur Devotee"
+        ],
+        "pick_score": 9.551510473333378,
+        "pick_score_raw": 4.656391436170573,
+        "pair_win_rate": 0.61328125,
+        "pair_games": 1024,
+        "draft_pair_events": 2994
+      },
+      {
+        "cards": [
+          "Molten Exhale",
+          "Temur Monument"
+        ],
+        "pick_score": 9.535150804366065,
+        "pick_score_raw": 4.6499963155022614,
+        "pair_win_rate": 0.6244186046511628,
+        "pair_games": 860,
+        "draft_pair_events": 1774
+      },
+      {
+        "cards": [
+          "Dragonback Assault",
+          "Molten Exhale"
+        ],
+        "pick_score": 8.860995624755041,
+        "pick_score_raw": 4.3926576153615216,
+        "pair_win_rate": 0.7280701754385965,
+        "pair_games": 228,
+        "draft_pair_events": 439
+      },
+      {
+        "cards": [
+          "Dragonback Assault",
+          "Sagu Wildling"
+        ],
+        "pick_score": 8.847135081212642,
+        "pick_score_raw": 4.387491603447841,
+        "pair_win_rate": 0.75,
+        "pair_games": 188,
+        "draft_pair_events": 413
+      },
+      {
+        "cards": [
+          "Mammoth Bellow",
+          "Sagu Wildling"
+        ],
+        "pick_score": 8.571074464027856,
+        "pick_score_raw": 4.285624744834128,
+        "pair_win_rate": 0.6055133079847909,
+        "pair_games": 1052,
+        "draft_pair_events": 2117
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 6,
+      "title": "Boros Go-Wide | Shock Brigade / Mardu Devotee",
+      "color_name": "Boros Go-Wide",
+      "deck_count": 16554,
+      "games": 74760,
+      "win_rate": 0.5793472445157838,
+      "signposts": [
+        "Shock Brigade",
+        "Mardu Devotee",
+        "Fortress Kin-Guard",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sage of the Skies",
+        "Elspeth, Storm Slayer",
+        "Rally the Monastery",
+        "Shocking Sharpshooter"
+      ]
+    },
+    {
+      "cluster_id": 7,
+      "title": "Temur | Temur Tawnyback / Sibsig Appraiser",
+      "color_name": "Temur",
+      "deck_count": 11891,
+      "games": 53510,
+      "win_rate": 0.575686787516352,
+      "signposts": [
+        "Temur Tawnyback",
+        "Sibsig Appraiser",
+        "Dispelling Exhale",
+        "Riverwalk Technique"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Karakyk Guardian"
+      ]
+    },
+    {
+      "cluster_id": 8,
+      "title": "Sultai | Gurmag Nightwatch / Lie in Wait",
+      "color_name": "Sultai",
+      "deck_count": 16514,
+      "games": 71231,
+      "win_rate": 0.5484550266035855,
+      "signposts": [
+        "Gurmag Nightwatch",
+        "Lie in Wait",
+        "Sultai Devotee",
+        "Sultai Monument"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Fangkeeper's Familiar",
+        "Awaken the Honored Dead",
+        "Sibsig Appraiser"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "Mardu Humans | Reigning Victor / Nightblade Brigade",
+      "color_name": "Mardu Humans",
+      "deck_count": 15854,
+      "games": 70132,
+      "win_rate": 0.548351679689728,
+      "signposts": [
+        "Reigning Victor",
+        "Nightblade Brigade",
+        "Mardu Devotee",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sonic Shrieker",
+        "Mardu Monument",
+        "Inevitable Defeat",
+        "Elspeth, Storm Slayer"
+      ]
+    },
+    {
+      "cluster_id": 1,
+      "title": "Jeskai | Monastery Messenger / Jeskai Devotee",
+      "color_name": "Jeskai",
+      "deck_count": 18554,
+      "games": 78954,
+      "win_rate": 0.5454568482914102,
+      "signposts": [
+        "Monastery Messenger",
+        "Jeskai Devotee",
+        "Narset's Rebuke",
+        "Jeskai Monument"
+      ],
+      "pick_cards": [
+        "Jeskai Revelation",
+        "Marang River Regent",
+        "Jeskai Shrinekeeper",
+        "Sage of the Skies"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Golgari Counters | Champion of Dusan / Trade Route Envoy",
+      "color_name": "Golgari Counters",
+      "deck_count": 7372,
+      "games": 31688,
+      "win_rate": 0.5407409745013886,
+      "signposts": [
+        "Champion of Dusan",
+        "Trade Route Envoy",
+        "Snakeskin Veil",
+        "Formation Breaker"
+      ],
+      "pick_cards": [
+        "Synchronized Charge",
+        "Qarsi Revenant",
+        "Knockout Maneuver",
+        "Marang River Regent"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Five-Color Dragons | Dragonstorm Globe / Boulderborn Dragon",
+      "color_name": "Five-Color Dragons",
+      "deck_count": 14930,
+      "games": 63631,
+      "win_rate": 0.5379296254970062,
+      "signposts": [
+        "Dragonstorm Globe",
+        "Boulderborn Dragon",
+        "Dragonstorm Forecaster",
+        "Dragonbroods' Relic"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Sonic Shrieker",
+        "Roar of Endless Song",
+        "Jeskai Revelation"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Temur | Temur Tawnyback / Mammoth Bellow",
+      "color_name": "Temur",
+      "deck_count": 12416,
+      "games": 52886,
+      "win_rate": 0.5349809023181938,
+      "signposts": [
+        "Temur Tawnyback",
+        "Mammoth Bellow",
+        "Temur Devotee",
+        "Dragonclaw Strike"
+      ],
+      "pick_cards": [
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Marang River Regent",
+        "Dragonback Assault"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Abzan Counters | Abzan Devotee / Reputable Merchant",
+      "color_name": "Abzan Counters",
+      "deck_count": 12817,
+      "games": 55636,
+      "win_rate": 0.531382558055935,
+      "signposts": [
+        "Abzan Devotee",
+        "Reputable Merchant",
+        "Skirmish Rhino",
+        "Armament Dragon"
+      ],
+      "pick_cards": [
+        "Revival of the Ancestors",
+        "Betor, Kin to All",
+        "Yathan Roadwatcher",
+        "Qarsi Revenant"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

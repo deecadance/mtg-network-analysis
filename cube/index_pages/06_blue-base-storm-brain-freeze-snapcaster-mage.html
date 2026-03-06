@@ -1,0 +1,4597 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blue Base Storm | Brain Freeze / Snapcaster Mage | Powered Cube Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "Cube - Powered",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 57913,
+      "cluster_feature_count": 539,
+      "svd_components": 48,
+      "svd_explained_variance": 0.23329785466194153,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.11178616434335709,
+          "dominant_main_color_share": 0.3637786402379163,
+          "objective": 0.13361288275763206
+        },
+        {
+          "k": 8,
+          "silhouette": 0.08127741515636444,
+          "dominant_main_color_share": 0.4612962424071051,
+          "objective": 0.10895518970079074
+        },
+        {
+          "k": 9,
+          "silhouette": 0.0866159126162529,
+          "dominant_main_color_share": 0.4338965083091679,
+          "objective": 0.11264970311480298
+        },
+        {
+          "k": 10,
+          "silhouette": 0.08284851163625717,
+          "dominant_main_color_share": 0.48828557861292066,
+          "objective": 0.11214564635303241
+        },
+        {
+          "k": 11,
+          "silhouette": 0.08475761115550995,
+          "dominant_main_color_share": 0.5052627611749999,
+          "objective": 0.11507337682600995
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "1": 12970,
+        "0": 9261,
+        "5": 5538,
+        "6": 9349,
+        "2": 7492,
+        "3": 5654,
+        "4": 7649
+      }
+    },
+    "deck_count": 57913,
+    "game_count": 266117
+  },
+  "segment": {
+    "cluster_id": 6,
+    "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
+    "color_signature": "U",
+    "color_name": "Blue Base Storm",
+    "deck_count": 9349,
+    "draft_count": 7224,
+    "games": 40088,
+    "wins": 20403,
+    "win_rate": 0.508955298343644,
+    "draft_match_win_rate": 0.5038513060951105,
+    "top_deck_colors": [
+      {
+        "colors": "WUBRG",
+        "count": 1613
+      },
+      {
+        "colors": "UBR",
+        "count": 1365
+      },
+      {
+        "colors": "WUBR",
+        "count": 1242
+      },
+      {
+        "colors": "UBRG",
+        "count": 1091
+      },
+      {
+        "colors": "WUB",
+        "count": 900
+      },
+      {
+        "colors": "WUBG",
+        "count": 607
+      },
+      {
+        "colors": "WUR",
+        "count": 503
+      },
+      {
+        "colors": "UB",
+        "count": 485
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "UB",
+        "count": 2769
+      },
+      {
+        "colors": "UBR",
+        "count": 1333
+      },
+      {
+        "colors": "UR",
+        "count": 1085
+      },
+      {
+        "colors": "WU",
+        "count": 862
+      },
+      {
+        "colors": "WUB",
+        "count": 830
+      },
+      {
+        "colors": "WUR",
+        "count": 554
+      },
+      {
+        "colors": "UBG",
+        "count": 531
+      },
+      {
+        "colors": "U",
+        "count": 293
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Brain Freeze",
+        "score": 2600.235403980215,
+        "z_score": 60.04986441777489,
+        "log_odds": 2.4400208423570096,
+        "cluster_prevalence": 0.20016173495742792,
+        "global_prevalence": 0.05026146454506784,
+        "lift": 3.9824095212734867,
+        "support_decks": 1875
+      },
+      {
+        "card": "Snapcaster Mage",
+        "score": 2326.109374176206,
+        "z_score": 52.10464990007556,
+        "log_odds": 1.736853140328946,
+        "cluster_prevalence": 0.21277132724283776,
+        "global_prevalence": 0.07249370169923709,
+        "lift": 2.9350319028484226,
+        "support_decks": 1993
+      },
+      {
+        "card": "Underworld Breach",
+        "score": 2237.667625607197,
+        "z_score": 54.987681990668186,
+        "log_odds": 2.2658353085171,
+        "cluster_prevalence": 0.17678581245038094,
+        "global_prevalence": 0.046857025717349315,
+        "lift": 3.772877380582953,
+        "support_decks": 1656
+      },
+      {
+        "card": "Narset, Parter of Veils",
+        "score": 2153.477819873518,
+        "z_score": 50.053816098713874,
+        "log_odds": 1.720119623905541,
+        "cluster_prevalence": 0.1976506032075658,
+        "global_prevalence": 0.06737216489202098,
+        "lift": 2.933713107250528,
+        "support_decks": 1851
+      },
+      {
+        "card": "Hullbreacher",
+        "score": 2140.523800625898,
+        "z_score": 48.10469506604255,
+        "log_odds": 1.5554441860160226,
+        "cluster_prevalence": 0.21141168447114908,
+        "global_prevalence": 0.07909092949101222,
+        "lift": 2.673020608452624,
+        "support_decks": 1980
+      },
+      {
+        "card": "Force of Negation",
+        "score": 2134.269770011538,
+        "z_score": 48.682471846987475,
+        "log_odds": 1.6110041181134311,
+        "cluster_prevalence": 0.20521550946828612,
+        "global_prevalence": 0.07429122333779202,
+        "lift": 2.762311619707745,
+        "support_decks": 1922
+      },
+      {
+        "card": "Miscalculation",
+        "score": 2087.4566956119374,
+        "z_score": 47.36885226398204,
+        "log_odds": 1.5408077063475618,
+        "cluster_prevalence": 0.2073978441217937,
+        "global_prevalence": 0.07802813765283646,
+        "lift": 2.6579878792513307,
+        "support_decks": 1942
+      },
+      {
+        "card": "Spell Pierce",
+        "score": 2074.141305807448,
+        "z_score": 46.425658441769215,
+        "log_odds": 1.4756817457872884,
+        "cluster_prevalence": 0.2131713164012005,
+        "global_prevalence": 0.08336354307728042,
+        "lift": 2.5571287943410046,
+        "support_decks": 1996
+      },
+      {
+        "card": "Force of Will",
+        "score": 2070.3819274196076,
+        "z_score": 47.151656341421194,
+        "log_odds": 1.5381923131723048,
+        "cluster_prevalence": 0.20585215683513697,
+        "global_prevalence": 0.07750046419658177,
+        "lift": 2.656140953078527,
+        "support_decks": 1928
+      },
+      {
+        "card": "Mystic Confluence",
+        "score": 2060.9137705284056,
+        "z_score": 46.74247353398088,
+        "log_odds": 1.5125486872126501,
+        "cluster_prevalence": 0.20757367613698358,
+        "global_prevalence": 0.07931537630152889,
+        "lift": 2.6170672802189348,
+        "support_decks": 1944
+      },
+      {
+        "card": "Daze",
+        "score": 2049.9021339265664,
+        "z_score": 47.50543390636434,
+        "log_odds": 1.5878068925515962,
+        "cluster_prevalence": 0.19885201509482478,
+        "global_prevalence": 0.07262366549150652,
+        "lift": 2.7381159261106274,
+        "support_decks": 1862
+      },
+      {
+        "card": "Counterspell",
+        "score": 2041.505043032777,
+        "z_score": 47.618718491545664,
+        "log_odds": 1.6066464666329285,
+        "cluster_prevalence": 0.19625049137696224,
+        "global_prevalence": 0.07087273057547054,
+        "lift": 2.769055034051216,
+        "support_decks": 1838
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Brain Freeze",
+        "label": "Brain Freeze",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2536,
+        "win_rate": 0.5906940063091483,
+        "standalone_delta": 0.08173870796550431,
+        "dependency_score": 5.123409752746988,
+        "degree": 7,
+        "signpost_score": 2600.235403980215,
+        "signpost_lift": 3.9824095212734867,
+        "deck_prevalence": 0.20016173495742792,
+        "draft_weight": 1905.0,
+        "draft_drafts": 1905,
+        "draft_presence": 0.26370431893687707,
+        "draft_win_rate": 0.500591282687675,
+        "draft_win_lift": -0.003260023407435475,
+        "analysis_score_raw": 2703.900198644831,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 254.7377172029908,
+        "pick_priority_score": 9.416310826206361,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Brain%20Freeze%22",
+        "community": 2,
+        "x": 900.3120555641528,
+        "y": 847.6249283512842,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Snapcaster Mage",
+        "label": "Snapcaster Mage",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Creature - Human Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2349,
+        "win_rate": 0.5721583652618135,
+        "standalone_delta": 0.06320306691816957,
+        "dependency_score": 0.18131493283081462,
+        "degree": 9,
+        "signpost_score": 2326.109374176206,
+        "signpost_lift": 2.9350319028484226,
+        "deck_prevalence": 0.21277132724283776,
+        "draft_weight": 1535.0,
+        "draft_drafts": 1535,
+        "draft_presence": 0.21248615725359912,
+        "draft_win_rate": 0.5133676667889686,
+        "draft_win_lift": 0.009516360693858084,
+        "analysis_score_raw": 2338.2214723357047,
+        "analysis_score": 9.993356230658932,
+        "pick_priority_score_raw": 207.04570982578082,
+        "pick_priority_score": 9.028064998792722,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Snapcaster%20Mage%22",
+        "community": 1,
+        "x": 997.8245749355237,
+        "y": 720.0089271629896,
+        "analysis_radius": 21.003506262408653,
+        "pick_radius": 30.0,
+        "radius": 21.003506262408653
+      },
+      {
+        "id": "Underworld Breach",
+        "label": "Underworld Breach",
+        "color_identity": "R",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 2093,
+        "win_rate": 0.5862398471094123,
+        "standalone_delta": 0.0772845487657684,
+        "dependency_score": 6.584435029927248,
+        "degree": 5,
+        "signpost_score": 2237.667625607197,
+        "signpost_lift": 3.772877380582953,
+        "deck_prevalence": 0.17678581245038094,
+        "draft_weight": 1713.0,
+        "draft_drafts": 1713,
+        "draft_presence": 0.2371262458471761,
+        "draft_win_rate": 0.5057644447685304,
+        "draft_win_lift": 0.0019131386734199118,
+        "analysis_score_raw": 2367.0072929730945,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 234.82399037836598,
+        "pick_priority_score": 9.263817516008244,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Underworld%20Breach%22",
+        "community": 2,
+        "x": 871.1526049103893,
+        "y": 869.1030822057159,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Narset, Parter of Veils",
+        "label": "Narset, Parter of Veils",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Legendary Planeswalker - Narset",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2177,
+        "win_rate": 0.5746440055121728,
+        "standalone_delta": 0.06568870716852881,
+        "dependency_score": 0.17355029084794316,
+        "degree": 15,
+        "signpost_score": 2153.477819873518,
+        "signpost_lift": 2.933713107250528,
+        "deck_prevalence": 0.1976506032075658,
+        "draft_weight": 1536.0,
+        "draft_drafts": 1536,
+        "draft_presence": 0.21262458471760798,
+        "draft_win_rate": 0.5000070721780341,
+        "draft_win_lift": -0.003844233917076445,
+        "analysis_score_raw": 2165.798144112375,
+        "analysis_score": 9.929368381325594,
+        "pick_priority_score_raw": 168.97583641154944,
+        "pick_priority_score": 8.647894740489026,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Narset%2C%20Parter%20of%20Veils%22",
+        "community": 0,
+        "x": 1176.2586055613547,
+        "y": 562.9122043613675,
+        "analysis_radius": 20.860689364795036,
+        "pick_radius": 30.0,
+        "radius": 20.860689364795036
+      },
+      {
+        "id": "Hullbreacher",
+        "label": "Hullbreacher",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Merfolk Pirate",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2415,
+        "win_rate": 0.5718426501035196,
+        "standalone_delta": 0.0628873517598757,
+        "dependency_score": 0.18416796696225787,
+        "degree": 11,
+        "signpost_score": 2140.523800625898,
+        "signpost_lift": 2.673020608452624,
+        "deck_prevalence": 0.21141168447114908,
+        "draft_weight": 1403.0,
+        "draft_drafts": 1403,
+        "draft_presence": 0.19421373200442968,
+        "draft_win_rate": 0.5206640587404829,
+        "draft_win_lift": 0.01681275264537241,
+        "analysis_score_raw": 2152.6430532776008,
+        "analysis_score": 9.924279180833752,
+        "pick_priority_score_raw": 224.7408056178419,
+        "pick_priority_score": 9.18161735105351,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Hullbreacher%22",
+        "community": 1,
+        "x": 1048.51590035654,
+        "y": 763.3114559053752,
+        "analysis_radius": 21.088851157434448,
+        "pick_radius": 30.0,
+        "radius": 21.088851157434448
+      },
+      {
+        "id": "Force of Negation",
+        "label": "Force of Negation",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2230,
+        "win_rate": 0.5681614349775784,
+        "standalone_delta": 0.05920613663393448,
+        "dependency_score": 0.8530642446958392,
+        "degree": 7,
+        "signpost_score": 2134.269770011538,
+        "signpost_lift": 2.762311619707745,
+        "deck_prevalence": 0.20521550946828612,
+        "draft_weight": 1465.0,
+        "draft_drafts": 1465,
+        "draft_presence": 0.20279623477297895,
+        "draft_win_rate": 0.5200333444892097,
+        "draft_win_lift": 0.016182038394099152,
+        "analysis_score_raw": 2157.9137855448143,
+        "analysis_score": 9.926321947706043,
+        "pick_priority_score_raw": 219.45488499000393,
+        "pick_priority_score": 9.137046171818346,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Force%20of%20Negation%22",
+        "community": 3,
+        "x": 631.6899021862213,
+        "y": 797.3623193252291,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Miscalculation",
+        "label": "Miscalculation",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2187,
+        "win_rate": 0.5724737082761774,
+        "standalone_delta": 0.06351840993253344,
+        "dependency_score": 0.15290279233921883,
+        "degree": 10,
+        "signpost_score": 2087.4566956119374,
+        "signpost_lift": 2.6579878792513307,
+        "deck_prevalence": 0.2073978441217937,
+        "draft_weight": 1522.0,
+        "draft_drafts": 1522,
+        "draft_presence": 0.21068660022148394,
+        "draft_win_rate": 0.5193878665823792,
+        "draft_win_lift": 0.015536560487268702,
+        "analysis_score_raw": 2099.101523264598,
+        "analysis_score": 9.90324019643224,
+        "pick_priority_score_raw": 229.5507614753499,
+        "pick_priority_score": 9.221277402751895,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Miscalculation%22",
+        "community": 0,
+        "x": 1199.7149637171822,
+        "y": 579.2649266935582,
+        "analysis_radius": 19.998013070501216,
+        "pick_radius": 30.0,
+        "radius": 19.998013070501216
+      },
+      {
+        "id": "Spell Pierce",
+        "label": "Spell Pierce",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2243,
+        "win_rate": 0.5559518502006242,
+        "standalone_delta": 0.04699655185698026,
+        "dependency_score": 0.1758684560441127,
+        "degree": 2,
+        "signpost_score": 2074.141305807448,
+        "signpost_lift": 2.5571287943410046,
+        "deck_prevalence": 0.2131713164012005,
+        "draft_weight": 1608.0,
+        "draft_drafts": 1608,
+        "draft_presence": 0.22259136212624583,
+        "draft_win_rate": 0.5115188448394937,
+        "draft_win_lift": 0.0076675387443831955,
+        "analysis_score_raw": 2083.8864552762197,
+        "analysis_score": 9.897163548684963,
+        "pick_priority_score_raw": 155.3246993362344,
+        "pick_priority_score": 8.49040830644723,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Spell%20Pierce%22",
+        "community": 1,
+        "x": 1167.8245749355237,
+        "y": 801.541777550068,
+        "analysis_radius": 19.91607476972197,
+        "pick_radius": 30.0,
+        "radius": 19.91607476972197
+      },
+      {
+        "id": "Force of Will",
+        "label": "Force of Will",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2337,
+        "win_rate": 0.5789473684210527,
+        "standalone_delta": 0.06999207007740871,
+        "dependency_score": 0.23914193412237147,
+        "degree": 7,
+        "signpost_score": 2070.3819274196076,
+        "signpost_lift": 2.656140953078527,
+        "deck_prevalence": 0.20585215683513697,
+        "draft_weight": 1383.0,
+        "draft_drafts": 1383,
+        "draft_presence": 0.19144518272425248,
+        "draft_win_rate": 0.5301109401211771,
+        "draft_win_lift": 0.02625963402606657,
+        "analysis_score_raw": 2084.4853720446476,
+        "analysis_score": 9.897403583459221,
+        "pick_priority_score_raw": 280.6990975343535,
+        "pick_priority_score": 9.598187520822023,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Force%20of%20Will%22",
+        "community": 1,
+        "x": 1096.463098166992,
+        "y": 758.1260749442987,
+        "analysis_radius": 23.458673482662853,
+        "pick_radius": 30.0,
+        "radius": 23.458673482662853
+      },
+      {
+        "id": "Mystic Confluence",
+        "label": "Mystic Confluence",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2294,
+        "win_rate": 0.6107236268526591,
+        "standalone_delta": 0.10176832850901518,
+        "dependency_score": 0.15513989516278712,
+        "degree": 13,
+        "signpost_score": 2060.9137705284056,
+        "signpost_lift": 2.6170672802189348,
+        "deck_prevalence": 0.20757367613698358,
+        "draft_weight": 1530.0,
+        "draft_drafts": 1530,
+        "draft_presence": 0.21179401993355482,
+        "draft_win_rate": 0.52914171988363,
+        "draft_win_lift": 0.025290413788519484,
+        "analysis_score_raw": 2077.953854632598,
+        "analysis_score": 9.89478214068118,
+        "pick_priority_score_raw": 369.26236054833817,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mystic%20Confluence%22",
+        "community": 0,
+        "x": 1145.1685162162678,
+        "y": 563.3636123073763,
+        "analysis_radius": 22.18229429385617,
+        "pick_radius": 30.0,
+        "radius": 22.18229429385617
+      },
+      {
+        "id": "Daze",
+        "label": "Daze",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2108,
+        "win_rate": 0.5592979127134725,
+        "standalone_delta": 0.050342614369828564,
+        "dependency_score": 0.17588906986423045,
+        "degree": 6,
+        "signpost_score": 2049.9021339265664,
+        "signpost_lift": 2.7381159261106274,
+        "deck_prevalence": 0.19885201509482478,
+        "draft_weight": 1517.0,
+        "draft_drafts": 1517,
+        "draft_presence": 0.20999446290143964,
+        "draft_win_rate": 0.5197370058917173,
+        "draft_win_lift": 0.01588569979660681,
+        "analysis_score_raw": 2060.1161031958986,
+        "analysis_score": 9.887580729954546,
+        "pick_priority_score_raw": 199.21405985329704,
+        "pick_priority_score": 8.955886390606251,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Daze%22",
+        "community": 0,
+        "x": 1114.6331795343253,
+        "y": 553.9742286159335,
+        "analysis_radius": 20.100850305452866,
+        "pick_radius": 30.0,
+        "radius": 20.100850305452866
+      },
+      {
+        "id": "Counterspell",
+        "label": "Counterspell",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2126,
+        "win_rate": 0.5799623706491063,
+        "standalone_delta": 0.07100707230546233,
+        "dependency_score": 0.16397191862365737,
+        "degree": 6,
+        "signpost_score": 2041.505043032777,
+        "signpost_lift": 2.769055034051216,
+        "deck_prevalence": 0.19625049137696224,
+        "draft_weight": 1414.0,
+        "draft_drafts": 1414,
+        "draft_presence": 0.19573643410852712,
+        "draft_win_rate": 0.5140092296675065,
+        "draft_win_lift": 0.010157923572395977,
+        "analysis_score_raw": 2054.397527690767,
+        "analysis_score": 9.885258843130794,
+        "pick_priority_score_raw": 217.7888624359982,
+        "pick_priority_score": 9.122776436703726,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Counterspell%22",
+        "community": 0,
+        "x": 1188.640110223882,
+        "y": 483.9124905048915,
+        "analysis_radius": 20.80837804725209,
+        "pick_radius": 30.0,
+        "radius": 20.80837804725209
+      },
+      {
+        "id": "Preordain",
+        "label": "Preordain",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2055,
+        "win_rate": 0.5557177615571777,
+        "standalone_delta": 0.04676246321353372,
+        "dependency_score": 0.1272785955461009,
+        "degree": 3,
+        "signpost_score": 2027.5726318033312,
+        "signpost_lift": 2.7706548358892973,
+        "deck_prevalence": 0.1949002270718231,
+        "draft_weight": 1457.0,
+        "draft_drafts": 1457,
+        "draft_presence": 0.20168881506090808,
+        "draft_win_rate": 0.5109805270235103,
+        "draft_win_lift": 0.007129220928399738,
+        "analysis_score_raw": 2036.4103913730557,
+        "analysis_score": 9.877913265975712,
+        "pick_priority_score_raw": 147.58660544430512,
+        "pick_priority_score": 8.394910747348787,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Preordain%22",
+        "community": 0,
+        "x": 1072.815418358413,
+        "y": 653.9124905048915,
+        "analysis_radius": 18.153964916403986,
+        "pick_radius": 30.0,
+        "radius": 18.153964916403986
+      },
+      {
+        "id": "Lion's Eye Diamond",
+        "label": "Lion's Eye Diamond",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 0.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 1765,
+        "win_rate": 0.5354107648725213,
+        "standalone_delta": 0.026455466528877314,
+        "dependency_score": 5.185588813994855,
+        "degree": 7,
+        "signpost_score": 2026.5011275362951,
+        "signpost_lift": 3.490801482152112,
+        "deck_prevalence": 0.16675821624111406,
+        "draft_weight": 1636.0,
+        "draft_drafts": 1636,
+        "draft_presence": 0.2264673311184939,
+        "draft_win_rate": 0.4900320603895621,
+        "draft_win_lift": -0.013819245705548433,
+        "analysis_score_raw": 2123.545491502245,
+        "analysis_score": 9.912911134346034,
+        "pick_priority_score_raw": 73.51230997397217,
+        "pick_priority_score": 7.096578654174214,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Lion%27s%20Eye%20Diamond%22",
+        "community": 2,
+        "x": 936.0310428441229,
+        "y": 876.6359947215,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Subtlety",
+        "label": "Subtlety",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 4.0,
+        "types": "Creature - Elemental Incarnation",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2043,
+        "win_rate": 0.5912873225648556,
+        "standalone_delta": 0.08233202422121166,
+        "dependency_score": 0.12810084624307705,
+        "degree": 5,
+        "signpost_score": 2023.8948460963145,
+        "signpost_lift": 2.8752379034668647,
+        "deck_prevalence": 0.18897774487373895,
+        "draft_weight": 1460.0,
+        "draft_drafts": 1460,
+        "draft_presence": 0.20210409745293467,
+        "draft_win_rate": 0.5269565224401942,
+        "draft_win_lift": 0.023105216345083668,
+        "analysis_score_raw": 2037.7271447196595,
+        "analysis_score": 9.878453196750872,
+        "pick_priority_score_raw": 310.3112838158269,
+        "pick_priority_score": 9.786209268215195,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Subtlety%22",
+        "community": 3,
+        "x": 801.6899021862213,
+        "y": 692.3732261812042,
+        "analysis_radius": 20.139891796917414,
+        "pick_radius": 30.0,
+        "radius": 20.139891796917414
+      },
+      {
+        "id": "Remand",
+        "label": "Remand",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2405,
+        "win_rate": 0.5904365904365905,
+        "standalone_delta": 0.08148129209294652,
+        "dependency_score": 0.19198452857575726,
+        "degree": 7,
+        "signpost_score": 2010.8185628048125,
+        "signpost_lift": 2.488633755704977,
+        "deck_prevalence": 0.21209463672688839,
+        "draft_weight": 1520.0,
+        "draft_drafts": 1520,
+        "draft_presence": 0.21040974529346623,
+        "draft_win_rate": 0.530231712514251,
+        "draft_win_lift": 0.026380406419140523,
+        "analysis_score_raw": 2025.6816652121886,
+        "analysis_score": 9.87350093483334,
+        "pick_priority_score_raw": 318.88962317867015,
+        "pick_priority_score": 9.837342223013195,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Remand%22",
+        "community": 0,
+        "x": 1233.544042069449,
+        "y": 531.1909112564737,
+        "analysis_radius": 22.39291409383932,
+        "pick_radius": 30.0,
+        "radius": 22.39291409383932
+      },
+      {
+        "id": "Echo of Eons",
+        "label": "Echo of Eons",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1955,
+        "win_rate": 0.5539641943734015,
+        "standalone_delta": 0.04500889602975755,
+        "dependency_score": 0.8588998358792591,
+        "degree": 9,
+        "signpost_score": 2004.8512709902793,
+        "signpost_lift": 2.956211941615452,
+        "deck_prevalence": 0.1834337441672279,
+        "draft_weight": 1610.0,
+        "draft_drafts": 1610,
+        "draft_presence": 0.22286821705426357,
+        "draft_win_rate": 0.4934304582154682,
+        "draft_win_lift": -0.010420847879642314,
+        "analysis_score_raw": 2026.6127134802719,
+        "analysis_score": 9.873884765252908,
+        "pick_priority_score_raw": 118.75929019694857,
+        "pick_priority_score": 7.989190361540659,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Echo%20of%20Eons%22",
+        "community": 3,
+        "x": 704.4703045842522,
+        "y": 752.4143455368719,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Ponder",
+        "label": "Ponder",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2010,
+        "win_rate": 0.5606965174129354,
+        "standalone_delta": 0.05174121906929141,
+        "dependency_score": 0.20231276233518725,
+        "degree": 5,
+        "signpost_score": 1904.3965728856792,
+        "signpost_lift": 2.708781909271462,
+        "deck_prevalence": 0.18689961807939068,
+        "draft_weight": 1407.0,
+        "draft_drafts": 1407,
+        "draft_presence": 0.19476744186046513,
+        "draft_win_rate": 0.5115655302635078,
+        "draft_win_lift": 0.007714224168397288,
+        "analysis_score_raw": 1915.2819732774133,
+        "analysis_score": 9.82669067167724,
+        "pick_priority_score_raw": 158.86565690385302,
+        "pick_priority_score": 8.53254192892178,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ponder%22",
+        "community": 1,
+        "x": 1147.7537174185795,
+        "y": 727.7468803884279,
+        "analysis_radius": 21.129026492877767,
+        "pick_radius": 30.0,
+        "radius": 21.129026492877767
+      },
+      {
+        "id": "Time Walk",
+        "label": "Time Walk",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1965,
+        "win_rate": 0.6625954198473283,
+        "standalone_delta": 0.15364012150368433,
+        "dependency_score": 0.21630206414529263,
+        "degree": 5,
+        "signpost_score": 933.9994680735523,
+        "signpost_lift": 1.7950657609844427,
+        "deck_prevalence": 0.15074017357090408,
+        "draft_weight": 602.0,
+        "draft_drafts": 602,
+        "draft_presence": 0.08333333333333333,
+        "draft_win_rate": 0.550905950980721,
+        "draft_win_lift": 0.04705464488561051,
+        "analysis_score_raw": 959.4025222386834,
+        "analysis_score": 9.249395033384795,
+        "pick_priority_score_raw": 348.4468538436937,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Time%20Walk%22",
+        "community": 0,
+        "x": 1225.239662572262,
+        "y": 572.6242922276454,
+        "analysis_radius": 27.237080991933173,
+        "pick_radius": 30.0,
+        "radius": 27.237080991933173
+      },
+      {
+        "id": "Ancestral Recall",
+        "label": "Ancestral Recall",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1744,
+        "win_rate": 0.6336009174311926,
+        "standalone_delta": 0.12464561908754868,
+        "dependency_score": 0.07592816822472195,
+        "degree": 2,
+        "signpost_score": 835.009976724378,
+        "signpost_lift": 1.711380667675161,
+        "deck_prevalence": 0.14637192934104776,
+        "draft_weight": 585.0,
+        "draft_drafts": 585,
+        "draft_presence": 0.08098006644518273,
+        "draft_win_rate": 0.5571197518679454,
+        "draft_win_lift": 0.05326844577283485,
+        "analysis_score_raw": 853.8270704246798,
+        "analysis_score": 9.152074548081753,
+        "pick_priority_score_raw": 315.61278595126726,
+        "pick_priority_score": 9.817973669202916,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ancestral%20Recall%22",
+        "community": 2,
+        "x": 892.504296681335,
+        "y": 706.6359947215,
+        "analysis_radius": 20.588923105905167,
+        "pick_radius": 30.0,
+        "radius": 20.588923105905167
+      },
+      {
+        "id": "Cryptic Command",
+        "label": "Cryptic Command",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1863,
+        "win_rate": 0.6253354804079442,
+        "standalone_delta": 0.11638018206430023,
+        "dependency_score": 0.12961192954221934,
+        "degree": 6,
+        "signpost_score": 1899.606423809267,
+        "signpost_lift": 3.1000471797012747,
+        "deck_prevalence": 0.16838067612154733,
+        "draft_weight": 1482.0,
+        "draft_drafts": 1482,
+        "draft_presence": 0.20514950166112958,
+        "draft_win_rate": 0.5142390285020008,
+        "draft_win_lift": 0.010387722406890232,
+        "analysis_score_raw": 1918.232664030029,
+        "analysis_score": 9.82797649885989,
+        "pick_priority_score_raw": 346.54972050114355,
+        "pick_priority_score": 9.993343894714135,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Cryptic%20Command%22",
+        "community": 0,
+        "x": 1118.50279464401,
+        "y": 616.2102167071605,
+        "analysis_radius": 22.06693947705641,
+        "pick_radius": 30.0,
+        "radius": 22.06693947705641
+      },
+      {
+        "id": "Stock Up",
+        "label": "Stock Up",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2163,
+        "win_rate": 0.59500693481276,
+        "standalone_delta": 0.08605163646911607,
+        "dependency_score": 0.24853864860485078,
+        "degree": 13,
+        "signpost_score": 1727.9329995898345,
+        "signpost_lift": 2.35834233576317,
+        "deck_prevalence": 0.1932130939966467,
+        "draft_weight": 1405.0,
+        "draft_drafts": 1405,
+        "draft_presence": 0.1944905869324474,
+        "draft_win_rate": 0.5278281595354354,
+        "draft_win_lift": 0.023976853440324852,
+        "analysis_score_raw": 1744.453924370398,
+        "analysis_score": 9.748659164286336,
+        "pick_priority_score_raw": 303.5810399164408,
+        "pick_priority_score": 9.74509601528645,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Stock%20Up%22",
+        "community": 0,
+        "x": 1185.1666059843753,
+        "y": 533.5414709659271,
+        "analysis_radius": 24.680231355576012,
+        "pick_radius": 30.0,
+        "radius": 24.680231355576012
+      },
+      {
+        "id": "Teferi, Hero of Dominaria",
+        "label": "Teferi, Hero of Dominaria",
+        "color_identity": "WU",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Legendary Planeswalker - Teferi",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 1439,
+        "win_rate": 0.6129256428075052,
+        "standalone_delta": 0.10397034446386122,
+        "dependency_score": 0.25272502948171666,
+        "degree": 6,
+        "signpost_score": 959.9719825563603,
+        "signpost_lift": 2.0456036527922725,
+        "deck_prevalence": 0.12883390109510728,
+        "draft_weight": 1042.0,
+        "draft_drafts": 1042,
+        "draft_presence": 0.14424141749723146,
+        "draft_win_rate": 0.5229001504477536,
+        "draft_win_lift": 0.01904884435264309,
+        "analysis_score_raw": 979.0768813119718,
+        "analysis_score": 9.266341880199546,
+        "pick_priority_score_raw": 271.80889811780105,
+        "pick_priority_score": 9.53786500506287,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Teferi%2C%20Hero%20of%20Dominaria%22",
+        "community": 1,
+        "x": 1065.9179162734517,
+        "y": 713.5646661354515,
+        "analysis_radius": 25.816470006854168,
+        "pick_radius": 30.0,
+        "radius": 25.816470006854168
+      },
+      {
+        "id": "Mana Leak",
+        "label": "Mana Leak",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2238,
+        "win_rate": 0.580875781948168,
+        "standalone_delta": 0.07192048360452408,
+        "dependency_score": 0.2607115574315409,
+        "degree": 4,
+        "signpost_score": 1895.5118171686775,
+        "signpost_lift": 2.4227171841040827,
+        "deck_prevalence": 0.20560569779523416,
+        "draft_weight": 1508.0,
+        "draft_drafts": 1508,
+        "draft_presence": 0.2087486157253599,
+        "draft_win_rate": 0.520793956496437,
+        "draft_win_lift": 0.016942650401326476,
+        "analysis_score_raw": 1910.2734929070787,
+        "analysis_score": 9.824503578948443,
+        "pick_priority_score_raw": 250.6168190169004,
+        "pick_priority_score": 9.385752579824292,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mana%20Leak%22",
+        "community": 0,
+        "x": 1155.316101118479,
+        "y": 509.0931558547749,
+        "analysis_radius": 24.341242665784296,
+        "pick_radius": 30.0,
+        "radius": 24.341242665784296
+      },
+      {
+        "id": "Enlightened Tutor",
+        "label": "Enlightened Tutor",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 240,
+        "win_rate": 0.5,
+        "standalone_delta": -0.008955298343643947,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 55.468534189497916,
+        "signpost_lift": 1.2388382722498783,
+        "deck_prevalence": 0.025218587216225986,
+        "draft_weight": 561.0,
+        "draft_drafts": 561,
+        "draft_presence": 0.0776578073089701,
+        "draft_win_rate": 0.49129369412749035,
+        "draft_win_lift": -0.012557611967620175,
+        "analysis_score_raw": 55.468534189497916,
+        "analysis_score": 6.881286637165896,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Enlightened%20Tutor%22",
+        "community": 4,
+        "x": 635.0,
+        "y": 560.0,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Talisman of Impulse",
+        "label": "Talisman of Impulse",
+        "color_identity": "RG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(211, 32, 42)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "RG"
+        },
+        "draw_games": 205,
+        "win_rate": 0.5121951219512195,
+        "standalone_delta": 0.003239823607575576,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -112.53599597984591,
+        "signpost_lift": 0.5858951041774034,
+        "deck_prevalence": 0.0203535650168399,
+        "draft_weight": 421.0,
+        "draft_drafts": 421,
+        "draft_presence": 0.05827796234772979,
+        "draft_win_rate": 0.4842007508829533,
+        "draft_win_lift": -0.01965055521215725,
+        "analysis_score_raw": -112.08242067478533,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 3.6561592431639287,
+        "pick_priority_score": 1.8807546422868935,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Talisman%20of%20Impulse%22",
+        "community": 5,
+        "x": 712.6167029855649,
+        "y": 372.6167029855649,
+        "analysis_radius": 11.178190298416657,
+        "pick_radius": 30.0,
+        "radius": 11.178190298416657
+      },
+      {
+        "id": "Entomb",
+        "label": "Entomb",
+        "color_identity": "B",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 209,
+        "win_rate": 0.4880382775119617,
+        "standalone_delta": -0.02091702083168223,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -208.12677627690343,
+        "signpost_lift": 0.4295126323372031,
+        "deck_prevalence": 0.02369256446915748,
+        "draft_weight": 398.0,
+        "draft_drafts": 398,
+        "draft_presence": 0.05509413067552602,
+        "draft_win_rate": 0.4865578015242111,
+        "draft_win_lift": -0.017293504570899454,
+        "analysis_score_raw": -208.12677627690343,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Entomb%22",
+        "community": 6,
+        "x": 900.0,
+        "y": 295.0,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Pyrite Spellbomb",
+        "label": "Pyrite Spellbomb",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 387,
+        "win_rate": 0.5684754521963824,
+        "standalone_delta": 0.059520153852738455,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -32.37239784596013,
+        "signpost_lift": 0.9209906889141786,
+        "deck_prevalence": 0.037545689506092765,
+        "draft_weight": 611.0,
+        "draft_drafts": 611,
+        "draft_presence": 0.08457918050941307,
+        "draft_win_rate": 0.4891882433473281,
+        "draft_win_lift": -0.014663062747782452,
+        "analysis_score_raw": -24.03957630657675,
+        "analysis_score": 0.8189719772246032,
+        "pick_priority_score_raw": 80.91840985261936,
+        "pick_priority_score": 7.274829198449137,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Pyrite%20Spellbomb%22",
+        "community": 7,
+        "x": 1087.3832970144351,
+        "y": 372.61670298556487,
+        "analysis_radius": 14.273608461900615,
+        "pick_radius": 30.0,
+        "radius": 14.273608461900615
+      }
+    ],
+    "edges": [
+      {
+        "from": "Brain Freeze",
+        "to": "Underworld Breach",
+        "pair_games": 594,
+        "pair_win_rate": 0.734006734006734,
+        "pair_expected_win_rate": 0.6636165151338462,
+        "pair_lift_vs_baseline": 0.22505143566309005,
+        "synergy_delta_logit": 0.3355945982881706,
+        "synergy_delta_prob": 0.07039021887288777,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 10.984814487307819,
+        "draft_pair_events": 890,
+        "quality_score": 7.993995215750047,
+        "pick_score_raw": 17.64073024654617,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Brain Freeze",
+        "to": "Lion's Eye Diamond",
+        "pair_games": 409,
+        "pair_win_rate": 0.6797066014669927,
+        "pair_expected_win_rate": 0.6160677089857439,
+        "pair_lift_vs_baseline": 0.17075130312334874,
+        "synergy_delta_logit": 0.2795331273686209,
+        "synergy_delta_prob": 0.06363889248124877,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 10.984814487307819,
+        "draft_pair_events": 782,
+        "quality_score": 4.280173322366768,
+        "pick_score_raw": 11.331738818021691,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Miscalculation",
+        "to": "Time Walk",
+        "pair_games": 128,
+        "pair_win_rate": 0.7890625,
+        "pair_expected_win_rate": 0.7172797077098821,
+        "pair_lift_vs_baseline": 0.28010720165635605,
+        "synergy_delta_logit": 0.3882758203488317,
+        "synergy_delta_prob": 0.07178279229011786,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 128,
+        "quality_score": 1.6386628179581106,
+        "pick_score_raw": 4.385364067144659,
+        "pick_score": 9.368250153872832
+      },
+      {
+        "from": "Force of Will",
+        "to": "Stock Up",
+        "pair_games": 135,
+        "pair_win_rate": 0.7481481481481481,
+        "pair_expected_win_rate": 0.6609054525966338,
+        "pair_lift_vs_baseline": 0.23919284980450417,
+        "synergy_delta_logit": 0.4214281689127384,
+        "synergy_delta_prob": 0.08724269555151432,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 279,
+        "quality_score": 1.626721564215204,
+        "pick_score_raw": 4.029715394924208,
+        "pick_score": 7.7941092473421385
+      },
+      {
+        "from": "Remand",
+        "to": "Stock Up",
+        "pair_games": 173,
+        "pair_win_rate": 0.7456647398843931,
+        "pair_expected_win_rate": 0.6714275159825752,
+        "pair_lift_vs_baseline": 0.23670944154074913,
+        "synergy_delta_logit": 0.3609741688263688,
+        "synergy_delta_prob": 0.07423722390181786,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 309,
+        "quality_score": 1.5684176761901718,
+        "pick_score_raw": 4.5386527375795,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Mystic Confluence",
+        "to": "Stock Up",
+        "pair_games": 157,
+        "pair_win_rate": 0.7579617834394905,
+        "pair_expected_win_rate": 0.689810400824831,
+        "pair_lift_vs_baseline": 0.24900648509584655,
+        "synergy_delta_logit": 0.3423042757308111,
+        "synergy_delta_prob": 0.06815138261465947,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 294,
+        "quality_score": 1.4818623824722554,
+        "pick_score_raw": 4.520766939086621,
+        "pick_score": 9.9403813039628
+      },
+      {
+        "from": "Force of Will",
+        "to": "Hullbreacher",
+        "pair_games": 186,
+        "pair_win_rate": 0.7150537634408602,
+        "pair_expected_win_rate": 0.6392249527788031,
+        "pair_lift_vs_baseline": 0.2060984650972163,
+        "synergy_delta_logit": 0.3480554096760903,
+        "synergy_delta_prob": 0.07582881066205716,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 282,
+        "quality_score": 1.376203792144841,
+        "pick_score_raw": 4.1280604497925655,
+        "pick_score": 8.240262008377464
+      },
+      {
+        "from": "Stock Up",
+        "to": "Time Walk",
+        "pair_games": 164,
+        "pair_win_rate": 0.7865853658536586,
+        "pair_expected_win_rate": 0.7357043398937159,
+        "pair_lift_vs_baseline": 0.2776300675100146,
+        "synergy_delta_logit": 0.2807044180957816,
+        "synergy_delta_prob": 0.050881025959942705,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 127,
+        "quality_score": 1.329474014675657,
+        "pick_score_raw": 4.921142560230688,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 104,
+        "pair_win_rate": 0.75,
+        "pair_expected_win_rate": 0.6711023145127578,
+        "pair_lift_vs_baseline": 0.24104470165635605,
+        "synergy_delta_logit": 0.3854373987135955,
+        "synergy_delta_prob": 0.07889768548724219,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 190,
+        "quality_score": 1.2955551101814502,
+        "pick_score_raw": 3.5010825643385393,
+        "pick_score": 5.235600316439892
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Force of Negation",
+        "pair_games": 145,
+        "pair_win_rate": 0.696551724137931,
+        "pair_expected_win_rate": 0.6118818885692068,
+        "pair_lift_vs_baseline": 0.18759642579428704,
+        "synergy_delta_logit": 0.3757013157738843,
+        "synergy_delta_prob": 0.0846698355687242,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 325,
+        "quality_score": 1.2109206502888938,
+        "pick_score_raw": 3.3677543805569883,
+        "pick_score": 4.542806304040351
+      },
+      {
+        "from": "Mana Leak",
+        "to": "Mystic Confluence",
+        "pair_games": 159,
+        "pair_win_rate": 0.7358490566037735,
+        "pair_expected_win_rate": 0.6771925285455364,
+        "pair_lift_vs_baseline": 0.22689375826012959,
+        "synergy_delta_logit": 0.2836047810763864,
+        "synergy_delta_prob": 0.05865652805823718,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 359,
+        "quality_score": 1.142770227809254,
+        "pick_score_raw": 4.212693159268917,
+        "pick_score": 8.61741005650427
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Stock Up",
+        "pair_games": 151,
+        "pair_win_rate": 0.7086092715231788,
+        "pair_expected_win_rate": 0.6377424083625245,
+        "pair_lift_vs_baseline": 0.19965397317953482,
+        "synergy_delta_logit": 0.32306028525780917,
+        "synergy_delta_prob": 0.07086686316065427,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 312,
+        "quality_score": 1.1225205643848664,
+        "pick_score_raw": 3.6297461789457737,
+        "pick_score": 5.884967609166078
+      },
+      {
+        "from": "Lion's Eye Diamond",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 163,
+        "pair_win_rate": 0.6809815950920245,
+        "pair_expected_win_rate": 0.6003394872307883,
+        "pair_lift_vs_baseline": 0.17202629674838055,
+        "synergy_delta_logit": 0.3514066441406408,
+        "synergy_delta_prob": 0.08064210786123616,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 370,
+        "quality_score": 1.1163640409712638,
+        "pick_score_raw": 3.3218871082567634,
+        "pick_score": 4.299574029714657
+      },
+      {
+        "from": "Mana Leak",
+        "to": "Stock Up",
+        "pair_games": 162,
+        "pair_win_rate": 0.7222222222222222,
+        "pair_expected_win_rate": 0.6626772063122699,
+        "pair_lift_vs_baseline": 0.21326692387857826,
+        "synergy_delta_logit": 0.280263758390208,
+        "synergy_delta_prob": 0.059545015909952315,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 330,
+        "quality_score": 1.0735022992563534,
+        "pick_score_raw": 4.002593717282516,
+        "pick_score": 7.669533696726697
+      },
+      {
+        "from": "Counterspell",
+        "to": "Mana Leak",
+        "pair_games": 150,
+        "pair_win_rate": 0.7133333333333334,
+        "pair_expected_win_rate": 0.648662099258344,
+        "pair_lift_vs_baseline": 0.20437803498968943,
+        "synergy_delta_logit": 0.29846522650300567,
+        "synergy_delta_prob": 0.06467123407498943,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 303,
+        "quality_score": 1.054655171666257,
+        "pick_score_raw": 3.690702062030466,
+        "pick_score": 6.186338382777763
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Snapcaster Mage",
+        "pair_games": 166,
+        "pair_win_rate": 0.6987951807228916,
+        "pair_expected_win_rate": 0.6327914063777906,
+        "pair_lift_vs_baseline": 0.18983988237924765,
+        "synergy_delta_logit": 0.2973564112132929,
+        "synergy_delta_prob": 0.06600377434510096,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 284,
+        "quality_score": 1.0311430103591306,
+        "pick_score_raw": 3.6205211870180842,
+        "pick_score": 5.839013117568091
+      },
+      {
+        "from": "Narset, Parter of Veils",
+        "to": "Time Walk",
+        "pair_games": 133,
+        "pair_win_rate": 0.7669172932330827,
+        "pair_expected_win_rate": 0.7190756363000591,
+        "pair_lift_vs_baseline": 0.2579619948894387,
+        "synergy_delta_logit": 0.2511045248616507,
+        "synergy_delta_prob": 0.04784165693302356,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 125,
+        "quality_score": 0.9995910618811367,
+        "pick_score_raw": 4.1358093148033985,
+        "pick_score": 8.27505110549935
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 288,
+        "pair_win_rate": 0.6736111111111112,
+        "pair_expected_win_rate": 0.6181492421509079,
+        "pair_lift_vs_baseline": 0.1646558127674672,
+        "synergy_delta_logit": 0.24286330234649178,
+        "synergy_delta_prob": 0.05546186896020322,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 515,
+        "quality_score": 0.9987482210165431,
+        "pick_score_raw": 4.308123437191087,
+        "pick_score": 9.035398969561223
+      },
+      {
+        "from": "Snapcaster Mage",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 126,
+        "pair_win_rate": 0.7301587301587301,
+        "pair_expected_win_rate": 0.6713868978430759,
+        "pair_lift_vs_baseline": 0.22120343181508617,
+        "synergy_delta_logit": 0.2809635602293633,
+        "synergy_delta_prob": 0.05877183231565419,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 251,
+        "quality_score": 0.9710237665857603,
+        "pick_score_raw": 3.6057581618980126,
+        "pick_score": 5.7652795509197095
+      },
+      {
+        "from": "Force of Will",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 121,
+        "pair_win_rate": 0.7355371900826446,
+        "pair_expected_win_rate": 0.6774888799254152,
+        "pair_lift_vs_baseline": 0.22658189173900067,
+        "synergy_delta_logit": 0.28064494420028174,
+        "synergy_delta_prob": 0.058048310157229444,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 232,
+        "quality_score": 0.9686939772302412,
+        "pick_score_raw": 3.5995248758517038,
+        "pick_score": 5.734076569698051
+      },
+      {
+        "from": "Brain Freeze",
+        "to": "Remand",
+        "pair_games": 157,
+        "pair_win_rate": 0.7197452229299363,
+        "pair_expected_win_rate": 0.6674736004036055,
+        "pair_lift_vs_baseline": 0.2107899245862923,
+        "synergy_delta_logit": 0.24641759948544095,
+        "synergy_delta_prob": 0.052271622526330774,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 377,
+        "quality_score": 0.9240444839650152,
+        "pick_score_raw": 3.9215373376940827,
+        "pick_score": 7.293158945689889
+      },
+      {
+        "from": "Daze",
+        "to": "Stock Up",
+        "pair_games": 140,
+        "pair_win_rate": 0.7,
+        "pair_expected_win_rate": 0.6427204297309358,
+        "pair_lift_vs_baseline": 0.191044701656356,
+        "synergy_delta_logit": 0.2601066064698462,
+        "synergy_delta_prob": 0.05727957026906416,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 309,
+        "quality_score": 0.8358157756820258,
+        "pick_score_raw": 3.3566072869215935,
+        "pick_score": 4.483929485126915
+      },
+      {
+        "from": "Ponder",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 96,
+        "pair_win_rate": 0.71875,
+        "pair_expected_win_rate": 0.661008374359556,
+        "pair_lift_vs_baseline": 0.20979470165635605,
+        "synergy_delta_logit": 0.2704785335435169,
+        "synergy_delta_prob": 0.05774162564044405,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 201,
+        "quality_score": 0.7706210263706456,
+        "pick_score_raw": 2.968619011947663,
+        "pick_score": 2.3348455318250276
+      },
+      {
+        "from": "Force of Negation",
+        "to": "Stock Up",
+        "pair_games": 138,
+        "pair_win_rate": 0.7028985507246377,
+        "pair_expected_win_rate": 0.6509532275215837,
+        "pair_lift_vs_baseline": 0.19394325238099375,
+        "synergy_delta_logit": 0.2379070510822372,
+        "synergy_delta_prob": 0.051945323203054006,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 313,
+        "quality_score": 0.769808054034341,
+        "pick_score_raw": 3.380248750653565,
+        "pick_score": 4.608620843124505
+      },
+      {
+        "from": "Force of Will",
+        "to": "Ponder",
+        "pair_games": 166,
+        "pair_win_rate": 0.6807228915662651,
+        "pair_expected_win_rate": 0.6286939740276359,
+        "pair_lift_vs_baseline": 0.17176759322262114,
+        "synergy_delta_logit": 0.2304778850717779,
+        "synergy_delta_prob": 0.05202891753862915,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 289,
+        "quality_score": 0.7308906063026598,
+        "pick_score_raw": 3.311284986842776,
+        "pick_score": 4.242984158440764
+      },
+      {
+        "from": "Narset, Parter of Veils",
+        "to": "Remand",
+        "pair_games": 147,
+        "pair_win_rate": 0.7006802721088435,
+        "pair_expected_win_rate": 0.6526639826182137,
+        "pair_lift_vs_baseline": 0.1917249737651996,
+        "synergy_delta_logit": 0.21976959353333536,
+        "synergy_delta_prob": 0.04801628949062986,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 296,
+        "quality_score": 0.7247622366974728,
+        "pick_score_raw": 3.4439873735353532,
+        "pick_score": 4.941471348728777
+      },
+      {
+        "from": "Force of Negation",
+        "to": "Hullbreacher",
+        "pair_games": 142,
+        "pair_win_rate": 0.6830985915492958,
+        "pair_expected_win_rate": 0.6289936172132896,
+        "pair_lift_vs_baseline": 0.1741432932056518,
+        "synergy_delta_logit": 0.24014664633504246,
+        "synergy_delta_prob": 0.05410497433600614,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 263,
+        "quality_score": 0.7104685431539921,
+        "pick_score_raw": 3.0874765977816834,
+        "pick_score": 3.0147531699164576
+      },
+      {
+        "from": "Cryptic Command",
+        "to": "Preordain",
+        "pair_games": 142,
+        "pair_win_rate": 0.7112676056338029,
+        "pair_expected_win_rate": 0.6682393734628349,
+        "pair_lift_vs_baseline": 0.20231230729015892,
+        "synergy_delta_logit": 0.20131570174444646,
+        "synergy_delta_prob": 0.04302823217096796,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 299,
+        "quality_score": 0.6854130501942365,
+        "pick_score_raw": 3.5557697614867974,
+        "pick_score": 5.5138468545254975
+      },
+      {
+        "from": "Daze",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 168,
+        "pair_win_rate": 0.6726190476190477,
+        "pair_expected_win_rate": 0.6232374442295825,
+        "pair_lift_vs_baseline": 0.16366374927540372,
+        "synergy_delta_logit": 0.2167422204015157,
+        "synergy_delta_prob": 0.04938160338946518,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 316,
+        "quality_score": 0.6645366717869592,
+        "pick_score_raw": 3.2031169618295414,
+        "pick_score": 3.6575416806818635
+      },
+      {
+        "from": "Mystic Confluence",
+        "to": "Ponder",
+        "pair_games": 135,
+        "pair_win_rate": 0.7037037037037037,
+        "pair_expected_win_rate": 0.6589276810994626,
+        "pair_lift_vs_baseline": 0.19474840536005977,
+        "synergy_delta_logit": 0.20647818305619026,
+        "synergy_delta_prob": 0.04477602260424107,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 272,
+        "quality_score": 0.6596926223136834,
+        "pick_score_raw": 3.334939739866651,
+        "pick_score": 4.369053386888009
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Lion's Eye Diamond",
+        "pair_games": 268,
+        "pair_win_rate": 0.6119402985074627,
+        "pair_expected_win_rate": 0.5799958572349568,
+        "pair_lift_vs_baseline": 0.10298500016381873,
+        "synergy_delta_logit": 0.13271914282128106,
+        "synergy_delta_prob": 0.03194444127250584,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 4.8006895599950825,
+        "draft_pair_events": 539,
+        "quality_score": 0.6548087107288875,
+        "pick_score_raw": 4.104792945042592,
+        "pick_score": 8.135484052804381
+      },
+      {
+        "from": "Ponder",
+        "to": "Spell Pierce",
+        "pair_games": 141,
+        "pair_win_rate": 0.6595744680851063,
+        "pair_expected_win_rate": 0.606569045506237,
+        "pair_lift_vs_baseline": 0.1506191697414624,
+        "synergy_delta_logit": 0.2284855051800202,
+        "synergy_delta_prob": 0.05300542257886931,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 333,
+        "quality_score": 0.5974110376805807,
+        "pick_score_raw": 2.7323893358621514,
+        "pick_score": 0.9208786183061954
+      },
+      {
+        "from": "Lion's Eye Diamond",
+        "to": "Underworld Breach",
+        "pair_games": 363,
+        "pair_win_rate": 0.6253443526170799,
+        "pair_expected_win_rate": 0.6117081634971252,
+        "pair_lift_vs_baseline": 0.11638905427343593,
+        "synergy_delta_logit": 0.0577970328273405,
+        "synergy_delta_prob": 0.013636189119954678,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 10.984814487307819,
+        "draft_pair_events": 787,
+        "quality_score": 0.596267237306176,
+        "pick_score_raw": 7.635169757519798,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Mystic Confluence",
+        "pair_games": 156,
+        "pair_win_rate": 0.6923076923076923,
+        "pair_expected_win_rate": 0.6527684818114654,
+        "pair_lift_vs_baseline": 0.18335239396404834,
+        "synergy_delta_logit": 0.17969945212972016,
+        "synergy_delta_prob": 0.039539210496226884,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 312,
+        "quality_score": 0.5875455461106216,
+        "pick_score_raw": 3.4155473346295735,
+        "pick_score": 4.79354795001889
+      },
+      {
+        "from": "Counterspell",
+        "to": "Stock Up",
+        "pair_games": 131,
+        "pair_win_rate": 0.7022900763358778,
+        "pair_expected_win_rate": 0.6618382847030642,
+        "pair_lift_vs_baseline": 0.19333477799223386,
+        "synergy_delta_logit": 0.18672991643772385,
+        "synergy_delta_prob": 0.04045179163281365,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 282,
+        "quality_score": 0.5846439861476631,
+        "pick_score_raw": 3.268806931241867,
+        "pick_score": 4.014848932300202
+      },
+      {
+        "from": "Cryptic Command",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 156,
+        "pair_win_rate": 0.717948717948718,
+        "pair_expected_win_rate": 0.6850885290313814,
+        "pair_lift_vs_baseline": 0.208993419605074,
+        "synergy_delta_logit": 0.15705272278458315,
+        "synergy_delta_prob": 0.03286018891733655,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 350,
+        "quality_score": 0.5808212543088779,
+        "pick_score_raw": 3.865882432079676,
+        "pick_score": 7.031125921526192
+      },
+      {
+        "from": "Miscalculation",
+        "to": "Remand",
+        "pair_games": 158,
+        "pair_win_rate": 0.689873417721519,
+        "pair_expected_win_rate": 0.6506497565804792,
+        "pair_lift_vs_baseline": 0.18091811937787505,
+        "synergy_delta_logit": 0.17763107678985302,
+        "synergy_delta_prob": 0.03922366114103981,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 325,
+        "quality_score": 0.5784098667684303,
+        "pick_score_raw": 3.402390715234803,
+        "pick_score": 4.724794625541727
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Subtlety",
+        "pair_games": 116,
+        "pair_win_rate": 0.6810344827586207,
+        "pair_expected_win_rate": 0.6341739763500558,
+        "pair_lift_vs_baseline": 0.17207918441497672,
+        "synergy_delta_logit": 0.2083644875527917,
+        "synergy_delta_prob": 0.04686050640856487,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 254,
+        "quality_score": 0.5504848644289374,
+        "pick_score_raw": 2.7565675032067563,
+        "pick_score": 1.0696500947409975
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Hullbreacher",
+        "pair_games": 267,
+        "pair_win_rate": 0.651685393258427,
+        "pair_expected_win_rate": 0.61544266527317,
+        "pair_lift_vs_baseline": 0.14273009491478306,
+        "synergy_delta_logit": 0.15620690909425516,
+        "synergy_delta_prob": 0.03624272798525696,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 481,
+        "quality_score": 0.5436623874597705,
+        "pick_score_raw": 3.6446726004308188,
+        "pick_score": 5.959130301252019
+      },
+      {
+        "from": "Counterspell",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 151,
+        "pair_win_rate": 0.6821192052980133,
+        "pair_expected_win_rate": 0.6428184577083444,
+        "pair_lift_vs_baseline": 0.17316390695436934,
+        "synergy_delta_logit": 0.17590980367907838,
+        "synergy_delta_prob": 0.03930074758966884,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 298,
+        "quality_score": 0.5365560817293067,
+        "pick_score_raw": 3.1854851378251166,
+        "pick_score": 3.560686155675947
+      },
+      {
+        "from": "Daze",
+        "to": "Mystic Confluence",
+        "pair_games": 153,
+        "pair_win_rate": 0.6928104575163399,
+        "pair_expected_win_rate": 0.6576508630693243,
+        "pair_lift_vs_baseline": 0.1838551591726959,
+        "synergy_delta_logit": 0.1604483896838782,
+        "synergy_delta_prob": 0.03515959444701555,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 350,
+        "quality_score": 0.5231358872569074,
+        "pick_score_raw": 3.408244660624087,
+        "pick_score": 4.755411271672345
+      },
+      {
+        "from": "Force of Will",
+        "to": "Mystic Confluence",
+        "pair_games": 144,
+        "pair_win_rate": 0.7083333333333334,
+        "pair_expected_win_rate": 0.6754596770922131,
+        "pair_lift_vs_baseline": 0.19937803498968942,
+        "synergy_delta_logit": 0.1543195228877704,
+        "synergy_delta_prob": 0.032873656241120264,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 290,
+        "quality_score": 0.5214916436366146,
+        "pick_score_raw": 3.528650227229897,
+        "pick_score": 5.376283605269733
+      },
+      {
+        "from": "Cryptic Command",
+        "to": "Daze",
+        "pair_games": 126,
+        "pair_win_rate": 0.7063492063492064,
+        "pair_expected_win_rate": 0.6714488706810081,
+        "pair_lift_vs_baseline": 0.19739390800556245,
+        "synergy_delta_logit": 0.16297305659286476,
+        "synergy_delta_prob": 0.03490033566819828,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 366,
+        "quality_score": 0.515119654126931,
+        "pick_score_raw": 3.3048707772094743,
+        "pick_score": 4.208680076508253
+      },
+      {
+        "from": "Mystic Confluence",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 110,
+        "pair_win_rate": 0.7363636363636363,
+        "pair_expected_win_rate": 0.7056098959368268,
+        "pair_lift_vs_baseline": 0.22740833801999238,
+        "synergy_delta_logit": 0.15299656761185976,
+        "synergy_delta_prob": 0.03075374042680956,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 240,
+        "quality_score": 0.505875380445157,
+        "pick_score_raw": 3.448770946552761,
+        "pick_score": 4.966258811356201
+      },
+      {
+        "from": "Counterspell",
+        "to": "Snapcaster Mage",
+        "pair_games": 170,
+        "pair_win_rate": 0.6764705882352942,
+        "pair_expected_win_rate": 0.6404819599254377,
+        "pair_lift_vs_baseline": 0.1675152898916502,
+        "synergy_delta_logit": 0.16014234471892586,
+        "synergy_delta_prob": 0.035988628309856496,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 333,
+        "quality_score": 0.5052944600412053,
+        "pick_score_raw": 3.297359864440101,
+        "pick_score": 4.168445646001239
+      },
+      {
+        "from": "Remand",
+        "to": "Snapcaster Mage",
+        "pair_games": 180,
+        "pair_win_rate": 0.6833333333333333,
+        "pair_expected_win_rate": 0.6503568582410085,
+        "pair_lift_vs_baseline": 0.1743780349896894,
+        "synergy_delta_logit": 0.1485249019906414,
+        "synergy_delta_prob": 0.03297647509232482,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 323,
+        "quality_score": 0.49928458413069604,
+        "pick_score_raw": 3.5123754494059436,
+        "pick_score": 5.293334071845763
+      },
+      {
+        "from": "Force of Will",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 164,
+        "pair_win_rate": 0.676829268292683,
+        "pair_expected_win_rate": 0.6418615499375901,
+        "pair_lift_vs_baseline": 0.16787396994903903,
+        "synergy_delta_logit": 0.1557853052868562,
+        "synergy_delta_prob": 0.034967718355092825,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 280,
+        "quality_score": 0.48047985262668336,
+        "pick_score_raw": 3.219900339864818,
+        "pick_score": 3.7493597954528
+      },
+      {
+        "from": "Mana Leak",
+        "to": "Miscalculation",
+        "pair_games": 125,
+        "pair_win_rate": 0.68,
+        "pair_expected_win_rate": 0.6416414397170169,
+        "pair_lift_vs_baseline": 0.1710447016563561,
+        "synergy_delta_logit": 0.17127621002753046,
+        "synergy_delta_prob": 0.03835856028298312,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 343,
+        "quality_score": 0.47267251154511314,
+        "pick_score_raw": 2.8844619531614346,
+        "pick_score": 1.8410090018167833
+      },
+      {
+        "from": "Narset, Parter of Veils",
+        "to": "Subtlety",
+        "pair_games": 147,
+        "pair_win_rate": 0.6870748299319728,
+        "pair_expected_win_rate": 0.6534613212816929,
+        "pair_lift_vs_baseline": 0.17811953158832883,
+        "synergy_delta_logit": 0.15219021535343802,
+        "synergy_delta_prob": 0.0336135086502799,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 304,
+        "quality_score": 0.4701310383342674,
+        "pick_score_raw": 3.2265075920301522,
+        "pick_score": 3.785406455489602
+      },
+      {
+        "from": "Miscalculation",
+        "to": "Snapcaster Mage",
+        "pair_games": 137,
+        "pair_win_rate": 0.6715328467153284,
+        "pair_expected_win_rate": 0.6333902240909045,
+        "pair_lift_vs_baseline": 0.16257754837168448,
+        "synergy_delta_logit": 0.16833738878335525,
+        "synergy_delta_prob": 0.038142622624423916,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 311,
+        "quality_score": 0.46303887653316683,
+        "pick_score_raw": 2.873388594268695,
+        "pick_score": 1.7752349835506038
+      },
+      {
+        "from": "Narset, Parter of Veils",
+        "to": "Underworld Breach",
+        "pair_games": 154,
+        "pair_win_rate": 0.6818181818181818,
+        "pair_expected_win_rate": 0.6487255200020094,
+        "pair_lift_vs_baseline": 0.17286288347453782,
+        "synergy_delta_logit": 0.14869826454359847,
+        "synergy_delta_prob": 0.03309266181617232,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 363,
+        "quality_score": 0.46082598216423604,
+        "pick_score_raw": 3.240208098842921,
+        "pick_score": 3.859971992183098
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 227,
+        "pair_win_rate": 0.6651982378854625,
+        "pair_expected_win_rate": 0.6351494133495784,
+        "pair_lift_vs_baseline": 0.15624293954181856,
+        "synergy_delta_logit": 0.13217414683285378,
+        "synergy_delta_prob": 0.03004882453588409,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 345,
+        "quality_score": 0.45356745949067917,
+        "pick_score_raw": 3.586834283430269,
+        "pick_score": 5.6704182949749535
+      },
+      {
+        "from": "Lion's Eye Diamond",
+        "to": "Stock Up",
+        "pair_games": 127,
+        "pair_win_rate": 0.6614173228346457,
+        "pair_expected_win_rate": 0.6202851415355437,
+        "pair_lift_vs_baseline": 0.15246202449100177,
+        "synergy_delta_logit": 0.17885800372048255,
+        "synergy_delta_prob": 0.04113218129910201,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 319,
+        "quality_score": 0.4478781191249639,
+        "pick_score_raw": 2.6162089423863164,
+        "pick_score": 0.19229292831599107
+      },
+      {
+        "from": "Daze",
+        "to": "Snapcaster Mage",
+        "pair_games": 158,
+        "pair_win_rate": 0.6582278481012658,
+        "pair_expected_win_rate": 0.6208484078160277,
+        "pair_lift_vs_baseline": 0.14927254975762183,
+        "synergy_delta_logit": 0.1622560147295572,
+        "synergy_delta_prob": 0.0373794402852381,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 347,
+        "quality_score": 0.4462553516920738,
+        "pick_score_raw": 2.8748348916388085,
+        "pick_score": 1.783836431693068
+      },
+      {
+        "from": "Brain Freeze",
+        "to": "Force of Negation",
+        "pair_games": 140,
+        "pair_win_rate": 0.6714285714285714,
+        "pair_expected_win_rate": 0.6468825083503503,
+        "pair_lift_vs_baseline": 0.16247327308492743,
+        "synergy_delta_logit": 0.10928954137247471,
+        "synergy_delta_prob": 0.024546063078221048,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.4577700659544655,
+        "draft_pair_events": 335,
+        "quality_score": 0.43934413006250056,
+        "pick_score_raw": 3.6284749267746412,
+        "pick_score": 5.878640282240076
+      },
+      {
+        "from": "Cryptic Command",
+        "to": "Subtlety",
+        "pair_games": 155,
+        "pair_win_rate": 0.7225806451612903,
+        "pair_expected_win_rate": 0.699668942447226,
+        "pair_lift_vs_baseline": 0.21362534681764633,
+        "synergy_delta_logit": 0.11157686318610893,
+        "synergy_delta_prob": 0.022911702714064286,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 362,
+        "quality_score": 0.4201804677475804,
+        "pick_score_raw": 3.937283999826626,
+        "pick_score": 7.36675931520239
+      },
+      {
+        "from": "Force of Negation",
+        "to": "Snapcaster Mage",
+        "pair_games": 154,
+        "pair_win_rate": 0.6623376623376623,
+        "pair_expected_win_rate": 0.6292945095328498,
+        "pair_lift_vs_baseline": 0.1533823639940184,
+        "synergy_delta_logit": 0.1445376500558222,
+        "synergy_delta_prob": 0.033043152804812514,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 298,
+        "quality_score": 0.3996289053325375,
+        "pick_score_raw": 2.8875293623529568,
+        "pick_score": 1.8591957705027014
+      },
+      {
+        "from": "Force of Negation",
+        "to": "Underworld Breach",
+        "pair_games": 126,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6426699153884761,
+        "pair_lift_vs_baseline": 0.15771136832302268,
+        "synergy_delta_logit": 0.10617590035436597,
+        "synergy_delta_prob": 0.023996751278190565,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.4577700659544655,
+        "draft_pair_events": 308,
+        "quality_score": 0.39307725592642073,
+        "pick_score_raw": 3.3399519346693167,
+        "pick_score": 4.395677799945255
+      },
+      {
+        "from": "Stock Up",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 93,
+        "pair_win_rate": 0.7204301075268817,
+        "pair_expected_win_rate": 0.6917908178433623,
+        "pair_lift_vs_baseline": 0.2114748091832378,
+        "synergy_delta_logit": 0.13809117309615215,
+        "synergy_delta_prob": 0.028639289683519475,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 192,
+        "quality_score": 0.3893684232419344,
+        "pick_score_raw": 2.9371244887009955,
+        "pick_score": 2.1512717187333177
+      },
+      {
+        "from": "Mystic Confluence",
+        "to": "Snapcaster Mage",
+        "pair_games": 157,
+        "pair_win_rate": 0.6942675159235668,
+        "pair_expected_win_rate": 0.6693380404952609,
+        "pair_lift_vs_baseline": 0.1853122175799229,
+        "synergy_delta_logit": 0.1149542297367363,
+        "synergy_delta_prob": 0.024929475428305925,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 339,
+        "quality_score": 0.3819145972905113,
+        "pick_score_raw": 3.472271603849729,
+        "pick_score": 5.087648421251893
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Snapcaster Mage",
+        "pair_games": 124,
+        "pair_win_rate": 0.6532258064516129,
+        "pair_expected_win_rate": 0.6157478338203886,
+        "pair_lift_vs_baseline": 0.14427050810796893,
+        "synergy_delta_logit": 0.1617105397628571,
+        "synergy_delta_prob": 0.03747797263122432,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 311,
+        "quality_score": 0.38074831020498884,
+        "pick_score_raw": 2.4595584731532103,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Miscalculation",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 141,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6357465992433617,
+        "pair_lift_vs_baseline": 0.15771136832302268,
+        "synergy_delta_logit": 0.13619690683376673,
+        "synergy_delta_prob": 0.030920067423304887,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 322,
+        "quality_score": 0.3704293399288244,
+        "pick_score_raw": 2.841727630606392,
+        "pick_score": 1.586131204882768
+      },
+      {
+        "from": "Echo of Eons",
+        "to": "Time Walk",
+        "pair_games": 144,
+        "pair_win_rate": 0.7222222222222222,
+        "pair_expected_win_rate": 0.701773540545871,
+        "pair_lift_vs_baseline": 0.21326692387857826,
+        "synergy_delta_logit": 0.09975381381868342,
+        "synergy_delta_prob": 0.020448681676351166,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 144,
+        "quality_score": 0.34871414618759294,
+        "pick_score_raw": 3.6350563937041027,
+        "pick_score": 5.911379048921208
+      },
+      {
+        "from": "Miscalculation",
+        "to": "Mystic Confluence",
+        "pair_games": 153,
+        "pair_win_rate": 0.6928104575163399,
+        "pair_expected_win_rate": 0.6696231156023821,
+        "pair_lift_vs_baseline": 0.1838551591726959,
+        "synergy_delta_logit": 0.10681052903605404,
+        "synergy_delta_prob": 0.02318734191395777,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 338,
+        "quality_score": 0.3477832338653448,
+        "pick_score_raw": 3.402981766723468,
+        "pick_score": 4.727887723659512
+      },
+      {
+        "from": "Force of Negation",
+        "to": "Force of Will",
+        "pair_games": 194,
+        "pair_win_rate": 0.6597938144329897,
+        "pair_expected_win_rate": 0.6357540561925381,
+        "pair_lift_vs_baseline": 0.15083851608934573,
+        "synergy_delta_logit": 0.10539304671755378,
+        "synergy_delta_prob": 0.02403975824045157,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 321,
+        "quality_score": 0.32319135605498256,
+        "pick_score_raw": 3.2039397053381045,
+        "pick_score": 3.662051265955955
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Remand",
+        "pair_games": 174,
+        "pair_win_rate": 0.6724137931034483,
+        "pair_expected_win_rate": 0.650063555124161,
+        "pair_lift_vs_baseline": 0.16345849475980434,
+        "synergy_delta_logit": 0.09980408366498128,
+        "synergy_delta_prob": 0.022350237979287257,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 287,
+        "quality_score": 0.30991137801429713,
+        "pick_score_raw": 3.2422400925035753,
+        "pick_score": 3.8710106749814424
+      },
+      {
+        "from": "Lion's Eye Diamond",
+        "to": "Miscalculation",
+        "pair_games": 107,
+        "pair_win_rate": 0.6355140186915887,
+        "pair_expected_win_rate": 0.5982086266923939,
+        "pair_lift_vs_baseline": 0.1265587203479448,
+        "synergy_delta_logit": 0.15793947390556962,
+        "synergy_delta_prob": 0.037305391999194804,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 316,
+        "quality_score": 0.3083838227027902,
+        "pick_score_raw": 2.039850145906388,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Brain Freeze",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 178,
+        "pair_win_rate": 0.6741573033707865,
+        "pair_expected_win_rate": 0.652905279444167,
+        "pair_lift_vs_baseline": 0.16520200502714255,
+        "synergy_delta_logit": 0.09521438052947395,
+        "synergy_delta_prob": 0.021252023926619512,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 395,
+        "quality_score": 0.30562651026812376,
+        "pick_score_raw": 3.3576725709039716,
+        "pick_score": 4.489562618172012
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Spell Pierce",
+        "pair_games": 147,
+        "pair_win_rate": 0.6462585034013606,
+        "pair_expected_win_rate": 0.6173455993309858,
+        "pair_lift_vs_baseline": 0.13730320505771665,
+        "synergy_delta_logit": 0.1243364110486681,
+        "synergy_delta_prob": 0.028912904070374834,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 280,
+        "quality_score": 0.30398679716928834,
+        "pick_score_raw": 2.552408206170104,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Mystic Confluence",
+        "to": "Time Walk",
+        "pair_games": 151,
+        "pair_win_rate": 0.7615894039735099,
+        "pair_expected_win_rate": 0.7482709385534762,
+        "pair_lift_vs_baseline": 0.252634105629866,
+        "synergy_delta_logit": 0.07200141632988988,
+        "synergy_delta_prob": 0.013318465420033787,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 130,
+        "quality_score": 0.3000172567029604,
+        "pick_score_raw": 4.33015245609131,
+        "pick_score": 9.130819239266648
+      },
+      {
+        "from": "Cryptic Command",
+        "to": "Mystic Confluence",
+        "pair_games": 160,
+        "pair_win_rate": 0.73125,
+        "pair_expected_win_rate": 0.7164230245458539,
+        "pair_lift_vs_baseline": 0.222294701656356,
+        "synergy_delta_logit": 0.07418661487216716,
+        "synergy_delta_prob": 0.014826975454146019,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 387,
+        "quality_score": 0.2951351758789239,
+        "pick_score_raw": 4.1609743055769295,
+        "pick_score": 8.387670235063345
+      },
+      {
+        "from": "Stock Up",
+        "to": "Underworld Breach",
+        "pair_games": 135,
+        "pair_win_rate": 0.6888888888888889,
+        "pair_expected_win_rate": 0.6675934535125675,
+        "pair_lift_vs_baseline": 0.17993359054524494,
+        "synergy_delta_logit": 0.09760924652758651,
+        "synergy_delta_prob": 0.021295435376321392,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 333,
+        "quality_score": 0.29263132752888205,
+        "pick_score_raw": 3.1329816465445024,
+        "pick_score": 3.269837690585399
+      },
+      {
+        "from": "Narset, Parter of Veils",
+        "to": "Stock Up",
+        "pair_games": 170,
+        "pair_win_rate": 0.6764705882352942,
+        "pair_expected_win_rate": 0.6569433888518299,
+        "pair_lift_vs_baseline": 0.1675152898916502,
+        "synergy_delta_logit": 0.08789657511622262,
+        "synergy_delta_prob": 0.019527199383464255,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 306,
+        "quality_score": 0.27643286836167125,
+        "pick_score_raw": 3.284994549797349,
+        "pick_score": 4.102053739528538
+      },
+      {
+        "from": "Mystic Confluence",
+        "to": "Narset, Parter of Veils",
+        "pair_games": 180,
+        "pair_win_rate": 0.6888888888888889,
+        "pair_expected_win_rate": 0.6715831647568185,
+        "pair_lift_vs_baseline": 0.17993359054524494,
+        "synergy_delta_logit": 0.0795756580545578,
+        "synergy_delta_prob": 0.017305724132070432,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 316,
+        "quality_score": 0.27491573901051763,
+        "pick_score_raw": 3.6092480345918747,
+        "pick_score": 5.782730943425931
+      },
+      {
+        "from": "Ancestral Recall",
+        "to": "Brain Freeze",
+        "pair_games": 151,
+        "pair_win_rate": 0.7218543046357616,
+        "pair_expected_win_rate": 0.7065540495747736,
+        "pair_lift_vs_baseline": 0.21289900629211767,
+        "synergy_delta_logit": 0.07497202848603679,
+        "synergy_delta_prob": 0.015300255060987977,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 146,
+        "quality_score": 0.2681014414122678,
+        "pick_score_raw": 3.718841308892709,
+        "pick_score": 6.324142225550132
+      },
+      {
+        "from": "Ancestral Recall",
+        "to": "Counterspell",
+        "pair_games": 143,
+        "pair_win_rate": 0.7132867132867133,
+        "pair_expected_win_rate": 0.697303490961732,
+        "pair_lift_vs_baseline": 0.2043314149430694,
+        "synergy_delta_logit": 0.07691068918371058,
+        "synergy_delta_prob": 0.015983222324981283,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 114,
+        "quality_score": 0.25527077014706473,
+        "pick_score_raw": 3.446342706825972,
+        "pick_score": 4.95367951983245
+      },
+      {
+        "from": "Ponder",
+        "to": "Remand",
+        "pair_games": 153,
+        "pair_win_rate": 0.6601307189542484,
+        "pair_expected_win_rate": 0.6396706127068732,
+        "pair_lift_vs_baseline": 0.1511754206106044,
+        "synergy_delta_logit": 0.08994199986670826,
+        "synergy_delta_prob": 0.020460106247375154,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 309,
+        "quality_score": 0.2450588372969829,
+        "pick_score_raw": 2.8460936136188306,
+        "pick_score": 1.6123006747083768
+      },
+      {
+        "from": "Cryptic Command",
+        "to": "Miscalculation",
+        "pair_games": 143,
+        "pair_win_rate": 0.6993006993006993,
+        "pair_expected_win_rate": 0.6831710569326244,
+        "pair_lift_vs_baseline": 0.19034540095705532,
+        "synergy_delta_logit": 0.07558680915165394,
+        "synergy_delta_prob": 0.016129642368074903,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 318,
+        "quality_score": 0.24493476097887226,
+        "pick_score_raw": 3.3854587980005255,
+        "pick_score": 4.636009507657125
+      },
+      {
+        "from": "Mystic Confluence",
+        "to": "Preordain",
+        "pair_games": 129,
+        "pair_win_rate": 0.6744186046511628,
+        "pair_expected_win_rate": 0.6543759592398577,
+        "pair_lift_vs_baseline": 0.16546330630751882,
+        "synergy_delta_logit": 0.08990804975563027,
+        "synergy_delta_prob": 0.02004264541130507,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 294,
+        "quality_score": 0.24323966891717824,
+        "pick_score_raw": 2.8252208007165436,
+        "pick_score": 1.4869206411909561
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Lion's Eye Diamond",
+        "pair_games": 141,
+        "pair_win_rate": 0.624113475177305,
+        "pair_expected_win_rate": 0.5975888530252568,
+        "pair_lift_vs_baseline": 0.11515817683366103,
+        "synergy_delta_logit": 0.1116162398156334,
+        "synergy_delta_prob": 0.026524622152048205,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 327,
+        "quality_score": 0.23102094739297854,
+        "pick_score_raw": 2.1627518947401647,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Brain Freeze",
+        "to": "Subtlety",
+        "pair_games": 118,
+        "pair_win_rate": 0.6864406779661016,
+        "pair_expected_win_rate": 0.6682542227129983,
+        "pair_lift_vs_baseline": 0.1774853796224577,
+        "synergy_delta_logit": 0.0832315124988886,
+        "synergy_delta_prob": 0.018186455253103362,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 336,
+        "quality_score": 0.23051085243166372,
+        "pick_score_raw": 2.894368926300073,
+        "pick_score": 1.899696149625474
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Preordain",
+        "pair_games": 166,
+        "pair_win_rate": 0.6385542168674698,
+        "pair_expected_win_rate": 0.6171215862122426,
+        "pair_lift_vs_baseline": 0.12959891852382588,
+        "synergy_delta_logit": 0.09174594839397177,
+        "synergy_delta_prob": 0.02143263065522727,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 278,
+        "quality_score": 0.22662537502119828,
+        "pick_score_raw": 2.5786790506136867,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Daze",
+        "to": "Subtlety",
+        "pair_games": 135,
+        "pair_win_rate": 0.6592592592592592,
+        "pair_expected_win_rate": 0.6391732898414821,
+        "pair_lift_vs_baseline": 0.15030396091561526,
+        "synergy_delta_logit": 0.08821718234151754,
+        "synergy_delta_prob": 0.020085969417777072,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 344,
+        "quality_score": 0.2255624983432186,
+        "pick_score_raw": 2.6725291507790123,
+        "pick_score": 0.5483639776315089
+      },
+      {
+        "from": "Hullbreacher",
+        "to": "Miscalculation",
+        "pair_games": 161,
+        "pair_win_rate": 0.6521739130434783,
+        "pair_expected_win_rate": 0.6330907178797692,
+        "pair_lift_vs_baseline": 0.14321861469983432,
+        "synergy_delta_logit": 0.08310956317601015,
+        "synergy_delta_prob": 0.019083195163709044,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 301,
+        "quality_score": 0.2212651004894765,
+        "pick_score_raw": 2.780593838023452,
+        "pick_score": 1.2165418081217103
+      },
+      {
+        "from": "Counterspell",
+        "to": "Miscalculation",
+        "pair_games": 138,
+        "pair_win_rate": 0.6594202898550725,
+        "pair_expected_win_rate": 0.6407785613854443,
+        "pair_lift_vs_baseline": 0.15046499151142856,
+        "synergy_delta_logit": 0.08196698461350005,
+        "synergy_delta_prob": 0.018641728469628194,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 300,
+        "quality_score": 0.21097790122557972,
+        "pick_score_raw": 2.688223037508708,
+        "pick_score": 0.6466122874149726
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Brain Freeze",
+          "Lion's Eye Diamond",
+          "Underworld Breach"
+        ],
+        "games": 115,
+        "win_rate": 0.782608695652174,
+        "expected_win_rate": 0.6868660358095338,
+        "synergy_delta_logit": 0.49542567065863374,
+        "deck_log_lift": 3.5551237009611993,
+        "draft_triplet_events": 449,
+        "quality": 12.42255089527504
+      },
+      {
+        "cards": [
+          "Brain Freeze",
+          "Preordain",
+          "Underworld Breach"
+        ],
+        "games": 45,
+        "win_rate": 0.7777777777777778,
+        "expected_win_rate": 0.7042102568601992,
+        "synergy_delta_logit": 0.3853348713063942,
+        "deck_log_lift": 2.0036615080164784,
+        "draft_triplet_events": 211,
+        "quality": 4.7844545199018675
+      },
+      {
+        "cards": [
+          "Brain Freeze",
+          "Echo of Eons",
+          "Lion's Eye Diamond"
+        ],
+        "games": 60,
+        "win_rate": 0.7166666666666667,
+        "expected_win_rate": 0.6578587235781845,
+        "synergy_delta_logit": 0.27422030989038115,
+        "deck_log_lift": 2.2928857938061635,
+        "draft_triplet_events": 248,
+        "quality": 4.123804786323571
+      },
+      {
+        "cards": [
+          "Brain Freeze",
+          "Lion's Eye Diamond",
+          "Preordain"
+        ],
+        "games": 32,
+        "win_rate": 0.71875,
+        "expected_win_rate": 0.6594549297991464,
+        "synergy_delta_logit": 0.27740349031698863,
+        "deck_log_lift": 1.6421702504454208,
+        "draft_triplet_events": 177,
+        "quality": 2.7327430338453884
+      },
+      {
+        "cards": [
+          "Brain Freeze",
+          "Force of Negation",
+          "Underworld Breach"
+        ],
+        "games": 42,
+        "win_rate": 0.7619047619047619,
+        "expected_win_rate": 0.71463061460462,
+        "synergy_delta_logit": 0.2451694537146808,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 158,
+        "quality": 2.072112382813812
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 11,
+        "top_cards": [
+          "Narset, Parter of Veils",
+          "Miscalculation",
+          "Mystic Confluence",
+          "Daze",
+          "Counterspell"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 6,
+        "top_cards": [
+          "Snapcaster Mage",
+          "Hullbreacher",
+          "Spell Pierce",
+          "Force of Will",
+          "Ponder"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Brain Freeze",
+          "Underworld Breach",
+          "Lion's Eye Diamond",
+          "Ancestral Recall"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 3,
+        "top_cards": [
+          "Force of Negation",
+          "Subtlety",
+          "Echo of Eons"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Enlightened Tutor"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Talisman of Impulse"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Entomb"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Pyrite Spellbomb"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Mana Leak",
+          "pick_priority_score": 9.385752579824292,
+          "pick_priority_score_raw": 250.6168190169004,
+          "draft_drafts": 1508,
+          "draft_win_rate": 0.520793956496437,
+          "draft_win_lift": 0.016942650401326476,
+          "draw_win_rate": 0.580875781948168
+        },
+        {
+          "card": "Miscalculation",
+          "pick_priority_score": 9.221277402751895,
+          "pick_priority_score_raw": 229.5507614753499,
+          "draft_drafts": 1522,
+          "draft_win_rate": 0.5193878665823792,
+          "draft_win_lift": 0.015536560487268702,
+          "draw_win_rate": 0.5724737082761774
+        },
+        {
+          "card": "Daze",
+          "pick_priority_score": 8.955886390606251,
+          "pick_priority_score_raw": 199.21405985329704,
+          "draft_drafts": 1517,
+          "draft_win_rate": 0.5197370058917173,
+          "draft_win_lift": 0.01588569979660681,
+          "draw_win_rate": 0.5592979127134725
+        },
+        {
+          "card": "Ponder",
+          "pick_priority_score": 8.53254192892178,
+          "pick_priority_score_raw": 158.86565690385302,
+          "draft_drafts": 1407,
+          "draft_win_rate": 0.5115655302635078,
+          "draft_win_lift": 0.007714224168397288,
+          "draw_win_rate": 0.5606965174129354
+        },
+        {
+          "card": "Spell Pierce",
+          "pick_priority_score": 8.49040830644723,
+          "pick_priority_score_raw": 155.3246993362344,
+          "draft_drafts": 1608,
+          "draft_win_rate": 0.5115188448394937,
+          "draft_win_lift": 0.0076675387443831955,
+          "draw_win_rate": 0.5559518502006242
+        },
+        {
+          "card": "Preordain",
+          "pick_priority_score": 8.394910747348787,
+          "pick_priority_score_raw": 147.58660544430512,
+          "draft_drafts": 1457,
+          "draft_win_rate": 0.5109805270235103,
+          "draft_win_lift": 0.007129220928399738,
+          "draw_win_rate": 0.5557177615571777
+        },
+        {
+          "card": "Pyrite Spellbomb",
+          "pick_priority_score": 7.274829198449137,
+          "pick_priority_score_raw": 80.91840985261936,
+          "draft_drafts": 611,
+          "draft_win_rate": 0.4891882433473281,
+          "draft_win_lift": -0.014663062747782452,
+          "draw_win_rate": 0.5684754521963824
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Remand",
+          "pick_priority_score": 9.837342223013195,
+          "pick_priority_score_raw": 318.88962317867015,
+          "draft_drafts": 1520,
+          "draft_win_rate": 0.530231712514251,
+          "draft_win_lift": 0.026380406419140523,
+          "draw_win_rate": 0.5904365904365905
+        },
+        {
+          "card": "Stock Up",
+          "pick_priority_score": 9.74509601528645,
+          "pick_priority_score_raw": 303.5810399164408,
+          "draft_drafts": 1405,
+          "draft_win_rate": 0.5278281595354354,
+          "draft_win_lift": 0.023976853440324852,
+          "draw_win_rate": 0.59500693481276
+        },
+        {
+          "card": "Brain Freeze",
+          "pick_priority_score": 9.416310826206361,
+          "pick_priority_score_raw": 254.7377172029908,
+          "draft_drafts": 1905,
+          "draft_win_rate": 0.500591282687675,
+          "draft_win_lift": -0.003260023407435475,
+          "draw_win_rate": 0.5906940063091483
+        },
+        {
+          "card": "Narset, Parter of Veils",
+          "pick_priority_score": 8.647894740489026,
+          "pick_priority_score_raw": 168.97583641154944,
+          "draft_drafts": 1536,
+          "draft_win_rate": 0.5000070721780341,
+          "draft_win_lift": -0.003844233917076445,
+          "draw_win_rate": 0.5746440055121728
+        },
+        {
+          "card": "Talisman of Impulse",
+          "pick_priority_score": 1.8807546422868935,
+          "pick_priority_score_raw": 3.6561592431639287,
+          "draft_drafts": 421,
+          "draft_win_rate": 0.4842007508829533,
+          "draft_win_lift": -0.01965055521215725,
+          "draw_win_rate": 0.5121951219512195
+        },
+        {
+          "card": "Enlightened Tutor",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 561,
+          "draft_win_rate": 0.49129369412749035,
+          "draft_win_lift": -0.012557611967620175,
+          "draw_win_rate": 0.5
+        }
+      ],
+      "rare": [
+        {
+          "card": "Mystic Confluence",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 369.26236054833817,
+          "draft_drafts": 1530,
+          "draft_win_rate": 0.52914171988363,
+          "draft_win_lift": 0.025290413788519484,
+          "draw_win_rate": 0.6107236268526591
+        },
+        {
+          "card": "Cryptic Command",
+          "pick_priority_score": 9.993343894714135,
+          "pick_priority_score_raw": 346.54972050114355,
+          "draft_drafts": 1482,
+          "draft_win_rate": 0.5142390285020008,
+          "draft_win_lift": 0.010387722406890232,
+          "draw_win_rate": 0.6253354804079442
+        },
+        {
+          "card": "Underworld Breach",
+          "pick_priority_score": 9.263817516008244,
+          "pick_priority_score_raw": 234.82399037836598,
+          "draft_drafts": 1713,
+          "draft_win_rate": 0.5057644447685304,
+          "draft_win_lift": 0.0019131386734199118,
+          "draw_win_rate": 0.5862398471094123
+        },
+        {
+          "card": "Hullbreacher",
+          "pick_priority_score": 9.18161735105351,
+          "pick_priority_score_raw": 224.7408056178419,
+          "draft_drafts": 1403,
+          "draft_win_rate": 0.5206640587404829,
+          "draft_win_lift": 0.01681275264537241,
+          "draw_win_rate": 0.5718426501035196
+        },
+        {
+          "card": "Force of Negation",
+          "pick_priority_score": 9.137046171818346,
+          "pick_priority_score_raw": 219.45488499000393,
+          "draft_drafts": 1465,
+          "draft_win_rate": 0.5200333444892097,
+          "draft_win_lift": 0.016182038394099152,
+          "draw_win_rate": 0.5681614349775784
+        },
+        {
+          "card": "Counterspell",
+          "pick_priority_score": 9.122776436703726,
+          "pick_priority_score_raw": 217.7888624359982,
+          "draft_drafts": 1414,
+          "draft_win_rate": 0.5140092296675065,
+          "draft_win_lift": 0.010157923572395977,
+          "draw_win_rate": 0.5799623706491063
+        },
+        {
+          "card": "Echo of Eons",
+          "pick_priority_score": 7.989190361540659,
+          "pick_priority_score_raw": 118.75929019694857,
+          "draft_drafts": 1610,
+          "draft_win_rate": 0.4934304582154682,
+          "draft_win_lift": -0.010420847879642314,
+          "draw_win_rate": 0.5539641943734015
+        },
+        {
+          "card": "Entomb",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 398,
+          "draft_win_rate": 0.4865578015242111,
+          "draft_win_lift": -0.017293504570899454,
+          "draw_win_rate": 0.4880382775119617
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Time Walk",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 348.4468538436937,
+          "draft_drafts": 602,
+          "draft_win_rate": 0.550905950980721,
+          "draft_win_lift": 0.04705464488561051,
+          "draw_win_rate": 0.6625954198473283
+        },
+        {
+          "card": "Ancestral Recall",
+          "pick_priority_score": 9.817973669202916,
+          "pick_priority_score_raw": 315.61278595126726,
+          "draft_drafts": 585,
+          "draft_win_rate": 0.5571197518679454,
+          "draft_win_lift": 0.05326844577283485,
+          "draw_win_rate": 0.6336009174311926
+        },
+        {
+          "card": "Subtlety",
+          "pick_priority_score": 9.786209268215195,
+          "pick_priority_score_raw": 310.3112838158269,
+          "draft_drafts": 1460,
+          "draft_win_rate": 0.5269565224401942,
+          "draft_win_lift": 0.023105216345083668,
+          "draw_win_rate": 0.5912873225648556
+        },
+        {
+          "card": "Force of Will",
+          "pick_priority_score": 9.598187520822023,
+          "pick_priority_score_raw": 280.6990975343535,
+          "draft_drafts": 1383,
+          "draft_win_rate": 0.5301109401211771,
+          "draft_win_lift": 0.02625963402606657,
+          "draw_win_rate": 0.5789473684210527
+        },
+        {
+          "card": "Teferi, Hero of Dominaria",
+          "pick_priority_score": 9.53786500506287,
+          "pick_priority_score_raw": 271.80889811780105,
+          "draft_drafts": 1042,
+          "draft_win_rate": 0.5229001504477536,
+          "draft_win_lift": 0.01904884435264309,
+          "draw_win_rate": 0.6129256428075052
+        },
+        {
+          "card": "Snapcaster Mage",
+          "pick_priority_score": 9.028064998792722,
+          "pick_priority_score_raw": 207.04570982578082,
+          "draft_drafts": 1535,
+          "draft_win_rate": 0.5133676667889686,
+          "draft_win_lift": 0.009516360693858084,
+          "draw_win_rate": 0.5721583652618135
+        },
+        {
+          "card": "Lion's Eye Diamond",
+          "pick_priority_score": 7.096578654174214,
+          "pick_priority_score_raw": 73.51230997397217,
+          "draft_drafts": 1636,
+          "draft_win_rate": 0.4900320603895621,
+          "draft_win_lift": -0.013819245705548433,
+          "draw_win_rate": 0.5354107648725213
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Time Walk",
+        "standalone_delta": 0.15364012150368433,
+        "win_rate": 0.6625954198473283,
+        "draw_games": 1965
+      },
+      {
+        "card": "Ancestral Recall",
+        "standalone_delta": 0.12464561908754868,
+        "win_rate": 0.6336009174311926,
+        "draw_games": 1744
+      },
+      {
+        "card": "Cryptic Command",
+        "standalone_delta": 0.11638018206430023,
+        "win_rate": 0.6253354804079442,
+        "draw_games": 1863
+      },
+      {
+        "card": "Teferi, Hero of Dominaria",
+        "standalone_delta": 0.10397034446386122,
+        "win_rate": 0.6129256428075052,
+        "draw_games": 1439
+      },
+      {
+        "card": "Mystic Confluence",
+        "standalone_delta": 0.10176832850901518,
+        "win_rate": 0.6107236268526591,
+        "draw_games": 2294
+      },
+      {
+        "card": "Stock Up",
+        "standalone_delta": 0.08605163646911607,
+        "win_rate": 0.59500693481276,
+        "draw_games": 2163
+      },
+      {
+        "card": "Subtlety",
+        "standalone_delta": 0.08233202422121166,
+        "win_rate": 0.5912873225648556,
+        "draw_games": 2043
+      },
+      {
+        "card": "Brain Freeze",
+        "standalone_delta": 0.08173870796550431,
+        "win_rate": 0.5906940063091483,
+        "draw_games": 2536
+      },
+      {
+        "card": "Remand",
+        "standalone_delta": 0.08148129209294652,
+        "win_rate": 0.5904365904365905,
+        "draw_games": 2405
+      },
+      {
+        "card": "Underworld Breach",
+        "standalone_delta": 0.0772845487657684,
+        "win_rate": 0.5862398471094123,
+        "draw_games": 2093
+      },
+      {
+        "card": "Mana Leak",
+        "standalone_delta": 0.07192048360452408,
+        "win_rate": 0.580875781948168,
+        "draw_games": 2238
+      },
+      {
+        "card": "Counterspell",
+        "standalone_delta": 0.07100707230546233,
+        "win_rate": 0.5799623706491063,
+        "draw_games": 2126
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Underworld Breach",
+        "dependency_score": 6.584435029927248,
+        "standalone_delta": 0.0772845487657684,
+        "draw_games": 2093
+      },
+      {
+        "card": "Lion's Eye Diamond",
+        "dependency_score": 5.185588813994855,
+        "standalone_delta": 0.026455466528877314,
+        "draw_games": 1765
+      },
+      {
+        "card": "Brain Freeze",
+        "dependency_score": 5.123409752746988,
+        "standalone_delta": 0.08173870796550431,
+        "draw_games": 2536
+      },
+      {
+        "card": "Echo of Eons",
+        "dependency_score": 0.8588998358792591,
+        "standalone_delta": 0.04500889602975755,
+        "draw_games": 1955
+      },
+      {
+        "card": "Force of Negation",
+        "dependency_score": 0.8530642446958392,
+        "standalone_delta": 0.05920613663393448,
+        "draw_games": 2230
+      },
+      {
+        "card": "Mana Leak",
+        "dependency_score": 0.2607115574315409,
+        "standalone_delta": 0.07192048360452408,
+        "draw_games": 2238
+      },
+      {
+        "card": "Teferi, Hero of Dominaria",
+        "dependency_score": 0.25272502948171666,
+        "standalone_delta": 0.10397034446386122,
+        "draw_games": 1439
+      },
+      {
+        "card": "Stock Up",
+        "dependency_score": 0.24853864860485078,
+        "standalone_delta": 0.08605163646911607,
+        "draw_games": 2163
+      },
+      {
+        "card": "Force of Will",
+        "dependency_score": 0.23914193412237147,
+        "standalone_delta": 0.06999207007740871,
+        "draw_games": 2337
+      },
+      {
+        "card": "Time Walk",
+        "dependency_score": 0.21630206414529263,
+        "standalone_delta": 0.15364012150368433,
+        "draw_games": 1965
+      },
+      {
+        "card": "Ponder",
+        "dependency_score": 0.20231276233518725,
+        "standalone_delta": 0.05174121906929141,
+        "draw_games": 2010
+      },
+      {
+        "card": "Remand",
+        "dependency_score": 0.19198452857575726,
+        "standalone_delta": 0.08148129209294652,
+        "draw_games": 2405
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Brain Freeze",
+          "Underworld Breach"
+        ],
+        "quality_score": 7.993995215750047,
+        "pair_win_rate": 0.734006734006734,
+        "pair_games": 594,
+        "synergy_delta_logit": 0.3355945982881706
+      },
+      {
+        "cards": [
+          "Brain Freeze",
+          "Lion's Eye Diamond"
+        ],
+        "quality_score": 4.280173322366768,
+        "pair_win_rate": 0.6797066014669927,
+        "pair_games": 409,
+        "synergy_delta_logit": 0.2795331273686209
+      },
+      {
+        "cards": [
+          "Miscalculation",
+          "Time Walk"
+        ],
+        "quality_score": 1.6386628179581106,
+        "pair_win_rate": 0.7890625,
+        "pair_games": 128,
+        "synergy_delta_logit": 0.3882758203488317
+      },
+      {
+        "cards": [
+          "Force of Will",
+          "Stock Up"
+        ],
+        "quality_score": 1.626721564215204,
+        "pair_win_rate": 0.7481481481481481,
+        "pair_games": 135,
+        "synergy_delta_logit": 0.4214281689127384
+      },
+      {
+        "cards": [
+          "Remand",
+          "Stock Up"
+        ],
+        "quality_score": 1.5684176761901718,
+        "pair_win_rate": 0.7456647398843931,
+        "pair_games": 173,
+        "synergy_delta_logit": 0.3609741688263688
+      },
+      {
+        "cards": [
+          "Mystic Confluence",
+          "Stock Up"
+        ],
+        "quality_score": 1.4818623824722554,
+        "pair_win_rate": 0.7579617834394905,
+        "pair_games": 157,
+        "synergy_delta_logit": 0.3423042757308111
+      },
+      {
+        "cards": [
+          "Force of Will",
+          "Hullbreacher"
+        ],
+        "quality_score": 1.376203792144841,
+        "pair_win_rate": 0.7150537634408602,
+        "pair_games": 186,
+        "synergy_delta_logit": 0.3480554096760903
+      },
+      {
+        "cards": [
+          "Stock Up",
+          "Time Walk"
+        ],
+        "quality_score": 1.329474014675657,
+        "pair_win_rate": 0.7865853658536586,
+        "pair_games": 164,
+        "synergy_delta_logit": 0.2807044180957816
+      },
+      {
+        "cards": [
+          "Hullbreacher",
+          "Teferi, Hero of Dominaria"
+        ],
+        "quality_score": 1.2955551101814502,
+        "pair_win_rate": 0.75,
+        "pair_games": 104,
+        "synergy_delta_logit": 0.3854373987135955
+      },
+      {
+        "cards": [
+          "Echo of Eons",
+          "Force of Negation"
+        ],
+        "quality_score": 1.2109206502888938,
+        "pair_win_rate": 0.696551724137931,
+        "pair_games": 145,
+        "synergy_delta_logit": 0.3757013157738843
+      },
+      {
+        "cards": [
+          "Mana Leak",
+          "Mystic Confluence"
+        ],
+        "quality_score": 1.142770227809254,
+        "pair_win_rate": 0.7358490566037735,
+        "pair_games": 159,
+        "synergy_delta_logit": 0.2836047810763864
+      },
+      {
+        "cards": [
+          "Echo of Eons",
+          "Stock Up"
+        ],
+        "quality_score": 1.1225205643848664,
+        "pair_win_rate": 0.7086092715231788,
+        "pair_games": 151,
+        "synergy_delta_logit": 0.32306028525780917
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Mystic Confluence",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 369.26236054833817,
+        "draft_drafts": 1530,
+        "draft_win_lift": 0.025290413788519484,
+        "rarity": "rare"
+      },
+      {
+        "card": "Time Walk",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 348.4468538436937,
+        "draft_drafts": 602,
+        "draft_win_lift": 0.04705464488561051,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Cryptic Command",
+        "pick_priority_score": 9.993343894714135,
+        "pick_priority_score_raw": 346.54972050114355,
+        "draft_drafts": 1482,
+        "draft_win_lift": 0.010387722406890232,
+        "rarity": "rare"
+      },
+      {
+        "card": "Remand",
+        "pick_priority_score": 9.837342223013195,
+        "pick_priority_score_raw": 318.88962317867015,
+        "draft_drafts": 1520,
+        "draft_win_lift": 0.026380406419140523,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Ancestral Recall",
+        "pick_priority_score": 9.817973669202916,
+        "pick_priority_score_raw": 315.61278595126726,
+        "draft_drafts": 585,
+        "draft_win_lift": 0.05326844577283485,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Subtlety",
+        "pick_priority_score": 9.786209268215195,
+        "pick_priority_score_raw": 310.3112838158269,
+        "draft_drafts": 1460,
+        "draft_win_lift": 0.023105216345083668,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Stock Up",
+        "pick_priority_score": 9.74509601528645,
+        "pick_priority_score_raw": 303.5810399164408,
+        "draft_drafts": 1405,
+        "draft_win_lift": 0.023976853440324852,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Force of Will",
+        "pick_priority_score": 9.598187520822023,
+        "pick_priority_score_raw": 280.6990975343535,
+        "draft_drafts": 1383,
+        "draft_win_lift": 0.02625963402606657,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Teferi, Hero of Dominaria",
+        "pick_priority_score": 9.53786500506287,
+        "pick_priority_score_raw": 271.80889811780105,
+        "draft_drafts": 1042,
+        "draft_win_lift": 0.01904884435264309,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Brain Freeze",
+        "pick_priority_score": 9.416310826206361,
+        "pick_priority_score_raw": 254.7377172029908,
+        "draft_drafts": 1905,
+        "draft_win_lift": -0.003260023407435475,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Mana Leak",
+        "pick_priority_score": 9.385752579824292,
+        "pick_priority_score_raw": 250.6168190169004,
+        "draft_drafts": 1508,
+        "draft_win_lift": 0.016942650401326476,
+        "rarity": "common"
+      },
+      {
+        "card": "Underworld Breach",
+        "pick_priority_score": 9.263817516008244,
+        "pick_priority_score_raw": 234.82399037836598,
+        "draft_drafts": 1713,
+        "draft_win_lift": 0.0019131386734199118,
+        "rarity": "rare"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Brain Freeze",
+          "Underworld Breach"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 17.64073024654617,
+        "pair_win_rate": 0.734006734006734,
+        "pair_games": 594,
+        "draft_pair_events": 890
+      },
+      {
+        "cards": [
+          "Brain Freeze",
+          "Lion's Eye Diamond"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 11.331738818021691,
+        "pair_win_rate": 0.6797066014669927,
+        "pair_games": 409,
+        "draft_pair_events": 782
+      },
+      {
+        "cards": [
+          "Lion's Eye Diamond",
+          "Underworld Breach"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 7.635169757519798,
+        "pair_win_rate": 0.6253443526170799,
+        "pair_games": 363,
+        "draft_pair_events": 787
+      },
+      {
+        "cards": [
+          "Stock Up",
+          "Time Walk"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.921142560230688,
+        "pair_win_rate": 0.7865853658536586,
+        "pair_games": 164,
+        "draft_pair_events": 127
+      },
+      {
+        "cards": [
+          "Remand",
+          "Stock Up"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.5386527375795,
+        "pair_win_rate": 0.7456647398843931,
+        "pair_games": 173,
+        "draft_pair_events": 309
+      },
+      {
+        "cards": [
+          "Mystic Confluence",
+          "Stock Up"
+        ],
+        "pick_score": 9.9403813039628,
+        "pick_score_raw": 4.520766939086621,
+        "pair_win_rate": 0.7579617834394905,
+        "pair_games": 157,
+        "draft_pair_events": 294
+      },
+      {
+        "cards": [
+          "Miscalculation",
+          "Time Walk"
+        ],
+        "pick_score": 9.368250153872832,
+        "pick_score_raw": 4.385364067144659,
+        "pair_win_rate": 0.7890625,
+        "pair_games": 128,
+        "draft_pair_events": 128
+      },
+      {
+        "cards": [
+          "Mystic Confluence",
+          "Time Walk"
+        ],
+        "pick_score": 9.130819239266648,
+        "pick_score_raw": 4.33015245609131,
+        "pair_win_rate": 0.7615894039735099,
+        "pair_games": 151,
+        "draft_pair_events": 130
+      },
+      {
+        "cards": [
+          "Echo of Eons",
+          "Narset, Parter of Veils"
+        ],
+        "pick_score": 9.035398969561223,
+        "pick_score_raw": 4.308123437191087,
+        "pair_win_rate": 0.6736111111111112,
+        "pair_games": 288,
+        "draft_pair_events": 515
+      },
+      {
+        "cards": [
+          "Mana Leak",
+          "Mystic Confluence"
+        ],
+        "pick_score": 8.61741005650427,
+        "pick_score_raw": 4.212693159268917,
+        "pair_win_rate": 0.7358490566037735,
+        "pair_games": 159,
+        "draft_pair_events": 359
+      },
+      {
+        "cards": [
+          "Cryptic Command",
+          "Mystic Confluence"
+        ],
+        "pick_score": 8.387670235063345,
+        "pick_score_raw": 4.1609743055769295,
+        "pair_win_rate": 0.73125,
+        "pair_games": 160,
+        "draft_pair_events": 387
+      },
+      {
+        "cards": [
+          "Narset, Parter of Veils",
+          "Time Walk"
+        ],
+        "pick_score": 8.27505110549935,
+        "pick_score_raw": 4.1358093148033985,
+        "pair_win_rate": 0.7669172932330827,
+        "pair_games": 133,
+        "draft_pair_events": 125
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
+      "color_name": "Boros Tokens",
+      "deck_count": 12970,
+      "games": 68705,
+      "win_rate": 0.6112510006549742,
+      "signposts": [
+        "Guide of Souls",
+        "Sanguine Evangelist",
+        "Luminarch Aspirant",
+        "Death-Greeter's Champion"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Ajani, Nacatl Pariah",
+        "Phlage, Titan of Fire's Fury",
+        "Broadside Bombardiers"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Red Base Midrange | Fire Covenant / Fury",
+      "color_name": "Red Base Midrange",
+      "deck_count": 5538,
+      "games": 26131,
+      "win_rate": 0.5561593509624584,
+      "signposts": [
+        "Fire Covenant",
+        "Fury",
+        "Pyrogoyf",
+        "Fiery Confluence"
+      ],
+      "pick_cards": [
+        "Pyrogoyf",
+        "Broadside Bombardiers",
+        "Laelia, the Blade Reforged",
+        "Fury"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "White Base Control | No More Lies / The Wandering Emperor",
+      "color_name": "White Base Control",
+      "deck_count": 5654,
+      "games": 26028,
+      "win_rate": 0.5472568003688336,
+      "signposts": [
+        "No More Lies",
+        "The Wandering Emperor",
+        "Solitude",
+        "Teferi, Time Raveler"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Sanguine Evangelist",
+        "Phelia, Exuberant Shepherd",
+        "Solitude"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Black Base Reanimator | Animate Dead / Necromancy",
+      "color_name": "Black Base Reanimator",
+      "deck_count": 7492,
+      "games": 33181,
+      "win_rate": 0.5180072933305204,
+      "signposts": [
+        "Animate Dead",
+        "Necromancy",
+        "Archon of Cruelty",
+        "Entomb"
+      ],
+      "pick_cards": [
+        "Archon of Cruelty",
+        "Animate Dead",
+        "Necromancy",
+        "Barrowgoyf"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
+      "color_name": "Green Base Ramp",
+      "deck_count": 9261,
+      "games": 39563,
+      "win_rate": 0.5142683820741601,
+      "signposts": [
+        "Birds of Paradise",
+        "Titania, Protector of Argoth",
+        "Noble Hierarch",
+        "Nadu, Winged Wisdom"
+      ],
+      "pick_cards": [
+        "Malevolent Rumble",
+        "Pest Infestation",
+        "Oko, Thief of Crowns",
+        "Nadu, Winged Wisdom"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
+      "color_name": "Blue Base Storm",
+      "deck_count": 9349,
+      "games": 40088,
+      "win_rate": 0.508955298343644,
+      "signposts": [
+        "Brain Freeze",
+        "Snapcaster Mage",
+        "Underworld Breach",
+        "Narset, Parter of Veils"
+      ],
+      "pick_cards": [
+        "Mystic Confluence",
+        "Time Walk",
+        "Cryptic Command",
+        "Remand"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer",
+      "color_name": "Blue Base Artifacts",
+      "deck_count": 7649,
+      "games": 32421,
+      "win_rate": 0.5056290675796552,
+      "signposts": [
+        "Mox Opal",
+        "Urza, Lord High Artificer",
+        "Retrofitter Foundry",
+        "Kappa Cannoneer"
+      ],
+      "pick_cards": [
+        "Ugin, Eye of the Storms",
+        "Urza, Lord High Artificer",
+        "Upheaval",
+        "Retrofitter Foundry"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,4500 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Golgari Elves | Scarblade Scout / Safewright Cavalry | Lorwyn Eclipsed Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "ECL",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 82906,
+      "cluster_feature_count": 263,
+      "svd_components": 48,
+      "svd_explained_variance": 0.41585496068000793,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.192540243268013,
+          "dominant_main_color_share": 0.7279459549142004,
+          "objective": 0.23621700056286504
+        },
+        {
+          "k": 8,
+          "silhouette": 0.17198492586612701,
+          "dominant_main_color_share": 0.6955971152387095,
+          "objective": 0.21372075278044958
+        },
+        {
+          "k": 9,
+          "silhouette": 0.15807880461215973,
+          "dominant_main_color_share": 0.7346713431984758,
+          "objective": 0.20215908520406828
+        },
+        {
+          "k": 10,
+          "silhouette": 0.1304016262292862,
+          "dominant_main_color_share": 0.7372495498149798,
+          "objective": 0.17463659921818497
+        },
+        {
+          "k": 11,
+          "silhouette": 0.12515881657600403,
+          "dominant_main_color_share": 0.7103820495023637,
+          "objective": 0.16778173954614584
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "4": 17005,
+        "2": 15634,
+        "0": 14756,
+        "3": 11302,
+        "6": 10159,
+        "5": 5824,
+        "1": 8226
+      }
+    },
+    "deck_count": 82906,
+    "game_count": 362682
+  },
+  "segment": {
+    "cluster_id": 4,
+    "title": "Golgari Elves | Scarblade Scout / Safewright Cavalry",
+    "color_signature": "BG",
+    "color_name": "Golgari Elves",
+    "deck_count": 17005,
+    "draft_count": 13196,
+    "games": 79178,
+    "wins": 45145,
+    "win_rate": 0.5701710070979312,
+    "draft_match_win_rate": 0.5716601493067899,
+    "top_deck_colors": [
+      {
+        "colors": "BG",
+        "count": 8102
+      },
+      {
+        "colors": "UBG",
+        "count": 2004
+      },
+      {
+        "colors": "WBG",
+        "count": 1625
+      },
+      {
+        "colors": "WUBG",
+        "count": 1530
+      },
+      {
+        "colors": "WUBRG",
+        "count": 1055
+      },
+      {
+        "colors": "UBRG",
+        "count": 953
+      },
+      {
+        "colors": "WBRG",
+        "count": 802
+      },
+      {
+        "colors": "BRG",
+        "count": 757
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "BG",
+        "count": 15327
+      },
+      {
+        "colors": "WBG",
+        "count": 529
+      },
+      {
+        "colors": "UBG",
+        "count": 525
+      },
+      {
+        "colors": "BRG",
+        "count": 214
+      },
+      {
+        "colors": "WB",
+        "count": 85
+      },
+      {
+        "colors": "G",
+        "count": 80
+      },
+      {
+        "colors": "UB",
+        "count": 63
+      },
+      {
+        "colors": "WG",
+        "count": 50
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Scarblade Scout",
+        "score": 16001.636488720416,
+        "z_score": 150.06664316020078,
+        "log_odds": 4.046831136649184,
+        "cluster_prevalence": 0.6677777416586975,
+        "global_prevalence": 0.1640734280548364,
+        "lift": 4.0699932315396845,
+        "support_decks": 11370
+      },
+      {
+        "card": "Safewright Cavalry",
+        "score": 14349.937760093297,
+        "z_score": 141.6005028482232,
+        "log_odds": 3.372240111135415,
+        "cluster_prevalence": 0.6032034356123018,
+        "global_prevalence": 0.1632411802553241,
+        "lift": 3.695167081424164,
+        "support_decks": 10270
+      },
+      {
+        "card": "Lys Alana Informant",
+        "score": 13944.505677119978,
+        "z_score": 136.03262898851565,
+        "log_odds": 2.8766380329654324,
+        "cluster_prevalence": 0.6172234030313494,
+        "global_prevalence": 0.19288850041765984,
+        "lift": 3.199897358810301,
+        "support_decks": 10508
+      },
+      {
+        "card": "Dawnhand Eulogist",
+        "score": 13933.05995548945,
+        "z_score": 130.22120073889036,
+        "log_odds": 5.138564490426486,
+        "cluster_prevalence": 0.6723292895690263,
+        "global_prevalence": 0.14748877987614983,
+        "lift": 4.558511434792522,
+        "support_decks": 11448
+      },
+      {
+        "card": "Stoic Grove-Guide",
+        "score": 11885.942785373178,
+        "z_score": 127.66568624908759,
+        "log_odds": 3.5268674252991965,
+        "cluster_prevalence": 0.509103885310901,
+        "global_prevalence": 0.1280334798672615,
+        "lift": 3.9763340482404574,
+        "support_decks": 8668
+      },
+      {
+        "card": "Dawn's Light Archer",
+        "score": 11786.83017266236,
+        "z_score": 127.2783802981588,
+        "log_odds": 3.4045106830792875,
+        "cluster_prevalence": 0.5037053807640285,
+        "global_prevalence": 0.12933612859693286,
+        "lift": 3.894545060443178,
+        "support_decks": 8576
+      },
+      {
+        "card": "Midnight Tilling",
+        "score": 11271.200289952452,
+        "z_score": 124.0918310871938,
+        "log_odds": 3.430320800707099,
+        "cluster_prevalence": 0.4845578221981729,
+        "global_prevalence": 0.12295556213400544,
+        "lift": 3.9409182780203826,
+        "support_decks": 8250
+      },
+      {
+        "card": "Assert Perfection",
+        "score": 9523.551648294713,
+        "z_score": 99.56624476549837,
+        "log_odds": 1.873801672282291,
+        "cluster_prevalence": 0.5375086071253046,
+        "global_prevalence": 0.23068943670275346,
+        "lift": 2.330009621627764,
+        "support_decks": 9149
+      },
+      {
+        "card": "Eclipsed Elf",
+        "score": 8587.14529636674,
+        "z_score": 104.78363676257567,
+        "log_odds": 3.7942016570779136,
+        "cluster_prevalence": 0.39445044363463233,
+        "global_prevalence": 0.09246166642094451,
+        "lift": 4.266097063823641,
+        "support_decks": 6716
+      },
+      {
+        "card": "Blight Rot",
+        "score": 8352.729393062418,
+        "z_score": 94.35853684464963,
+        "log_odds": 1.8412476910936562,
+        "cluster_prevalence": 0.4603638589889422,
+        "global_prevalence": 0.1892338470371929,
+        "lift": 2.4327775722831455,
+        "support_decks": 7836
+      },
+      {
+        "card": "Bogslither's Embrace",
+        "score": 8171.727173126607,
+        "z_score": 91.3227422997605,
+        "log_odds": 1.7480068604571108,
+        "cluster_prevalence": 0.47042469639904866,
+        "global_prevalence": 0.20303227432186013,
+        "lift": 2.316994664864466,
+        "support_decks": 8007
+      },
+      {
+        "card": "Morcant's Loyalist",
+        "score": 7990.037965008355,
+        "z_score": 96.65918578861577,
+        "log_odds": 4.346839536280701,
+        "cluster_prevalence": 0.40131368075124874,
+        "global_prevalence": 0.08922923916730806,
+        "lift": 4.497558025780888,
+        "support_decks": 6833
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Scarblade Scout",
+        "label": "Scarblade Scout",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Elf Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 16725,
+        "win_rate": 0.5834977578475337,
+        "standalone_delta": 0.013326750749602434,
+        "dependency_score": 0.14941241504951758,
+        "degree": 6,
+        "signpost_score": 16001.636488720416,
+        "signpost_lift": 4.0699932315396845,
+        "deck_prevalence": 0.6677777416586975,
+        "draft_weight": 15054.0,
+        "draft_drafts": 9251,
+        "draft_presence": 0.7010457714458926,
+        "draft_win_rate": 0.5773154961914901,
+        "draft_win_lift": 0.005655346884700263,
+        "analysis_score_raw": 16006.191657296251,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 163.23514038801167,
+        "pick_priority_score": 8.006931062794196,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Scarblade%20Scout%22",
+        "community": 1,
+        "x": 1087.722545285984,
+        "y": 851.3005655478282,
+        "analysis_radius": 17.111818233010766,
+        "pick_radius": 30.0,
+        "radius": 17.111818233010766
+      },
+      {
+        "id": "Safewright Cavalry",
+        "label": "Safewright Cavalry",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Elf Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 15190,
+        "win_rate": 0.5875576036866359,
+        "standalone_delta": 0.017386596588704673,
+        "dependency_score": 0.039568708310578224,
+        "degree": 12,
+        "signpost_score": 14349.937760093297,
+        "signpost_lift": 3.695167081424164,
+        "deck_prevalence": 0.6032034356123018,
+        "draft_weight": 12778.0,
+        "draft_drafts": 8517,
+        "draft_presence": 0.6454228554107305,
+        "draft_win_rate": 0.574761098879468,
+        "draft_win_lift": 0.0031009495726781466,
+        "analysis_score_raw": 14353.084120365305,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 148.36728991889828,
+        "pick_priority_score": 7.857991608035982,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Safewright%20Cavalry%22",
+        "community": 2,
+        "x": 885.1575736705618,
+        "y": 864.9569270564265,
+        "analysis_radius": 13.380736311559573,
+        "pick_radius": 30.0,
+        "radius": 13.380736311559573
+      },
+      {
+        "id": "Lys Alana Informant",
+        "label": "Lys Alana Informant",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Elf Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 15016,
+        "win_rate": 0.5817794352690463,
+        "standalone_delta": 0.01160842817111507,
+        "dependency_score": 0.2649210132688931,
+        "degree": 3,
+        "signpost_score": 13944.505677119978,
+        "signpost_lift": 3.199897358810301,
+        "deck_prevalence": 0.6172234030313494,
+        "draft_weight": 13072.0,
+        "draft_drafts": 8477,
+        "draft_presence": 0.6423916338284329,
+        "draft_win_rate": 0.5760606834666759,
+        "draft_win_lift": 0.00440053415988606,
+        "analysis_score_raw": 13950.899435302774,
+        "analysis_score": 9.985272699851196,
+        "pick_priority_score_raw": 121.14465277679393,
+        "pick_priority_score": 7.542187189072842,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Lys%20Alana%20Informant%22",
+        "community": 0,
+        "x": 1271.9731828825923,
+        "y": 564.475956234946,
+        "analysis_radius": 21.175620027091483,
+        "pick_radius": 30.0,
+        "radius": 21.175620027091483
+      },
+      {
+        "id": "Dawnhand Eulogist",
+        "label": "Dawnhand Eulogist",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Elf Warlock",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 18562,
+        "win_rate": 0.5998814782889775,
+        "standalone_delta": 0.029710471191046306,
+        "dependency_score": 0.16503137759814795,
+        "degree": 5,
+        "signpost_score": 13933.05995548945,
+        "signpost_lift": 4.558511434792522,
+        "deck_prevalence": 0.6723292895690263,
+        "draft_weight": 16052.0,
+        "draft_drafts": 9567,
+        "draft_presence": 0.7249924219460443,
+        "draft_win_rate": 0.5760240235343711,
+        "draft_win_lift": 0.0043638742275812215,
+        "analysis_score_raw": 13940.189986252963,
+        "analysis_score": 9.984775275347136,
+        "pick_priority_score_raw": 274.57907873283614,
+        "pick_priority_score": 8.81931056154875,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dawnhand%20Eulogist%22",
+        "community": 1,
+        "x": 1003.6111897781334,
+        "y": 765.0593247803761,
+        "analysis_radius": 18.575205509040874,
+        "pick_radius": 30.0,
+        "radius": 18.575205509040874
+      },
+      {
+        "id": "Stoic Grove-Guide",
+        "label": "Stoic Grove-Guide",
+        "color_identity": "BG",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Elf Druid",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(21, 11, 0)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "BG"
+        },
+        "draw_games": 10917,
+        "win_rate": 0.5538151506824219,
+        "standalone_delta": -0.016355856415509296,
+        "dependency_score": 0.1740877134908126,
+        "degree": 11,
+        "signpost_score": 11885.942785373178,
+        "signpost_lift": 3.9763340482404574,
+        "deck_prevalence": 0.509103885310901,
+        "draft_weight": 11340.0,
+        "draft_drafts": 7974,
+        "draft_presence": 0.6042740224310397,
+        "draft_win_rate": 0.5720046983302354,
+        "draft_win_lift": 0.0003445490234454951,
+        "analysis_score_raw": 11889.076364216013,
+        "analysis_score": 9.881685422980766,
+        "pick_priority_score_raw": 3.9924653531940635,
+        "pick_priority_score": 2.523785210587489,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Stoic%20Grove-Guide%22",
+        "community": 0,
+        "x": 1101.9731828825923,
+        "y": 532.9898753368607,
+        "analysis_radius": 17.267157685669254,
+        "pick_radius": 30.0,
+        "radius": 17.267157685669254
+      },
+      {
+        "id": "Dawn's Light Archer",
+        "label": "Dawn's Light Archer",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Elf Archer",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 11377,
+        "win_rate": 0.5749318801089919,
+        "standalone_delta": 0.004760873011060651,
+        "dependency_score": 0.27884724897361174,
+        "degree": 7,
+        "signpost_score": 11786.83017266236,
+        "signpost_lift": 3.894545060443178,
+        "deck_prevalence": 0.5037053807640285,
+        "draft_weight": 11315.0,
+        "draft_drafts": 7815,
+        "draft_presence": 0.5922249166414065,
+        "draft_win_rate": 0.5724383248781785,
+        "draft_win_lift": 0.0007781755713885952,
+        "analysis_score_raw": 11792.515945365434,
+        "analysis_score": 9.876403274376125,
+        "pick_priority_score_raw": 38.71881400245965,
+        "pick_priority_score": 5.7789433115456434,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dawn%27s%20Light%20Archer%22",
+        "community": 1,
+        "x": 1112.2800181936457,
+        "y": 701.2476506857342,
+        "analysis_radius": 21.30034897865836,
+        "pick_radius": 30.0,
+        "radius": 21.30034897865836
+      },
+      {
+        "id": "Midnight Tilling",
+        "label": "Midnight Tilling",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 11160,
+        "win_rate": 0.5774193548387097,
+        "standalone_delta": 0.007248347740778427,
+        "dependency_score": 0.06726792936242157,
+        "degree": 9,
+        "signpost_score": 11271.200289952452,
+        "signpost_lift": 3.9409182780203826,
+        "deck_prevalence": 0.4845578221981729,
+        "draft_weight": 12407.0,
+        "draft_drafts": 8374,
+        "draft_presence": 0.6345862382540164,
+        "draft_win_rate": 0.574892289481539,
+        "draft_win_lift": 0.003232140174749154,
+        "analysis_score_raw": 11273.425881364685,
+        "analysis_score": 9.84724486469973,
+        "pick_priority_score_raw": 85.48550023852269,
+        "pick_priority_score": 7.000319972061133,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Midnight%20Tilling%22",
+        "community": 0,
+        "x": 1169.59845589532,
+        "y": 599.3253835372689,
+        "analysis_radius": 13.82030458278999,
+        "pick_radius": 30.0,
+        "radius": 13.82030458278999
+      },
+      {
+        "id": "Assert Perfection",
+        "label": "Assert Perfection",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 14009,
+        "win_rate": 0.6185309443928902,
+        "standalone_delta": 0.04835993729495902,
+        "dependency_score": 0.03279282266861951,
+        "degree": 3,
+        "signpost_score": 9523.551648294713,
+        "signpost_lift": 2.330009621627764,
+        "deck_prevalence": 0.5375086071253046,
+        "draft_weight": 10470.0,
+        "draft_drafts": 7318,
+        "draft_presence": 0.554561988481358,
+        "draft_win_rate": 0.5792494856048523,
+        "draft_win_lift": 0.007589336298062466,
+        "analysis_score_raw": 9530.912310324044,
+        "analysis_score": 9.738488262939148,
+        "pick_priority_score_raw": 331.35330541482176,
+        "pick_priority_score": 9.1133317337679,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Assert%20Perfection%22",
+        "community": 1,
+        "x": 1005.3357013314333,
+        "y": 681.3005655478282,
+        "analysis_radius": 14.840338167293048,
+        "pick_radius": 30.0,
+        "radius": 14.840338167293048
+      },
+      {
+        "id": "Eclipsed Elf",
+        "label": "Eclipsed Elf",
+        "color_identity": "BG",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Elf Scout",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(21, 11, 0)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "BG"
+        },
+        "draw_games": 9402,
+        "win_rate": 0.6396511380557328,
+        "standalone_delta": 0.06948013095780159,
+        "dependency_score": 0.03328406818666464,
+        "degree": 2,
+        "signpost_score": 8587.14529636674,
+        "signpost_lift": 4.266097063823641,
+        "deck_prevalence": 0.39445044363463233,
+        "draft_weight": 6489.0,
+        "draft_drafts": 5151,
+        "draft_presence": 0.39034555926038195,
+        "draft_win_rate": 0.5953037867969736,
+        "draft_win_lift": 0.023643637490183722,
+        "analysis_score_raw": 8597.471627928191,
+        "analysis_score": 9.671727615944775,
+        "pick_priority_score_raw": 588.9559047778175,
+        "pick_priority_score": 10.0,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Eclipsed%20Elf%22",
+        "community": 2,
+        "x": 901.811279937926,
+        "y": 708.0687703562544,
+        "analysis_radius": 16.019633657399012,
+        "pick_radius": 30.0,
+        "radius": 16.019633657399012
+      },
+      {
+        "id": "Blight Rot",
+        "label": "Blight Rot",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 11209,
+        "win_rate": 0.5933624765813186,
+        "standalone_delta": 0.02319146948338735,
+        "dependency_score": 0.06556040189625538,
+        "degree": 8,
+        "signpost_score": 8352.729393062418,
+        "signpost_lift": 2.4327775722831455,
+        "deck_prevalence": 0.4603638589889422,
+        "draft_weight": 8188.0,
+        "draft_drafts": 6171,
+        "draft_presence": 0.4676417096089724,
+        "draft_win_rate": 0.5695070980550911,
+        "draft_win_lift": -0.0021530512516987343,
+        "analysis_score_raw": 8357.156286024225,
+        "analysis_score": 9.653365288369915,
+        "pick_priority_score_raw": 114.55669740458656,
+        "pick_priority_score": 7.455161889684609,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Blight%20Rot%22",
+        "community": 0,
+        "x": 1130.3553274910041,
+        "y": 513.4873835769515,
+        "analysis_radius": 14.635705289851497,
+        "pick_radius": 30.0,
+        "radius": 14.635705289851497
+      },
+      {
+        "id": "Bogslither's Embrace",
+        "label": "Bogslither's Embrace",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 11336,
+        "win_rate": 0.5990649258997883,
+        "standalone_delta": 0.0288939188018571,
+        "dependency_score": 0.038946012859155,
+        "degree": 11,
+        "signpost_score": 8171.727173126607,
+        "signpost_lift": 2.316994664864466,
+        "deck_prevalence": 0.47042469639904866,
+        "draft_weight": 8394.0,
+        "draft_drafts": 6323,
+        "draft_presence": 0.47916035162170356,
+        "draft_win_rate": 0.5745455503943915,
+        "draft_win_lift": 0.0028854010876016023,
+        "analysis_score_raw": 8176.473349990332,
+        "analysis_score": 9.639208317697344,
+        "pick_priority_score_raw": 168.9741278237738,
+        "pick_priority_score": 8.06084173748663,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bogslither%27s%20Embrace%22",
+        "community": 0,
+        "x": 1183.456815670198,
+        "y": 516.1026809276453,
+        "analysis_radius": 13.991221997031719,
+        "pick_radius": 30.0,
+        "radius": 13.991221997031719
+      },
+      {
+        "id": "Morcant's Loyalist",
+        "label": "Morcant's Loyalist",
+        "color_identity": "BG",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Elf Warrior",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(21, 11, 0)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "BG"
+        },
+        "draw_games": 9744,
+        "win_rate": 0.6414203612479474,
+        "standalone_delta": 0.07124935415001621,
+        "dependency_score": 0.036858743164059536,
+        "degree": 8,
+        "signpost_score": 7990.037965008355,
+        "signpost_lift": 4.497558025780888,
+        "deck_prevalence": 0.40131368075124874,
+        "draft_weight": 6301.0,
+        "draft_drafts": 5065,
+        "draft_presence": 0.3838284328584419,
+        "draft_win_rate": 0.5910980614216661,
+        "draft_win_lift": 0.01943791211487622,
+        "analysis_score_raw": 8000.6763319663105,
+        "analysis_score": 9.625130687660931,
+        "pick_priority_score_raw": 563.1553382704717,
+        "pick_priority_score": 9.943848778174985,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Morcant%27s%20Loyalist%22",
+        "community": 2,
+        "x": 860.2106050842838,
+        "y": 795.6087333434169,
+        "analysis_radius": 16.245629232157036,
+        "pick_radius": 30.0,
+        "radius": 16.245629232157036
+      },
+      {
+        "id": "Lys Alana Dignitary",
+        "label": "Lys Alana Dignitary",
+        "color_identity": "G",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Elf Advisor",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 7613,
+        "win_rate": 0.5792722973860501,
+        "standalone_delta": 0.009101290288118902,
+        "dependency_score": 0.03888635013270138,
+        "degree": 7,
+        "signpost_score": 7759.185978921819,
+        "signpost_lift": 4.302682459454683,
+        "deck_prevalence": 0.3628553410913185,
+        "draft_weight": 6098.0,
+        "draft_drafts": 4942,
+        "draft_presence": 0.3745074264928766,
+        "draft_win_rate": 0.5764261224972634,
+        "draft_win_lift": 0.00476597319047356,
+        "analysis_score_raw": 7761.160113864544,
+        "analysis_score": 9.60544443415776,
+        "pick_priority_score_raw": 91.38185252074024,
+        "pick_priority_score": 7.103840152833129,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Lys%20Alana%20Dignitary%22",
+        "community": 1,
+        "x": 1146.499379788124,
+        "y": 784.8351150858183,
+        "analysis_radius": 12.90047957062379,
+        "pick_radius": 30.0,
+        "radius": 12.90047957062379
+      },
+      {
+        "id": "Creakwood Safewright",
+        "label": "Creakwood Safewright",
+        "color_identity": "B",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Elf Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 7946,
+        "win_rate": 0.5865844450037755,
+        "standalone_delta": 0.016413437905844264,
+        "dependency_score": 0.1484195070466071,
+        "degree": 6,
+        "signpost_score": 7722.660968449237,
+        "signpost_lift": 4.253139110619461,
+        "deck_prevalence": 0.35698438830137835,
+        "draft_weight": 5863.0,
+        "draft_drafts": 4760,
+        "draft_presence": 0.36071536829342227,
+        "draft_win_rate": 0.578751723898264,
+        "draft_win_lift": 0.007091574591474137,
+        "analysis_score_raw": 7727.630400882894,
+        "analysis_score": 9.602640204503981,
+        "pick_priority_score_raw": 147.3870739686419,
+        "pick_priority_score": 7.847657321740161,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Creakwood%20Safewright%22",
+        "community": 2,
+        "x": 746.4772343488424,
+        "y": 878.0687703562544,
+        "analysis_radius": 17.24584133849929,
+        "pick_radius": 30.0,
+        "radius": 17.24584133849929
+      },
+      {
+        "id": "Morcant's Eyes",
+        "label": "Morcant's Eyes",
+        "color_identity": "G",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Kindred Enchantment - Elf",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 9234,
+        "win_rate": 0.6238899718431882,
+        "standalone_delta": 0.05371896474525695,
+        "dependency_score": 0.27206217778396136,
+        "degree": 16,
+        "signpost_score": 7671.987557489998,
+        "signpost_lift": 4.528290291094431,
+        "deck_prevalence": 0.3936786597709257,
+        "draft_weight": 6770.0,
+        "draft_drafts": 5390,
+        "draft_presence": 0.4084571082146105,
+        "draft_win_rate": 0.5922648189743602,
+        "draft_win_lift": 0.020604669667570352,
+        "analysis_score_raw": 7684.405331754445,
+        "analysis_score": 9.599007106461373,
+        "pick_priority_score_raw": 498.09146749266995,
+        "pick_priority_score": 9.75151122986628,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Morcant%27s%20Eyes%22",
+        "community": 1,
+        "x": 1062.5691984187606,
+        "y": 775.096840283241,
+        "analysis_radius": 23.748781461211742,
+        "pick_radius": 30.0,
+        "radius": 23.748781461211742
+      },
+      {
+        "id": "Moonglove Extractor",
+        "label": "Moonglove Extractor",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Elf Warlock",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 7175,
+        "win_rate": 0.5390940766550523,
+        "standalone_delta": -0.03107693044287896,
+        "dependency_score": 0.0965025419007521,
+        "degree": 14,
+        "signpost_score": 7645.745689103054,
+        "signpost_lift": 4.057526910024963,
+        "deck_prevalence": 0.3430212400985621,
+        "draft_weight": 9657.0,
+        "draft_drafts": 6935,
+        "draft_presence": 0.5255380418308578,
+        "draft_win_rate": 0.5655472167413406,
+        "draft_win_lift": -0.006112932565449314,
+        "analysis_score_raw": 7647.482734857268,
+        "analysis_score": 9.595887517076152,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Moonglove%20Extractor%22",
+        "community": 0,
+        "x": 1119.730172953366,
+        "y": 571.6822612490951,
+        "analysis_radius": 14.474091508427076,
+        "pick_radius": 30.0,
+        "radius": 14.474091508427076
+      },
+      {
+        "id": "Iron-Shield Elf",
+        "label": "Iron-Shield Elf",
+        "color_identity": "B",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Elf Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 6961,
+        "win_rate": 0.5885648613704928,
+        "standalone_delta": 0.01839385427256157,
+        "dependency_score": 0.14869711109186468,
+        "degree": 8,
+        "signpost_score": 7526.25606752385,
+        "signpost_lift": 3.6964808780133325,
+        "deck_prevalence": 0.3341588579539443,
+        "draft_weight": 5508.0,
+        "draft_drafts": 4542,
+        "draft_presence": 0.34419521066989994,
+        "draft_win_rate": 0.5825800123589696,
+        "draft_win_lift": 0.010919863052179735,
+        "analysis_score_raw": 7531.507755121663,
+        "analysis_score": 9.585989930930275,
+        "pick_priority_score_raw": 180.003131082119,
+        "pick_priority_score": 8.159518657678463,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Iron-Shield%20Elf%22",
+        "community": 1,
+        "x": 1038.55554965187,
+        "y": 811.4573380473693,
+        "analysis_radius": 17.364757984298016,
+        "pick_radius": 30.0,
+        "radius": 17.364757984298016
+      },
+      {
+        "id": "Scarblade's Malice",
+        "label": "Scarblade's Malice",
+        "color_identity": "B",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 6195,
+        "win_rate": 0.5685230024213075,
+        "standalone_delta": -0.0016480046766237377,
+        "dependency_score": 0.13449266847298724,
+        "degree": 11,
+        "signpost_score": 6665.708207759698,
+        "signpost_lift": 3.376302300067795,
+        "deck_prevalence": 0.30481523835974345,
+        "draft_weight": 8381.0,
+        "draft_drafts": 6473,
+        "draft_presence": 0.4905274325553198,
+        "draft_win_rate": 0.5682520298646688,
+        "draft_win_lift": -0.0034081194421210492,
+        "analysis_score_raw": 6668.129075792212,
+        "analysis_score": 9.507130168619224,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Scarblade%27s%20Malice%22",
+        "community": 0,
+        "x": 1165.7809831118077,
+        "y": 560.3863491794932,
+        "analysis_radius": 15.84173606502754,
+        "pick_radius": 30.0,
+        "radius": 15.84173606502754
+      },
+      {
+        "id": "Gloom Ripper",
+        "label": "Gloom Ripper",
+        "color_identity": "B",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Creature - Elf Assassin",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 3828,
+        "win_rate": 0.6891327063740856,
+        "standalone_delta": 0.11896169927615441,
+        "dependency_score": 0.07966267977507484,
+        "degree": 3,
+        "signpost_score": 3657.4020752448732,
+        "signpost_lift": 3.9780218194279477,
+        "deck_prevalence": 0.16964929775285242,
+        "draft_weight": 1645.0,
+        "draft_drafts": 1570,
+        "draft_presence": 0.11897544710518339,
+        "draft_win_rate": 0.6231451001105117,
+        "draft_win_lift": 0.05148495080372184,
+        "analysis_score_raw": 3675.4906413794865,
+        "analysis_score": 9.12135813689418,
+        "pick_priority_score_raw": 601.2075417350105,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Gloom%20Ripper%22",
+        "community": 0,
+        "x": 1127.3065798770779,
+        "y": 620.6182664290454,
+        "analysis_radius": 20.41074993209119,
+        "pick_radius": 30.0,
+        "radius": 20.41074993209119
+      },
+      {
+        "id": "Trystan's Command",
+        "label": "Trystan's Command",
+        "color_identity": "BG",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Kindred Sorcery - Elf",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(21, 11, 0)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "BG"
+        },
+        "draw_games": 3339,
+        "win_rate": 0.6903264450434262,
+        "standalone_delta": 0.12015543794549499,
+        "dependency_score": 0.04351346216151742,
+        "degree": 10,
+        "signpost_score": 3196.1411377272775,
+        "signpost_lift": 3.176895107262961,
+        "deck_prevalence": 0.15521653082821052,
+        "draft_weight": 1554.0,
+        "draft_drafts": 1494,
+        "draft_presence": 0.11321612609881783,
+        "draft_win_rate": 0.6118285897782557,
+        "draft_win_lift": 0.04016844047146584,
+        "analysis_score_raw": 3213.7461413585543,
+        "analysis_score": 9.034419583543059,
+        "pick_priority_score_raw": 500.10001945260444,
+        "pick_priority_score": 9.757815223867189,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Trystan%27s%20Command%22",
+        "community": 2,
+        "x": 811.5030694662695,
+        "y": 845.0762825285644,
+        "analysis_radius": 19.175033724816853,
+        "pick_radius": 30.0,
+        "radius": 19.175033724816853
+      },
+      {
+        "id": "Moon-Vigil Adherents",
+        "label": "Moon-Vigil Adherents",
+        "color_identity": "G",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Elf Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 7091,
+        "win_rate": 0.6237484134818785,
+        "standalone_delta": 0.05357740638394726,
+        "dependency_score": 0.05946579517782053,
+        "degree": 10,
+        "signpost_score": 6571.260163358141,
+        "signpost_lift": 3.2236045695547877,
+        "deck_prevalence": 0.30645811487668156,
+        "draft_weight": 4799.0,
+        "draft_drafts": 4041,
+        "draft_presence": 0.3062291603516217,
+        "draft_win_rate": 0.5872995700754714,
+        "draft_win_lift": 0.015639420768681522,
+        "analysis_score_raw": 6579.831384565094,
+        "analysis_score": 9.498496451023263,
+        "pick_priority_score_raw": 350.49966407307323,
+        "pick_priority_score": 9.201244563456218,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Moon-Vigil%20Adherents%22",
+        "community": 0,
+        "x": 1214.825299236042,
+        "y": 560.9318435286938,
+        "analysis_radius": 16.087525977518638,
+        "pick_radius": 30.0,
+        "radius": 16.087525977518638
+      },
+      {
+        "id": "Leaf-Crowned Visionary",
+        "label": "Leaf-Crowned Visionary",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Creature - Elf Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 170,
+        "win_rate": 0.5647058823529412,
+        "standalone_delta": -0.0054651247449900575,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 0.0,
+        "signpost_lift": 1.0,
+        "deck_prevalence": 0.0,
+        "draft_weight": 98.0,
+        "draft_drafts": 98,
+        "draft_presence": 0.007426492876629282,
+        "draft_win_rate": 0.573535371489513,
+        "draft_win_lift": 0.0018752221827230686,
+        "analysis_score_raw": 0.0,
+        "analysis_score": 3.803280491951614,
+        "pick_priority_score_raw": 1.8563752502888893,
+        "pick_priority_score": 1.6473650389746672,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Leaf-Crowned%20Visionary%22",
+        "community": 3,
+        "x": 661.243250005859,
+        "y": 674.979190866153,
+        "analysis_radius": 11.0,
+        "pick_radius": 25.112820811153444,
+        "radius": 11.0
+      },
+      {
+        "id": "Rimekin Recluse",
+        "label": "Rimekin Recluse",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Elemental Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 141,
+        "win_rate": 0.5886524822695035,
+        "standalone_delta": 0.01848147517157228,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -375.8778504038274,
+        "signpost_lift": 0.055539000385652154,
+        "deck_prevalence": 0.006939866265569184,
+        "draft_weight": 422.0,
+        "draft_drafts": 405,
+        "draft_presence": 0.03069111852076387,
+        "draft_win_rate": 0.5779535249493981,
+        "draft_win_lift": 0.006293375642608234,
+        "analysis_score_raw": -373.29044387980724,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 33.121462400346644,
+        "pick_priority_score": 5.540525615564217,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Rimekin%20Recluse%22",
+        "community": 4,
+        "x": 661.243250005859,
+        "y": 445.02080913384714,
+        "analysis_radius": 12.016481134436475,
+        "pick_radius": 30.0,
+        "radius": 12.016481134436475
+      },
+      {
+        "id": "Kinbinding",
+        "label": "Kinbinding",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 186,
+        "win_rate": 0.532258064516129,
+        "standalone_delta": -0.03791294258180222,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -293.5010602673468,
+        "signpost_lift": 0.18549028594016048,
+        "deck_prevalence": 0.00922150996215264,
+        "draft_weight": 212.0,
+        "draft_drafts": 211,
+        "draft_presence": 0.015989693846620186,
+        "draft_win_rate": 0.5568837083397202,
+        "draft_win_lift": -0.014776440967069648,
+        "analysis_score_raw": -293.5010602673468,
+        "analysis_score": 0.12047564438498058,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kinbinding%22",
+        "community": 5,
+        "x": 841.0319525015766,
+        "y": 301.64410327181673,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Keep Out",
+        "label": "Keep Out",
+        "color_identity": "W",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 121,
+        "win_rate": 0.5289256198347108,
+        "standalone_delta": -0.04124538726322047,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -370.57882087707105,
+        "signpost_lift": 0.06052976761438459,
+        "deck_prevalence": 0.007059907815437233,
+        "draft_weight": 688.0,
+        "draft_drafts": 636,
+        "draft_presence": 0.04819642315853289,
+        "draft_win_rate": 0.552680646190711,
+        "draft_win_lift": -0.018979503116078877,
+        "analysis_score_raw": -370.57882087707105,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Keep%20Out%22",
+        "community": 6,
+        "x": 1065.2247974925644,
+        "y": 352.8146571459721,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      }
+    ],
+    "edges": [
+      {
+        "from": "Iron-Shield Elf",
+        "to": "Morcant's Eyes",
+        "pair_games": 741,
+        "pair_win_rate": 0.6977058029689609,
+        "pair_expected_win_rate": 0.6414306892976168,
+        "pair_lift_vs_baseline": 0.12753479587102967,
+        "synergy_delta_logit": 0.2548176658229373,
+        "synergy_delta_prob": 0.05627511367134408,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.22280662717462552,
+        "draft_pair_events": 1788,
+        "quality_score": 1.4630050255746898,
+        "pick_score_raw": 5.950471741596446,
+        "pick_score": 8.27727417190917
+      },
+      {
+        "from": "Dawnhand Eulogist",
+        "to": "Morcant's Eyes",
+        "pair_games": 2322,
+        "pair_win_rate": 0.6752799310938846,
+        "pair_expected_win_rate": 0.6521525985528542,
+        "pair_lift_vs_baseline": 0.1051089239959534,
+        "synergy_delta_logit": 0.10364913351610838,
+        "synergy_delta_prob": 0.023127332541030388,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.4398126815038484,
+        "draft_pair_events": 3903,
+        "quality_score": 0.9531593649904149,
+        "pick_score_raw": 9.416673668749203,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Morcant's Eyes",
+        "to": "Scarblade Scout",
+        "pair_games": 1930,
+        "pair_win_rate": 0.6621761658031088,
+        "pair_expected_win_rate": 0.6366126802977348,
+        "pair_lift_vs_baseline": 0.09200515870517756,
+        "synergy_delta_logit": 0.11231490143119516,
+        "synergy_delta_prob": 0.025563485505374017,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.37739167493288317,
+        "draft_pair_events": 3728,
+        "quality_score": 0.832883021954145,
+        "pick_score_raw": 7.625895377116478,
+        "pick_score": 9.847890435114964
+      },
+      {
+        "from": "Lys Alana Informant",
+        "to": "Moon-Vigil Adherents",
+        "pair_games": 1411,
+        "pair_win_rate": 0.6591070163004961,
+        "pair_expected_win_rate": 0.6348365771488305,
+        "pair_lift_vs_baseline": 0.08893600920256484,
+        "synergy_delta_logit": 0.10629469631047761,
+        "synergy_delta_prob": 0.0242704391516656,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2636,
+        "quality_score": 0.6062737859225183,
+        "pick_score_raw": 6.0260494407015415,
+        "pick_score": 8.355929313337517
+      },
+      {
+        "from": "Morcant's Loyalist",
+        "to": "Trystan's Command",
+        "pair_games": 369,
+        "pair_win_rate": 0.7696476964769647,
+        "pair_expected_win_rate": 0.7503783665383847,
+        "pair_lift_vs_baseline": 0.1994766893790335,
+        "synergy_delta_logit": 0.10569171889626117,
+        "synergy_delta_prob": 0.019269329938579993,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 550,
+        "quality_score": 0.5862218914272486,
+        "pick_score_raw": 5.812629573537608,
+        "pick_score": 8.131591259790198
+      },
+      {
+        "from": "Moonglove Extractor",
+        "to": "Morcant's Eyes",
+        "pair_games": 829,
+        "pair_win_rate": 0.632086851628468,
+        "pair_expected_win_rate": 0.5939308784123065,
+        "pair_lift_vs_baseline": 0.06191584453053678,
+        "synergy_delta_logit": 0.16094035675812102,
+        "synergy_delta_prob": 0.03815597321616149,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2825,
+        "quality_score": 0.530407179814631,
+        "pick_score_raw": 3.4831004199331983,
+        "pick_score": 5.088214644005528
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Moon-Vigil Adherents",
+        "pair_games": 962,
+        "pair_win_rate": 0.6725571725571725,
+        "pair_expected_win_rate": 0.6512437313167241,
+        "pair_lift_vs_baseline": 0.10238616545924129,
+        "synergy_delta_logit": 0.095262995964434,
+        "synergy_delta_prob": 0.021313441240448427,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1861,
+        "quality_score": 0.4977496369464894,
+        "pick_score_raw": 5.510817167337536,
+        "pick_score": 7.802039903195655
+      },
+      {
+        "from": "Creakwood Safewright",
+        "to": "Trystan's Command",
+        "pair_games": 355,
+        "pair_win_rate": 0.7267605633802817,
+        "pair_expected_win_rate": 0.7045293278720152,
+        "pair_lift_vs_baseline": 0.1565895562823505,
+        "synergy_delta_logit": 0.10928823022602163,
+        "synergy_delta_prob": 0.022231235508266556,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 553,
+        "quality_score": 0.4784776843329265,
+        "pick_score_raw": 4.58831122623043,
+        "pick_score": 6.690853051333419
+      },
+      {
+        "from": "Moon-Vigil Adherents",
+        "to": "Scarblade Scout",
+        "pair_games": 1505,
+        "pair_win_rate": 0.6551495016611296,
+        "pair_expected_win_rate": 0.6364731202866531,
+        "pair_lift_vs_baseline": 0.08497849456319839,
+        "synergy_delta_logit": 0.08166352601261129,
+        "synergy_delta_prob": 0.01867638137447647,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2832,
+        "quality_score": 0.4647660730494871,
+        "pick_score_raw": 6.0149643470967415,
+        "pick_score": 8.344445945053858
+      },
+      {
+        "from": "Midnight Tilling",
+        "to": "Moon-Vigil Adherents",
+        "pair_games": 1073,
+        "pair_win_rate": 0.6533084808946877,
+        "pair_expected_win_rate": 0.6306784949412945,
+        "pair_lift_vs_baseline": 0.08313747379675651,
+        "synergy_delta_logit": 0.09848536891321902,
+        "synergy_delta_prob": 0.022629985953393272,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2639,
+        "quality_score": 0.46379707647784274,
+        "pick_score_raw": 4.975470912301428,
+        "pick_score": 7.178023440078535
+      },
+      {
+        "from": "Lys Alana Dignitary",
+        "to": "Morcant's Eyes",
+        "pair_games": 902,
+        "pair_win_rate": 0.655210643015521,
+        "pair_expected_win_rate": 0.6325867725946998,
+        "pair_lift_vs_baseline": 0.08503963591758978,
+        "synergy_delta_logit": 0.0986928790310132,
+        "synergy_delta_prob": 0.022623870420821257,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2032,
+        "quality_score": 0.4299253074911408,
+        "pick_score_raw": 4.596494865844729,
+        "pick_score": 6.701495618956421
+      },
+      {
+        "from": "Morcant's Loyalist",
+        "to": "Scarblade Scout",
+        "pair_games": 2103,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6538790526161317,
+        "pair_lift_vs_baseline": 0.0964956595687354,
+        "synergy_delta_logit": 0.05701305393217693,
+        "synergy_delta_prob": 0.012787614050534968,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3567,
+        "quality_score": 0.42915184869021056,
+        "pick_score_raw": 7.964244397098501,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Moonglove Extractor",
+        "pair_games": 1068,
+        "pair_win_rate": 0.6039325842696629,
+        "pair_expected_win_rate": 0.562676223325532,
+        "pair_lift_vs_baseline": 0.03376157717173167,
+        "synergy_delta_logit": 0.16984759530350235,
+        "synergy_delta_prob": 0.041256360944130877,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3239,
+        "quality_score": 0.41902083295910647,
+        "pick_score_raw": 2.6090595877451075,
+        "pick_score": 3.510991870356386
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Morcant's Eyes",
+        "pair_games": 1367,
+        "pair_win_rate": 0.6664228237015362,
+        "pair_expected_win_rate": 0.6513807267557903,
+        "pair_lift_vs_baseline": 0.09625181660360493,
+        "synergy_delta_logit": 0.06693620187924254,
+        "synergy_delta_prob": 0.015042096945745875,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2468,
+        "quality_score": 0.40007421152385214,
+        "pick_score_raw": 6.312703018355498,
+        "pick_score": 8.646754603652354
+      },
+      {
+        "from": "Gloom Ripper",
+        "to": "Moonglove Extractor",
+        "pair_games": 401,
+        "pair_win_rate": 0.685785536159601,
+        "pair_expected_win_rate": 0.6615512998830332,
+        "pair_lift_vs_baseline": 0.1156145290616698,
+        "synergy_delta_logit": 0.11027418957620816,
+        "synergy_delta_prob": 0.024234236276567844,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 816,
+        "quality_score": 0.3998759281489928,
+        "pick_score_raw": 3.808300555266037,
+        "pick_score": 5.597516491361617
+      },
+      {
+        "from": "Midnight Tilling",
+        "to": "Morcant's Eyes",
+        "pair_games": 1478,
+        "pair_win_rate": 0.6481732070365359,
+        "pair_expected_win_rate": 0.6308189891868724,
+        "pair_lift_vs_baseline": 0.07800219993860469,
+        "synergy_delta_logit": 0.0752870763916671,
+        "synergy_delta_prob": 0.01735421784966351,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3500,
+        "quality_score": 0.39940042936760095,
+        "pick_score_raw": 5.612505353432682,
+        "pick_score": 7.914750226251834
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Morcant's Eyes",
+        "pair_games": 1790,
+        "pair_win_rate": 0.6804469273743017,
+        "pair_expected_win_rate": 0.669707161544602,
+        "pair_lift_vs_baseline": 0.11027592027637045,
+        "synergy_delta_logit": 0.048965562592702794,
+        "synergy_delta_prob": 0.01073976582969971,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3004,
+        "quality_score": 0.3779497177618487,
+        "pick_score_raw": 8.160068193854768,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Morcant's Eyes",
+        "pair_games": 1356,
+        "pair_win_rate": 0.6607669616519174,
+        "pair_expected_win_rate": 0.6459826438798947,
+        "pair_lift_vs_baseline": 0.09059595455398617,
+        "synergy_delta_logit": 0.06528722764888095,
+        "synergy_delta_prob": 0.014784317772022715,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2430,
+        "quality_score": 0.3695307014859795,
+        "pick_score_raw": 5.977576781856159,
+        "pick_score": 8.30558083252739
+      },
+      {
+        "from": "Gloom Ripper",
+        "to": "Midnight Tilling",
+        "pair_games": 491,
+        "pair_win_rate": 0.7107942973523421,
+        "pair_expected_win_rate": 0.6954465051767251,
+        "pair_lift_vs_baseline": 0.1406232902544109,
+        "synergy_delta_logit": 0.0735375244140698,
+        "synergy_delta_prob": 0.015347792175616992,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 993,
+        "quality_score": 0.35205344607214306,
+        "pick_score_raw": 5.03304352410751,
+        "pick_score": 7.247759640162979
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Safewright Cavalry",
+        "pair_games": 2157,
+        "pair_win_rate": 0.6258692628650904,
+        "pair_expected_win_rate": 0.6104518964202797,
+        "pair_lift_vs_baseline": 0.055698255767159144,
+        "synergy_delta_logit": 0.06532406499025534,
+        "synergy_delta_prob": 0.01541736644481062,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3977,
+        "quality_score": 0.32483633385109784,
+        "pick_score_raw": 5.2640895659421645,
+        "pick_score": 7.521081316157395
+      },
+      {
+        "from": "Moon-Vigil Adherents",
+        "to": "Scarblade's Malice",
+        "pair_games": 529,
+        "pair_win_rate": 0.6465028355387523,
+        "pair_expected_win_rate": 0.6221697051791646,
+        "pair_lift_vs_baseline": 0.07633182844082109,
+        "synergy_delta_logit": 0.104934366082165,
+        "synergy_delta_prob": 0.02433313035958773,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1947,
+        "quality_score": 0.32054865173692587,
+        "pick_score_raw": 3.2225781285518047,
+        "pick_score": 4.652802779150557
+      },
+      {
+        "from": "Moonglove Extractor",
+        "to": "Safewright Cavalry",
+        "pair_games": 1351,
+        "pair_win_rate": 0.5906735751295337,
+        "pair_expected_win_rate": 0.5567605207006248,
+        "pair_lift_vs_baseline": 0.02050256803160244,
+        "synergy_delta_logit": 0.13872560264260242,
+        "synergy_delta_prob": 0.033913054428908906,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4401,
+        "quality_score": 0.29315642057464203,
+        "pick_score_raw": 2.2381106884377235,
+        "pick_score": 2.722210423615527
+      },
+      {
+        "from": "Dawn's Light Archer",
+        "to": "Morcant's Eyes",
+        "pair_games": 1458,
+        "pair_win_rate": 0.6406035665294925,
+        "pair_expected_win_rate": 0.6284435805376399,
+        "pair_lift_vs_baseline": 0.07043255943156124,
+        "synergy_delta_logit": 0.052439220317153756,
+        "synergy_delta_prob": 0.012159985991852529,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5302849687210839,
+        "draft_pair_events": 3251,
+        "quality_score": 0.2785663383432838,
+        "pick_score_raw": 5.400512110193366,
+        "pick_score": 7.677770750437744
+      },
+      {
+        "from": "Creakwood Safewright",
+        "to": "Morcant's Eyes",
+        "pair_games": 908,
+        "pair_win_rate": 0.6530837004405287,
+        "pair_expected_win_rate": 0.6395488979991213,
+        "pair_lift_vs_baseline": 0.08291269334259743,
+        "synergy_delta_logit": 0.05921498735394537,
+        "synergy_delta_prob": 0.013534802441407368,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.4398126815038484,
+        "draft_pair_events": 1941,
+        "quality_score": 0.27318815220748904,
+        "pick_score_raw": 4.708202358933301,
+        "pick_score": 6.84523170366796
+      },
+      {
+        "from": "Morcant's Loyalist",
+        "to": "Safewright Cavalry",
+        "pair_games": 1899,
+        "pair_win_rate": 0.6661400737230121,
+        "pair_expected_win_rate": 0.6576553657567443,
+        "pair_lift_vs_baseline": 0.09596906662508087,
+        "synergy_delta_logit": 0.037915344994470135,
+        "synergy_delta_prob": 0.008484707966267768,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3289,
+        "quality_score": 0.2691999684184334,
+        "pick_score_raw": 7.509303451765888,
+        "pick_score": 9.748917982502583
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Bogslither's Embrace",
+        "pair_games": 1686,
+        "pair_win_rate": 0.6340450771055753,
+        "pair_expected_win_rate": 0.621731690676723,
+        "pair_lift_vs_baseline": 0.06387407000764411,
+        "synergy_delta_logit": 0.05270500976284509,
+        "synergy_delta_prob": 0.01231338642885238,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3007,
+        "quality_score": 0.2542005493185064,
+        "pick_score_raw": 5.09890814360439,
+        "pick_score": 7.326728176187972
+      },
+      {
+        "from": "Safewright Cavalry",
+        "to": "Trystan's Command",
+        "pair_games": 700,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_expected_win_rate": 0.7053643043783073,
+        "pair_lift_vs_baseline": 0.14411470718778308,
+        "synergy_delta_logit": 0.0433159818183011,
+        "synergy_delta_prob": 0.008921409907406974,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 973,
+        "quality_score": 0.252793996140007,
+        "pick_score_raw": 6.13483996021716,
+        "pick_score": 8.467676698143364
+      },
+      {
+        "from": "Morcant's Eyes",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1249,
+        "pair_win_rate": 0.6236989591673339,
+        "pair_expected_win_rate": 0.6081734965611392,
+        "pair_lift_vs_baseline": 0.05352795206940264,
+        "synergy_delta_logit": 0.06563730226966591,
+        "synergy_delta_prob": 0.015525462606194695,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.29535456368479696,
+        "draft_pair_events": 3237,
+        "quality_score": 0.2522257260987939,
+        "pick_score_raw": 3.9727435641830198,
+        "pick_score": 5.8420843747054105
+      },
+      {
+        "from": "Morcant's Eyes",
+        "to": "Trystan's Command",
+        "pair_games": 358,
+        "pair_win_rate": 0.7458100558659218,
+        "pair_expected_win_rate": 0.7359821804110767,
+        "pair_lift_vs_baseline": 0.17563904876799052,
+        "synergy_delta_logit": 0.05119984415690748,
+        "synergy_delta_prob": 0.009827875454845092,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 602,
+        "quality_score": 0.2501907009818503,
+        "pick_score_raw": 5.123529499514943,
+        "pick_score": 7.35602921565774
+      },
+      {
+        "from": "Dawnhand Eulogist",
+        "to": "Morcant's Loyalist",
+        "pair_games": 2215,
+        "pair_win_rate": 0.6753950338600452,
+        "pair_expected_win_rate": 0.6690644288670196,
+        "pair_lift_vs_baseline": 0.10522402676211395,
+        "synergy_delta_logit": 0.02873214637895094,
+        "synergy_delta_prob": 0.006330604993025624,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3673,
+        "quality_score": 0.23883658574161074,
+        "pick_score_raw": 8.7963224790647,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Lys Alana Dignitary",
+        "to": "Safewright Cavalry",
+        "pair_games": 1506,
+        "pair_win_rate": 0.6128818061088978,
+        "pair_expected_win_rate": 0.5965512449063367,
+        "pair_lift_vs_baseline": 0.04271079901096653,
+        "synergy_delta_logit": 0.06832637962714727,
+        "synergy_delta_prob": 0.016330561202561045,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3234,
+        "quality_score": 0.2334736816863362,
+        "pick_score_raw": 3.613716594713652,
+        "pick_score": 5.297079636315252
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Scarblade's Malice",
+        "pair_games": 862,
+        "pair_win_rate": 0.617169373549884,
+        "pair_expected_win_rate": 0.5974494892295044,
+        "pair_lift_vs_baseline": 0.04699836645195277,
+        "synergy_delta_logit": 0.08270167308586535,
+        "synergy_delta_prob": 0.019719884320379633,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3120,
+        "quality_score": 0.22812435994786812,
+        "pick_score_raw": 2.91666872469394,
+        "pick_score": 4.105860456337955
+      },
+      {
+        "from": "Eclipsed Elf",
+        "to": "Morcant's Loyalist",
+        "pair_games": 1120,
+        "pair_win_rate": 0.7116071428571429,
+        "pair_expected_win_rate": 0.7053353992095034,
+        "pair_lift_vs_baseline": 0.14143613575921166,
+        "synergy_delta_logit": 0.03036668537877596,
+        "synergy_delta_prob": 0.006271743647639494,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1925,
+        "quality_score": 0.22610324988689962,
+        "pick_score_raw": 7.854382553511126,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1662,
+        "pair_win_rate": 0.5962695547533092,
+        "pair_expected_win_rate": 0.5772347674051003,
+        "pair_lift_vs_baseline": 0.026098547655378,
+        "synergy_delta_logit": 0.07851335697084538,
+        "synergy_delta_prob": 0.01903478734820896,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3719,
+        "quality_score": 0.20820735789835149,
+        "pick_score_raw": 2.806380423748408,
+        "pick_score": 3.8981308126082284
+      },
+      {
+        "from": "Gloom Ripper",
+        "to": "Scarblade's Malice",
+        "pair_games": 339,
+        "pair_win_rate": 0.6991150442477876,
+        "pair_expected_win_rate": 0.6876909793054415,
+        "pair_lift_vs_baseline": 0.12894403714985636,
+        "synergy_delta_logit": 0.05374089738613452,
+        "synergy_delta_prob": 0.011424064942346046,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 788,
+        "quality_score": 0.19653204951784692,
+        "pick_score_raw": 3.839965342454841,
+        "pick_score": 5.64525371677287
+      },
+      {
+        "from": "Moonglove Extractor",
+        "to": "Scarblade's Malice",
+        "pair_games": 695,
+        "pair_win_rate": 0.5798561151079137,
+        "pair_expected_win_rate": 0.5374235873263284,
+        "pair_lift_vs_baseline": 0.009685108009982457,
+        "synergy_delta_logit": 0.17220793279396834,
+        "synergy_delta_prob": 0.04243252778158524,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3467,
+        "quality_score": 0.18969381147059583,
+        "pick_score_raw": 1.1653303742118732,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Scarblade's Malice",
+        "pair_games": 923,
+        "pair_win_rate": 0.6088840736728061,
+        "pair_expected_win_rate": 0.5917397219115067,
+        "pair_lift_vs_baseline": 0.03871306657487483,
+        "synergy_delta_logit": 0.07146191978897776,
+        "synergy_delta_prob": 0.01714435176129936,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3055,
+        "quality_score": 0.17861740812589277,
+        "pick_score_raw": 2.6426207807940796,
+        "pick_score": 3.578309705681986
+      },
+      {
+        "from": "Iron-Shield Elf",
+        "to": "Moonglove Extractor",
+        "pair_games": 669,
+        "pair_win_rate": 0.5889387144992526,
+        "pair_expected_win_rate": 0.5577863835479447,
+        "pair_lift_vs_baseline": 0.018767707401321387,
+        "synergy_delta_logit": 0.12739680819782684,
+        "synergy_delta_prob": 0.03115233095130787,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2347,
+        "quality_score": 0.17731759363109453,
+        "pick_score_raw": 1.469677644003589,
+        "pick_score": 0.7520065458861146
+      },
+      {
+        "from": "Iron-Shield Elf",
+        "to": "Midnight Tilling",
+        "pair_games": 982,
+        "pair_win_rate": 0.6109979633401222,
+        "pair_expected_win_rate": 0.5957229602939533,
+        "pair_lift_vs_baseline": 0.040826956242191015,
+        "synergy_delta_logit": 0.06383370412782458,
+        "synergy_delta_prob": 0.015275003046168911,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2896,
+        "quality_score": 0.17017139722619004,
+        "pick_score_raw": 2.817800564320215,
+        "pick_score": 3.9199182865835445
+      },
+      {
+        "from": "Dawn's Light Archer",
+        "to": "Trystan's Command",
+        "pair_games": 507,
+        "pair_win_rate": 0.7021696252465484,
+        "pair_expected_win_rate": 0.694469606554109,
+        "pair_lift_vs_baseline": 0.13199861814861713,
+        "synergy_delta_logit": 0.036551757072393665,
+        "synergy_delta_prob": 0.007700018692439303,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 922,
+        "quality_score": 0.16780472214430323,
+        "pick_score_raw": 4.824555469186208,
+        "pick_score": 6.991984999764678
+      },
+      {
+        "from": "Lys Alana Informant",
+        "to": "Morcant's Eyes",
+        "pair_games": 1853,
+        "pair_win_rate": 0.6411225040474906,
+        "pair_expected_win_rate": 0.6349764051143433,
+        "pair_lift_vs_baseline": 0.07095149694955938,
+        "synergy_delta_logit": 0.026613613380177537,
+        "synergy_delta_prob": 0.006146098933147326,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5345325444299198,
+        "draft_pair_events": 3460,
+        "quality_score": 0.16076269831424,
+        "pick_score_raw": 6.14109056994544,
+        "pick_score": 8.474045332121062
+      },
+      {
+        "from": "Safewright Cavalry",
+        "to": "Scarblade Scout",
+        "pair_games": 3195,
+        "pair_win_rate": 0.6087636932707355,
+        "pair_expected_win_rate": 0.6007227831067528,
+        "pair_lift_vs_baseline": 0.038592686172804314,
+        "synergy_delta_logit": 0.033640811847205854,
+        "synergy_delta_prob": 0.008040910163982784,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5855,
+        "quality_score": 0.1597430976921648,
+        "pick_score_raw": 5.035806914730011,
+        "pick_score": 7.251090103720111
+      },
+      {
+        "from": "Midnight Tilling",
+        "to": "Moonglove Extractor",
+        "pair_games": 1017,
+        "pair_win_rate": 0.5771878072763028,
+        "pair_expected_win_rate": 0.546449613748767,
+        "pair_lift_vs_baseline": 0.007016800178371585,
+        "synergy_delta_logit": 0.12490387453368429,
+        "synergy_delta_prob": 0.030738193527535818,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4264,
+        "quality_score": 0.152587488244774,
+        "pick_score_raw": 1.2936517062381614,
+        "pick_score": 0.2142419932950459
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Moonglove Extractor",
+        "pair_games": 1280,
+        "pair_win_rate": 0.60234375,
+        "pair_expected_win_rate": 0.5884265810794442,
+        "pair_lift_vs_baseline": 0.03217274290206873,
+        "synergy_delta_logit": 0.05777561611238141,
+        "synergy_delta_prob": 0.013917168920555723,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3764,
+        "quality_score": 0.1522397324082272,
+        "pick_score_raw": 2.788702677647618,
+        "pick_score": 3.864275763323421
+      },
+      {
+        "from": "Eclipsed Elf",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1282,
+        "pair_win_rate": 0.6326053042121685,
+        "pair_expected_win_rate": 0.6241965556980171,
+        "pair_lift_vs_baseline": 0.062434297114237314,
+        "synergy_delta_logit": 0.03601090041379684,
+        "synergy_delta_prob": 0.00840874851415141,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3046,
+        "quality_score": 0.14892023527614562,
+        "pick_score_raw": 4.372192792844236,
+        "pick_score": 6.404008976844465
+      },
+      {
+        "from": "Morcant's Loyalist",
+        "to": "Scarblade's Malice",
+        "pair_games": 819,
+        "pair_win_rate": 0.6483516483516484,
+        "pair_expected_win_rate": 0.6398729915161877,
+        "pair_lift_vs_baseline": 0.07818064125371715,
+        "synergy_delta_logit": 0.03698860577650709,
+        "synergy_delta_prob": 0.008478656835460674,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2460,
+        "quality_score": 0.14450423698655396,
+        "pick_score_raw": 4.1261174269234875,
+        "pick_score": 6.063007235846079
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Safewright Cavalry",
+        "pair_games": 2194,
+        "pair_win_rate": 0.6230628988149499,
+        "pair_expected_win_rate": 0.6160697585189875,
+        "pair_lift_vs_baseline": 0.05289189171701869,
+        "synergy_delta_logit": 0.029669813504566767,
+        "synergy_delta_prob": 0.00699314029596243,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4015,
+        "quality_score": 0.1433305394491361,
+        "pick_score_raw": 5.114171406520271,
+        "pick_score": 7.344906370004132
+      },
+      {
+        "from": "Lys Alana Dignitary",
+        "to": "Moon-Vigil Adherents",
+        "pair_games": 726,
+        "pair_win_rate": 0.6418732782369146,
+        "pair_expected_win_rate": 0.6324465591105914,
+        "pair_lift_vs_baseline": 0.07170227113898342,
+        "synergy_delta_logit": 0.04077700306976395,
+        "synergy_delta_prob": 0.009426719126323202,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1510,
+        "quality_score": 0.1376330652163388,
+        "pick_score_raw": 3.5561419909596523,
+        "pick_score": 5.205751976232983
+      },
+      {
+        "from": "Moonglove Extractor",
+        "to": "Trystan's Command",
+        "pair_games": 297,
+        "pair_win_rate": 0.6734006734006734,
+        "pair_expected_win_rate": 0.6627991272256787,
+        "pair_lift_vs_baseline": 0.10322966630274222,
+        "synergy_delta_logit": 0.04781323371507873,
+        "synergy_delta_prob": 0.010601546174994758,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 753,
+        "quality_score": 0.13517850371554047,
+        "pick_score_raw": 2.9679230018693272,
+        "pick_score": 4.200415636150804
+      },
+      {
+        "from": "Midnight Tilling",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1487,
+        "pair_win_rate": 0.5803631472763954,
+        "pair_expected_win_rate": 0.5611270124501689,
+        "pair_lift_vs_baseline": 0.010192140178464149,
+        "synergy_delta_logit": 0.07852708816572762,
+        "synergy_delta_prob": 0.019236134826226436,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5018,
+        "quality_score": 0.13037773049107587,
+        "pick_score_raw": 1.7594961848981379,
+        "pick_score": 1.5589937818263262
+      },
+      {
+        "from": "Dawn's Light Archer",
+        "to": "Iron-Shield Elf",
+        "pair_games": 1044,
+        "pair_win_rate": 0.6053639846743295,
+        "pair_expected_win_rate": 0.5932673344350238,
+        "pair_lift_vs_baseline": 0.03519297757639828,
+        "synergy_delta_logit": 0.05037705872865794,
+        "synergy_delta_prob": 0.012096650239305728,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2662,
+        "quality_score": 0.12526851540449335,
+        "pick_score_raw": 2.6272740060680437,
+        "pick_score": 3.547604080668116
+      },
+      {
+        "from": "Moonglove Extractor",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1182,
+        "pair_win_rate": 0.5541455160744501,
+        "pair_expected_win_rate": 0.5225459245189006,
+        "pair_lift_vs_baseline": -0.016025491023481164,
+        "synergy_delta_logit": 0.12718979159382818,
+        "synergy_delta_prob": 0.03159959155554948,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4257,
+        "quality_score": 0.12399793693543412,
+        "pick_score_raw": 1.0323648392863578,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1649,
+        "pair_win_rate": 0.5942995755003032,
+        "pair_expected_win_rate": 0.5830044406245612,
+        "pair_lift_vs_baseline": 0.024128568402371986,
+        "synergy_delta_logit": 0.0466492811255077,
+        "synergy_delta_prob": 0.011295134875741963,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3779,
+        "quality_score": 0.11802419626950729,
+        "pick_score_raw": 2.677645441275129,
+        "pick_score": 3.6479048078297462
+      },
+      {
+        "from": "Morcant's Eyes",
+        "to": "Safewright Cavalry",
+        "pair_games": 1833,
+        "pair_win_rate": 0.6448445171849427,
+        "pair_expected_win_rate": 0.640473796598578,
+        "pair_lift_vs_baseline": 0.07467351008701151,
+        "synergy_delta_logit": 0.019032409075686263,
+        "synergy_delta_prob": 0.004370720586364785,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3505,
+        "quality_score": 0.10862768823343043,
+        "pick_score_raw": 6.038351659591971,
+        "pick_score": 8.368652345396809
+      },
+      {
+        "from": "Midnight Tilling",
+        "to": "Trystan's Command",
+        "pair_games": 419,
+        "pair_win_rate": 0.7016706443914081,
+        "pair_expected_win_rate": 0.6966266720101726,
+        "pair_lift_vs_baseline": 0.1314996372934769,
+        "synergy_delta_logit": 0.02398053665859412,
+        "synergy_delta_prob": 0.005043972381235551,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 948,
+        "quality_score": 0.09985717476597107,
+        "pick_score_raw": 4.3766870493977,
+        "pick_score": 6.410090648675378
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Trystan's Command",
+        "pair_games": 449,
+        "pair_win_rate": 0.7193763919821826,
+        "pair_expected_win_rate": 0.7151780917103255,
+        "pair_lift_vs_baseline": 0.1492053848842514,
+        "synergy_delta_logit": 0.020702927030783025,
+        "synergy_delta_prob": 0.0041983002718570805,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 659,
+        "quality_score": 0.09832360297499179,
+        "pick_score_raw": 4.9820335795343915,
+        "pick_score": 7.186006477747357
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Dawnhand Eulogist",
+        "pair_games": 2662,
+        "pair_win_rate": 0.6318557475582269,
+        "pair_expected_win_rate": 0.628080960402342,
+        "pair_lift_vs_baseline": 0.061684740460295706,
+        "synergy_delta_logit": 0.01619338796808345,
+        "synergy_delta_prob": 0.0037747871558849733,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4548,
+        "quality_score": 0.09698787536990851,
+        "pick_score_raw": 6.3443226625644815,
+        "pick_score": 8.678133676539696
+      },
+      {
+        "from": "Midnight Tilling",
+        "to": "Scarblade's Malice",
+        "pair_games": 887,
+        "pair_win_rate": 0.5896279594137542,
+        "pair_expected_win_rate": 0.5757784639211083,
+        "pair_lift_vs_baseline": 0.019456952315823006,
+        "synergy_delta_logit": 0.056960430495538006,
+        "synergy_delta_prob": 0.013849495492645914,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4029,
+        "quality_score": 0.094719282705447,
+        "pick_score_raw": 1.7604497315701104,
+        "pick_score": 1.5615064517458315
+      },
+      {
+        "from": "Dawn's Light Archer",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1663,
+        "pair_win_rate": 0.5736620565243535,
+        "pair_expected_win_rate": 0.5586169435670554,
+        "pair_lift_vs_baseline": 0.00349104942642231,
+        "synergy_delta_logit": 0.06125726678096011,
+        "synergy_delta_prob": 0.015045112957298157,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5306832677729645,
+        "draft_pair_events": 4742,
+        "quality_score": 0.09149557169302874,
+        "pick_score_raw": 1.5211347952803862,
+        "pick_score": 0.9019813089877576
+      },
+      {
+        "from": "Dawnhand Eulogist",
+        "to": "Lys Alana Dignitary",
+        "pair_games": 1804,
+        "pair_win_rate": 0.6136363636363636,
+        "pair_expected_win_rate": 0.6087853178567767,
+        "pair_lift_vs_baseline": 0.04346535653843242,
+        "synergy_delta_logit": 0.02041430071839967,
+        "synergy_delta_prob": 0.004851045779586949,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3564,
+        "quality_score": 0.07753250876503055,
+        "pick_score_raw": 4.018421469588876,
+        "pick_score": 5.90858433379457
+      },
+      {
+        "from": "Safewright Cavalry",
+        "to": "Scarblade's Malice",
+        "pair_games": 1218,
+        "pair_win_rate": 0.5944170771756979,
+        "pair_expected_win_rate": 0.5859278493896456,
+        "pair_lift_vs_baseline": 0.02424607007776669,
+        "synergy_delta_logit": 0.0350994525870823,
+        "synergy_delta_prob": 0.008489227786052322,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4183,
+        "quality_score": 0.07679864689756083,
+        "pick_score_raw": 2.31679941329881,
+        "pick_score": 2.896830806129801
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Lys Alana Dignitary",
+        "pair_games": 1094,
+        "pair_win_rate": 0.6078610603290676,
+        "pair_expected_win_rate": 0.6023152127147314,
+        "pair_lift_vs_baseline": 0.03769005323113639,
+        "synergy_delta_logit": 0.023208904041503775,
+        "synergy_delta_prob": 0.005545847614336186,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2237,
+        "quality_score": 0.06136533010500998,
+        "pick_score_raw": 2.791223632479642,
+        "pick_score": 3.8691133460079805
+      },
+      {
+        "from": "Creakwood Safewright",
+        "to": "Moonglove Extractor",
+        "pair_games": 793,
+        "pair_win_rate": 0.5725094577553594,
+        "pair_expected_win_rate": 0.5557696361204085,
+        "pair_lift_vs_baseline": 0.002338450657428215,
+        "synergy_delta_logit": 0.06808647123966732,
+        "synergy_delta_prob": 0.016739821634950913,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2528,
+        "quality_score": 0.059610221515924655,
+        "pick_score_raw": 0.9247977969542538,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Moon-Vigil Adherents",
+        "to": "Safewright Cavalry",
+        "pair_games": 1278,
+        "pair_win_rate": 0.6431924882629108,
+        "pair_expected_win_rate": 0.6403348816865004,
+        "pair_lift_vs_baseline": 0.07302148116497953,
+        "synergy_delta_logit": 0.0124296650155018,
+        "synergy_delta_prob": 0.002857606576410321,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2608,
+        "quality_score": 0.057592243343744784,
+        "pick_score_raw": 4.89505382872867,
+        "pick_score": 7.0794832604899085
+      },
+      {
+        "from": "Morcant's Loyalist",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1282,
+        "pair_win_rate": 0.6287051482059283,
+        "pair_expected_win_rate": 0.6259972912421375,
+        "pair_lift_vs_baseline": 0.05853414110799704,
+        "synergy_delta_logit": 0.011582884330094245,
+        "synergy_delta_prob": 0.0027078569637907224,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3062,
+        "quality_score": 0.04564236863087411,
+        "pick_score_raw": 4.166217921702095,
+        "pick_score": 6.119678944233028
+      },
+      {
+        "from": "Iron-Shield Elf",
+        "to": "Morcant's Loyalist",
+        "pair_games": 846,
+        "pair_win_rate": 0.6607565011820331,
+        "pair_expected_win_rate": 0.6585909054357375,
+        "pair_lift_vs_baseline": 0.09058549408410188,
+        "synergy_delta_logit": 0.00964614551688947,
+        "synergy_delta_prob": 0.002165595746295601,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1727,
+        "quality_score": 0.042591621638283284,
+        "pick_score_raw": 4.655184135371764,
+        "pick_score": 6.77736623550284
+      },
+      {
+        "from": "Moon-Vigil Adherents",
+        "to": "Moonglove Extractor",
+        "pair_games": 622,
+        "pair_win_rate": 0.5996784565916399,
+        "pair_expected_win_rate": 0.5937853859043649,
+        "pair_lift_vs_baseline": 0.02950744949370865,
+        "synergy_delta_logit": 0.024489198379094856,
+        "synergy_delta_prob": 0.005893070687274959,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2033,
+        "quality_score": 0.04175406506840813,
+        "pick_score_raw": 1.7990566662975789,
+        "pick_score": 1.6625164520376365
+      },
+      {
+        "from": "Creakwood Safewright",
+        "to": "Iron-Shield Elf",
+        "pair_games": 736,
+        "pair_win_rate": 0.6086956521739131,
+        "pair_expected_win_rate": 0.6047628003005757,
+        "pair_lift_vs_baseline": 0.038524645075981856,
+        "synergy_delta_logit": 0.016482526982866008,
+        "synergy_delta_prob": 0.003932851873337362,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.22280662717462552,
+        "draft_pair_events": 1619,
+        "quality_score": 0.03727723307436452,
+        "pick_score_raw": 2.3428140392391548,
+        "pick_score": 2.9536505245177365
+      },
+      {
+        "from": "Lys Alana Dignitary",
+        "to": "Trystan's Command",
+        "pair_games": 337,
+        "pair_win_rate": 0.7002967359050445,
+        "pair_expected_win_rate": 0.6982300855473003,
+        "pair_lift_vs_baseline": 0.13012572880711326,
+        "synergy_delta_logit": 0.009827458614434237,
+        "synergy_delta_prob": 0.0020666503577442263,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 541,
+        "quality_score": 0.03560892603814588,
+        "pick_score_raw": 3.796905329023304,
+        "pick_score": 5.580260306610882
+      },
+      {
+        "from": "Scarblade Scout",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 2477,
+        "pair_win_rate": 0.5724666935809447,
+        "pair_expected_win_rate": 0.5672641361367506,
+        "pair_lift_vs_baseline": 0.0022956864830134815,
+        "synergy_delta_logit": 0.02122484536648256,
+        "synergy_delta_prob": 0.005202557444194067,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.20939842081125817,
+        "draft_pair_events": 5571,
+        "quality_score": 0.034980012775936535,
+        "pick_score_raw": 1.7191803960285696,
+        "pick_score": 1.4519563595240257
+      },
+      {
+        "from": "Dawn's Light Archer",
+        "to": "Moon-Vigil Adherents",
+        "pair_games": 1061,
+        "pair_win_rate": 0.6305372290292177,
+        "pair_expected_win_rate": 0.628302714965045,
+        "pair_lift_vs_baseline": 0.06036622193128649,
+        "synergy_delta_logit": 0.009579912902615284,
+        "synergy_delta_prob": 0.0022345140641727435,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2411,
+        "quality_score": 0.03484363100148196,
+        "pick_score_raw": 3.8410326535577357,
+        "pick_score": 5.64685732842401
+      },
+      {
+        "from": "Moon-Vigil Adherents",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 890,
+        "pair_win_rate": 0.6112359550561798,
+        "pair_expected_win_rate": 0.6080297393001107,
+        "pair_lift_vs_baseline": 0.041064947958248554,
+        "synergy_delta_logit": 0.01347264905673673,
+        "synergy_delta_prob": 0.003206215756069053,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2435,
+        "quality_score": 0.034113423542391906,
+        "pick_score_raw": 2.6741117188297987,
+        "pick_score": 3.6409133197833103
+      },
+      {
+        "from": "Lys Alana Informant",
+        "to": "Trystan's Command",
+        "pair_games": 687,
+        "pair_win_rate": 0.7016011644832606,
+        "pair_expected_win_rate": 0.7003949849070442,
+        "pair_lift_vs_baseline": 0.13143015738532937,
+        "synergy_delta_logit": 0.005754685651567448,
+        "synergy_delta_prob": 0.0012061795762163818,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 943,
+        "quality_score": 0.030663991277561673,
+        "pick_score_raw": 5.6004133988957285,
+        "pick_score": 7.9014387516889
+      },
+      {
+        "from": "Assert Perfection",
+        "to": "Safewright Cavalry",
+        "pair_games": 2868,
+        "pair_win_rate": 0.6359832635983264,
+        "pair_expected_win_rate": 0.6352129032599377,
+        "pair_lift_vs_baseline": 0.06581225650039513,
+        "synergy_delta_logit": 0.0033260655649887116,
+        "synergy_delta_prob": 0.0007703603383886204,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4805,
+        "quality_score": 0.021764234820519132,
+        "pick_score_raw": 6.933132061648824,
+        "pick_score": 9.239010128765896
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Moonglove Extractor",
+        "pair_games": 1113,
+        "pair_win_rate": 0.573225516621743,
+        "pair_expected_win_rate": 0.5684960578516218,
+        "pair_lift_vs_baseline": 0.0030545095238118103,
+        "synergy_delta_logit": 0.01930574684073577,
+        "synergy_delta_prob": 0.004729458770121209,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3359,
+        "quality_score": 0.02087712568514208,
+        "pick_score_raw": 1.143845911117247,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Creakwood Safewright",
+        "pair_games": 1226,
+        "pair_win_rate": 0.6166394779771615,
+        "pair_expected_win_rate": 0.6151198061037129,
+        "pair_lift_vs_baseline": 0.04646847087923023,
+        "synergy_delta_logit": 0.006423727143377855,
+        "synergy_delta_prob": 0.0015196718734485914,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2337,
+        "quality_score": 0.020748721350687147,
+        "pick_score_raw": 3.4105462774560538,
+        "pick_score": 4.969550289967471
+      },
+      {
+        "from": "Morcant's Eyes",
+        "to": "Scarblade's Malice",
+        "pair_games": 681,
+        "pair_win_rate": 0.6240822320117474,
+        "pair_expected_win_rate": 0.6223114978502935,
+        "pair_lift_vs_baseline": 0.05391122491381617,
+        "synergy_delta_logit": 0.007540744163504698,
+        "synergy_delta_prob": 0.0017707341614539018,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2574,
+        "quality_score": 0.02025580820879602,
+        "pick_score_raw": 2.8376607971842818,
+        "pick_score": 3.957653103391135
+      },
+      {
+        "from": "Dawn's Light Archer",
+        "to": "Midnight Tilling",
+        "pair_games": 1793,
+        "pair_win_rate": 0.5844952593418851,
+        "pair_expected_win_rate": 0.5821587787231329,
+        "pair_lift_vs_baseline": 0.014324252243953839,
+        "synergy_delta_logit": 0.00961292725948637,
+        "synergy_delta_prob": 0.0023364806187521348,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4958,
+        "quality_score": 0.019915822883599867,
+        "pick_score_raw": 2.195445998418215,
+        "pick_score": 2.625749340648467
+      },
+      {
+        "from": "Dawn's Light Archer",
+        "to": "Scarblade's Malice",
+        "pair_games": 1056,
+        "pair_win_rate": 0.5767045454545454,
+        "pair_expected_win_rate": 0.5732884681890659,
+        "pair_lift_vs_baseline": 0.006533538356614188,
+        "synergy_delta_logit": 0.013978863576757483,
+        "synergy_delta_prob": 0.0034160772654795446,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5306832677729645,
+        "draft_pair_events": 3815,
+        "quality_score": 0.018649284684107696,
+        "pick_score_raw": 1.3572874918652276,
+        "pick_score": 0.4132708991261645
+      },
+      {
+        "from": "Iron-Shield Elf",
+        "to": "Safewright Cavalry",
+        "pair_games": 1367,
+        "pair_win_rate": 0.6071689831748354,
+        "pair_expected_win_rate": 0.6057219303755538,
+        "pair_lift_vs_baseline": 0.03699797607690414,
+        "synergy_delta_logit": 0.006063007121964392,
+        "synergy_delta_prob": 0.0014470527992815896,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2915,
+        "quality_score": 0.01787384326400146,
+        "pick_score_raw": 3.11614263625532,
+        "pick_score": 4.4671339780480395
+      },
+      {
+        "from": "Dawnhand Eulogist",
+        "to": "Scarblade's Malice",
+        "pair_games": 1441,
+        "pair_win_rate": 0.5995836224843858,
+        "pair_expected_win_rate": 0.5982671253551368,
+        "pair_lift_vs_baseline": 0.029412615386454566,
+        "synergy_delta_logit": 0.0054805269807433055,
+        "synergy_delta_prob": 0.0013164971292489724,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.21226111540689344,
+        "draft_pair_events": 4698,
+        "quality_score": 0.01518470300077236,
+        "pick_score_raw": 2.887308948912601,
+        "pick_score": 4.05113781275004
+      },
+      {
+        "from": "Bogslither's Embrace",
+        "to": "Lys Alana Dignitary",
+        "pair_games": 1172,
+        "pair_win_rate": 0.6092150170648464,
+        "pair_expected_win_rate": 0.6079750615581285,
+        "pair_lift_vs_baseline": 0.03904400996691515,
+        "synergy_delta_logit": 0.005205370515645236,
+        "synergy_delta_prob": 0.0012399555067178492,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2338,
+        "quality_score": 0.014602974240822337,
+        "pick_score_raw": 2.9621720406141456,
+        "pick_score": 4.189867142892633
+      },
+      {
+        "from": "Iron-Shield Elf",
+        "to": "Stoic Grove-Guide",
+        "pair_games": 1069,
+        "pair_win_rate": 0.5753040224508886,
+        "pair_expected_win_rate": 0.5723840007741334,
+        "pair_lift_vs_baseline": 0.005133015352957404,
+        "synergy_delta_logit": 0.01194056839016544,
+        "synergy_delta_prob": 0.0029200216767552023,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.2680779405623355,
+        "draft_pair_events": 2772,
+        "quality_score": 0.014362496384856885,
+        "pick_score_raw": 1.2451143415396997,
+        "pick_score": 0.05868725094103806
+      },
+      {
+        "from": "Moonglove Extractor",
+        "to": "Scarblade Scout",
+        "pair_games": 1640,
+        "pair_win_rate": 0.5554878048780488,
+        "pair_expected_win_rate": 0.5526283462941995,
+        "pair_lift_vs_baseline": -0.014683202219882396,
+        "synergy_delta_logit": 0.011573147068585199,
+        "synergy_delta_prob": 0.0028594585838492836,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4871,
+        "quality_score": 0.013353190632813062,
+        "pick_score_raw": 1.2225820456801728,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Blight Rot",
+        "to": "Creakwood Safewright",
+        "pair_games": 1219,
+        "pair_win_rate": 0.6103363412633306,
+        "pair_expected_win_rate": 0.6094968546173555,
+        "pair_lift_vs_baseline": 0.04016533416539936,
+        "synergy_delta_logit": 0.003528466489820581,
+        "synergy_delta_prob": 0.0008394866459751071,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2255,
+        "quality_score": 0.010273502760502397,
+        "pick_score_raw": 3.073802042187853,
+        "pick_score": 4.391935655591986
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Dawn's Light Archer",
+          "Morcant's Eyes",
+          "Stoic Grove-Guide"
+        ],
+        "games": 215,
+        "win_rate": 0.6837209302325581,
+        "expected_win_rate": 0.612799293504149,
+        "synergy_delta_logit": 0.31183059610331343,
+        "deck_log_lift": 0.05811004615231116,
+        "draft_triplet_events": 1938,
+        "quality": 6.726343906724553
+      },
+      {
+        "cards": [
+          "Iron-Shield Elf",
+          "Lys Alana Informant",
+          "Morcant's Eyes"
+        ],
+        "games": 136,
+        "win_rate": 0.7352941176470589,
+        "expected_win_rate": 0.6522882436983543,
+        "synergy_delta_logit": 0.3925385418032794,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1101,
+        "quality": 6.501741236462774
+      },
+      {
+        "cards": [
+          "Dawnhand Eulogist",
+          "Iron-Shield Elf",
+          "Morcant's Eyes"
+        ],
+        "games": 190,
+        "win_rate": 0.7315789473684211,
+        "expected_win_rate": 0.6690743714861396,
+        "synergy_delta_logit": 0.2986467411779339,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1300,
+        "quality": 5.887725334091242
+      },
+      {
+        "cards": [
+          "Dawn's Light Archer",
+          "Iron-Shield Elf",
+          "Morcant's Eyes"
+        ],
+        "games": 133,
+        "win_rate": 0.7218045112781954,
+        "expected_win_rate": 0.6458924660397524,
+        "synergy_delta_logit": 0.3523978853908213,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1071,
+        "quality": 5.765412166800899
+      },
+      {
+        "cards": [
+          "Lys Alana Informant",
+          "Morcant's Eyes",
+          "Stoic Grove-Guide"
+        ],
+        "games": 263,
+        "win_rate": 0.6730038022813688,
+        "expected_win_rate": 0.6194406142853057,
+        "synergy_delta_logit": 0.23462783852509328,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2045,
+        "quality": 5.545512607963476
+      },
+      {
+        "cards": [
+          "Creakwood Safewright",
+          "Lys Alana Informant",
+          "Morcant's Eyes"
+        ],
+        "games": 181,
+        "win_rate": 0.7071823204419889,
+        "expected_win_rate": 0.6504323798473753,
+        "synergy_delta_logit": 0.260798028651098,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1212,
+        "quality": 5.003555070420084
+      },
+      {
+        "cards": [
+          "Iron-Shield Elf",
+          "Morcant's Eyes",
+          "Scarblade Scout"
+        ],
+        "games": 163,
+        "win_rate": 0.7116564417177914,
+        "expected_win_rate": 0.6538892154544401,
+        "synergy_delta_logit": 0.26726355797453083,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1242,
+        "quality": 4.870963018969894
+      },
+      {
+        "cards": [
+          "Morcant's Eyes",
+          "Scarblade's Malice",
+          "Stoic Grove-Guide"
+        ],
+        "games": 81,
+        "win_rate": 0.691358024691358,
+        "expected_win_rate": 0.6065706575685545,
+        "synergy_delta_logit": 0.37355613367692975,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1542,
+        "quality": 4.84293161769618
+      },
+      {
+        "cards": [
+          "Morcant's Eyes",
+          "Scarblade Scout",
+          "Stoic Grove-Guide"
+        ],
+        "games": 300,
+        "win_rate": 0.6633333333333333,
+        "expected_win_rate": 0.6211049754230595,
+        "synergy_delta_logit": 0.18394338439493196,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2238,
+        "quality": 4.660556644493398
+      },
+      {
+        "cards": [
+          "Creakwood Safewright",
+          "Morcant's Eyes",
+          "Stoic Grove-Guide"
+        ],
+        "games": 143,
+        "win_rate": 0.6853146853146853,
+        "expected_win_rate": 0.6240925076597155,
+        "synergy_delta_logit": 0.27134946417343586,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1116,
+        "quality": 4.6112947401679145
+      },
+      {
+        "cards": [
+          "Morcant's Eyes",
+          "Scarblade Scout",
+          "Scarblade's Malice"
+        ],
+        "games": 148,
+        "win_rate": 0.6891891891891891,
+        "expected_win_rate": 0.6350563680453158,
+        "synergy_delta_logit": 0.24236056192250321,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1802,
+        "quality": 4.274748999490376
+      },
+      {
+        "cards": [
+          "Iron-Shield Elf",
+          "Morcant's Eyes",
+          "Scarblade's Malice"
+        ],
+        "games": 61,
+        "win_rate": 0.7049180327868853,
+        "expected_win_rate": 0.6398833391119291,
+        "synergy_delta_logit": 0.2959705176739048,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 862,
+        "quality": 3.2492475921043713
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 9,
+        "top_cards": [
+          "Lys Alana Informant",
+          "Stoic Grove-Guide",
+          "Midnight Tilling",
+          "Blight Rot",
+          "Bogslither's Embrace"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 7,
+        "top_cards": [
+          "Scarblade Scout",
+          "Dawnhand Eulogist",
+          "Dawn's Light Archer",
+          "Assert Perfection",
+          "Lys Alana Dignitary"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 5,
+        "top_cards": [
+          "Safewright Cavalry",
+          "Eclipsed Elf",
+          "Morcant's Loyalist",
+          "Creakwood Safewright",
+          "Trystan's Command"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 1,
+        "top_cards": [
+          "Leaf-Crowned Visionary"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Rimekin Recluse"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Kinbinding"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Keep Out"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Assert Perfection",
+          "pick_priority_score": 9.1133317337679,
+          "pick_priority_score_raw": 331.35330541482176,
+          "draft_drafts": 7318,
+          "draft_win_rate": 0.5792494856048523,
+          "draft_win_lift": 0.007589336298062466,
+          "draw_win_rate": 0.6185309443928902
+        },
+        {
+          "card": "Dawnhand Eulogist",
+          "pick_priority_score": 8.81931056154875,
+          "pick_priority_score_raw": 274.57907873283614,
+          "draft_drafts": 9567,
+          "draft_win_rate": 0.5760240235343711,
+          "draft_win_lift": 0.0043638742275812215,
+          "draw_win_rate": 0.5998814782889775
+        },
+        {
+          "card": "Bogslither's Embrace",
+          "pick_priority_score": 8.06084173748663,
+          "pick_priority_score_raw": 168.9741278237738,
+          "draft_drafts": 6323,
+          "draft_win_rate": 0.5745455503943915,
+          "draft_win_lift": 0.0028854010876016023,
+          "draw_win_rate": 0.5990649258997883
+        },
+        {
+          "card": "Scarblade Scout",
+          "pick_priority_score": 8.006931062794196,
+          "pick_priority_score_raw": 163.23514038801167,
+          "draft_drafts": 9251,
+          "draft_win_rate": 0.5773154961914901,
+          "draft_win_lift": 0.005655346884700263,
+          "draw_win_rate": 0.5834977578475337
+        },
+        {
+          "card": "Safewright Cavalry",
+          "pick_priority_score": 7.857991608035982,
+          "pick_priority_score_raw": 148.36728991889828,
+          "draft_drafts": 8517,
+          "draft_win_rate": 0.574761098879468,
+          "draft_win_lift": 0.0031009495726781466,
+          "draw_win_rate": 0.5875576036866359
+        },
+        {
+          "card": "Lys Alana Informant",
+          "pick_priority_score": 7.542187189072842,
+          "pick_priority_score_raw": 121.14465277679393,
+          "draft_drafts": 8477,
+          "draft_win_rate": 0.5760606834666759,
+          "draft_win_lift": 0.00440053415988606,
+          "draw_win_rate": 0.5817794352690463
+        },
+        {
+          "card": "Blight Rot",
+          "pick_priority_score": 7.455161889684609,
+          "pick_priority_score_raw": 114.55669740458656,
+          "draft_drafts": 6171,
+          "draft_win_rate": 0.5695070980550911,
+          "draft_win_lift": -0.0021530512516987343,
+          "draw_win_rate": 0.5933624765813186
+        },
+        {
+          "card": "Midnight Tilling",
+          "pick_priority_score": 7.000319972061133,
+          "pick_priority_score_raw": 85.48550023852269,
+          "draft_drafts": 8374,
+          "draft_win_rate": 0.574892289481539,
+          "draft_win_lift": 0.003232140174749154,
+          "draw_win_rate": 0.5774193548387097
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Eclipsed Elf",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 588.9559047778175,
+          "draft_drafts": 5151,
+          "draft_win_rate": 0.5953037867969736,
+          "draft_win_lift": 0.023643637490183722,
+          "draw_win_rate": 0.6396511380557328
+        },
+        {
+          "card": "Morcant's Loyalist",
+          "pick_priority_score": 9.943848778174985,
+          "pick_priority_score_raw": 563.1553382704717,
+          "draft_drafts": 5065,
+          "draft_win_rate": 0.5910980614216661,
+          "draft_win_lift": 0.01943791211487622,
+          "draw_win_rate": 0.6414203612479474
+        },
+        {
+          "card": "Morcant's Eyes",
+          "pick_priority_score": 9.75151122986628,
+          "pick_priority_score_raw": 498.09146749266995,
+          "draft_drafts": 5390,
+          "draft_win_rate": 0.5922648189743602,
+          "draft_win_lift": 0.020604669667570352,
+          "draw_win_rate": 0.6238899718431882
+        },
+        {
+          "card": "Moon-Vigil Adherents",
+          "pick_priority_score": 9.201244563456218,
+          "pick_priority_score_raw": 350.49966407307323,
+          "draft_drafts": 4041,
+          "draft_win_rate": 0.5872995700754714,
+          "draft_win_lift": 0.015639420768681522,
+          "draw_win_rate": 0.6237484134818785
+        },
+        {
+          "card": "Iron-Shield Elf",
+          "pick_priority_score": 8.159518657678463,
+          "pick_priority_score_raw": 180.003131082119,
+          "draft_drafts": 4542,
+          "draft_win_rate": 0.5825800123589696,
+          "draft_win_lift": 0.010919863052179735,
+          "draw_win_rate": 0.5885648613704928
+        },
+        {
+          "card": "Creakwood Safewright",
+          "pick_priority_score": 7.847657321740161,
+          "pick_priority_score_raw": 147.3870739686419,
+          "draft_drafts": 4760,
+          "draft_win_rate": 0.578751723898264,
+          "draft_win_lift": 0.007091574591474137,
+          "draw_win_rate": 0.5865844450037755
+        },
+        {
+          "card": "Lys Alana Dignitary",
+          "pick_priority_score": 7.103840152833129,
+          "pick_priority_score_raw": 91.38185252074024,
+          "draft_drafts": 4942,
+          "draft_win_rate": 0.5764261224972634,
+          "draft_win_lift": 0.00476597319047356,
+          "draw_win_rate": 0.5792722973860501
+        },
+        {
+          "card": "Rimekin Recluse",
+          "pick_priority_score": 5.540525615564217,
+          "pick_priority_score_raw": 33.121462400346644,
+          "draft_drafts": 405,
+          "draft_win_rate": 0.5779535249493981,
+          "draft_win_lift": 0.006293375642608234,
+          "draw_win_rate": 0.5886524822695035
+        }
+      ],
+      "rare": [
+        {
+          "card": "Gloom Ripper",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 601.2075417350105,
+          "draft_drafts": 1570,
+          "draft_win_rate": 0.6231451001105117,
+          "draft_win_lift": 0.05148495080372184,
+          "draw_win_rate": 0.6891327063740856
+        },
+        {
+          "card": "Trystan's Command",
+          "pick_priority_score": 9.757815223867189,
+          "pick_priority_score_raw": 500.10001945260444,
+          "draft_drafts": 1494,
+          "draft_win_rate": 0.6118285897782557,
+          "draft_win_lift": 0.04016844047146584,
+          "draw_win_rate": 0.6903264450434262
+        },
+        {
+          "card": "Leaf-Crowned Visionary",
+          "pick_priority_score": 1.6473650389746672,
+          "pick_priority_score_raw": 1.8563752502888893,
+          "draft_drafts": 98,
+          "draft_win_rate": 0.573535371489513,
+          "draft_win_lift": 0.0018752221827230686,
+          "draw_win_rate": 0.5647058823529412
+        },
+        {
+          "card": "Kinbinding",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 211,
+          "draft_win_rate": 0.5568837083397202,
+          "draft_win_lift": -0.014776440967069648,
+          "draw_win_rate": 0.532258064516129
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Trystan's Command",
+        "standalone_delta": 0.12015543794549499,
+        "win_rate": 0.6903264450434262,
+        "draw_games": 3339
+      },
+      {
+        "card": "Gloom Ripper",
+        "standalone_delta": 0.11896169927615441,
+        "win_rate": 0.6891327063740856,
+        "draw_games": 3828
+      },
+      {
+        "card": "Morcant's Loyalist",
+        "standalone_delta": 0.07124935415001621,
+        "win_rate": 0.6414203612479474,
+        "draw_games": 9744
+      },
+      {
+        "card": "Eclipsed Elf",
+        "standalone_delta": 0.06948013095780159,
+        "win_rate": 0.6396511380557328,
+        "draw_games": 9402
+      },
+      {
+        "card": "Morcant's Eyes",
+        "standalone_delta": 0.05371896474525695,
+        "win_rate": 0.6238899718431882,
+        "draw_games": 9234
+      },
+      {
+        "card": "Moon-Vigil Adherents",
+        "standalone_delta": 0.05357740638394726,
+        "win_rate": 0.6237484134818785,
+        "draw_games": 7091
+      },
+      {
+        "card": "Assert Perfection",
+        "standalone_delta": 0.04835993729495902,
+        "win_rate": 0.6185309443928902,
+        "draw_games": 14009
+      },
+      {
+        "card": "Dawnhand Eulogist",
+        "standalone_delta": 0.029710471191046306,
+        "win_rate": 0.5998814782889775,
+        "draw_games": 18562
+      },
+      {
+        "card": "Bogslither's Embrace",
+        "standalone_delta": 0.0288939188018571,
+        "win_rate": 0.5990649258997883,
+        "draw_games": 11336
+      },
+      {
+        "card": "Blight Rot",
+        "standalone_delta": 0.02319146948338735,
+        "win_rate": 0.5933624765813186,
+        "draw_games": 11209
+      },
+      {
+        "card": "Rimekin Recluse",
+        "standalone_delta": 0.01848147517157228,
+        "win_rate": 0.5886524822695035,
+        "draw_games": 141
+      },
+      {
+        "card": "Iron-Shield Elf",
+        "standalone_delta": 0.01839385427256157,
+        "win_rate": 0.5885648613704928,
+        "draw_games": 6961
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Dawn's Light Archer",
+        "dependency_score": 0.27884724897361174,
+        "standalone_delta": 0.004760873011060651,
+        "draw_games": 11377
+      },
+      {
+        "card": "Morcant's Eyes",
+        "dependency_score": 0.27206217778396136,
+        "standalone_delta": 0.05371896474525695,
+        "draw_games": 9234
+      },
+      {
+        "card": "Lys Alana Informant",
+        "dependency_score": 0.2649210132688931,
+        "standalone_delta": 0.01160842817111507,
+        "draw_games": 15016
+      },
+      {
+        "card": "Stoic Grove-Guide",
+        "dependency_score": 0.1740877134908126,
+        "standalone_delta": -0.016355856415509296,
+        "draw_games": 10917
+      },
+      {
+        "card": "Dawnhand Eulogist",
+        "dependency_score": 0.16503137759814795,
+        "standalone_delta": 0.029710471191046306,
+        "draw_games": 18562
+      },
+      {
+        "card": "Scarblade Scout",
+        "dependency_score": 0.14941241504951758,
+        "standalone_delta": 0.013326750749602434,
+        "draw_games": 16725
+      },
+      {
+        "card": "Iron-Shield Elf",
+        "dependency_score": 0.14869711109186468,
+        "standalone_delta": 0.01839385427256157,
+        "draw_games": 6961
+      },
+      {
+        "card": "Creakwood Safewright",
+        "dependency_score": 0.1484195070466071,
+        "standalone_delta": 0.016413437905844264,
+        "draw_games": 7946
+      },
+      {
+        "card": "Scarblade's Malice",
+        "dependency_score": 0.13449266847298724,
+        "standalone_delta": -0.0016480046766237377,
+        "draw_games": 6195
+      },
+      {
+        "card": "Moonglove Extractor",
+        "dependency_score": 0.0965025419007521,
+        "standalone_delta": -0.03107693044287896,
+        "draw_games": 7175
+      },
+      {
+        "card": "Gloom Ripper",
+        "dependency_score": 0.07966267977507484,
+        "standalone_delta": 0.11896169927615441,
+        "draw_games": 3828
+      },
+      {
+        "card": "Midnight Tilling",
+        "dependency_score": 0.06726792936242157,
+        "standalone_delta": 0.007248347740778427,
+        "draw_games": 11160
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Iron-Shield Elf",
+          "Morcant's Eyes"
+        ],
+        "quality_score": 1.4630050255746898,
+        "pair_win_rate": 0.6977058029689609,
+        "pair_games": 741,
+        "synergy_delta_logit": 0.2548176658229373
+      },
+      {
+        "cards": [
+          "Dawnhand Eulogist",
+          "Morcant's Eyes"
+        ],
+        "quality_score": 0.9531593649904149,
+        "pair_win_rate": 0.6752799310938846,
+        "pair_games": 2322,
+        "synergy_delta_logit": 0.10364913351610838
+      },
+      {
+        "cards": [
+          "Morcant's Eyes",
+          "Scarblade Scout"
+        ],
+        "quality_score": 0.832883021954145,
+        "pair_win_rate": 0.6621761658031088,
+        "pair_games": 1930,
+        "synergy_delta_logit": 0.11231490143119516
+      },
+      {
+        "cards": [
+          "Lys Alana Informant",
+          "Moon-Vigil Adherents"
+        ],
+        "quality_score": 0.6062737859225183,
+        "pair_win_rate": 0.6591070163004961,
+        "pair_games": 1411,
+        "synergy_delta_logit": 0.10629469631047761
+      },
+      {
+        "cards": [
+          "Morcant's Loyalist",
+          "Trystan's Command"
+        ],
+        "quality_score": 0.5862218914272486,
+        "pair_win_rate": 0.7696476964769647,
+        "pair_games": 369,
+        "synergy_delta_logit": 0.10569171889626117
+      },
+      {
+        "cards": [
+          "Moonglove Extractor",
+          "Morcant's Eyes"
+        ],
+        "quality_score": 0.530407179814631,
+        "pair_win_rate": 0.632086851628468,
+        "pair_games": 829,
+        "synergy_delta_logit": 0.16094035675812102
+      },
+      {
+        "cards": [
+          "Bogslither's Embrace",
+          "Moon-Vigil Adherents"
+        ],
+        "quality_score": 0.4977496369464894,
+        "pair_win_rate": 0.6725571725571725,
+        "pair_games": 962,
+        "synergy_delta_logit": 0.095262995964434
+      },
+      {
+        "cards": [
+          "Creakwood Safewright",
+          "Trystan's Command"
+        ],
+        "quality_score": 0.4784776843329265,
+        "pair_win_rate": 0.7267605633802817,
+        "pair_games": 355,
+        "synergy_delta_logit": 0.10928823022602163
+      },
+      {
+        "cards": [
+          "Moon-Vigil Adherents",
+          "Scarblade Scout"
+        ],
+        "quality_score": 0.4647660730494871,
+        "pair_win_rate": 0.6551495016611296,
+        "pair_games": 1505,
+        "synergy_delta_logit": 0.08166352601261129
+      },
+      {
+        "cards": [
+          "Midnight Tilling",
+          "Moon-Vigil Adherents"
+        ],
+        "quality_score": 0.46379707647784274,
+        "pair_win_rate": 0.6533084808946877,
+        "pair_games": 1073,
+        "synergy_delta_logit": 0.09848536891321902
+      },
+      {
+        "cards": [
+          "Lys Alana Dignitary",
+          "Morcant's Eyes"
+        ],
+        "quality_score": 0.4299253074911408,
+        "pair_win_rate": 0.655210643015521,
+        "pair_games": 902,
+        "synergy_delta_logit": 0.0986928790310132
+      },
+      {
+        "cards": [
+          "Morcant's Loyalist",
+          "Scarblade Scout"
+        ],
+        "quality_score": 0.42915184869021056,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_games": 2103,
+        "synergy_delta_logit": 0.05701305393217693
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Gloom Ripper",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 601.2075417350105,
+        "draft_drafts": 1570,
+        "draft_win_lift": 0.05148495080372184,
+        "rarity": "rare"
+      },
+      {
+        "card": "Eclipsed Elf",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 588.9559047778175,
+        "draft_drafts": 5151,
+        "draft_win_lift": 0.023643637490183722,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Morcant's Loyalist",
+        "pick_priority_score": 9.943848778174985,
+        "pick_priority_score_raw": 563.1553382704717,
+        "draft_drafts": 5065,
+        "draft_win_lift": 0.01943791211487622,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Trystan's Command",
+        "pick_priority_score": 9.757815223867189,
+        "pick_priority_score_raw": 500.10001945260444,
+        "draft_drafts": 1494,
+        "draft_win_lift": 0.04016844047146584,
+        "rarity": "rare"
+      },
+      {
+        "card": "Morcant's Eyes",
+        "pick_priority_score": 9.75151122986628,
+        "pick_priority_score_raw": 498.09146749266995,
+        "draft_drafts": 5390,
+        "draft_win_lift": 0.020604669667570352,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Moon-Vigil Adherents",
+        "pick_priority_score": 9.201244563456218,
+        "pick_priority_score_raw": 350.49966407307323,
+        "draft_drafts": 4041,
+        "draft_win_lift": 0.015639420768681522,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Assert Perfection",
+        "pick_priority_score": 9.1133317337679,
+        "pick_priority_score_raw": 331.35330541482176,
+        "draft_drafts": 7318,
+        "draft_win_lift": 0.007589336298062466,
+        "rarity": "common"
+      },
+      {
+        "card": "Dawnhand Eulogist",
+        "pick_priority_score": 8.81931056154875,
+        "pick_priority_score_raw": 274.57907873283614,
+        "draft_drafts": 9567,
+        "draft_win_lift": 0.0043638742275812215,
+        "rarity": "common"
+      },
+      {
+        "card": "Iron-Shield Elf",
+        "pick_priority_score": 8.159518657678463,
+        "pick_priority_score_raw": 180.003131082119,
+        "draft_drafts": 4542,
+        "draft_win_lift": 0.010919863052179735,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Bogslither's Embrace",
+        "pick_priority_score": 8.06084173748663,
+        "pick_priority_score_raw": 168.9741278237738,
+        "draft_drafts": 6323,
+        "draft_win_lift": 0.0028854010876016023,
+        "rarity": "common"
+      },
+      {
+        "card": "Scarblade Scout",
+        "pick_priority_score": 8.006931062794196,
+        "pick_priority_score_raw": 163.23514038801167,
+        "draft_drafts": 9251,
+        "draft_win_lift": 0.005655346884700263,
+        "rarity": "common"
+      },
+      {
+        "card": "Safewright Cavalry",
+        "pick_priority_score": 7.857991608035982,
+        "pick_priority_score_raw": 148.36728991889828,
+        "draft_drafts": 8517,
+        "draft_win_lift": 0.0031009495726781466,
+        "rarity": "common"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Dawnhand Eulogist",
+          "Morcant's Eyes"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 9.416673668749203,
+        "pair_win_rate": 0.6752799310938846,
+        "pair_games": 2322,
+        "draft_pair_events": 3903
+      },
+      {
+        "cards": [
+          "Dawnhand Eulogist",
+          "Morcant's Loyalist"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 8.7963224790647,
+        "pair_win_rate": 0.6753950338600452,
+        "pair_games": 2215,
+        "draft_pair_events": 3673
+      },
+      {
+        "cards": [
+          "Assert Perfection",
+          "Morcant's Eyes"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 8.160068193854768,
+        "pair_win_rate": 0.6804469273743017,
+        "pair_games": 1790,
+        "draft_pair_events": 3004
+      },
+      {
+        "cards": [
+          "Morcant's Loyalist",
+          "Scarblade Scout"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 7.964244397098501,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_games": 2103,
+        "draft_pair_events": 3567
+      },
+      {
+        "cards": [
+          "Eclipsed Elf",
+          "Morcant's Loyalist"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 7.854382553511126,
+        "pair_win_rate": 0.7116071428571429,
+        "pair_games": 1120,
+        "draft_pair_events": 1925
+      },
+      {
+        "cards": [
+          "Morcant's Eyes",
+          "Scarblade Scout"
+        ],
+        "pick_score": 9.847890435114964,
+        "pick_score_raw": 7.625895377116478,
+        "pair_win_rate": 0.6621761658031088,
+        "pair_games": 1930,
+        "draft_pair_events": 3728
+      },
+      {
+        "cards": [
+          "Morcant's Loyalist",
+          "Safewright Cavalry"
+        ],
+        "pick_score": 9.748917982502583,
+        "pick_score_raw": 7.509303451765888,
+        "pair_win_rate": 0.6661400737230121,
+        "pair_games": 1899,
+        "draft_pair_events": 3289
+      },
+      {
+        "cards": [
+          "Assert Perfection",
+          "Safewright Cavalry"
+        ],
+        "pick_score": 9.239010128765896,
+        "pick_score_raw": 6.933132061648824,
+        "pair_win_rate": 0.6359832635983264,
+        "pair_games": 2868,
+        "draft_pair_events": 4805
+      },
+      {
+        "cards": [
+          "Bogslither's Embrace",
+          "Dawnhand Eulogist"
+        ],
+        "pick_score": 8.678133676539696,
+        "pick_score_raw": 6.3443226625644815,
+        "pair_win_rate": 0.6318557475582269,
+        "pair_games": 2662,
+        "draft_pair_events": 4548
+      },
+      {
+        "cards": [
+          "Bogslither's Embrace",
+          "Morcant's Eyes"
+        ],
+        "pick_score": 8.646754603652354,
+        "pick_score_raw": 6.312703018355498,
+        "pair_win_rate": 0.6664228237015362,
+        "pair_games": 1367,
+        "draft_pair_events": 2468
+      },
+      {
+        "cards": [
+          "Lys Alana Informant",
+          "Morcant's Eyes"
+        ],
+        "pick_score": 8.474045332121062,
+        "pick_score_raw": 6.14109056994544,
+        "pair_win_rate": 0.6411225040474906,
+        "pair_games": 1853,
+        "draft_pair_events": 3460
+      },
+      {
+        "cards": [
+          "Safewright Cavalry",
+          "Trystan's Command"
+        ],
+        "pick_score": 8.467676698143364,
+        "pick_score_raw": 6.13483996021716,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_games": 700,
+        "draft_pair_events": 973
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Selesnya Kithkin | Mistmeadow Council / Crossroads Watcher",
+      "color_name": "Selesnya Kithkin",
+      "deck_count": 8226,
+      "games": 38928,
+      "win_rate": 0.5777332511302918,
+      "signposts": [
+        "Mistmeadow Council",
+        "Crossroads Watcher",
+        "Surly Farrier",
+        "Wary Farmer"
+      ],
+      "pick_cards": [
+        "Eclipsed Kithkin",
+        "Brigid's Command",
+        "Thoughtweft Imbuer",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Golgari Elves | Scarblade Scout / Safewright Cavalry",
+      "color_name": "Golgari Elves",
+      "deck_count": 17005,
+      "games": 79178,
+      "win_rate": 0.5701710070979312,
+      "signposts": [
+        "Scarblade Scout",
+        "Safewright Cavalry",
+        "Lys Alana Informant",
+        "Dawnhand Eulogist"
+      ],
+      "pick_cards": [
+        "Gloom Ripper",
+        "Eclipsed Elf",
+        "Morcant's Loyalist",
+        "Trystan's Command"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Azorius Merfolk | Merrow Skyswimmer / Wanderbrine Preacher",
+      "color_name": "Azorius Merfolk",
+      "deck_count": 14756,
+      "games": 65697,
+      "win_rate": 0.5584425468438438,
+      "signposts": [
+        "Merrow Skyswimmer",
+        "Wanderbrine Preacher",
+        "Gravelgill Scoundrel",
+        "Silvergill Peddler"
+      ],
+      "pick_cards": [
+        "Deepchannel Duelist",
+        "Eclipsed Merrow",
+        "Champions of the Shoal",
+        "Kinbinding"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Izzet Elementals | Kulrath Zealot / Flamekin Gildweaver",
+      "color_name": "Izzet Elementals",
+      "deck_count": 15634,
+      "games": 67280,
+      "win_rate": 0.5508323424494649,
+      "signposts": [
+        "Kulrath Zealot",
+        "Flamekin Gildweaver",
+        "Flaring Cinder",
+        "Flame-Chain Mauler"
+      ],
+      "pick_cards": [
+        "Ashling's Command",
+        "Sunderflock",
+        "Eclipsed Flamekin",
+        "Rimekin Recluse"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Rakdos Goblins | Gristle Glutton / Elder Auntie",
+      "color_name": "Rakdos Goblins",
+      "deck_count": 10159,
+      "games": 43081,
+      "win_rate": 0.5284232028040203,
+      "signposts": [
+        "Gristle Glutton",
+        "Elder Auntie",
+        "Bile-Vial Boggart",
+        "Boggart Prankster"
+      ],
+      "pick_cards": [
+        "Grub's Command",
+        "Eclipsed Boggart",
+        "Boggart Mischief",
+        "Boggart Cursecrafter"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "White Base Kithkin | Timid Shieldbearer / Reluctant Dounguard",
+      "color_name": "White Base Kithkin",
+      "deck_count": 5824,
+      "games": 24407,
+      "win_rate": 0.516286311304134,
+      "signposts": [
+        "Timid Shieldbearer",
+        "Reluctant Dounguard",
+        "Spiral into Solitude",
+        "Sun-Dappled Celebrant"
+      ],
+      "pick_cards": [
+        "Kinbinding",
+        "Thoughtweft Imbuer",
+        "Pyrrhic Strike",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "Five-Color | Great Forest Druid / Foraging Wickermaw",
+      "color_name": "Five-Color",
+      "deck_count": 11302,
+      "games": 44111,
+      "win_rate": 0.5071524109632518,
+      "signposts": [
+        "Great Forest Druid",
+        "Foraging Wickermaw",
+        "Wildvine Pummeler",
+        "Tend the Sprigs"
+      ],
+      "pick_cards": [
+        "Shinestriker",
+        "Explosive Prodigy",
+        "Prismabasher",
+        "Noggle Robber"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

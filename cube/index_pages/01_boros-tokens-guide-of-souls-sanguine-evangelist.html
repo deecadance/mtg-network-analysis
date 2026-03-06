@@ -1,0 +1,4431 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Boros Tokens | Guide of Souls / Sanguine Evangelist | Powered Cube Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "Cube - Powered",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 57913,
+      "cluster_feature_count": 539,
+      "svd_components": 48,
+      "svd_explained_variance": 0.23329785466194153,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.11178616434335709,
+          "dominant_main_color_share": 0.3637786402379163,
+          "objective": 0.13361288275763206
+        },
+        {
+          "k": 8,
+          "silhouette": 0.08127741515636444,
+          "dominant_main_color_share": 0.4612962424071051,
+          "objective": 0.10895518970079074
+        },
+        {
+          "k": 9,
+          "silhouette": 0.0866159126162529,
+          "dominant_main_color_share": 0.4338965083091679,
+          "objective": 0.11264970311480298
+        },
+        {
+          "k": 10,
+          "silhouette": 0.08284851163625717,
+          "dominant_main_color_share": 0.48828557861292066,
+          "objective": 0.11214564635303241
+        },
+        {
+          "k": 11,
+          "silhouette": 0.08475761115550995,
+          "dominant_main_color_share": 0.5052627611749999,
+          "objective": 0.11507337682600995
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "1": 12970,
+        "0": 9261,
+        "5": 5538,
+        "6": 9349,
+        "2": 7492,
+        "3": 5654,
+        "4": 7649
+      }
+    },
+    "deck_count": 57913,
+    "game_count": 266117
+  },
+  "segment": {
+    "cluster_id": 1,
+    "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
+    "color_signature": "WR",
+    "color_name": "Boros Tokens",
+    "deck_count": 12970,
+    "draft_count": 9804,
+    "games": 68705,
+    "wins": 41996,
+    "win_rate": 0.6112510006549742,
+    "draft_match_win_rate": 0.6149218015554226,
+    "top_deck_colors": [
+      {
+        "colors": "WR",
+        "count": 5757
+      },
+      {
+        "colors": "WUR",
+        "count": 3152
+      },
+      {
+        "colors": "WBR",
+        "count": 1619
+      },
+      {
+        "colors": "WUBR",
+        "count": 910
+      },
+      {
+        "colors": "WRG",
+        "count": 766
+      },
+      {
+        "colors": "WURG",
+        "count": 331
+      },
+      {
+        "colors": "WBRG",
+        "count": 191
+      },
+      {
+        "colors": "WUBRG",
+        "count": 131
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "WR",
+        "count": 12069
+      },
+      {
+        "colors": "W",
+        "count": 306
+      },
+      {
+        "colors": "WBR",
+        "count": 207
+      },
+      {
+        "colors": "WUR",
+        "count": 182
+      },
+      {
+        "colors": "WRG",
+        "count": 130
+      },
+      {
+        "colors": "R",
+        "count": 52
+      },
+      {
+        "colors": "WG",
+        "count": 13
+      },
+      {
+        "colors": "WURG",
+        "count": 4
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Guide of Souls",
+        "score": 6099.141150921314,
+        "z_score": 88.28216336555398,
+        "log_odds": 2.797939264556469,
+        "cluster_prevalence": 0.36743269021773983,
+        "global_prevalence": 0.10890791882827218,
+        "lift": 3.3737922289848714,
+        "support_decks": 4773
+      },
+      {
+        "card": "Sanguine Evangelist",
+        "score": 5850.670390647348,
+        "z_score": 86.48934817090162,
+        "log_odds": 2.9670621826840384,
+        "cluster_prevalence": 0.3522617966467906,
+        "global_prevalence": 0.10010265042357061,
+        "lift": 3.519005692219369,
+        "support_decks": 4576
+      },
+      {
+        "card": "Luminarch Aspirant",
+        "score": 5695.393907326291,
+        "z_score": 85.24357857389933,
+        "log_odds": 2.9392334492668057,
+        "cluster_prevalence": 0.3436420574168587,
+        "global_prevalence": 0.09796176412665247,
+        "lift": 3.507920263385334,
+        "support_decks": 4464
+      },
+      {
+        "card": "Death-Greeter's Champion",
+        "score": 5398.556227904616,
+        "z_score": 81.47893972459465,
+        "log_odds": 2.4074810737699135,
+        "cluster_prevalence": 0.33797141079584264,
+        "global_prevalence": 0.1098747728341553,
+        "lift": 3.0759691426709552,
+        "support_decks": 4390
+      },
+      {
+        "card": "Mother of Runes",
+        "score": 5387.847173399102,
+        "z_score": 82.04949121308853,
+        "log_odds": 2.54645157928684,
+        "cluster_prevalence": 0.33198024064295356,
+        "global_prevalence": 0.10351017654969488,
+        "lift": 3.2072232094355573,
+        "support_decks": 4312
+      },
+      {
+        "card": "Phlage, Titan of Fire's Fury",
+        "score": 5316.0618885496,
+        "z_score": 81.91168257566459,
+        "log_odds": 2.694113527632319,
+        "cluster_prevalence": 0.3242464494648403,
+        "global_prevalence": 0.09707869716787783,
+        "lift": 3.340037092835333,
+        "support_decks": 4212
+      },
+      {
+        "card": "Adeline, Resplendent Cathar",
+        "score": 5288.671966806028,
+        "z_score": 81.89900075297449,
+        "log_odds": 2.981616303354505,
+        "cluster_prevalence": 0.3210112914494804,
+        "global_prevalence": 0.09014063134233331,
+        "lift": 3.5612274583517567,
+        "support_decks": 4170
+      },
+      {
+        "card": "Glimmer Lens",
+        "score": 5138.975531053016,
+        "z_score": 80.60208475043324,
+        "log_odds": 2.7832100161802966,
+        "cluster_prevalence": 0.31293635963247446,
+        "global_prevalence": 0.09141825479348199,
+        "lift": 3.4231276930347443,
+        "support_decks": 4065
+      },
+      {
+        "card": "Ajani, Nacatl Pariah",
+        "score": 5102.702709572619,
+        "z_score": 78.85854977293434,
+        "log_odds": 2.3491617985394946,
+        "cluster_prevalence": 0.3223387799920672,
+        "global_prevalence": 0.10597008061253935,
+        "lift": 3.041790457540948,
+        "support_decks": 4187
+      },
+      {
+        "card": "Ocelot Pride",
+        "score": 5036.1488106073675,
+        "z_score": 78.98930259455653,
+        "log_odds": 2.4814914043779743,
+        "cluster_prevalence": 0.31294079854513296,
+        "global_prevalence": 0.09863252962501366,
+        "lift": 3.1727950173729473,
+        "support_decks": 4065
+      },
+      {
+        "card": "Showdown of the Skalds",
+        "score": 5000.01061966403,
+        "z_score": 78.12516593225047,
+        "log_odds": 3.5149534675803134,
+        "cluster_prevalence": 0.31530234531606965,
+        "global_prevalence": 0.08118001175692173,
+        "lift": 3.8839898947068794,
+        "support_decks": 4096
+      },
+      {
+        "card": "Giver of Runes",
+        "score": 4986.753409262989,
+        "z_score": 79.27474762825096,
+        "log_odds": 2.736814964514975,
+        "cluster_prevalence": 0.3046251886737106,
+        "global_prevalence": 0.08970900187646932,
+        "lift": 3.395703689727639,
+        "support_decks": 3957
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Guide of Souls",
+        "label": "Guide of Souls",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Creature - Human Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 4261,
+        "win_rate": 0.6130016428068529,
+        "standalone_delta": 0.0017506421518787008,
+        "dependency_score": 0.7613686015716371,
+        "degree": 8,
+        "signpost_score": 6099.141150921314,
+        "signpost_lift": 3.3737922289848714,
+        "deck_prevalence": 0.36743269021773983,
+        "draft_weight": 3504.0,
+        "draft_drafts": 3504,
+        "draft_presence": 0.3574051407588739,
+        "draft_win_rate": 0.6237314600752113,
+        "draft_win_lift": 0.008809658519788655,
+        "analysis_score_raw": 6113.090875650866,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 71.57989670995576,
+        "pick_priority_score": 7.734096378332539,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Guide%20of%20Souls%22",
+        "community": 3,
+        "x": 867.3957626637518,
+        "y": 776.3431697080254,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Sanguine Evangelist",
+        "label": "Sanguine Evangelist",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Vampire Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 4162,
+        "win_rate": 0.6261412782316195,
+        "standalone_delta": 0.014890277576645294,
+        "dependency_score": 0.1562610668967629,
+        "degree": 6,
+        "signpost_score": 5850.670390647348,
+        "signpost_lift": 3.519005692219369,
+        "deck_prevalence": 0.3522617966467906,
+        "draft_weight": 3738.0,
+        "draft_drafts": 3738,
+        "draft_presence": 0.3812729498164015,
+        "draft_win_rate": 0.624777901493105,
+        "draft_win_lift": 0.009856099937682328,
+        "analysis_score_raw": 5855.56772871222,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 138.122517232151,
+        "pick_priority_score": 8.908585909110876,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sanguine%20Evangelist%22",
+        "community": 4,
+        "x": 717.1486732847545,
+        "y": 766.040192496356,
+        "analysis_radius": 17.444363674998954,
+        "pick_radius": 30.0,
+        "radius": 17.444363674998954
+      },
+      {
+        "id": "Luminarch Aspirant",
+        "label": "Luminarch Aspirant",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Creature - Human Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 4025,
+        "win_rate": 0.6019875776397515,
+        "standalone_delta": -0.00926342301522265,
+        "dependency_score": 0.5865902209531104,
+        "degree": 8,
+        "signpost_score": 5695.393907326291,
+        "signpost_lift": 3.507920263385334,
+        "deck_prevalence": 0.3436420574168587,
+        "draft_weight": 3517.0,
+        "draft_drafts": 3517,
+        "draft_presence": 0.3587311301509588,
+        "draft_win_rate": 0.625885219733581,
+        "draft_win_lift": 0.01096341817815838,
+        "analysis_score_raw": 5705.952531303446,
+        "analysis_score": 9.987472899123247,
+        "pick_priority_score_raw": 81.32372589778123,
+        "pick_priority_score": 7.96148160321705,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Luminarch%20Aspirant%22",
+        "community": 3,
+        "x": 950.0477301925682,
+        "y": 830.0460700335045,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Death-Greeter's Champion",
+        "label": "Death-Greeter's Champion",
+        "color_identity": "R",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Human Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 4029,
+        "win_rate": 0.6195085629188384,
+        "standalone_delta": 0.008257562263864204,
+        "dependency_score": 0.26128163747575195,
+        "degree": 5,
+        "signpost_score": 5398.556227904616,
+        "signpost_lift": 3.0759691426709552,
+        "deck_prevalence": 0.33797141079584264,
+        "draft_weight": 3462.0,
+        "draft_drafts": 3462,
+        "draft_presence": 0.35312117503059975,
+        "draft_win_rate": 0.6264819442326088,
+        "draft_win_lift": 0.011560142677186191,
+        "analysis_score_raw": 5404.41535609612,
+        "analysis_score": 9.949933827051412,
+        "pick_priority_score_raw": 114.40895167923614,
+        "pick_priority_score": 8.571269837605927,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Death-Greeter%27s%20Champion%22",
+        "community": 5,
+        "x": 730.7343619921583,
+        "y": 550.9427341000252,
+        "analysis_radius": 20.860304873639603,
+        "pick_radius": 30.0,
+        "radius": 20.860304873639603
+      },
+      {
+        "id": "Mother of Runes",
+        "label": "Mother of Runes",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 1.0,
+        "types": "Creature - Human Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3838,
+        "win_rate": 0.5956227201667535,
+        "standalone_delta": -0.015628280488220625,
+        "dependency_score": 0.4460483321017122,
+        "degree": 10,
+        "signpost_score": 5387.847173399102,
+        "signpost_lift": 3.2072232094355573,
+        "deck_prevalence": 0.33198024064295356,
+        "draft_weight": 3285.0,
+        "draft_drafts": 3285,
+        "draft_presence": 0.3350673194614443,
+        "draft_win_rate": 0.6256912284245112,
+        "draft_win_lift": 0.01076942686908855,
+        "analysis_score_raw": 5395.876043376933,
+        "analysis_score": 9.948840500804183,
+        "pick_priority_score_raw": 75.34894296276549,
+        "pick_priority_score": 7.825479455943715,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mother%20of%20Runes%22",
+        "community": 1,
+        "x": 1145.9929610826334,
+        "y": 619.3238033103975,
+        "analysis_radius": 27.05773995566164,
+        "pick_radius": 30.0,
+        "radius": 27.05773995566164
+      },
+      {
+        "id": "Phlage, Titan of Fire's Fury",
+        "label": "Phlage, Titan of Fire's Fury",
+        "color_identity": "WR",
+        "rarity": "mythic",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Elder Giant",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "WR"
+        },
+        "draw_games": 3718,
+        "win_rate": 0.6543840774610006,
+        "standalone_delta": 0.043133076806026405,
+        "dependency_score": 0.26447143995458194,
+        "degree": 7,
+        "signpost_score": 5316.0618885496,
+        "signpost_lift": 3.340037092835333,
+        "deck_prevalence": 0.3242464494648403,
+        "draft_weight": 3234.0,
+        "draft_drafts": 3234,
+        "draft_presence": 0.3298653610771114,
+        "draft_win_rate": 0.6269241193830899,
+        "draft_win_lift": 0.012002317827667253,
+        "analysis_score_raw": 5326.861005221625,
+        "analysis_score": 9.939940178608552,
+        "pick_priority_score_raw": 250.7061058000169,
+        "pick_priority_score": 9.978815858643893,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Phlage%2C%20Titan%20of%20Fire%27s%20Fury%22",
+        "community": 0,
+        "x": 1166.1751044766515,
+        "y": 520.2917980368042,
+        "analysis_radius": 22.893291062696402,
+        "pick_radius": 30.0,
+        "radius": 22.893291062696402
+      },
+      {
+        "id": "Adeline, Resplendent Cathar",
+        "label": "Adeline, Resplendent Cathar",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Human Knight",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3806,
+        "win_rate": 0.5974776668418287,
+        "standalone_delta": -0.013773333813145494,
+        "dependency_score": 0.6799722044634524,
+        "degree": 9,
+        "signpost_score": 5288.671966806028,
+        "signpost_lift": 3.5612274583517567,
+        "deck_prevalence": 0.3210112914494804,
+        "draft_weight": 3353.0,
+        "draft_drafts": 3353,
+        "draft_presence": 0.3420032639738882,
+        "draft_win_rate": 0.6193610361943879,
+        "draft_win_lift": 0.004439234638965228,
+        "analysis_score_raw": 5300.91146648637,
+        "analysis_score": 9.936563815155598,
+        "pick_priority_score_raw": 32.28917562387945,
+        "pick_priority_score": 6.327136182918439,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Adeline%2C%20Resplendent%20Cathar%22",
+        "community": 0,
+        "x": 1133.6087553483426,
+        "y": 599.3732169531602,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Glimmer Lens",
+        "label": "Glimmer Lens",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Artifact - Equipment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3507,
+        "win_rate": 0.5968063872255489,
+        "standalone_delta": -0.014444613429425268,
+        "dependency_score": 0.10474729730635926,
+        "degree": 15,
+        "signpost_score": 5138.975531053016,
+        "signpost_lift": 3.4231276930347443,
+        "deck_prevalence": 0.31293635963247446,
+        "draft_weight": 3402.0,
+        "draft_drafts": 3402,
+        "draft_presence": 0.34700122399020805,
+        "draft_win_rate": 0.6191902673576668,
+        "draft_win_lift": 0.004268465802244159,
+        "analysis_score_raw": 5140.860982404531,
+        "analysis_score": 9.91536672497316,
+        "pick_priority_score_raw": 30.92928711845385,
+        "pick_priority_score": 6.25184986254399,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Glimmer%20Lens%22",
+        "community": 0,
+        "x": 1183.4568206129775,
+        "y": 567.7323310837345,
+        "analysis_radius": 14.770902703028934,
+        "pick_radius": 30.0,
+        "radius": 14.770902703028934
+      },
+      {
+        "id": "Ajani, Nacatl Pariah",
+        "label": "Ajani, Nacatl Pariah",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Legendary Creature - Cat Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3746,
+        "win_rate": 0.6489588894821142,
+        "standalone_delta": 0.037707888827140046,
+        "dependency_score": 0.20892648364388133,
+        "degree": 6,
+        "signpost_score": 5102.702709572619,
+        "signpost_lift": 3.041790457540948,
+        "deck_prevalence": 0.3223387799920672,
+        "draft_weight": 2767.0,
+        "draft_drafts": 2767,
+        "draft_presence": 0.28223174214606284,
+        "draft_win_rate": 0.6344337087686646,
+        "draft_win_lift": 0.01951190721324192,
+        "analysis_score_raw": 5111.742490714008,
+        "analysis_score": 9.91143942725836,
+        "pick_priority_score_raw": 254.96171673297118,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ajani%2C%20Nacatl%20Pariah%22",
+        "community": 1,
+        "x": 1099.2582879068718,
+        "y": 789.3238033103975,
+        "analysis_radius": 20.59528729667243,
+        "pick_radius": 30.0,
+        "radius": 20.59528729667243
+      },
+      {
+        "id": "Ocelot Pride",
+        "label": "Ocelot Pride",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 1.0,
+        "types": "Creature - Cat",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3756,
+        "win_rate": 0.6051650692225772,
+        "standalone_delta": -0.006085931432396996,
+        "dependency_score": 0.13742022644228893,
+        "degree": 9,
+        "signpost_score": 5036.1488106073675,
+        "signpost_lift": 3.1727950173729473,
+        "deck_prevalence": 0.31294079854513296,
+        "draft_weight": 2824.0,
+        "draft_drafts": 2824,
+        "draft_presence": 0.28804569563443494,
+        "draft_win_rate": 0.6267297477245843,
+        "draft_win_lift": 0.011807946169161698,
+        "analysis_score_raw": 5038.622374683328,
+        "analysis_score": 9.901478040137782,
+        "pick_priority_score_raw": 76.38305416792717,
+        "pick_priority_score": 7.849763996966824,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ocelot%20Pride%22",
+        "community": 1,
+        "x": 1117.8327462772945,
+        "y": 721.8870459616363,
+        "analysis_radius": 15.947128151922403,
+        "pick_radius": 30.0,
+        "radius": 15.947128151922403
+      },
+      {
+        "id": "Showdown of the Skalds",
+        "label": "Showdown of the Skalds",
+        "color_identity": "WR",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Enchantment - Saga",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "WR"
+        },
+        "draw_games": 3677,
+        "win_rate": 0.6227903181941801,
+        "standalone_delta": 0.011539317539205896,
+        "dependency_score": 0.470456309713205,
+        "degree": 10,
+        "signpost_score": 5000.01061966403,
+        "signpost_lift": 3.8839898947068794,
+        "deck_prevalence": 0.31530234531606965,
+        "draft_weight": 3733.0,
+        "draft_drafts": 3733,
+        "draft_presence": 0.3807629538963688,
+        "draft_win_rate": 0.6178580240387054,
+        "draft_win_lift": 0.0029362224832827355,
+        "analysis_score_raw": 5010.094337694357,
+        "analysis_score": 9.897552325953932,
+        "pick_priority_score_raw": 73.0736110138719,
+        "pick_priority_score": 7.770867804810397,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Showdown%20of%20the%20Skalds%22",
+        "community": 1,
+        "x": 1128.6447495342525,
+        "y": 682.5446139205022,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Giver of Runes",
+        "label": "Giver of Runes",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Creature - Kor Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3409,
+        "win_rate": 0.5852156057494866,
+        "standalone_delta": -0.026035394905487563,
+        "dependency_score": 0.08621594785535103,
+        "degree": 8,
+        "signpost_score": 4986.753409262989,
+        "signpost_lift": 3.395703689727639,
+        "deck_prevalence": 0.3046251886737106,
+        "draft_weight": 3144.0,
+        "draft_drafts": 3144,
+        "draft_presence": 0.32068543451652387,
+        "draft_win_rate": 0.62122196254646,
+        "draft_win_lift": 0.006300160991037362,
+        "analysis_score_raw": 4988.305296324385,
+        "analysis_score": 9.894538875126083,
+        "pick_priority_score_raw": 43.788906713809794,
+        "pick_priority_score": 6.862746834448372,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Giver%20of%20Runes%22",
+        "community": 2,
+        "x": 1091.768739991181,
+        "y": 853.0952254018838,
+        "analysis_radius": 14.103774122792636,
+        "pick_radius": 30.0,
+        "radius": 14.103774122792636
+      },
+      {
+        "id": "Parallax Wave",
+        "label": "Parallax Wave",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3810,
+        "win_rate": 0.6674540682414698,
+        "standalone_delta": 0.056203067586495625,
+        "dependency_score": 0.19381890138865335,
+        "degree": 7,
+        "signpost_score": 4929.731080351539,
+        "signpost_lift": 2.812635511344792,
+        "deck_prevalence": 0.32559695168760955,
+        "draft_weight": 3189.0,
+        "draft_drafts": 3189,
+        "draft_presence": 0.32527539779681763,
+        "draft_win_rate": 0.6281940678037725,
+        "draft_win_lift": 0.013272266248349873,
+        "analysis_score_raw": 4941.088250038645,
+        "analysis_score": 9.887963287790683,
+        "pick_priority_score_raw": 294.7396989931534,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Parallax%20Wave%22",
+        "community": 0,
+        "x": 1176.5140295486704,
+        "y": 641.3013269631506,
+        "analysis_radius": 21.06864916724878,
+        "pick_radius": 30.0,
+        "radius": 21.06864916724878
+      },
+      {
+        "id": "Voice of Victory",
+        "label": "Voice of Victory",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Creature - Human Bard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3412,
+        "win_rate": 0.6078546307151231,
+        "standalone_delta": -0.0033963699398510405,
+        "dependency_score": 0.43654302575437454,
+        "degree": 7,
+        "signpost_score": 4900.615342007156,
+        "signpost_lift": 3.2695269406000125,
+        "deck_prevalence": 0.30216848836572946,
+        "draft_weight": 3032.0,
+        "draft_drafts": 3032,
+        "draft_presence": 0.3092615259077927,
+        "draft_win_rate": 0.6217276914968602,
+        "draft_win_lift": 0.006805889941437604,
+        "analysis_score_raw": 4908.473116470735,
+        "analysis_score": 9.88338441756178,
+        "pick_priority_score_raw": 45.980886366055756,
+        "pick_priority_score": 6.948992991395625,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Voice%20of%20Victory%22",
+        "community": 2,
+        "x": 921.7687399911811,
+        "y": 797.8224898572637,
+        "analysis_radius": 26.715548927157485,
+        "pick_radius": 30.0,
+        "radius": 26.715548927157485
+      },
+      {
+        "id": "Phelia, Exuberant Shepherd",
+        "label": "Phelia, Exuberant Shepherd",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Legendary Creature - Dog",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 3735,
+        "win_rate": 0.6072289156626506,
+        "standalone_delta": -0.0040220849923235935,
+        "dependency_score": 0.1133090675466484,
+        "degree": 6,
+        "signpost_score": 4619.330218767584,
+        "signpost_lift": 2.8132114379357547,
+        "deck_prevalence": 0.30642957372364443,
+        "draft_weight": 2932.0,
+        "draft_drafts": 2932,
+        "draft_presence": 0.29906160750713995,
+        "draft_win_rate": 0.6243484218751694,
+        "draft_win_lift": 0.009426620319746726,
+        "analysis_score_raw": 4621.369781983423,
+        "analysis_score": 9.841713275505102,
+        "pick_priority_score_raw": 60.298425956033036,
+        "pick_priority_score": 7.42916159574389,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Phelia%2C%20Exuberant%20Shepherd%22",
+        "community": 4,
+        "x": 816.118521614372,
+        "y": 704.7593797826756,
+        "analysis_radius": 15.079126431679342,
+        "pick_radius": 30.0,
+        "radius": 15.079126431679342
+      },
+      {
+        "id": "Figure of Destiny",
+        "label": "Figure of Destiny",
+        "color_identity": "WR",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Creature - Kithkin",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "WR"
+        },
+        "draw_games": 3219,
+        "win_rate": 0.5970798384591488,
+        "standalone_delta": -0.01417116219582537,
+        "dependency_score": 0.14353286423688025,
+        "degree": 5,
+        "signpost_score": 4438.519121503476,
+        "signpost_lift": 3.7784961442417377,
+        "deck_prevalence": 0.27705587444314506,
+        "draft_weight": 3205.0,
+        "draft_drafts": 3205,
+        "draft_presence": 0.32690738474092207,
+        "draft_win_rate": 0.6158961023325706,
+        "draft_win_lift": 0.0009743007771479961,
+        "analysis_score_raw": 4441.1027130597395,
+        "analysis_score": 9.814204340300149,
+        "pick_priority_score_raw": 7.0483394580572245,
+        "pick_priority_score": 3.7643799283992134,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Figure%20of%20Destiny%22",
+        "community": 0,
+        "x": 1165.245290013358,
+        "y": 471.3013269631506,
+        "analysis_radius": 16.167183112527688,
+        "pick_radius": 30.0,
+        "radius": 16.167183112527688
+      },
+      {
+        "id": "Lightning Helix",
+        "label": "Lightning Helix",
+        "color_identity": "WR",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "WR"
+        },
+        "draw_games": 2995,
+        "win_rate": 0.6237061769616027,
+        "standalone_delta": 0.012455176306628513,
+        "dependency_score": 0.17232802419465118,
+        "degree": 6,
+        "signpost_score": 4169.705977267303,
+        "signpost_lift": 3.4114199701222496,
+        "deck_prevalence": 0.25744366679668734,
+        "draft_weight": 2911.0,
+        "draft_drafts": 2911,
+        "draft_presence": 0.29691962464300287,
+        "draft_win_rate": 0.6190056694204514,
+        "draft_win_lift": 0.00408386786502879,
+        "analysis_score_raw": 4174.551606385734,
+        "analysis_score": 9.77141135041702,
+        "pick_priority_score_raw": 73.22007620821059,
+        "pick_priority_score": 7.774433402042937,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Lightning%20Helix%22",
+        "community": 4,
+        "x": 646.118521614372,
+        "y": 810.0213393326038,
+        "analysis_radius": 17.88884356787201,
+        "pick_radius": 30.0,
+        "radius": 17.88884356787201
+      },
+      {
+        "id": "Kytheon, Hero of Akros",
+        "label": "Kytheon, Hero of Akros",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 1.0,
+        "types": "Legendary Creature - Human Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 2889,
+        "win_rate": 0.579785392869505,
+        "standalone_delta": -0.03146560778546914,
+        "dependency_score": 0.19049918784803513,
+        "degree": 8,
+        "signpost_score": 4131.210497500606,
+        "signpost_lift": 3.7558779100796933,
+        "deck_prevalence": 0.2582711840401212,
+        "draft_weight": 2920.0,
+        "draft_drafts": 2920,
+        "draft_presence": 0.2978376172990616,
+        "draft_win_rate": 0.6122352920446135,
+        "draft_win_lift": -0.0026865095108091763,
+        "analysis_score_raw": 4134.63948288187,
+        "analysis_score": 9.764769523410477,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kytheon%2C%20Hero%20of%20Akros%22",
+        "community": 2,
+        "x": 981.9018878254212,
+        "y": 794.790386280554,
+        "analysis_radius": 17.857970762529263,
+        "pick_radius": 30.0,
+        "radius": 17.857970762529263
+      },
+      {
+        "id": "Broadside Bombardiers",
+        "label": "Broadside Bombardiers",
+        "color_identity": "R",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Goblin Pirate",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 2885,
+        "win_rate": 0.6734835355285962,
+        "standalone_delta": 0.062232534873622014,
+        "dependency_score": 0.10137112356070277,
+        "degree": 7,
+        "signpost_score": 2670.6765102318273,
+        "signpost_lift": 2.0692195030113716,
+        "deck_prevalence": 0.23982326379951782,
+        "draft_weight": 2120.0,
+        "draft_drafts": 2120,
+        "draft_presence": 0.21623827009383925,
+        "draft_win_rate": 0.6265613785957077,
+        "draft_win_lift": 0.011639577040285065,
+        "analysis_score_raw": 2681.213745338227,
+        "analysis_score": 9.465336260327149,
+        "pick_priority_score_raw": 233.7705115599555,
+        "pick_priority_score": 9.853087171578478,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Broadside%20Bombardiers%22",
+        "community": 3,
+        "x": 851.6550483814298,
+        "y": 879.0100867358724,
+        "analysis_radius": 18.07214986623451,
+        "pick_radius": 30.0,
+        "radius": 18.07214986623451
+      },
+      {
+        "id": "Pyrogoyf",
+        "label": "Pyrogoyf",
+        "color_identity": "R",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Creature - Lhurgoyf",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 2516,
+        "win_rate": 0.6581875993640699,
+        "standalone_delta": 0.04693659870909572,
+        "dependency_score": 0.13475839795861258,
+        "degree": 8,
+        "signpost_score": 2018.3116604695201,
+        "signpost_lift": 1.8465977554159552,
+        "deck_prevalence": 0.2131286290162287,
+        "draft_weight": 2058.0,
+        "draft_drafts": 2058,
+        "draft_presence": 0.20991432068543453,
+        "draft_win_rate": 0.6257514384931285,
+        "draft_win_lift": 0.010829636937705889,
+        "analysis_score_raw": 2027.3084354520486,
+        "analysis_score": 9.272094172501909,
+        "pick_priority_score_raw": 180.31347177335905,
+        "pick_priority_score": 9.386695196386395,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Pyrogoyf%22",
+        "community": 3,
+        "x": 780.0477301925682,
+        "y": 803.8114019163863,
+        "analysis_radius": 18.43281525551032,
+        "pick_radius": 30.0,
+        "radius": 18.43281525551032
+      },
+      {
+        "id": "Fury",
+        "label": "Fury",
+        "color_identity": "R",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Creature - Elemental Incarnation",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 2580,
+        "win_rate": 0.6531007751937985,
+        "standalone_delta": 0.041849774538824325,
+        "dependency_score": 0.0783923338476538,
+        "degree": 8,
+        "signpost_score": 2653.603916684577,
+        "signpost_lift": 2.248088711412232,
+        "deck_prevalence": 0.2180862720021952,
+        "draft_weight": 2126.0,
+        "draft_drafts": 2126,
+        "draft_presence": 0.21685026519787842,
+        "draft_win_rate": 0.6286202885890838,
+        "draft_win_lift": 0.013698487033661166,
+        "analysis_score_raw": 2660.8739471292706,
+        "analysis_score": 9.460072236878885,
+        "pick_priority_score_raw": 190.42067662583852,
+        "pick_priority_score": 9.484612340644095,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fury%22",
+        "community": 5,
+        "x": 560.7343619921583,
+        "y": 718.3755210259325,
+        "analysis_radius": 16.123861618150876,
+        "pick_radius": 30.0,
+        "radius": 16.123861618150876
+      },
+      {
+        "id": "Comet, Stellar Pup",
+        "label": "Comet, Stellar Pup",
+        "color_identity": "WR",
+        "rarity": "mythic",
+        "mana_value": 4.0,
+        "types": "Legendary Planeswalker - Comet",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "WR"
+        },
+        "draw_games": 3225,
+        "win_rate": 0.6412403100775194,
+        "standalone_delta": 0.029989309422545185,
+        "dependency_score": 0.08408192310359548,
+        "degree": 7,
+        "signpost_score": 3732.205043442237,
+        "signpost_lift": 2.5180768211427274,
+        "deck_prevalence": 0.27149254439174136,
+        "draft_weight": 2506.0,
+        "draft_drafts": 2506,
+        "draft_presence": 0.25560995512035906,
+        "draft_win_rate": 0.6221277415573105,
+        "draft_win_lift": 0.0072059400018879005,
+        "analysis_score_raw": 3737.917021377258,
+        "analysis_score": 9.695031251193145,
+        "pick_priority_score_raw": 136.6532462477566,
+        "pick_priority_score": 8.88942137356263,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Comet%2C%20Stellar%20Pup%22",
+        "community": 2,
+        "x": 1044.9005459742161,
+        "y": 758.501813536088,
+        "analysis_radius": 15.676361249969423,
+        "pick_radius": 30.0,
+        "radius": 15.676361249969423
+      },
+      {
+        "id": "Barrowgoyf",
+        "label": "Barrowgoyf",
+        "color_identity": "B",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Lhurgoyf",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 120,
+        "win_rate": 0.5833333333333334,
+        "standalone_delta": -0.027917667321640804,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -299.5851961937685,
+        "signpost_lift": 0.12277704075885244,
+        "deck_prevalence": 0.009827137231698192,
+        "draft_weight": 283.0,
+        "draft_drafts": 283,
+        "draft_presence": 0.02886576907384741,
+        "draft_win_rate": 0.62865702494178,
+        "draft_win_lift": 0.013735223386357354,
+        "analysis_score_raw": -299.5851961937685,
+        "analysis_score": 0.0604036999988522,
+        "pick_priority_score_raw": 23.106222169990932,
+        "pick_priority_score": 5.744532562180207,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Barrowgoyf%22",
+        "community": 6,
+        "x": 645.7343619921581,
+        "y": 485.3408724370212,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Fire Covenant",
+        "label": "Fire Covenant",
+        "color_identity": "BR",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(21, 11, 0)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "BR"
+        },
+        "draw_games": 159,
+        "win_rate": 0.6415094339622641,
+        "standalone_delta": 0.030258433307289945,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -386.57147614697254,
+        "signpost_lift": 0.2153874589820386,
+        "deck_prevalence": 0.017002785414461173,
+        "draft_weight": 500.0,
+        "draft_drafts": 500,
+        "draft_presence": 0.050999592003263976,
+        "draft_win_rate": 0.6126324441101825,
+        "draft_win_lift": -0.00228935744524017,
+        "analysis_score_raw": -382.33529548395194,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 37.21295257225926,
+        "pick_priority_score": 6.57612948338979,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fire%20Covenant%22",
+        "community": 7,
+        "x": 726.4619055044994,
+        "y": 359.7263627961216,
+        "analysis_radius": 12.664213831900947,
+        "pick_radius": 30.0,
+        "radius": 12.664213831900947
+      },
+      {
+        "id": "Leyline Binding",
+        "label": "Leyline Binding",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 153,
+        "win_rate": 0.5620915032679739,
+        "standalone_delta": -0.04915949738700032,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -234.51162482267134,
+        "signpost_lift": 0.32270466290673033,
+        "deck_prevalence": 0.014073538556931836,
+        "draft_weight": 731.0,
+        "draft_drafts": 731,
+        "draft_presence": 0.07456140350877193,
+        "draft_win_rate": 0.6031905973248095,
+        "draft_win_lift": -0.011731204230613135,
+        "analysis_score_raw": -234.51162482267134,
+        "analysis_score": 0.22911756821678175,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Leyline%20Binding%22",
+        "community": 8,
+        "x": 862.2865678575794,
+        "y": 297.6973179015528,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Fractured Identity",
+        "label": "Fractured Identity",
+        "color_identity": "WU",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 165,
+        "win_rate": 0.5757575757575758,
+        "standalone_delta": -0.035493424897398373,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -339.5334938922662,
+        "signpost_lift": 0.16809339512292268,
+        "deck_prevalence": 0.012966372395407759,
+        "draft_weight": 264.0,
+        "draft_drafts": 264,
+        "draft_presence": 0.02692778457772338,
+        "draft_win_rate": 0.6194394499496627,
+        "draft_win_lift": 0.00451764839424007,
+        "analysis_score_raw": -339.5334938922662,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 7.3403098106896625,
+        "pick_priority_score": 3.82870228104016,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fractured%20Identity%22",
+        "community": 9,
+        "x": 1010.0849784454998,
+        "y": 318.9475212310526,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Bloodbraid Elf",
+        "label": "Bloodbraid Elf",
+        "color_identity": "RG",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Elf Berserker",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(211, 32, 42)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "RG"
+        },
+        "draw_games": 112,
+        "win_rate": 0.5803571428571429,
+        "standalone_delta": -0.03089385779783127,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -156.63447941157446,
+        "signpost_lift": 0.37832618036988236,
+        "deck_prevalence": 0.010980614319686171,
+        "draft_weight": 812.0,
+        "draft_drafts": 812,
+        "draft_presence": 0.0828233374133007,
+        "draft_win_rate": 0.6137863618895113,
+        "draft_win_lift": -0.001135439665911342,
+        "analysis_score_raw": -156.63447941157446,
+        "analysis_score": 0.506755005309395,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bloodbraid%20Elf%22",
+        "community": 10,
+        "x": 1122.932186200263,
+        "y": 416.73018337426663,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      }
+    ],
+    "edges": [
+      {
+        "from": "Ocelot Pride",
+        "to": "Showdown of the Skalds",
+        "pair_games": 204,
+        "pair_win_rate": 0.7352941176470589,
+        "pair_expected_win_rate": 0.6167717769305243,
+        "pair_lift_vs_baseline": 0.1240431169920847,
+        "synergy_delta_logit": 0.5457828779769678,
+        "synergy_delta_prob": 0.11852234071653456,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1078,
+        "quality_score": 1.514957514061429,
+        "pick_score_raw": 2.919432073973931,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Figure of Destiny",
+        "to": "Phlage, Titan of Fire's Fury",
+        "pair_games": 178,
+        "pair_win_rate": 0.7247191011235955,
+        "pair_expected_win_rate": 0.6408614321733527,
+        "pair_lift_vs_baseline": 0.11346810046862132,
+        "synergy_delta_logit": 0.3888871439760999,
+        "synergy_delta_prob": 0.08385766895024283,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1024,
+        "quality_score": 0.9325173043740731,
+        "pick_score_raw": 2.5213575669222665,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Lightning Helix",
+        "to": "Sanguine Evangelist",
+        "pair_games": 209,
+        "pair_win_rate": 0.7177033492822966,
+        "pair_expected_win_rate": 0.638401604763201,
+        "pair_lift_vs_baseline": 0.10645234862732245,
+        "synergy_delta_logit": 0.3646644808881214,
+        "synergy_delta_prob": 0.07930174451909566,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1120,
+        "quality_score": 0.9007009530146507,
+        "pick_score_raw": 2.598313070757329,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Phlage, Titan of Fire's Fury",
+        "pair_games": 203,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_expected_win_rate": 0.6405998089595265,
+        "pair_lift_vs_baseline": 0.10303471363074013,
+        "synergy_delta_logit": 0.3383222988235217,
+        "synergy_delta_prob": 0.0736859053261878,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1123,
+        "quality_score": 0.8013760733840005,
+        "pick_score_raw": 2.4918168142235753,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Kytheon, Hero of Akros",
+        "to": "Voice of Victory",
+        "pair_games": 165,
+        "pair_win_rate": 0.6727272727272727,
+        "pair_expected_win_rate": 0.576304671499764,
+        "pair_lift_vs_baseline": 0.061476272072298555,
+        "synergy_delta_logit": 0.4129243224000883,
+        "synergy_delta_prob": 0.09642260122750868,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 967,
+        "quality_score": 0.5807187042547851,
+        "pick_score_raw": 1.478311174878216,
+        "pick_score": 6.415017428827276
+      },
+      {
+        "from": "Guide of Souls",
+        "to": "Pyrogoyf",
+        "pair_games": 166,
+        "pair_win_rate": 0.7168674698795181,
+        "pair_expected_win_rate": 0.659844497741661,
+        "pair_lift_vs_baseline": 0.10561646922454393,
+        "synergy_delta_logit": 0.26637456626014777,
+        "synergy_delta_prob": 0.05702297213785712,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 717,
+        "quality_score": 0.5728760611892749,
+        "pick_score_raw": 2.2570781910984192,
+        "pick_score": 9.551820466884854
+      },
+      {
+        "from": "Guide of Souls",
+        "to": "Luminarch Aspirant",
+        "pair_games": 268,
+        "pair_win_rate": 0.6604477611940298,
+        "pair_expected_win_rate": 0.6037528930422562,
+        "pair_lift_vs_baseline": 0.04919676053905564,
+        "synergy_delta_logit": 0.2441632534250861,
+        "synergy_delta_prob": 0.0566948681517736,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.2954790699518057,
+        "draft_pair_events": 1337,
+        "quality_score": 0.4638568501931817,
+        "pick_score_raw": 1.8322358870395459,
+        "pick_score": 7.947402372099888
+      },
+      {
+        "from": "Phelia, Exuberant Shepherd",
+        "to": "Pyrogoyf",
+        "pair_games": 167,
+        "pair_win_rate": 0.7005988023952096,
+        "pair_expected_win_rate": 0.6543765457824476,
+        "pair_lift_vs_baseline": 0.08934780174023538,
+        "synergy_delta_logit": 0.21181788536034862,
+        "synergy_delta_prob": 0.046222256612761914,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 621,
+        "quality_score": 0.3955909943544273,
+        "pick_score_raw": 1.9585024956666572,
+        "pick_score": 8.44809988151492
+      },
+      {
+        "from": "Mother of Runes",
+        "to": "Showdown of the Skalds",
+        "pair_games": 204,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6073279240895927,
+        "pair_lift_vs_baseline": 0.055415666011692455,
+        "synergy_delta_logit": 0.25705314910795035,
+        "synergy_delta_prob": 0.059338742577073944,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1215,
+        "quality_score": 0.3752252997678797,
+        "pick_score_raw": 1.5362322594312972,
+        "pick_score": 6.68021932168946
+      },
+      {
+        "from": "Broadside Bombardiers",
+        "to": "Pyrogoyf",
+        "pair_games": 127,
+        "pair_win_rate": 0.7480314960629921,
+        "pair_expected_win_rate": 0.7163925753760498,
+        "pair_lift_vs_baseline": 0.13678049540801795,
+        "synergy_delta_logit": 0.16150365669513667,
+        "synergy_delta_prob": 0.031638920686942296,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 473,
+        "quality_score": 0.3732536296383543,
+        "pick_score_raw": 2.4199734977064464,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Phelia, Exuberant Shepherd",
+        "to": "Sanguine Evangelist",
+        "pair_games": 235,
+        "pair_win_rate": 0.6723404255319149,
+        "pair_expected_win_rate": 0.6221780261085709,
+        "pair_lift_vs_baseline": 0.06108942487694069,
+        "synergy_delta_logit": 0.2199864599152191,
+        "synergy_delta_prob": 0.050162399423343995,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1209,
+        "quality_score": 0.37051633996573363,
+        "pick_score_raw": 1.7725071407910546,
+        "pick_score": 7.702723679571308
+      },
+      {
+        "from": "Broadside Bombardiers",
+        "to": "Luminarch Aspirant",
+        "pair_games": 164,
+        "pair_win_rate": 0.7012195121951219,
+        "pair_expected_win_rate": 0.6648900450731219,
+        "pair_lift_vs_baseline": 0.08996851154014773,
+        "synergy_delta_logit": 0.1679488506563761,
+        "synergy_delta_prob": 0.036329467122000025,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 756,
+        "quality_score": 0.3149184413009688,
+        "pick_score_raw": 1.9684456882860033,
+        "pick_score": 8.48661641079773
+      },
+      {
+        "from": "Ajani, Nacatl Pariah",
+        "to": "Ocelot Pride",
+        "pair_games": 244,
+        "pair_win_rate": 0.680327868852459,
+        "pair_expected_win_rate": 0.6431186187276088,
+        "pair_lift_vs_baseline": 0.06907686819748482,
+        "synergy_delta_logit": 0.16635323864113327,
+        "synergy_delta_prob": 0.03720925012485021,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 885,
+        "quality_score": 0.3100134998024911,
+        "pick_score_raw": 1.9580176858627194,
+        "pick_score": 8.446218585823877
+      },
+      {
+        "from": "Phlage, Titan of Fire's Fury",
+        "to": "Pyrogoyf",
+        "pair_games": 139,
+        "pair_win_rate": 0.7266187050359713,
+        "pair_expected_win_rate": 0.6986801021380893,
+        "pair_lift_vs_baseline": 0.11536770438099708,
+        "synergy_delta_logit": 0.136513854356071,
+        "synergy_delta_prob": 0.02793860289788197,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 728,
+        "quality_score": 0.2896775714201586,
+        "pick_score_raw": 2.2271652250885277,
+        "pick_score": 9.445906004774148
+      },
+      {
+        "from": "Comet, Stellar Pup",
+        "to": "Kytheon, Hero of Akros",
+        "pair_games": 118,
+        "pair_win_rate": 0.6694915254237288,
+        "pair_expected_win_rate": 0.6106559227585117,
+        "pair_lift_vs_baseline": 0.05824052476875463,
+        "synergy_delta_logit": 0.2558160136560597,
+        "synergy_delta_prob": 0.058835602665217146,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 718,
+        "quality_score": 0.2889285921139696,
+        "pick_score_raw": 1.1853449151892572,
+        "pick_score": 4.97085726801399
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Parallax Wave",
+        "pair_games": 243,
+        "pair_win_rate": 0.6831275720164609,
+        "pair_expected_win_rate": 0.6545466216244878,
+        "pair_lift_vs_baseline": 0.07187657136148673,
+        "synergy_delta_logit": 0.12909724578498538,
+        "synergy_delta_prob": 0.02858095039197306,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7867319818000482,
+        "draft_pair_events": 1131,
+        "quality_score": 0.28529052777088976,
+        "pick_score_raw": 2.1966872322816813,
+        "pick_score": 9.336976361893587
+      },
+      {
+        "from": "Guide of Souls",
+        "to": "Showdown of the Skalds",
+        "pair_games": 227,
+        "pair_win_rate": 0.6607929515418502,
+        "pair_expected_win_rate": 0.624520916515935,
+        "pair_lift_vs_baseline": 0.049541950886876074,
+        "synergy_delta_logit": 0.1580478165654463,
+        "synergy_delta_prob": 0.03627203502591525,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.6458472587157562,
+        "draft_pair_events": 1339,
+        "quality_score": 0.25139488584987446,
+        "pick_score_raw": 1.5973157683308092,
+        "pick_score": 6.953418168187501
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Parallax Wave",
+        "pair_games": 242,
+        "pair_win_rate": 0.6818181818181818,
+        "pair_expected_win_rate": 0.6539153867035354,
+        "pair_lift_vs_baseline": 0.07056718116320759,
+        "synergy_delta_logit": 0.12584537934948548,
+        "synergy_delta_prob": 0.027902795114646328,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1158,
+        "quality_score": 0.2398492542677804,
+        "pick_score_raw": 2.005306265158648,
+        "pick_score": 8.628284641637892
+      },
+      {
+        "from": "Death-Greeter's Champion",
+        "to": "Fury",
+        "pair_games": 168,
+        "pair_win_rate": 0.6904761904761905,
+        "pair_expected_win_rate": 0.6609624555065378,
+        "pair_lift_vs_baseline": 0.07922518982121629,
+        "synergy_delta_logit": 0.13476028578887733,
+        "synergy_delta_prob": 0.029513734969652705,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 806,
+        "quality_score": 0.2313189218437979,
+        "pick_score_raw": 1.8026046556541835,
+        "pick_score": 7.826669901263773
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Fury",
+        "pair_games": 138,
+        "pair_win_rate": 0.6739130434782609,
+        "pair_expected_win_rate": 0.6399367562779015,
+        "pair_lift_vs_baseline": 0.06266204282328669,
+        "synergy_delta_logit": 0.15084734325443538,
+        "synergy_delta_prob": 0.03397628720035939,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 675,
+        "quality_score": 0.19420683906499467,
+        "pick_score_raw": 1.3507156601383299,
+        "pick_score": 5.808240716253325
+      },
+      {
+        "from": "Broadside Bombardiers",
+        "to": "Guide of Souls",
+        "pair_games": 162,
+        "pair_win_rate": 0.6975308641975309,
+        "pair_expected_win_rate": 0.6751028884535878,
+        "pair_lift_vs_baseline": 0.08627986354255668,
+        "synergy_delta_logit": 0.1042109663569647,
+        "synergy_delta_prob": 0.022427975743943063,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 768,
+        "quality_score": 0.1878058561193159,
+        "pick_score_raw": 1.8920593928262674,
+        "pick_score": 8.187350662600052
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Phlage, Titan of Fire's Fury",
+        "pair_games": 201,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6412420061594307,
+        "pair_lift_vs_baseline": 0.055415666011692455,
+        "synergy_delta_logit": 0.11238829948884876,
+        "synergy_delta_prob": 0.025424660507235908,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7186527028160825,
+        "draft_pair_events": 1154,
+        "quality_score": 0.1835604864500831,
+        "pick_score_raw": 1.6309426033050247,
+        "pick_score": 7.1010863596873115
+      },
+      {
+        "from": "Broadside Bombardiers",
+        "to": "Fury",
+        "pair_games": 104,
+        "pair_win_rate": 0.7307692307692307,
+        "pair_expected_win_rate": 0.711792660297024,
+        "pair_lift_vs_baseline": 0.11951823011425655,
+        "synergy_delta_logit": 0.0944223191914938,
+        "synergy_delta_prob": 0.01897657047220669,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 484,
+        "quality_score": 0.17588579149000655,
+        "pick_score_raw": 1.9507453628032594,
+        "pick_score": 8.417961405396547
+      },
+      {
+        "from": "Broadside Bombardiers",
+        "to": "Glimmer Lens",
+        "pair_games": 140,
+        "pair_win_rate": 0.6857142857142857,
+        "pair_expected_win_rate": 0.6600653074534913,
+        "pair_lift_vs_baseline": 0.07446328505931155,
+        "synergy_delta_logit": 0.11657329515206738,
+        "synergy_delta_prob": 0.025648978260794375,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 743,
+        "quality_score": 0.17337014959187444,
+        "pick_score_raw": 1.5611232073549897,
+        "pick_score": 6.792331291735979
+      },
+      {
+        "from": "Phlage, Titan of Fire's Fury",
+        "to": "Voice of Victory",
+        "pair_games": 200,
+        "pair_win_rate": 0.675,
+        "pair_expected_win_rate": 0.6511494787125642,
+        "pair_lift_vs_baseline": 0.06374899934502587,
+        "synergy_delta_logit": 0.10679180338034189,
+        "synergy_delta_prob": 0.02385052128743581,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1022,
+        "quality_score": 0.17031264026131093,
+        "pick_score_raw": 1.6768941070387942,
+        "pick_score": 7.299853706567802
+      },
+      {
+        "from": "Lightning Helix",
+        "to": "Showdown of the Skalds",
+        "pair_games": 190,
+        "pair_win_rate": 0.6631578947368421,
+        "pair_expected_win_rate": 0.6350964934656491,
+        "pair_lift_vs_baseline": 0.05190689408186788,
+        "synergy_delta_logit": 0.12325483100239143,
+        "synergy_delta_prob": 0.028061401271192943,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1125,
+        "quality_score": 0.16508587530862187,
+        "pick_score_raw": 1.4090303544023197,
+        "pick_score": 6.089539575868586
+      },
+      {
+        "from": "Parallax Wave",
+        "to": "Showdown of the Skalds",
+        "pair_games": 210,
+        "pair_win_rate": 0.6952380952380952,
+        "pair_expected_win_rate": 0.6782033779412032,
+        "pair_lift_vs_baseline": 0.08398709458312104,
+        "synergy_delta_logit": 0.07919606540728097,
+        "synergy_delta_prob": 0.017034717296891988,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1181,
+        "quality_score": 0.1615587842705631,
+        "pick_score_raw": 2.1465987486555758,
+        "pick_score": 9.155681859165252
+      },
+      {
+        "from": "Ajani, Nacatl Pariah",
+        "to": "Figure of Destiny",
+        "pair_games": 161,
+        "pair_win_rate": 0.6645962732919255,
+        "pair_expected_win_rate": 0.6353422636486226,
+        "pair_lift_vs_baseline": 0.053345272636951324,
+        "synergy_delta_logit": 0.12864014137263058,
+        "synergy_delta_prob": 0.029254009643302936,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 911,
+        "quality_score": 0.1605165233514541,
+        "pick_score_raw": 1.3112245469023593,
+        "pick_score": 5.613751698909759
+      },
+      {
+        "from": "Lightning Helix",
+        "to": "Mother of Runes",
+        "pair_games": 156,
+        "pair_win_rate": 0.6474358974358975,
+        "pair_expected_win_rate": 0.6082577106668894,
+        "pair_lift_vs_baseline": 0.03618489678092329,
+        "synergy_delta_logit": 0.16779287164123607,
+        "synergy_delta_prob": 0.03917818676900808,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 944,
+        "quality_score": 0.1580843410199207,
+        "pick_score_raw": 0.9902179220291469,
+        "pick_score": 3.8971873728540753
+      },
+      {
+        "from": "Mother of Runes",
+        "to": "Sanguine Evangelist",
+        "pair_games": 268,
+        "pair_win_rate": 0.6417910447761194,
+        "pair_expected_win_rate": 0.610730388807848,
+        "pair_lift_vs_baseline": 0.030540044121145193,
+        "synergy_delta_logit": 0.1327628771806219,
+        "synergy_delta_prob": 0.031060655968271345,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1313,
+        "quality_score": 0.1492837057377722,
+        "pick_score_raw": 1.1838511018812774,
+        "pick_score": 4.963007680632516
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Luminarch Aspirant",
+        "pair_games": 225,
+        "pair_win_rate": 0.6311111111111111,
+        "pair_expected_win_rate": 0.5874310855481484,
+        "pair_lift_vs_baseline": 0.019860110456136892,
+        "synergy_delta_logit": 0.1836307690200109,
+        "synergy_delta_prob": 0.04368002556296269,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1227,
+        "quality_score": 0.14884185178469672,
+        "pick_score_raw": 0.8530792239709901,
+        "pick_score": 3.0776052098503257
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Glimmer Lens",
+        "pair_games": 208,
+        "pair_win_rate": 0.6298076923076923,
+        "pair_expected_win_rate": 0.5828705248009224,
+        "pair_lift_vs_baseline": 0.018556691652718116,
+        "synergy_delta_logit": 0.19682348974109226,
+        "synergy_delta_prob": 0.046937167506769906,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1231,
+        "quality_score": 0.14839193558949043,
+        "pick_score_raw": 0.793506386458306,
+        "pick_score": 2.702500489858578
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Ocelot Pride",
+        "pair_games": 210,
+        "pair_win_rate": 0.6333333333333333,
+        "pair_expected_win_rate": 0.5913202767067015,
+        "pair_lift_vs_baseline": 0.02208233267835913,
+        "synergy_delta_logit": 0.17711768903656516,
+        "synergy_delta_prob": 0.042013056626631795,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1020,
+        "quality_score": 0.14543005439492615,
+        "pick_score_raw": 0.8633451398654431,
+        "pick_score": 3.141025105686892
+      },
+      {
+        "from": "Fury",
+        "to": "Showdown of the Skalds",
+        "pair_games": 146,
+        "pair_win_rate": 0.684931506849315,
+        "pair_expected_win_rate": 0.6640805408699052,
+        "pair_lift_vs_baseline": 0.07368050619434086,
+        "synergy_delta_logit": 0.09499677714698618,
+        "synergy_delta_prob": 0.02085096597940983,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 827,
+        "quality_score": 0.14365638926407617,
+        "pick_score_raw": 1.588279411859655,
+        "pick_score": 6.913410135087246
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Showdown of the Skalds",
+        "pair_games": 208,
+        "pair_win_rate": 0.6394230769230769,
+        "pair_expected_win_rate": 0.6091644097711096,
+        "pair_lift_vs_baseline": 0.028172076268102697,
+        "synergy_delta_logit": 0.1290598028350956,
+        "synergy_delta_prob": 0.030258667151967233,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7677672634355243,
+        "draft_pair_events": 1319,
+        "quality_score": 0.1387207453437278,
+        "pick_score_raw": 1.0706061191640994,
+        "pick_score": 4.3517428280626
+      },
+      {
+        "from": "Kytheon, Hero of Akros",
+        "to": "Luminarch Aspirant",
+        "pair_games": 176,
+        "pair_win_rate": 0.625,
+        "pair_expected_win_rate": 0.570299272190929,
+        "pair_lift_vs_baseline": 0.013748999345025825,
+        "synergy_delta_logit": 0.2277533463310974,
+        "synergy_delta_prob": 0.05470072780907098,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1079,
+        "quality_score": 0.1375846116590394,
+        "pick_score_raw": 0.635367542841433,
+        "pick_score": 1.6428875304256294
+      },
+      {
+        "from": "Kytheon, Hero of Akros",
+        "to": "Lightning Helix",
+        "pair_games": 142,
+        "pair_win_rate": 0.6338028169014085,
+        "pair_expected_win_rate": 0.5925767403172807,
+        "pair_lift_vs_baseline": 0.02255181624643432,
+        "synergy_delta_logit": 0.17393816275315405,
+        "synergy_delta_prob": 0.0412260765841278,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 881,
+        "quality_score": 0.11810635783293486,
+        "pick_score_raw": 0.7134034980813059,
+        "pick_score": 2.1779936789685097
+      },
+      {
+        "from": "Guide of Souls",
+        "to": "Voice of Victory",
+        "pair_games": 249,
+        "pair_win_rate": 0.6345381526104418,
+        "pair_expected_win_rate": 0.6096107992898263,
+        "pair_lift_vs_baseline": 0.0232871519554676,
+        "synergy_delta_logit": 0.10605899896514598,
+        "synergy_delta_prob": 0.024927353320615464,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.0658862246173024,
+        "draft_pair_events": 1188,
+        "quality_score": 0.11691328486134285,
+        "pick_score_raw": 1.0769974268844964,
+        "pick_score": 4.387121770850408
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Lightning Helix",
+        "pair_games": 159,
+        "pair_win_rate": 0.6415094339622641,
+        "pair_expected_win_rate": 0.6094286453587882,
+        "pair_lift_vs_baseline": 0.030258433307289945,
+        "synergy_delta_logit": 0.1370103531042785,
+        "synergy_delta_prob": 0.03208078860347596,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 985,
+        "quality_score": 0.11675641448177006,
+        "pick_score_raw": 0.8958596978458171,
+        "pick_score": 3.3396093141501266
+      },
+      {
+        "from": "Comet, Stellar Pup",
+        "to": "Ocelot Pride",
+        "pair_games": 184,
+        "pair_win_rate": 0.657608695652174,
+        "pair_expected_win_rate": 0.6353437823794423,
+        "pair_lift_vs_baseline": 0.04635769499719977,
+        "synergy_delta_logit": 0.09744461744900557,
+        "synergy_delta_prob": 0.022264913272731612,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 738,
+        "quality_score": 0.11667993787186264,
+        "pick_score_raw": 1.2568530437576861,
+        "pick_score": 5.3404700974535295
+      },
+      {
+        "from": "Giver of Runes",
+        "to": "Pyrogoyf",
+        "pair_games": 112,
+        "pair_win_rate": 0.6607142857142857,
+        "pair_expected_win_rate": 0.6334104123268658,
+        "pair_lift_vs_baseline": 0.049463285059311524,
+        "synergy_delta_logit": 0.11960329330573805,
+        "synergy_delta_prob": 0.027303873387419908,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 630,
+        "quality_score": 0.11626765408977761,
+        "pick_score_raw": 1.0195069075353647,
+        "pick_score": 4.064893720113012
+      },
+      {
+        "from": "Parallax Wave",
+        "to": "Phelia, Exuberant Shepherd",
+        "pair_games": 251,
+        "pair_win_rate": 0.6772908366533864,
+        "pair_expected_win_rate": 0.663693540942504,
+        "pair_lift_vs_baseline": 0.06603983599841223,
+        "synergy_delta_logit": 0.061551598965232546,
+        "synergy_delta_prob": 0.013597295710882418,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1047,
+        "quality_score": 0.11307830655036599,
+        "pick_score_raw": 1.9319308701358997,
+        "pick_score": 8.344531822265406
+      },
+      {
+        "from": "Figure of Destiny",
+        "to": "Fury",
+        "pair_games": 104,
+        "pair_win_rate": 0.6634615384615384,
+        "pair_expected_win_rate": 0.6395555759708736,
+        "pair_lift_vs_baseline": 0.05221053780656426,
+        "synergy_delta_logit": 0.10532270177549574,
+        "synergy_delta_prob": 0.02390596249066479,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 756,
+        "quality_score": 0.10326901311317162,
+        "pick_score_raw": 1.029320008638698,
+        "pick_score": 4.12053920468678
+      },
+      {
+        "from": "Ocelot Pride",
+        "to": "Voice of Victory",
+        "pair_games": 206,
+        "pair_win_rate": 0.6310679611650486,
+        "pair_expected_win_rate": 0.6017501710000205,
+        "pair_lift_vs_baseline": 0.01981696051007442,
+        "synergy_delta_logit": 0.12403826874639262,
+        "synergy_delta_prob": 0.029317790165028113,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 911,
+        "quality_score": 0.09504200319473279,
+        "pick_score_raw": 0.8051813744932479,
+        "pick_score": 2.7769849745243533
+      },
+      {
+        "from": "Luminarch Aspirant",
+        "to": "Sanguine Evangelist",
+        "pair_games": 243,
+        "pair_win_rate": 0.6378600823045267,
+        "pair_expected_win_rate": 0.6170103558078435,
+        "pair_lift_vs_baseline": 0.026609081649552557,
+        "synergy_delta_logit": 0.08921044469941614,
+        "synergy_delta_prob": 0.020849726496683263,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1406,
+        "quality_score": 0.08831071232949579,
+        "pick_score_raw": 1.042584658697138,
+        "pick_score": 4.1953306193982565
+      },
+      {
+        "from": "Death-Greeter's Champion",
+        "to": "Giver of Runes",
+        "pair_games": 182,
+        "pair_win_rate": 0.6263736263736264,
+        "pair_expected_win_rate": 0.5936585593262295,
+        "pair_lift_vs_baseline": 0.015122625718652194,
+        "synergy_delta_logit": 0.1375801981264903,
+        "synergy_delta_prob": 0.032715067047396906,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1069,
+        "quality_score": 0.08792587968286246,
+        "pick_score_raw": 0.6721398017535508,
+        "pick_score": 1.8981514321703943
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Comet, Stellar Pup",
+        "pair_games": 159,
+        "pair_win_rate": 0.6477987421383647,
+        "pair_expected_win_rate": 0.6278826545836768,
+        "pair_lift_vs_baseline": 0.03654774148339057,
+        "synergy_delta_logit": 0.08623325344294963,
+        "synergy_delta_prob": 0.01991608755468799,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 840,
+        "quality_score": 0.0821924937257724,
+        "pick_score_raw": 1.0011618387037664,
+        "pick_score": 3.960138401591331
+      },
+      {
+        "from": "Death-Greeter's Champion",
+        "to": "Showdown of the Skalds",
+        "pair_games": 206,
+        "pair_win_rate": 0.6456310679611651,
+        "pair_expected_win_rate": 0.6309507578343035,
+        "pair_lift_vs_baseline": 0.03438006730619092,
+        "synergy_delta_logit": 0.06359194861545603,
+        "synergy_delta_prob": 0.014680310126861551,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.8121696067086577,
+        "draft_pair_events": 1341,
+        "quality_score": 0.07737520349587582,
+        "pick_score_raw": 1.208548511731436,
+        "pick_score": 5.092101710286347
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Pyrogoyf",
+        "pair_games": 161,
+        "pair_win_rate": 0.6583850931677019,
+        "pair_expected_win_rate": 0.6444726105882385,
+        "pair_lift_vs_baseline": 0.04713409251272771,
+        "synergy_delta_logit": 0.06127587558551417,
+        "synergy_delta_prob": 0.013912482579463425,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 714,
+        "quality_score": 0.06934967855498013,
+        "pick_score_raw": 1.1877466053758579,
+        "pick_score": 4.983466263150099
+      },
+      {
+        "from": "Giver of Runes",
+        "to": "Kytheon, Hero of Akros",
+        "pair_games": 149,
+        "pair_win_rate": 0.6040268456375839,
+        "pair_expected_win_rate": 0.5531831020589083,
+        "pair_lift_vs_baseline": -0.007224155017390266,
+        "synergy_delta_logit": 0.20873205931042793,
+        "synergy_delta_prob": 0.050843743578675604,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 985,
+        "quality_score": 0.0685223333305494,
+        "pick_score_raw": 0.3451084719405298,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Mother of Runes",
+        "pair_games": 245,
+        "pair_win_rate": 0.6122448979591837,
+        "pair_expected_win_rate": 0.5816746226196744,
+        "pair_lift_vs_baseline": 0.0009938973042095123,
+        "synergy_delta_logit": 0.12710672326722927,
+        "synergy_delta_prob": 0.03057027533950929,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.08237443103252,
+        "draft_pair_events": 1179,
+        "quality_score": 0.06755547009121883,
+        "pick_score_raw": 0.5187280477832228,
+        "pick_score": 0.7934706532120379
+      },
+      {
+        "from": "Death-Greeter's Champion",
+        "to": "Mother of Runes",
+        "pair_games": 214,
+        "pair_win_rate": 0.6261682242990654,
+        "pair_expected_win_rate": 0.6039971822070871,
+        "pair_lift_vs_baseline": 0.014917223644091204,
+        "synergy_delta_logit": 0.09366495944098457,
+        "synergy_delta_prob": 0.022171042091978288,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1132,
+        "quality_score": 0.06466688670522014,
+        "pick_score_raw": 0.7263286812797485,
+        "pick_score": 2.264264938475924
+      },
+      {
+        "from": "Kytheon, Hero of Akros",
+        "to": "Parallax Wave",
+        "pair_games": 175,
+        "pair_win_rate": 0.6514285714285715,
+        "pair_expected_win_rate": 0.6378422878871454,
+        "pair_lift_vs_baseline": 0.04017757077359729,
+        "synergy_delta_logit": 0.05931331487353175,
+        "synergy_delta_prob": 0.013586283541426103,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 947,
+        "quality_score": 0.06340019520538041,
+        "pick_score_raw": 1.1234690166439347,
+        "pick_score": 4.641136995083429
+      },
+      {
+        "from": "Giver of Runes",
+        "to": "Sanguine Evangelist",
+        "pair_games": 197,
+        "pair_win_rate": 0.6243654822335025,
+        "pair_expected_win_rate": 0.6004512684347243,
+        "pair_lift_vs_baseline": 0.013114481578528348,
+        "synergy_delta_logit": 0.10077351474739932,
+        "synergy_delta_prob": 0.023914213798778228,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1154,
+        "quality_score": 0.06335261482294488,
+        "pick_score_raw": 0.6614392339580973,
+        "pick_score": 1.8244544719840792
+      },
+      {
+        "from": "Ajani, Nacatl Pariah",
+        "to": "Broadside Bombardiers",
+        "pair_games": 133,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_expected_win_rate": 0.7080382704635106,
+        "pair_lift_vs_baseline": 0.10303471363074013,
+        "synergy_delta_logit": 0.03041531576187051,
+        "synergy_delta_prob": 0.006247443822203658,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 577,
+        "quality_score": 0.05687929466086591,
+        "pick_score_raw": 1.9603236104962176,
+        "pick_score": 8.455163931771478
+      },
+      {
+        "from": "Guide of Souls",
+        "to": "Mother of Runes",
+        "pair_games": 281,
+        "pair_win_rate": 0.6156583629893239,
+        "pair_expected_win_rate": 0.5973973857335062,
+        "pair_lift_vs_baseline": 0.004407362334349685,
+        "synergy_delta_logit": 0.07652784431829546,
+        "synergy_delta_prob": 0.018260977255817656,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.08237443103252,
+        "draft_pair_events": 1225,
+        "quality_score": 0.05071336236522532,
+        "pick_score_raw": 0.6468992774838984,
+        "pick_score": 1.7235505658710362
+      },
+      {
+        "from": "Comet, Stellar Pup",
+        "to": "Giver of Runes",
+        "pair_games": 158,
+        "pair_win_rate": 0.6329113924050633,
+        "pair_expected_win_rate": 0.6159514581148267,
+        "pair_lift_vs_baseline": 0.02166039175008916,
+        "synergy_delta_logit": 0.07232797253263473,
+        "synergy_delta_prob": 0.016959934290236678,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 794,
+        "quality_score": 0.05052275518081227,
+        "pick_score_raw": 0.7334950459891277,
+        "pick_score": 2.3118200901549875
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Phelia, Exuberant Shepherd",
+        "pair_games": 224,
+        "pair_win_rate": 0.6160714285714286,
+        "pair_expected_win_rate": 0.592734429008767,
+        "pair_lift_vs_baseline": 0.004820427916454428,
+        "synergy_delta_logit": 0.09762541460260549,
+        "synergy_delta_prob": 0.023336999562661553,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1028,
+        "quality_score": 0.04884327754100242,
+        "pick_score_raw": 0.5260801357899527,
+        "pick_score": 0.848908150929704
+      },
+      {
+        "from": "Luminarch Aspirant",
+        "to": "Showdown of the Skalds",
+        "pair_games": 204,
+        "pair_win_rate": 0.6274509803921569,
+        "pair_expected_win_rate": 0.6136280558646238,
+        "pair_lift_vs_baseline": 0.01619997973718268,
+        "synergy_delta_logit": 0.05870844260466207,
+        "synergy_delta_prob": 0.013822924527533087,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.8121696067086577,
+        "draft_pair_events": 1366,
+        "quality_score": 0.04735271408508382,
+        "pick_score_raw": 0.8012164497414526,
+        "pick_score": 2.7517435704917714
+      },
+      {
+        "from": "Ocelot Pride",
+        "to": "Parallax Wave",
+        "pair_games": 235,
+        "pair_win_rate": 0.6680851063829787,
+        "pair_expected_win_rate": 0.6617611255836682,
+        "pair_lift_vs_baseline": 0.056834105728004514,
+        "synergy_delta_logit": 0.028384700236175786,
+        "synergy_delta_prob": 0.0063239807993105135,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 936,
+        "quality_score": 0.044871254915429114,
+        "pick_score_raw": 1.661421564565578,
+        "pick_score": 7.233309436645365
+      },
+      {
+        "from": "Mother of Runes",
+        "to": "Pyrogoyf",
+        "pair_games": 130,
+        "pair_win_rate": 0.6538461538461539,
+        "pair_expected_win_rate": 0.6433452526514536,
+        "pair_lift_vs_baseline": 0.04259515319117968,
+        "synergy_delta_logit": 0.046075465803804505,
+        "synergy_delta_prob": 0.010500901194700263,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 686,
+        "quality_score": 0.04362421068160905,
+        "pick_score_raw": 0.9934200385406662,
+        "pick_score": 3.915642174333469
+      },
+      {
+        "from": "Ajani, Nacatl Pariah",
+        "to": "Comet, Stellar Pup",
+        "pair_games": 180,
+        "pair_win_rate": 0.6833333333333333,
+        "pair_expected_win_rate": 0.6775737007882914,
+        "pair_lift_vs_baseline": 0.07208233267835917,
+        "synergy_delta_logit": 0.026489337792016898,
+        "synergy_delta_prob": 0.0057596325450419705,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 704,
+        "quality_score": 0.04345625253615815,
+        "pick_score_raw": 1.7215395472830235,
+        "pick_score": 7.489730224718842
+      },
+      {
+        "from": "Adeline, Resplendent Cathar",
+        "to": "Luminarch Aspirant",
+        "pair_games": 237,
+        "pair_win_rate": 0.6075949367088608,
+        "pair_expected_win_rate": 0.5881072014332422,
+        "pair_lift_vs_baseline": -0.003656063946113397,
+        "synergy_delta_logit": 0.08106767761763001,
+        "synergy_delta_prob": 0.019487735275618534,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.2954790699518057,
+        "draft_pair_events": 1279,
+        "quality_score": 0.041792103207515766,
+        "pick_score_raw": 0.4970787585822194,
+        "pick_score": 0.6286545652555292
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Kytheon, Hero of Akros",
+        "pair_games": 150,
+        "pair_win_rate": 0.5933333333333334,
+        "pair_expected_win_rate": 0.5650036522568177,
+        "pair_lift_vs_baseline": -0.017917667321640796,
+        "synergy_delta_logit": 0.11626794532267481,
+        "synergy_delta_prob": 0.028329681076515678,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1002,
+        "quality_score": 0.03832052422867212,
+        "pick_score_raw": 0.346515853298579,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Death-Greeter's Champion",
+        "to": "Phelia, Exuberant Shepherd",
+        "pair_games": 215,
+        "pair_win_rate": 0.627906976744186,
+        "pair_expected_win_rate": 0.6155181734735603,
+        "pair_lift_vs_baseline": 0.016655976089211877,
+        "synergy_delta_logit": 0.05268019483543401,
+        "synergy_delta_prob": 0.012388803270625748,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1029,
+        "quality_score": 0.03813604798868924,
+        "pick_score_raw": 0.7612030515473324,
+        "pick_score": 2.4938558535661803
+      },
+      {
+        "from": "Ocelot Pride",
+        "to": "Phlage, Titan of Fire's Fury",
+        "pair_games": 209,
+        "pair_win_rate": 0.6555023923444976,
+        "pair_expected_win_rate": 0.6485851898921705,
+        "pair_lift_vs_baseline": 0.04425139168952341,
+        "synergy_delta_logit": 0.030488768036306846,
+        "synergy_delta_prob": 0.006917202452327076,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 956,
+        "quality_score": 0.038039347854565184,
+        "pick_score_raw": 1.3114071143397958,
+        "pick_score": 5.614658445741599
+      },
+      {
+        "from": "Comet, Stellar Pup",
+        "to": "Figure of Destiny",
+        "pair_games": 130,
+        "pair_win_rate": 0.6384615384615384,
+        "pair_expected_win_rate": 0.6274961413661961,
+        "pair_lift_vs_baseline": 0.02721053780656424,
+        "synergy_delta_logit": 0.047202880831153204,
+        "synergy_delta_prob": 0.010965397095342277,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 741,
+        "quality_score": 0.033805190426289,
+        "pick_score_raw": 0.7517449506697218,
+        "pick_score": 2.4320420758566037
+      },
+      {
+        "from": "Showdown of the Skalds",
+        "to": "Voice of Victory",
+        "pair_games": 184,
+        "pair_win_rate": 0.6304347826086957,
+        "pair_expected_win_rate": 0.6194319953778952,
+        "pair_lift_vs_baseline": 0.0191837819537215,
+        "synergy_delta_logit": 0.046944449988556236,
+        "synergy_delta_prob": 0.011002787230800504,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1160,
+        "quality_score": 0.03375590510218826,
+        "pick_score_raw": 0.7565698028984125,
+        "pick_score": 2.4636166685615506
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Sanguine Evangelist",
+        "pair_games": 257,
+        "pair_win_rate": 0.622568093385214,
+        "pair_expected_win_rate": 0.6118986483788306,
+        "pair_lift_vs_baseline": 0.011317092730239842,
+        "synergy_delta_logit": 0.0451626961875598,
+        "synergy_delta_prob": 0.010669445006383449,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1346,
+        "quality_score": 0.030843008628033595,
+        "pick_score_raw": 0.7191070514288213,
+        "pick_score": 2.216142932407255
+      },
+      {
+        "from": "Broadside Bombardiers",
+        "to": "Lightning Helix",
+        "pair_games": 116,
+        "pair_win_rate": 0.6896551724137931,
+        "pair_expected_win_rate": 0.6849724430949563,
+        "pair_lift_vs_baseline": 0.07840417175881897,
+        "synergy_delta_logit": 0.021789205060733896,
+        "synergy_delta_prob": 0.004682729318836842,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 644,
+        "quality_score": 0.030562968684415735,
+        "pick_score_raw": 1.4712296631600186,
+        "pick_score": 6.382169092479319
+      },
+      {
+        "from": "Kytheon, Hero of Akros",
+        "to": "Pyrogoyf",
+        "pair_games": 91,
+        "pair_win_rate": 0.6373626373626373,
+        "pair_expected_win_rate": 0.62821030438149,
+        "pair_lift_vs_baseline": 0.026111636707663144,
+        "synergy_delta_logit": 0.03938881913561543,
+        "synergy_delta_prob": 0.00915233298114737,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 572,
+        "quality_score": 0.022828081611710155,
+        "pick_score_raw": 0.6074934843402552,
+        "pick_score": 1.4455386885132295
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Ocelot Pride",
+        "pair_games": 227,
+        "pair_win_rate": 0.6035242290748899,
+        "pair_expected_win_rate": 0.5906457638994019,
+        "pair_lift_vs_baseline": -0.0077267715800842796,
+        "synergy_delta_logit": 0.05353568618681831,
+        "synergy_delta_prob": 0.012878465175487963,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 989,
+        "quality_score": 0.021695593115597107,
+        "pick_score_raw": 0.4260396679994441,
+        "pick_score": 0.0705847661364805
+      },
+      {
+        "from": "Ajani, Nacatl Pariah",
+        "to": "Guide of Souls",
+        "pair_games": 257,
+        "pair_win_rate": 0.6536964980544747,
+        "pair_expected_win_rate": 0.650636777786806,
+        "pair_lift_vs_baseline": 0.04244549739950054,
+        "synergy_delta_logit": 0.013488200523188998,
+        "synergy_delta_prob": 0.003059720267668764,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7529210294516981,
+        "draft_pair_events": 1038,
+        "quality_score": 0.020657760619279004,
+        "pick_score_raw": 1.5250732069517556,
+        "pick_score": 6.6295998636624445
+      },
+      {
+        "from": "Mother of Runes",
+        "to": "Voice of Victory",
+        "pair_games": 204,
+        "pair_win_rate": 0.6029411764705882,
+        "pair_expected_win_rate": 0.5921809083361982,
+        "pair_lift_vs_baseline": -0.008309824184385972,
+        "synergy_delta_logit": 0.0447466973801387,
+        "synergy_delta_prob": 0.010760268134390016,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.0068388335924707,
+        "draft_pair_events": 1072,
+        "quality_score": 0.020366860748612714,
+        "pick_score_raw": 0.4460628542073842,
+        "pick_score": 0.23064826293602436
+      },
+      {
+        "from": "Luminarch Aspirant",
+        "to": "Phelia, Exuberant Shepherd",
+        "pair_games": 215,
+        "pair_win_rate": 0.6093023255813953,
+        "pair_expected_win_rate": 0.5979326935644592,
+        "pair_lift_vs_baseline": -0.001948675073578876,
+        "synergy_delta_logit": 0.047521832858006596,
+        "synergy_delta_prob": 0.011369632016936082,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1079,
+        "quality_score": 0.018803135223689083,
+        "pick_score_raw": 0.4161568203949981,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Comet, Stellar Pup",
+        "to": "Fury",
+        "pair_games": 111,
+        "pair_win_rate": 0.6846846846846847,
+        "pair_expected_win_rate": 0.681543641867948,
+        "pair_lift_vs_baseline": 0.07343368402971051,
+        "synergy_delta_logit": 0.014510434243718118,
+        "synergy_delta_prob": 0.003141042816736661,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 528,
+        "quality_score": 0.018762546842823916,
+        "pick_score_raw": 1.3547689394908102,
+        "pick_score": 5.828017438030987
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Voice of Victory",
+        "pair_games": 207,
+        "pair_win_rate": 0.6038647342995169,
+        "pair_expected_win_rate": 0.5933677720711263,
+        "pair_lift_vs_baseline": -0.007386266355457249,
+        "synergy_delta_logit": 0.04368925434031834,
+        "synergy_delta_prob": 0.010496962228390583,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1056,
+        "quality_score": 0.016948492560277858,
+        "pick_score_raw": 0.4079693211321501,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Mother of Runes",
+        "to": "Phlage, Titan of Fire's Fury",
+        "pair_games": 213,
+        "pair_win_rate": 0.6431924882629108,
+        "pair_expected_win_rate": 0.6394670405452527,
+        "pair_lift_vs_baseline": 0.03194148760793658,
+        "synergy_delta_logit": 0.01619588486904988,
+        "synergy_delta_prob": 0.003725447717658037,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1042,
+        "quality_score": 0.01654380212246217,
+        "pick_score_raw": 1.0741659856380907,
+        "pick_score": 4.371461841150728
+      },
+      {
+        "from": "Ajani, Nacatl Pariah",
+        "to": "Glimmer Lens",
+        "pair_games": 205,
+        "pair_win_rate": 0.6390243902439025,
+        "pair_expected_win_rate": 0.6350789092678699,
+        "pair_lift_vs_baseline": 0.027773389588928277,
+        "synergy_delta_logit": 0.01706411269629271,
+        "synergy_delta_prob": 0.003945480976032534,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 972,
+        "quality_score": 0.015687443388048034,
+        "pick_score_raw": 0.9663862829910789,
+        "pick_score": 3.758898074677519
+      },
+      {
+        "from": "Fury",
+        "to": "Mother of Runes",
+        "pair_games": 151,
+        "pair_win_rate": 0.6423841059602649,
+        "pair_expected_win_rate": 0.638158976897673,
+        "pair_lift_vs_baseline": 0.031133105305290676,
+        "synergy_delta_logit": 0.018344452208960305,
+        "synergy_delta_prob": 0.00422512906259187,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 695,
+        "quality_score": 0.015298675894492774,
+        "pick_score_raw": 0.8750941076177894,
+        "pick_score": 3.2131795075043206
+      },
+      {
+        "from": "Glimmer Lens",
+        "to": "Guide of Souls",
+        "pair_games": 264,
+        "pair_win_rate": 0.6060606060606061,
+        "pair_expected_win_rate": 0.5985793590709689,
+        "pair_lift_vs_baseline": -0.005190394594368097,
+        "synergy_delta_logit": 0.031233660659300833,
+        "synergy_delta_prob": 0.007481246989637147,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1248,
+        "quality_score": 0.013768170062395958,
+        "pick_score_raw": 0.46398200208567325,
+        "pick_score": 0.3720240955604564
+      },
+      {
+        "from": "Fury",
+        "to": "Parallax Wave",
+        "pair_games": 130,
+        "pair_win_rate": 0.7076923076923077,
+        "pair_expected_win_rate": 0.7061619674966421,
+        "pair_lift_vs_baseline": 0.09644130703733356,
+        "synergy_delta_logit": 0.007386496103118367,
+        "synergy_delta_prob": 0.0015303401956656693,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 645,
+        "quality_score": 0.012979390049831325,
+        "pick_score_raw": 1.8430868264892286,
+        "pick_score": 7.991298814482428
+      },
+      {
+        "from": "Giver of Runes",
+        "to": "Glimmer Lens",
+        "pair_games": 220,
+        "pair_win_rate": 0.5772727272727273,
+        "pair_expected_win_rate": 0.5704833728352885,
+        "pair_lift_vs_baseline": -0.033978273382246904,
+        "synergy_delta_logit": 0.027764022841459013,
+        "synergy_delta_prob": 0.006789354437438777,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1166,
+        "quality_score": 0.011144400176434466,
+        "pick_score_raw": 0.4223470152412902,
+        "pick_score": 0.040820732728849
+      },
+      {
+        "from": "Giver of Runes",
+        "to": "Ocelot Pride",
+        "pair_games": 222,
+        "pair_win_rate": 0.5855855855855856,
+        "pair_expected_win_rate": 0.5790028110989626,
+        "pair_lift_vs_baseline": -0.025665415069388575,
+        "synergy_delta_logit": 0.027064697217536737,
+        "synergy_delta_prob": 0.006582774486623033,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1020,
+        "quality_score": 0.01085906499535646,
+        "pick_score_raw": 0.42187275465716384,
+        "pick_score": 0.03699243327471179
+      },
+      {
+        "from": "Figure of Destiny",
+        "to": "Giver of Runes",
+        "pair_games": 182,
+        "pair_win_rate": 0.5769230769230769,
+        "pair_expected_win_rate": 0.5707618366344783,
+        "pair_lift_vs_baseline": -0.0343279237318973,
+        "synergy_delta_logit": 0.025194828615650866,
+        "synergy_delta_prob": 0.006161240288598546,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1036,
+        "quality_score": 0.009158209581552496,
+        "pick_score_raw": 0.3822317810355463,
+        "pick_score": 0.0
+      }
+    ],
+    "triplets": [],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 5,
+        "top_cards": [
+          "Phlage, Titan of Fire's Fury",
+          "Adeline, Resplendent Cathar",
+          "Glimmer Lens",
+          "Parallax Wave",
+          "Figure of Destiny"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 4,
+        "top_cards": [
+          "Mother of Runes",
+          "Ajani, Nacatl Pariah",
+          "Ocelot Pride",
+          "Showdown of the Skalds"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Giver of Runes",
+          "Voice of Victory",
+          "Kytheon, Hero of Akros",
+          "Comet, Stellar Pup"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 4,
+        "top_cards": [
+          "Guide of Souls",
+          "Luminarch Aspirant",
+          "Broadside Bombardiers",
+          "Pyrogoyf"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 3,
+        "top_cards": [
+          "Sanguine Evangelist",
+          "Phelia, Exuberant Shepherd",
+          "Lightning Helix"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 2,
+        "top_cards": [
+          "Death-Greeter's Champion",
+          "Fury"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Barrowgoyf"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Fire Covenant"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Leyline Binding"
+        ]
+      },
+      {
+        "community_id": 9,
+        "size": 1,
+        "top_cards": [
+          "Fractured Identity"
+        ]
+      },
+      {
+        "community_id": 10,
+        "size": 1,
+        "top_cards": [
+          "Bloodbraid Elf"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "uncommon": [
+        {
+          "card": "Mother of Runes",
+          "pick_priority_score": 7.825479455943715,
+          "pick_priority_score_raw": 75.34894296276549,
+          "draft_drafts": 3285,
+          "draft_win_rate": 0.6256912284245112,
+          "draft_win_lift": 0.01076942686908855,
+          "draw_win_rate": 0.5956227201667535
+        },
+        {
+          "card": "Fire Covenant",
+          "pick_priority_score": 6.57612948338979,
+          "pick_priority_score_raw": 37.21295257225926,
+          "draft_drafts": 500,
+          "draft_win_rate": 0.6126324441101825,
+          "draft_win_lift": -0.00228935744524017,
+          "draw_win_rate": 0.6415094339622641
+        },
+        {
+          "card": "Bloodbraid Elf",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 812,
+          "draft_win_rate": 0.6137863618895113,
+          "draft_win_lift": -0.001135439665911342,
+          "draw_win_rate": 0.5803571428571429
+        }
+      ],
+      "rare": [
+        {
+          "card": "Parallax Wave",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 294.7396989931534,
+          "draft_drafts": 3189,
+          "draft_win_rate": 0.6281940678037725,
+          "draft_win_lift": 0.013272266248349873,
+          "draw_win_rate": 0.6674540682414698
+        },
+        {
+          "card": "Broadside Bombardiers",
+          "pick_priority_score": 9.853087171578478,
+          "pick_priority_score_raw": 233.7705115599555,
+          "draft_drafts": 2120,
+          "draft_win_rate": 0.6265613785957077,
+          "draft_win_lift": 0.011639577040285065,
+          "draw_win_rate": 0.6734835355285962
+        },
+        {
+          "card": "Pyrogoyf",
+          "pick_priority_score": 9.386695196386395,
+          "pick_priority_score_raw": 180.31347177335905,
+          "draft_drafts": 2058,
+          "draft_win_rate": 0.6257514384931285,
+          "draft_win_lift": 0.010829636937705889,
+          "draw_win_rate": 0.6581875993640699
+        },
+        {
+          "card": "Sanguine Evangelist",
+          "pick_priority_score": 8.908585909110876,
+          "pick_priority_score_raw": 138.122517232151,
+          "draft_drafts": 3738,
+          "draft_win_rate": 0.624777901493105,
+          "draft_win_lift": 0.009856099937682328,
+          "draw_win_rate": 0.6261412782316195
+        },
+        {
+          "card": "Death-Greeter's Champion",
+          "pick_priority_score": 8.571269837605927,
+          "pick_priority_score_raw": 114.40895167923614,
+          "draft_drafts": 3462,
+          "draft_win_rate": 0.6264819442326088,
+          "draft_win_lift": 0.011560142677186191,
+          "draw_win_rate": 0.6195085629188384
+        },
+        {
+          "card": "Luminarch Aspirant",
+          "pick_priority_score": 7.96148160321705,
+          "pick_priority_score_raw": 81.32372589778123,
+          "draft_drafts": 3517,
+          "draft_win_rate": 0.625885219733581,
+          "draft_win_lift": 0.01096341817815838,
+          "draw_win_rate": 0.6019875776397515
+        },
+        {
+          "card": "Lightning Helix",
+          "pick_priority_score": 7.774433402042937,
+          "pick_priority_score_raw": 73.22007620821059,
+          "draft_drafts": 2911,
+          "draft_win_rate": 0.6190056694204514,
+          "draft_win_lift": 0.00408386786502879,
+          "draw_win_rate": 0.6237061769616027
+        },
+        {
+          "card": "Showdown of the Skalds",
+          "pick_priority_score": 7.770867804810397,
+          "pick_priority_score_raw": 73.0736110138719,
+          "draft_drafts": 3733,
+          "draft_win_rate": 0.6178580240387054,
+          "draft_win_lift": 0.0029362224832827355,
+          "draw_win_rate": 0.6227903181941801
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Ajani, Nacatl Pariah",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 254.96171673297118,
+          "draft_drafts": 2767,
+          "draft_win_rate": 0.6344337087686646,
+          "draft_win_lift": 0.01951190721324192,
+          "draw_win_rate": 0.6489588894821142
+        },
+        {
+          "card": "Phlage, Titan of Fire's Fury",
+          "pick_priority_score": 9.978815858643893,
+          "pick_priority_score_raw": 250.7061058000169,
+          "draft_drafts": 3234,
+          "draft_win_rate": 0.6269241193830899,
+          "draft_win_lift": 0.012002317827667253,
+          "draw_win_rate": 0.6543840774610006
+        },
+        {
+          "card": "Fury",
+          "pick_priority_score": 9.484612340644095,
+          "pick_priority_score_raw": 190.42067662583852,
+          "draft_drafts": 2126,
+          "draft_win_rate": 0.6286202885890838,
+          "draft_win_lift": 0.013698487033661166,
+          "draw_win_rate": 0.6531007751937985
+        },
+        {
+          "card": "Comet, Stellar Pup",
+          "pick_priority_score": 8.88942137356263,
+          "pick_priority_score_raw": 136.6532462477566,
+          "draft_drafts": 2506,
+          "draft_win_rate": 0.6221277415573105,
+          "draft_win_lift": 0.0072059400018879005,
+          "draw_win_rate": 0.6412403100775194
+        },
+        {
+          "card": "Ocelot Pride",
+          "pick_priority_score": 7.849763996966824,
+          "pick_priority_score_raw": 76.38305416792717,
+          "draft_drafts": 2824,
+          "draft_win_rate": 0.6267297477245843,
+          "draft_win_lift": 0.011807946169161698,
+          "draw_win_rate": 0.6051650692225772
+        },
+        {
+          "card": "Fractured Identity",
+          "pick_priority_score": 3.82870228104016,
+          "pick_priority_score_raw": 7.3403098106896625,
+          "draft_drafts": 264,
+          "draft_win_rate": 0.6194394499496627,
+          "draft_win_lift": 0.00451764839424007,
+          "draw_win_rate": 0.5757575757575758
+        },
+        {
+          "card": "Kytheon, Hero of Akros",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 2920,
+          "draft_win_rate": 0.6122352920446135,
+          "draft_win_lift": -0.0026865095108091763,
+          "draw_win_rate": 0.579785392869505
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Broadside Bombardiers",
+        "standalone_delta": 0.062232534873622014,
+        "win_rate": 0.6734835355285962,
+        "draw_games": 2885
+      },
+      {
+        "card": "Parallax Wave",
+        "standalone_delta": 0.056203067586495625,
+        "win_rate": 0.6674540682414698,
+        "draw_games": 3810
+      },
+      {
+        "card": "Pyrogoyf",
+        "standalone_delta": 0.04693659870909572,
+        "win_rate": 0.6581875993640699,
+        "draw_games": 2516
+      },
+      {
+        "card": "Phlage, Titan of Fire's Fury",
+        "standalone_delta": 0.043133076806026405,
+        "win_rate": 0.6543840774610006,
+        "draw_games": 3718
+      },
+      {
+        "card": "Fury",
+        "standalone_delta": 0.041849774538824325,
+        "win_rate": 0.6531007751937985,
+        "draw_games": 2580
+      },
+      {
+        "card": "Ajani, Nacatl Pariah",
+        "standalone_delta": 0.037707888827140046,
+        "win_rate": 0.6489588894821142,
+        "draw_games": 3746
+      },
+      {
+        "card": "Fire Covenant",
+        "standalone_delta": 0.030258433307289945,
+        "win_rate": 0.6415094339622641,
+        "draw_games": 159
+      },
+      {
+        "card": "Comet, Stellar Pup",
+        "standalone_delta": 0.029989309422545185,
+        "win_rate": 0.6412403100775194,
+        "draw_games": 3225
+      },
+      {
+        "card": "Sanguine Evangelist",
+        "standalone_delta": 0.014890277576645294,
+        "win_rate": 0.6261412782316195,
+        "draw_games": 4162
+      },
+      {
+        "card": "Lightning Helix",
+        "standalone_delta": 0.012455176306628513,
+        "win_rate": 0.6237061769616027,
+        "draw_games": 2995
+      },
+      {
+        "card": "Showdown of the Skalds",
+        "standalone_delta": 0.011539317539205896,
+        "win_rate": 0.6227903181941801,
+        "draw_games": 3677
+      },
+      {
+        "card": "Death-Greeter's Champion",
+        "standalone_delta": 0.008257562263864204,
+        "win_rate": 0.6195085629188384,
+        "draw_games": 4029
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Guide of Souls",
+        "dependency_score": 0.7613686015716371,
+        "standalone_delta": 0.0017506421518787008,
+        "draw_games": 4261
+      },
+      {
+        "card": "Adeline, Resplendent Cathar",
+        "dependency_score": 0.6799722044634524,
+        "standalone_delta": -0.013773333813145494,
+        "draw_games": 3806
+      },
+      {
+        "card": "Luminarch Aspirant",
+        "dependency_score": 0.5865902209531104,
+        "standalone_delta": -0.00926342301522265,
+        "draw_games": 4025
+      },
+      {
+        "card": "Showdown of the Skalds",
+        "dependency_score": 0.470456309713205,
+        "standalone_delta": 0.011539317539205896,
+        "draw_games": 3677
+      },
+      {
+        "card": "Mother of Runes",
+        "dependency_score": 0.4460483321017122,
+        "standalone_delta": -0.015628280488220625,
+        "draw_games": 3838
+      },
+      {
+        "card": "Voice of Victory",
+        "dependency_score": 0.43654302575437454,
+        "standalone_delta": -0.0033963699398510405,
+        "draw_games": 3412
+      },
+      {
+        "card": "Phlage, Titan of Fire's Fury",
+        "dependency_score": 0.26447143995458194,
+        "standalone_delta": 0.043133076806026405,
+        "draw_games": 3718
+      },
+      {
+        "card": "Death-Greeter's Champion",
+        "dependency_score": 0.26128163747575195,
+        "standalone_delta": 0.008257562263864204,
+        "draw_games": 4029
+      },
+      {
+        "card": "Ajani, Nacatl Pariah",
+        "dependency_score": 0.20892648364388133,
+        "standalone_delta": 0.037707888827140046,
+        "draw_games": 3746
+      },
+      {
+        "card": "Parallax Wave",
+        "dependency_score": 0.19381890138865335,
+        "standalone_delta": 0.056203067586495625,
+        "draw_games": 3810
+      },
+      {
+        "card": "Kytheon, Hero of Akros",
+        "dependency_score": 0.19049918784803513,
+        "standalone_delta": -0.03146560778546914,
+        "draw_games": 2889
+      },
+      {
+        "card": "Lightning Helix",
+        "dependency_score": 0.17232802419465118,
+        "standalone_delta": 0.012455176306628513,
+        "draw_games": 2995
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Ocelot Pride",
+          "Showdown of the Skalds"
+        ],
+        "quality_score": 1.514957514061429,
+        "pair_win_rate": 0.7352941176470589,
+        "pair_games": 204,
+        "synergy_delta_logit": 0.5457828779769678
+      },
+      {
+        "cards": [
+          "Figure of Destiny",
+          "Phlage, Titan of Fire's Fury"
+        ],
+        "quality_score": 0.9325173043740731,
+        "pair_win_rate": 0.7247191011235955,
+        "pair_games": 178,
+        "synergy_delta_logit": 0.3888871439760999
+      },
+      {
+        "cards": [
+          "Lightning Helix",
+          "Sanguine Evangelist"
+        ],
+        "quality_score": 0.9007009530146507,
+        "pair_win_rate": 0.7177033492822966,
+        "pair_games": 209,
+        "synergy_delta_logit": 0.3646644808881214
+      },
+      {
+        "cards": [
+          "Glimmer Lens",
+          "Phlage, Titan of Fire's Fury"
+        ],
+        "quality_score": 0.8013760733840005,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_games": 203,
+        "synergy_delta_logit": 0.3383222988235217
+      },
+      {
+        "cards": [
+          "Kytheon, Hero of Akros",
+          "Voice of Victory"
+        ],
+        "quality_score": 0.5807187042547851,
+        "pair_win_rate": 0.6727272727272727,
+        "pair_games": 165,
+        "synergy_delta_logit": 0.4129243224000883
+      },
+      {
+        "cards": [
+          "Guide of Souls",
+          "Pyrogoyf"
+        ],
+        "quality_score": 0.5728760611892749,
+        "pair_win_rate": 0.7168674698795181,
+        "pair_games": 166,
+        "synergy_delta_logit": 0.26637456626014777
+      },
+      {
+        "cards": [
+          "Guide of Souls",
+          "Luminarch Aspirant"
+        ],
+        "quality_score": 0.4638568501931817,
+        "pair_win_rate": 0.6604477611940298,
+        "pair_games": 268,
+        "synergy_delta_logit": 0.2441632534250861
+      },
+      {
+        "cards": [
+          "Phelia, Exuberant Shepherd",
+          "Pyrogoyf"
+        ],
+        "quality_score": 0.3955909943544273,
+        "pair_win_rate": 0.7005988023952096,
+        "pair_games": 167,
+        "synergy_delta_logit": 0.21181788536034862
+      },
+      {
+        "cards": [
+          "Mother of Runes",
+          "Showdown of the Skalds"
+        ],
+        "quality_score": 0.3752252997678797,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_games": 204,
+        "synergy_delta_logit": 0.25705314910795035
+      },
+      {
+        "cards": [
+          "Broadside Bombardiers",
+          "Pyrogoyf"
+        ],
+        "quality_score": 0.3732536296383543,
+        "pair_win_rate": 0.7480314960629921,
+        "pair_games": 127,
+        "synergy_delta_logit": 0.16150365669513667
+      },
+      {
+        "cards": [
+          "Phelia, Exuberant Shepherd",
+          "Sanguine Evangelist"
+        ],
+        "quality_score": 0.37051633996573363,
+        "pair_win_rate": 0.6723404255319149,
+        "pair_games": 235,
+        "synergy_delta_logit": 0.2199864599152191
+      },
+      {
+        "cards": [
+          "Broadside Bombardiers",
+          "Luminarch Aspirant"
+        ],
+        "quality_score": 0.3149184413009688,
+        "pair_win_rate": 0.7012195121951219,
+        "pair_games": 164,
+        "synergy_delta_logit": 0.1679488506563761
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Parallax Wave",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 294.7396989931534,
+        "draft_drafts": 3189,
+        "draft_win_lift": 0.013272266248349873,
+        "rarity": "rare"
+      },
+      {
+        "card": "Ajani, Nacatl Pariah",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 254.96171673297118,
+        "draft_drafts": 2767,
+        "draft_win_lift": 0.01951190721324192,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Phlage, Titan of Fire's Fury",
+        "pick_priority_score": 9.978815858643893,
+        "pick_priority_score_raw": 250.7061058000169,
+        "draft_drafts": 3234,
+        "draft_win_lift": 0.012002317827667253,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Broadside Bombardiers",
+        "pick_priority_score": 9.853087171578478,
+        "pick_priority_score_raw": 233.7705115599555,
+        "draft_drafts": 2120,
+        "draft_win_lift": 0.011639577040285065,
+        "rarity": "rare"
+      },
+      {
+        "card": "Fury",
+        "pick_priority_score": 9.484612340644095,
+        "pick_priority_score_raw": 190.42067662583852,
+        "draft_drafts": 2126,
+        "draft_win_lift": 0.013698487033661166,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Pyrogoyf",
+        "pick_priority_score": 9.386695196386395,
+        "pick_priority_score_raw": 180.31347177335905,
+        "draft_drafts": 2058,
+        "draft_win_lift": 0.010829636937705889,
+        "rarity": "rare"
+      },
+      {
+        "card": "Sanguine Evangelist",
+        "pick_priority_score": 8.908585909110876,
+        "pick_priority_score_raw": 138.122517232151,
+        "draft_drafts": 3738,
+        "draft_win_lift": 0.009856099937682328,
+        "rarity": "rare"
+      },
+      {
+        "card": "Comet, Stellar Pup",
+        "pick_priority_score": 8.88942137356263,
+        "pick_priority_score_raw": 136.6532462477566,
+        "draft_drafts": 2506,
+        "draft_win_lift": 0.0072059400018879005,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Death-Greeter's Champion",
+        "pick_priority_score": 8.571269837605927,
+        "pick_priority_score_raw": 114.40895167923614,
+        "draft_drafts": 3462,
+        "draft_win_lift": 0.011560142677186191,
+        "rarity": "rare"
+      },
+      {
+        "card": "Luminarch Aspirant",
+        "pick_priority_score": 7.96148160321705,
+        "pick_priority_score_raw": 81.32372589778123,
+        "draft_drafts": 3517,
+        "draft_win_lift": 0.01096341817815838,
+        "rarity": "rare"
+      },
+      {
+        "card": "Ocelot Pride",
+        "pick_priority_score": 7.849763996966824,
+        "pick_priority_score_raw": 76.38305416792717,
+        "draft_drafts": 2824,
+        "draft_win_lift": 0.011807946169161698,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Mother of Runes",
+        "pick_priority_score": 7.825479455943715,
+        "pick_priority_score_raw": 75.34894296276549,
+        "draft_drafts": 3285,
+        "draft_win_lift": 0.01076942686908855,
+        "rarity": "uncommon"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Ocelot Pride",
+          "Showdown of the Skalds"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 2.919432073973931,
+        "pair_win_rate": 0.7352941176470589,
+        "pair_games": 204,
+        "draft_pair_events": 1078
+      },
+      {
+        "cards": [
+          "Lightning Helix",
+          "Sanguine Evangelist"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 2.598313070757329,
+        "pair_win_rate": 0.7177033492822966,
+        "pair_games": 209,
+        "draft_pair_events": 1120
+      },
+      {
+        "cards": [
+          "Figure of Destiny",
+          "Phlage, Titan of Fire's Fury"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 2.5213575669222665,
+        "pair_win_rate": 0.7247191011235955,
+        "pair_games": 178,
+        "draft_pair_events": 1024
+      },
+      {
+        "cards": [
+          "Glimmer Lens",
+          "Phlage, Titan of Fire's Fury"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 2.4918168142235753,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_games": 203,
+        "draft_pair_events": 1123
+      },
+      {
+        "cards": [
+          "Broadside Bombardiers",
+          "Pyrogoyf"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 2.4199734977064464,
+        "pair_win_rate": 0.7480314960629921,
+        "pair_games": 127,
+        "draft_pair_events": 473
+      },
+      {
+        "cards": [
+          "Guide of Souls",
+          "Pyrogoyf"
+        ],
+        "pick_score": 9.551820466884854,
+        "pick_score_raw": 2.2570781910984192,
+        "pair_win_rate": 0.7168674698795181,
+        "pair_games": 166,
+        "draft_pair_events": 717
+      },
+      {
+        "cards": [
+          "Phlage, Titan of Fire's Fury",
+          "Pyrogoyf"
+        ],
+        "pick_score": 9.445906004774148,
+        "pick_score_raw": 2.2271652250885277,
+        "pair_win_rate": 0.7266187050359713,
+        "pair_games": 139,
+        "draft_pair_events": 728
+      },
+      {
+        "cards": [
+          "Adeline, Resplendent Cathar",
+          "Parallax Wave"
+        ],
+        "pick_score": 9.336976361893587,
+        "pick_score_raw": 2.1966872322816813,
+        "pair_win_rate": 0.6831275720164609,
+        "pair_games": 243,
+        "draft_pair_events": 1131
+      },
+      {
+        "cards": [
+          "Parallax Wave",
+          "Showdown of the Skalds"
+        ],
+        "pick_score": 9.155681859165252,
+        "pick_score_raw": 2.1465987486555758,
+        "pair_win_rate": 0.6952380952380952,
+        "pair_games": 210,
+        "draft_pair_events": 1181
+      },
+      {
+        "cards": [
+          "Glimmer Lens",
+          "Parallax Wave"
+        ],
+        "pick_score": 8.628284641637892,
+        "pick_score_raw": 2.005306265158648,
+        "pair_win_rate": 0.6818181818181818,
+        "pair_games": 242,
+        "draft_pair_events": 1158
+      },
+      {
+        "cards": [
+          "Broadside Bombardiers",
+          "Luminarch Aspirant"
+        ],
+        "pick_score": 8.48661641079773,
+        "pick_score_raw": 1.9684456882860033,
+        "pair_win_rate": 0.7012195121951219,
+        "pair_games": 164,
+        "draft_pair_events": 756
+      },
+      {
+        "cards": [
+          "Ajani, Nacatl Pariah",
+          "Broadside Bombardiers"
+        ],
+        "pick_score": 8.455163931771478,
+        "pick_score_raw": 1.9603236104962176,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_games": 133,
+        "draft_pair_events": 577
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
+      "color_name": "Boros Tokens",
+      "deck_count": 12970,
+      "games": 68705,
+      "win_rate": 0.6112510006549742,
+      "signposts": [
+        "Guide of Souls",
+        "Sanguine Evangelist",
+        "Luminarch Aspirant",
+        "Death-Greeter's Champion"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Ajani, Nacatl Pariah",
+        "Phlage, Titan of Fire's Fury",
+        "Broadside Bombardiers"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Red Base Midrange | Fire Covenant / Fury",
+      "color_name": "Red Base Midrange",
+      "deck_count": 5538,
+      "games": 26131,
+      "win_rate": 0.5561593509624584,
+      "signposts": [
+        "Fire Covenant",
+        "Fury",
+        "Pyrogoyf",
+        "Fiery Confluence"
+      ],
+      "pick_cards": [
+        "Pyrogoyf",
+        "Broadside Bombardiers",
+        "Laelia, the Blade Reforged",
+        "Fury"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "White Base Control | No More Lies / The Wandering Emperor",
+      "color_name": "White Base Control",
+      "deck_count": 5654,
+      "games": 26028,
+      "win_rate": 0.5472568003688336,
+      "signposts": [
+        "No More Lies",
+        "The Wandering Emperor",
+        "Solitude",
+        "Teferi, Time Raveler"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Sanguine Evangelist",
+        "Phelia, Exuberant Shepherd",
+        "Solitude"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Black Base Reanimator | Animate Dead / Necromancy",
+      "color_name": "Black Base Reanimator",
+      "deck_count": 7492,
+      "games": 33181,
+      "win_rate": 0.5180072933305204,
+      "signposts": [
+        "Animate Dead",
+        "Necromancy",
+        "Archon of Cruelty",
+        "Entomb"
+      ],
+      "pick_cards": [
+        "Archon of Cruelty",
+        "Animate Dead",
+        "Necromancy",
+        "Barrowgoyf"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
+      "color_name": "Green Base Ramp",
+      "deck_count": 9261,
+      "games": 39563,
+      "win_rate": 0.5142683820741601,
+      "signposts": [
+        "Birds of Paradise",
+        "Titania, Protector of Argoth",
+        "Noble Hierarch",
+        "Nadu, Winged Wisdom"
+      ],
+      "pick_cards": [
+        "Malevolent Rumble",
+        "Pest Infestation",
+        "Oko, Thief of Crowns",
+        "Nadu, Winged Wisdom"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
+      "color_name": "Blue Base Storm",
+      "deck_count": 9349,
+      "games": 40088,
+      "win_rate": 0.508955298343644,
+      "signposts": [
+        "Brain Freeze",
+        "Snapcaster Mage",
+        "Underworld Breach",
+        "Narset, Parter of Veils"
+      ],
+      "pick_cards": [
+        "Mystic Confluence",
+        "Time Walk",
+        "Cryptic Command",
+        "Remand"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer",
+      "color_name": "Blue Base Artifacts",
+      "deck_count": 7649,
+      "games": 32421,
+      "win_rate": 0.5056290675796552,
+      "signposts": [
+        "Mox Opal",
+        "Urza, Lord High Artificer",
+        "Retrofitter Foundry",
+        "Kappa Cannoneer"
+      ],
+      "pick_cards": [
+        "Ugin, Eye of the Storms",
+        "Urza, Lord High Artificer",
+        "Upheaval",
+        "Retrofitter Foundry"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

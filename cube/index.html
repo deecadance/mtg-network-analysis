@@ -1,0 +1,350 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Powered Cube Analysis</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #97aac6;
+      --line: rgba(126, 157, 197, 0.18);
+      --panel: rgba(13, 20, 34, 0.9);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .muted { color: var(--muted); }
+    .hero {
+      display: grid;
+      gap: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+    }
+    .hero .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(92, 200, 255, 0.16);
+      border: 1px solid rgba(92, 200, 255, 0.34);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-btn.secondary {
+      background: rgba(244, 201, 93, 0.14);
+      border-color: rgba(244, 201, 93, 0.28);
+    }
+    .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Powered Cube Analysis</h1>
+      <div class="muted">This landing page keeps the network pages clean. Open any archetype below, then switch between the analysis-focused view and the draft pick-focused view on that archetype page.</div>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div>
+  <div class="section-title">Archetypes</div>
+  <div id="archetypeGrid" class="grid"></div>
+</div>
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "Cube - Powered",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 57913,
+      "cluster_feature_count": 539,
+      "svd_components": 48,
+      "svd_explained_variance": 0.23329785466194153,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.11178616434335709,
+          "dominant_main_color_share": 0.3637786402379163,
+          "objective": 0.13361288275763206
+        },
+        {
+          "k": 8,
+          "silhouette": 0.08127741515636444,
+          "dominant_main_color_share": 0.4612962424071051,
+          "objective": 0.10895518970079074
+        },
+        {
+          "k": 9,
+          "silhouette": 0.0866159126162529,
+          "dominant_main_color_share": 0.4338965083091679,
+          "objective": 0.11264970311480298
+        },
+        {
+          "k": 10,
+          "silhouette": 0.08284851163625717,
+          "dominant_main_color_share": 0.48828557861292066,
+          "objective": 0.11214564635303241
+        },
+        {
+          "k": 11,
+          "silhouette": 0.08475761115550995,
+          "dominant_main_color_share": 0.5052627611749999,
+          "objective": 0.11507337682600995
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "1": 12970,
+        "0": 9261,
+        "5": 5538,
+        "6": 9349,
+        "2": 7492,
+        "3": 5654,
+        "4": 7649
+      }
+    },
+    "deck_count": 57913,
+    "game_count": 266117
+  },
+  "overview": [
+    {
+      "cluster_id": 0,
+      "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
+      "color_name": "Green Base Ramp",
+      "deck_count": 9261,
+      "games": 39563,
+      "win_rate": 0.5142683820741601,
+      "signposts": [
+        "Birds of Paradise",
+        "Titania, Protector of Argoth",
+        "Noble Hierarch",
+        "Nadu, Winged Wisdom"
+      ],
+      "pick_cards": [
+        "Malevolent Rumble",
+        "Pest Infestation",
+        "Oko, Thief of Crowns",
+        "Nadu, Winged Wisdom"
+      ],
+      "href": "index_pages/00_green-base-ramp-birds-of-paradise-titania-protector-of-argoth.html"
+    },
+    {
+      "cluster_id": 1,
+      "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
+      "color_name": "Boros Tokens",
+      "deck_count": 12970,
+      "games": 68705,
+      "win_rate": 0.6112510006549742,
+      "signposts": [
+        "Guide of Souls",
+        "Sanguine Evangelist",
+        "Luminarch Aspirant",
+        "Death-Greeter's Champion"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Ajani, Nacatl Pariah",
+        "Phlage, Titan of Fire's Fury",
+        "Broadside Bombardiers"
+      ],
+      "href": "index_pages/01_boros-tokens-guide-of-souls-sanguine-evangelist.html"
+    },
+    {
+      "cluster_id": 2,
+      "title": "Black Base Reanimator | Animate Dead / Necromancy",
+      "color_name": "Black Base Reanimator",
+      "deck_count": 7492,
+      "games": 33181,
+      "win_rate": 0.5180072933305204,
+      "signposts": [
+        "Animate Dead",
+        "Necromancy",
+        "Archon of Cruelty",
+        "Entomb"
+      ],
+      "pick_cards": [
+        "Archon of Cruelty",
+        "Animate Dead",
+        "Necromancy",
+        "Barrowgoyf"
+      ],
+      "href": "index_pages/02_black-base-reanimator-animate-dead-necromancy.html"
+    },
+    {
+      "cluster_id": 3,
+      "title": "White Base Control | No More Lies / The Wandering Emperor",
+      "color_name": "White Base Control",
+      "deck_count": 5654,
+      "games": 26028,
+      "win_rate": 0.5472568003688336,
+      "signposts": [
+        "No More Lies",
+        "The Wandering Emperor",
+        "Solitude",
+        "Teferi, Time Raveler"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Sanguine Evangelist",
+        "Phelia, Exuberant Shepherd",
+        "Solitude"
+      ],
+      "href": "index_pages/03_white-base-control-no-more-lies-the-wandering-emperor.html"
+    },
+    {
+      "cluster_id": 4,
+      "title": "Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer",
+      "color_name": "Blue Base Artifacts",
+      "deck_count": 7649,
+      "games": 32421,
+      "win_rate": 0.5056290675796552,
+      "signposts": [
+        "Mox Opal",
+        "Urza, Lord High Artificer",
+        "Retrofitter Foundry",
+        "Kappa Cannoneer"
+      ],
+      "pick_cards": [
+        "Ugin, Eye of the Storms",
+        "Urza, Lord High Artificer",
+        "Upheaval",
+        "Retrofitter Foundry"
+      ],
+      "href": "index_pages/04_blue-base-artifacts-mox-opal-urza-lord-high-artificer.html"
+    },
+    {
+      "cluster_id": 5,
+      "title": "Red Base Midrange | Fire Covenant / Fury",
+      "color_name": "Red Base Midrange",
+      "deck_count": 5538,
+      "games": 26131,
+      "win_rate": 0.5561593509624584,
+      "signposts": [
+        "Fire Covenant",
+        "Fury",
+        "Pyrogoyf",
+        "Fiery Confluence"
+      ],
+      "pick_cards": [
+        "Pyrogoyf",
+        "Broadside Bombardiers",
+        "Laelia, the Blade Reforged",
+        "Fury"
+      ],
+      "href": "index_pages/05_red-base-midrange-fire-covenant-fury.html"
+    },
+    {
+      "cluster_id": 6,
+      "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
+      "color_name": "Blue Base Storm",
+      "deck_count": 9349,
+      "games": 40088,
+      "win_rate": 0.508955298343644,
+      "signposts": [
+        "Brain Freeze",
+        "Snapcaster Mage",
+        "Underworld Breach",
+        "Narset, Parter of Veils"
+      ],
+      "pick_cards": [
+        "Mystic Confluence",
+        "Time Walk",
+        "Cryptic Command",
+        "Remand"
+      ],
+      "href": "index_pages/06_blue-base-storm-brain-freeze-snapcaster-mage.html"
+    }
+  ]
+}</script>
+<script>
+(function() {
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var heroStats = document.getElementById('heroStats');
+  [
+    'Deck builds: ' + payload.meta.deck_count,
+    'Game rows: ' + payload.meta.game_count,
+    'Archetypes: ' + payload.meta.n_clusters,
+    'Views per page: analysis + pick'
+  ].forEach(function(text) {
+    var span = document.createElement('span');
+    span.className = 'pill';
+    span.textContent = text;
+    heroStats.appendChild(span);
+  });
+  var grid = document.getElementById('archetypeGrid');
+  payload.overview.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '' +
+      '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
+      '<div class="row"><span>Game WR</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
+      '<div class="row"><span>Games</span><strong>' + row.games + '</strong></div>' +
+      '<div><div class="muted">Archetype-defining cards</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Draft priority candidates</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Archetype Page</a><span class="link-btn secondary">Mode switch inside page</span></div>';
+    grid.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

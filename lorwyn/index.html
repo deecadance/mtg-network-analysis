@@ -1,0 +1,350 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lorwyn Eclipsed Analysis</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #97aac6;
+      --line: rgba(126, 157, 197, 0.18);
+      --panel: rgba(13, 20, 34, 0.9);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .muted { color: var(--muted); }
+    .hero {
+      display: grid;
+      gap: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+    }
+    .hero .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(92, 200, 255, 0.16);
+      border: 1px solid rgba(92, 200, 255, 0.34);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-btn.secondary {
+      background: rgba(244, 201, 93, 0.14);
+      border-color: rgba(244, 201, 93, 0.28);
+    }
+    .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Lorwyn Eclipsed Analysis</h1>
+      <div class="muted">This landing page keeps the network pages clean. Open any archetype below, then switch between the analysis-focused view and the draft pick-focused view on that archetype page.</div>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div>
+  <div class="section-title">Archetypes</div>
+  <div id="archetypeGrid" class="grid"></div>
+</div>
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "ECL",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 82906,
+      "cluster_feature_count": 263,
+      "svd_components": 48,
+      "svd_explained_variance": 0.41585496068000793,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.192540243268013,
+          "dominant_main_color_share": 0.7279459549142004,
+          "objective": 0.23621700056286504
+        },
+        {
+          "k": 8,
+          "silhouette": 0.17198492586612701,
+          "dominant_main_color_share": 0.6955971152387095,
+          "objective": 0.21372075278044958
+        },
+        {
+          "k": 9,
+          "silhouette": 0.15807880461215973,
+          "dominant_main_color_share": 0.7346713431984758,
+          "objective": 0.20215908520406828
+        },
+        {
+          "k": 10,
+          "silhouette": 0.1304016262292862,
+          "dominant_main_color_share": 0.7372495498149798,
+          "objective": 0.17463659921818497
+        },
+        {
+          "k": 11,
+          "silhouette": 0.12515881657600403,
+          "dominant_main_color_share": 0.7103820495023637,
+          "objective": 0.16778173954614584
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "4": 17005,
+        "2": 15634,
+        "0": 14756,
+        "3": 11302,
+        "6": 10159,
+        "5": 5824,
+        "1": 8226
+      }
+    },
+    "deck_count": 82906,
+    "game_count": 362682
+  },
+  "overview": [
+    {
+      "cluster_id": 0,
+      "title": "Azorius Merfolk | Merrow Skyswimmer / Wanderbrine Preacher",
+      "color_name": "Azorius Merfolk",
+      "deck_count": 14756,
+      "games": 65697,
+      "win_rate": 0.5584425468438438,
+      "signposts": [
+        "Merrow Skyswimmer",
+        "Wanderbrine Preacher",
+        "Gravelgill Scoundrel",
+        "Silvergill Peddler"
+      ],
+      "pick_cards": [
+        "Deepchannel Duelist",
+        "Eclipsed Merrow",
+        "Champions of the Shoal",
+        "Kinbinding"
+      ],
+      "href": "index_pages/00_azorius-merfolk-merrow-skyswimmer-wanderbrine-preacher.html"
+    },
+    {
+      "cluster_id": 1,
+      "title": "Selesnya Kithkin | Mistmeadow Council / Crossroads Watcher",
+      "color_name": "Selesnya Kithkin",
+      "deck_count": 8226,
+      "games": 38928,
+      "win_rate": 0.5777332511302918,
+      "signposts": [
+        "Mistmeadow Council",
+        "Crossroads Watcher",
+        "Surly Farrier",
+        "Wary Farmer"
+      ],
+      "pick_cards": [
+        "Eclipsed Kithkin",
+        "Brigid's Command",
+        "Thoughtweft Imbuer",
+        "Figure of Fable"
+      ],
+      "href": "index_pages/01_selesnya-kithkin-mistmeadow-council-crossroads-watcher.html"
+    },
+    {
+      "cluster_id": 2,
+      "title": "Izzet Elementals | Kulrath Zealot / Flamekin Gildweaver",
+      "color_name": "Izzet Elementals",
+      "deck_count": 15634,
+      "games": 67280,
+      "win_rate": 0.5508323424494649,
+      "signposts": [
+        "Kulrath Zealot",
+        "Flamekin Gildweaver",
+        "Flaring Cinder",
+        "Flame-Chain Mauler"
+      ],
+      "pick_cards": [
+        "Ashling's Command",
+        "Sunderflock",
+        "Eclipsed Flamekin",
+        "Rimekin Recluse"
+      ],
+      "href": "index_pages/02_izzet-elementals-kulrath-zealot-flamekin-gildweaver.html"
+    },
+    {
+      "cluster_id": 3,
+      "title": "Five-Color | Great Forest Druid / Foraging Wickermaw",
+      "color_name": "Five-Color",
+      "deck_count": 11302,
+      "games": 44111,
+      "win_rate": 0.5071524109632518,
+      "signposts": [
+        "Great Forest Druid",
+        "Foraging Wickermaw",
+        "Wildvine Pummeler",
+        "Tend the Sprigs"
+      ],
+      "pick_cards": [
+        "Shinestriker",
+        "Explosive Prodigy",
+        "Prismabasher",
+        "Noggle Robber"
+      ],
+      "href": "index_pages/03_five-color-great-forest-druid-foraging-wickermaw.html"
+    },
+    {
+      "cluster_id": 4,
+      "title": "Golgari Elves | Scarblade Scout / Safewright Cavalry",
+      "color_name": "Golgari Elves",
+      "deck_count": 17005,
+      "games": 79178,
+      "win_rate": 0.5701710070979312,
+      "signposts": [
+        "Scarblade Scout",
+        "Safewright Cavalry",
+        "Lys Alana Informant",
+        "Dawnhand Eulogist"
+      ],
+      "pick_cards": [
+        "Gloom Ripper",
+        "Eclipsed Elf",
+        "Morcant's Loyalist",
+        "Trystan's Command"
+      ],
+      "href": "index_pages/04_golgari-elves-scarblade-scout-safewright-cavalry.html"
+    },
+    {
+      "cluster_id": 5,
+      "title": "White Base Kithkin | Timid Shieldbearer / Reluctant Dounguard",
+      "color_name": "White Base Kithkin",
+      "deck_count": 5824,
+      "games": 24407,
+      "win_rate": 0.516286311304134,
+      "signposts": [
+        "Timid Shieldbearer",
+        "Reluctant Dounguard",
+        "Spiral into Solitude",
+        "Sun-Dappled Celebrant"
+      ],
+      "pick_cards": [
+        "Kinbinding",
+        "Thoughtweft Imbuer",
+        "Pyrrhic Strike",
+        "Figure of Fable"
+      ],
+      "href": "index_pages/05_white-base-kithkin-timid-shieldbearer-reluctant-dounguard.html"
+    },
+    {
+      "cluster_id": 6,
+      "title": "Rakdos Goblins | Gristle Glutton / Elder Auntie",
+      "color_name": "Rakdos Goblins",
+      "deck_count": 10159,
+      "games": 43081,
+      "win_rate": 0.5284232028040203,
+      "signposts": [
+        "Gristle Glutton",
+        "Elder Auntie",
+        "Bile-Vial Boggart",
+        "Boggart Prankster"
+      ],
+      "pick_cards": [
+        "Grub's Command",
+        "Eclipsed Boggart",
+        "Boggart Mischief",
+        "Boggart Cursecrafter"
+      ],
+      "href": "index_pages/06_rakdos-goblins-gristle-glutton-elder-auntie.html"
+    }
+  ]
+}</script>
+<script>
+(function() {
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var heroStats = document.getElementById('heroStats');
+  [
+    'Deck builds: ' + payload.meta.deck_count,
+    'Game rows: ' + payload.meta.game_count,
+    'Archetypes: ' + payload.meta.n_clusters,
+    'Views per page: analysis + pick'
+  ].forEach(function(text) {
+    var span = document.createElement('span');
+    span.className = 'pill';
+    span.textContent = text;
+    heroStats.appendChild(span);
+  });
+  var grid = document.getElementById('archetypeGrid');
+  payload.overview.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '' +
+      '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
+      '<div class="row"><span>Game WR</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
+      '<div class="row"><span>Games</span><strong>' + row.games + '</strong></div>' +
+      '<div><div class="muted">Archetype-defining cards</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Draft priority candidates</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Archetype Page</a><span class="link-btn secondary">Mode switch inside page</span></div>';
+    grid.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

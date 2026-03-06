@@ -1,0 +1,3744 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>White Base Control | No More Lies / The Wandering Emperor | Powered Cube Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "Cube - Powered",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 57913,
+      "cluster_feature_count": 539,
+      "svd_components": 48,
+      "svd_explained_variance": 0.23329785466194153,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.11178616434335709,
+          "dominant_main_color_share": 0.3637786402379163,
+          "objective": 0.13361288275763206
+        },
+        {
+          "k": 8,
+          "silhouette": 0.08127741515636444,
+          "dominant_main_color_share": 0.4612962424071051,
+          "objective": 0.10895518970079074
+        },
+        {
+          "k": 9,
+          "silhouette": 0.0866159126162529,
+          "dominant_main_color_share": 0.4338965083091679,
+          "objective": 0.11264970311480298
+        },
+        {
+          "k": 10,
+          "silhouette": 0.08284851163625717,
+          "dominant_main_color_share": 0.48828557861292066,
+          "objective": 0.11214564635303241
+        },
+        {
+          "k": 11,
+          "silhouette": 0.08475761115550995,
+          "dominant_main_color_share": 0.5052627611749999,
+          "objective": 0.11507337682600995
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "1": 12970,
+        "0": 9261,
+        "5": 5538,
+        "6": 9349,
+        "2": 7492,
+        "3": 5654,
+        "4": 7649
+      }
+    },
+    "deck_count": 57913,
+    "game_count": 266117
+  },
+  "segment": {
+    "cluster_id": 3,
+    "title": "White Base Control | No More Lies / The Wandering Emperor",
+    "color_signature": "W",
+    "color_name": "White Base Control",
+    "deck_count": 5654,
+    "draft_count": 5441,
+    "games": 26028,
+    "wins": 14244,
+    "win_rate": 0.5472568003688336,
+    "draft_match_win_rate": 0.5474355021071025,
+    "top_deck_colors": [
+      {
+        "colors": "WUB",
+        "count": 1174
+      },
+      {
+        "colors": "WU",
+        "count": 740
+      },
+      {
+        "colors": "WUBR",
+        "count": 692
+      },
+      {
+        "colors": "WUR",
+        "count": 677
+      },
+      {
+        "colors": "WB",
+        "count": 518
+      },
+      {
+        "colors": "WBR",
+        "count": 416
+      },
+      {
+        "colors": "WUBRG",
+        "count": 380
+      },
+      {
+        "colors": "WUBG",
+        "count": 306
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "WU",
+        "count": 1845
+      },
+      {
+        "colors": "WB",
+        "count": 1127
+      },
+      {
+        "colors": "WUB",
+        "count": 812
+      },
+      {
+        "colors": "WUR",
+        "count": 555
+      },
+      {
+        "colors": "W",
+        "count": 368
+      },
+      {
+        "colors": "WBR",
+        "count": 258
+      },
+      {
+        "colors": "WR",
+        "count": 174
+      },
+      {
+        "colors": "WUG",
+        "count": 167
+      }
+    ],
+    "signposts": [
+      {
+        "card": "No More Lies",
+        "score": 1887.1551308831656,
+        "z_score": 51.649600815819014,
+        "log_odds": 1.9773799319059138,
+        "cluster_prevalence": 0.23532276632594032,
+        "global_prevalence": 0.05991320898067433,
+        "lift": 3.9277276301766157,
+        "support_decks": 1335
+      },
+      {
+        "card": "The Wandering Emperor",
+        "score": 1788.731690487474,
+        "z_score": 50.19302160419508,
+        "log_odds": 1.9579256855868312,
+        "cluster_prevalence": 0.22383069508460704,
+        "global_prevalence": 0.05721448567842616,
+        "lift": 3.9121333073349076,
+        "support_decks": 1270
+      },
+      {
+        "card": "Solitude",
+        "score": 1747.5161029572935,
+        "z_score": 44.71998691776105,
+        "log_odds": 1.532668748087171,
+        "cluster_prevalence": 0.2691885511613973,
+        "global_prevalence": 0.0928488232341313,
+        "lift": 2.899213385640879,
+        "support_decks": 1527
+      },
+      {
+        "card": "Teferi, Time Raveler",
+        "score": 1717.4470075934526,
+        "z_score": 46.51954065153392,
+        "log_odds": 1.6990320893726678,
+        "cluster_prevalence": 0.2402707393063638,
+        "global_prevalence": 0.07285821849349194,
+        "lift": 3.297784989456282,
+        "support_decks": 1363
+      },
+      {
+        "card": "Lingering Souls",
+        "score": 1710.9141192243198,
+        "z_score": 51.1919441975607,
+        "log_odds": 2.2087506569537334,
+        "cluster_prevalence": 0.19689034440862524,
+        "global_prevalence": 0.04294064709359745,
+        "lift": 4.585174135346974,
+        "support_decks": 1117
+      },
+      {
+        "card": "Reprieve",
+        "score": 1632.2748263919225,
+        "z_score": 42.47203157046928,
+        "log_odds": 1.4638509582377175,
+        "cluster_prevalence": 0.26046134103547824,
+        "global_prevalence": 0.09347854445951037,
+        "lift": 2.7863221720177234,
+        "support_decks": 1477
+      },
+      {
+        "card": "Oust",
+        "score": 1568.5578622833277,
+        "z_score": 41.20655913512162,
+        "log_odds": 1.4252898834359065,
+        "cluster_prevalence": 0.2555365711554365,
+        "global_prevalence": 0.0938066011517804,
+        "lift": 2.724078775031778,
+        "support_decks": 1449
+      },
+      {
+        "card": "Teferi, Hero of Dominaria",
+        "score": 1513.393371013579,
+        "z_score": 43.797534554146374,
+        "log_odds": 1.688416535413994,
+        "cluster_prevalence": 0.21048090581809883,
+        "global_prevalence": 0.06298087164600412,
+        "lift": 3.341981467026155,
+        "support_decks": 1194
+      },
+      {
+        "card": "Elspeth, Storm Slayer",
+        "score": 1446.612369955163,
+        "z_score": 40.04487280842751,
+        "log_odds": 1.4464551710223263,
+        "cluster_prevalence": 0.2300839716120722,
+        "global_prevalence": 0.08183390893891675,
+        "lift": 2.811596984616899,
+        "support_decks": 1305
+      },
+      {
+        "card": "Overlord of the Mistmoors",
+        "score": 1402.025063471138,
+        "z_score": 43.51681488623917,
+        "log_odds": 1.815482045075348,
+        "cluster_prevalence": 0.18298241188241335,
+        "global_prevalence": 0.04965259197097534,
+        "lift": 3.6852539740397963,
+        "support_decks": 1038
+      },
+      {
+        "card": "Fractured Identity",
+        "score": 1371.1449029366765,
+        "z_score": 39.016640743901135,
+        "log_odds": 1.4401958845551825,
+        "cluster_prevalence": 0.2177492396019892,
+        "global_prevalence": 0.0771379053051178,
+        "lift": 2.8228565287154925,
+        "support_decks": 1235
+      },
+      {
+        "card": "Wrath of God",
+        "score": 1357.5805568000555,
+        "z_score": 44.138751152231215,
+        "log_odds": 1.9685460507828854,
+        "cluster_prevalence": 0.16677238392142502,
+        "global_prevalence": 0.04086606741533176,
+        "lift": 4.080950149337268,
+        "support_decks": 946
+      }
+    ],
+    "nodes": [
+      {
+        "id": "No More Lies",
+        "label": "No More Lies",
+        "color_identity": "WU",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 1561,
+        "win_rate": 0.5932094811018578,
+        "standalone_delta": 0.045952680733024165,
+        "dependency_score": 1.3494271481721694,
+        "degree": 7,
+        "signpost_score": 1887.1551308831656,
+        "signpost_lift": 3.9277276301766157,
+        "deck_prevalence": 0.23532276632594032,
+        "draft_weight": 1349.0,
+        "draft_drafts": 1349,
+        "draft_presence": 0.24793236537401214,
+        "draft_win_rate": 0.5509824743860654,
+        "draft_win_lift": 0.0035469722789629454,
+        "analysis_score_raw": 1917.8781948528879,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 136.84735582399892,
+        "pick_priority_score": 8.096394624886539,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22No%20More%20Lies%22",
+        "community": 1,
+        "x": 1125.9899540529007,
+        "y": 673.493133531776,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "The Wandering Emperor",
+        "label": "The Wandering Emperor",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 4.0,
+        "types": "Legendary Planeswalker",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1319,
+        "win_rate": 0.601213040181956,
+        "standalone_delta": 0.053956239813122364,
+        "dependency_score": 0.17963537312732947,
+        "degree": 5,
+        "signpost_score": 1788.731690487474,
+        "signpost_lift": 3.9121333073349076,
+        "deck_prevalence": 0.22383069508460704,
+        "draft_weight": 1247.0,
+        "draft_drafts": 1247,
+        "draft_presence": 0.22918581143172212,
+        "draft_win_rate": 0.5514730821179009,
+        "draft_win_lift": 0.004037580010798458,
+        "analysis_score_raw": 1799.519000777603,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 153.72171564060562,
+        "pick_priority_score": 8.511492169800455,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22The%20Wandering%20Emperor%22",
+        "community": 0,
+        "x": 1152.265832282543,
+        "y": 549.248519649223,
+        "analysis_radius": 20.43446662230559,
+        "pick_radius": 30.0,
+        "radius": 20.43446662230559
+      },
+      {
+        "id": "Solitude",
+        "label": "Solitude",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Creature - Elemental Incarnation",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1641,
+        "win_rate": 0.6069469835466179,
+        "standalone_delta": 0.059690183177784295,
+        "dependency_score": 0.15266727350773993,
+        "degree": 5,
+        "signpost_score": 1747.5161029572935,
+        "signpost_lift": 2.899213385640879,
+        "deck_prevalence": 0.2691885511613973,
+        "draft_weight": 1419.0,
+        "draft_drafts": 1419,
+        "draft_presence": 0.26079764749127,
+        "draft_win_rate": 0.5616270262958499,
+        "draft_win_lift": 0.014191524188747473,
+        "analysis_score_raw": 1758.6207395253227,
+        "analysis_score": 9.98701130891684,
+        "pick_priority_score_raw": 210.76692792179307,
+        "pick_priority_score": 9.639656656370791,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Solitude%22",
+        "community": 2,
+        "x": 1100.9452411303942,
+        "y": 764.9373765167098,
+        "analysis_radius": 19.778981921056776,
+        "pick_radius": 30.0,
+        "radius": 19.778981921056776
+      },
+      {
+        "id": "Teferi, Time Raveler",
+        "label": "Teferi, Time Raveler",
+        "color_identity": "WU",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Legendary Planeswalker - Teferi",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 1509,
+        "win_rate": 0.6083499005964215,
+        "standalone_delta": 0.06109310022758785,
+        "dependency_score": 0.9259763520737013,
+        "degree": 4,
+        "signpost_score": 1717.4470075934526,
+        "signpost_lift": 3.297784989456282,
+        "deck_prevalence": 0.2402707393063638,
+        "draft_weight": 1257.0,
+        "draft_drafts": 1257,
+        "draft_presence": 0.23102370887704465,
+        "draft_win_rate": 0.5480366237103524,
+        "draft_win_lift": 0.0006011216032499878,
+        "analysis_score_raw": 1742.6676159626415,
+        "analysis_score": 9.979090528549628,
+        "pick_priority_score_raw": 149.12490704173936,
+        "pick_priority_score": 8.403080269181523,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Teferi%2C%20Time%20Raveler%22",
+        "community": 1,
+        "x": 1200.8352935875864,
+        "y": 582.2148290415894,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Lingering Souls",
+        "label": "Lingering Souls",
+        "color_identity": "WB",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(21, 11, 0)"
+          ],
+          "id": "WB"
+        },
+        "draw_games": 1110,
+        "win_rate": 0.5945945945945946,
+        "standalone_delta": 0.04733779422576101,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 1710.9141192243198,
+        "signpost_lift": 4.585174135346974,
+        "deck_prevalence": 0.19689034440862524,
+        "draft_weight": 1412.0,
+        "draft_drafts": 1412,
+        "draft_presence": 0.2595111192795442,
+        "draft_win_rate": 0.5479804593776588,
+        "draft_win_lift": 0.0005449572705563677,
+        "analysis_score_raw": 1717.5414104159263,
+        "analysis_score": 9.966467127671006,
+        "pick_priority_score_raw": 135.69057794725435,
+        "pick_priority_score": 8.066103235823915,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Lingering%20Souls%22",
+        "community": 3,
+        "x": 1001.4111095767488,
+        "y": 804.828076115491,
+        "analysis_radius": 13.603578682416856,
+        "pick_radius": 30.0,
+        "radius": 13.603578682416856
+      },
+      {
+        "id": "Reprieve",
+        "label": "Reprieve",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1580,
+        "win_rate": 0.5822784810126582,
+        "standalone_delta": 0.035021680643824604,
+        "dependency_score": 0.13061829107754405,
+        "degree": 7,
+        "signpost_score": 1632.2748263919225,
+        "signpost_lift": 2.7863221720177234,
+        "deck_prevalence": 0.26046134103547824,
+        "draft_weight": 1464.0,
+        "draft_drafts": 1464,
+        "draft_presence": 0.2690681859952215,
+        "draft_win_rate": 0.5553595896150798,
+        "draft_win_lift": 0.007924087507977351,
+        "analysis_score_raw": 1639.5289909214537,
+        "analysis_score": 9.926063731919948,
+        "pick_priority_score_raw": 122.60109484751911,
+        "pick_priority_score": 7.704278945263799,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Reprieve%22",
+        "community": 0,
+        "x": 1158.2541337503728,
+        "y": 581.8318229704565,
+        "analysis_radius": 17.628450914201938,
+        "pick_radius": 30.0,
+        "radius": 17.628450914201938
+      },
+      {
+        "id": "Oust",
+        "label": "Oust",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1574,
+        "win_rate": 0.6143583227445998,
+        "standalone_delta": 0.06710152237576616,
+        "dependency_score": 0.13900217470988205,
+        "degree": 6,
+        "signpost_score": 1568.5578622833277,
+        "signpost_lift": 2.724078775031778,
+        "deck_prevalence": 0.2555365711554365,
+        "draft_weight": 1447.0,
+        "draft_drafts": 1447,
+        "draft_presence": 0.26594376033817313,
+        "draft_win_rate": 0.5549491433501839,
+        "draft_win_lift": 0.007513641243081404,
+        "analysis_score_raw": 1580.454114560713,
+        "analysis_score": 9.894168676519069,
+        "pick_priority_score_raw": 198.10090034384623,
+        "pick_priority_score": 9.417967255332401,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Oust%22",
+        "community": 0,
+        "x": 1165.6356757331582,
+        "y": 500.0853684029757,
+        "analysis_radius": 19.694662020222893,
+        "pick_radius": 30.0,
+        "radius": 19.694662020222893
+      },
+      {
+        "id": "Teferi, Hero of Dominaria",
+        "label": "Teferi, Hero of Dominaria",
+        "color_identity": "WU",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Legendary Planeswalker - Teferi",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 1329,
+        "win_rate": 0.5981941309255079,
+        "standalone_delta": 0.050937330556674265,
+        "dependency_score": 1.4514513097040425,
+        "degree": 7,
+        "signpost_score": 1513.393371013579,
+        "signpost_lift": 3.341981467026155,
+        "deck_prevalence": 0.21048090581809883,
+        "draft_weight": 1131.0,
+        "draft_drafts": 1131,
+        "draft_presence": 0.20786620106598053,
+        "draft_win_rate": 0.539722070666247,
+        "draft_win_lift": -0.007713431440855456,
+        "analysis_score_raw": 1546.6507208661865,
+        "analysis_score": 9.875377576216513,
+        "pick_priority_score_raw": 116.28268823907551,
+        "pick_priority_score": 7.515667239166317,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Teferi%2C%20Hero%20of%20Dominaria%22",
+        "community": 0,
+        "x": 1179.0984809945505,
+        "y": 556.135171951192,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Elspeth, Storm Slayer",
+        "label": "Elspeth, Storm Slayer",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Legendary Planeswalker - Elspeth",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1379,
+        "win_rate": 0.6142131979695431,
+        "standalone_delta": 0.06695639760070948,
+        "dependency_score": 0.111660991757999,
+        "degree": 4,
+        "signpost_score": 1446.612369955163,
+        "signpost_lift": 2.811596984616899,
+        "deck_prevalence": 0.2300839716120722,
+        "draft_weight": 1241.0,
+        "draft_drafts": 1241,
+        "draft_presence": 0.22808307296452857,
+        "draft_win_rate": 0.5594867269166788,
+        "draft_win_lift": 0.012051224809576322,
+        "analysis_score_raw": 1457.9961634709064,
+        "analysis_score": 9.824074940573375,
+        "pick_priority_score_raw": 203.37670939156476,
+        "pick_priority_score": 9.511974946792783,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Elspeth%2C%20Storm%20Slayer%22",
+        "community": 1,
+        "x": 1211.2435284107387,
+        "y": 680.4806836235352,
+        "analysis_radius": 18.702397571326987,
+        "pick_radius": 30.0,
+        "radius": 18.702397571326987
+      },
+      {
+        "id": "Overlord of the Mistmoors",
+        "label": "Overlord of the Mistmoors",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 7.0,
+        "types": "Enchantment Creature - Avatar Horror",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1086,
+        "win_rate": 0.6132596685082873,
+        "standalone_delta": 0.06600286813945366,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 1402.025063471138,
+        "signpost_lift": 3.6852539740397963,
+        "deck_prevalence": 0.18298241188241335,
+        "draft_weight": 1143.0,
+        "draft_drafts": 1143,
+        "draft_presence": 0.21007167800036758,
+        "draft_win_rate": 0.5536416079658001,
+        "draft_win_lift": 0.00620610585869763,
+        "analysis_score_raw": 1411.2654650106615,
+        "analysis_score": 9.7957634339482,
+        "pick_priority_score_raw": 182.30128023032677,
+        "pick_priority_score": 9.120771503194847,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Overlord%20of%20the%20Mistmoors%22",
+        "community": 4,
+        "x": 900.0,
+        "y": 825.0,
+        "analysis_radius": 14.630157747669951,
+        "pick_radius": 30.0,
+        "radius": 14.630157747669951
+      },
+      {
+        "id": "Fractured Identity",
+        "label": "Fractured Identity",
+        "color_identity": "WU",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 1434,
+        "win_rate": 0.6269177126917713,
+        "standalone_delta": 0.0796609123229377,
+        "dependency_score": 1.0899874840852868,
+        "degree": 7,
+        "signpost_score": 1371.1449029366765,
+        "signpost_lift": 2.8228565287154925,
+        "deck_prevalence": 0.2177492396019892,
+        "draft_weight": 1151.0,
+        "draft_drafts": 1151,
+        "draft_presence": 0.21154199595662562,
+        "draft_win_rate": 0.5532470365586956,
+        "draft_win_lift": 0.005811534451593103,
+        "analysis_score_raw": 1401.917205375423,
+        "analysis_score": 9.789987517432841,
+        "pick_priority_score_raw": 199.04942073946265,
+        "pick_priority_score": 9.435050879705889,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fractured%20Identity%22",
+        "community": 0,
+        "x": 1166.5199675771648,
+        "y": 528.8575633278779,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Wrath of God",
+        "label": "Wrath of God",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 998,
+        "win_rate": 0.5851703406813628,
+        "standalone_delta": 0.03791354031252914,
+        "dependency_score": 1.0207694984505788,
+        "degree": 2,
+        "signpost_score": 1357.5805568000555,
+        "signpost_lift": 4.080950149337268,
+        "deck_prevalence": 0.16677238392142502,
+        "draft_weight": 1142.0,
+        "draft_drafts": 1142,
+        "draft_presence": 0.20988788825583532,
+        "draft_win_rate": 0.5376018740924849,
+        "draft_win_lift": -0.009833628014617513,
+        "analysis_score_raw": 1381.26230341592,
+        "analysis_score": 9.777088012763276,
+        "pick_priority_score_raw": 92.17844385958661,
+        "pick_priority_score": 6.688676921766487,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Wrath%20of%20God%22",
+        "community": 2,
+        "x": 1025.5715433602982,
+        "y": 649.7679950849852,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Swords to Plowshares",
+        "label": "Swords to Plowshares",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1454,
+        "win_rate": 0.6011004126547456,
+        "standalone_delta": 0.053843612285911946,
+        "dependency_score": 0.10924659877521374,
+        "degree": 5,
+        "signpost_score": 1327.778258084643,
+        "signpost_lift": 2.378863710184009,
+        "deck_prevalence": 0.24708417385245543,
+        "draft_weight": 1188.0,
+        "draft_drafts": 1188,
+        "draft_presence": 0.21834221650431906,
+        "draft_win_rate": 0.5543665266712402,
+        "draft_win_lift": 0.006931024564137744,
+        "analysis_score_raw": 1337.2828025826248,
+        "analysis_score": 9.748967235124606,
+        "pick_priority_score_raw": 143.32937820085905,
+        "pick_priority_score": 8.261565982059627,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Swords%20to%20Plowshares%22",
+        "community": 0,
+        "x": 1202.8268044472184,
+        "y": 533.7561852952991,
+        "analysis_radius": 17.89427623163285,
+        "pick_radius": 30.0,
+        "radius": 17.89427623163285
+      },
+      {
+        "id": "Path to Exile",
+        "label": "Path to Exile",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1203,
+        "win_rate": 0.5569409808811305,
+        "standalone_delta": 0.009684180512296914,
+        "dependency_score": 0.10595274809713003,
+        "degree": 4,
+        "signpost_score": 1280.8874045082846,
+        "signpost_lift": 2.7426800265420312,
+        "deck_prevalence": 0.20896585279661237,
+        "draft_weight": 1151.0,
+        "draft_drafts": 1151,
+        "draft_presence": 0.21154199595662562,
+        "draft_win_rate": 0.5326341868290633,
+        "draft_win_lift": -0.014801315278039184,
+        "analysis_score_raw": 1284.1503392457544,
+        "analysis_score": 9.713734653470604,
+        "pick_priority_score_raw": 21.219270757324157,
+        "pick_priority_score": 1.535752100883768,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Path%20to%20Exile%22",
+        "community": 2,
+        "x": 1149.902991495733,
+        "y": 755.0598213710604,
+        "analysis_radius": 15.346928859673012,
+        "pick_radius": 30.0,
+        "radius": 15.346928859673012
+      },
+      {
+        "id": "Vindicate",
+        "label": "Vindicate",
+        "color_identity": "WB",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(21, 11, 0)"
+          ],
+          "id": "WB"
+        },
+        "draw_games": 873,
+        "win_rate": 0.5567010309278351,
+        "standalone_delta": 0.009444230559001454,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 1263.4289520823045,
+        "signpost_lift": 4.305964867660225,
+        "deck_prevalence": 0.15091445129971884,
+        "draft_weight": 1061.0,
+        "draft_drafts": 1061,
+        "draft_presence": 0.19500091894872265,
+        "draft_win_rate": 0.5468926017029625,
+        "draft_win_lift": -0.0005429004041399565,
+        "analysis_score_raw": 1264.7511443605647,
+        "analysis_score": 9.700506673832159,
+        "pick_priority_score_raw": 22.512998100041777,
+        "pick_priority_score": 1.7391773734364184,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Vindicate%22",
+        "community": 5,
+        "x": 798.5888904232512,
+        "y": 804.828076115491,
+        "analysis_radius": 11.51943268074508,
+        "pick_radius": 30.0,
+        "radius": 11.51943268074508
+      },
+      {
+        "id": "Phelia, Exuberant Shepherd",
+        "label": "Phelia, Exuberant Shepherd",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Legendary Creature - Dog",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1483,
+        "win_rate": 0.6062036412677007,
+        "standalone_delta": 0.05894684089886704,
+        "dependency_score": 0.060383880126206435,
+        "degree": 1,
+        "signpost_score": 1261.0833431868184,
+        "signpost_lift": 2.2685751958075637,
+        "deck_prevalence": 0.247104970795025,
+        "draft_weight": 1325.0,
+        "draft_drafts": 1325,
+        "draft_presence": 0.243521411505238,
+        "draft_win_rate": 0.5691294629219928,
+        "draft_win_lift": 0.02169396081489039,
+        "analysis_score_raw": 1270.4228107549316,
+        "analysis_score": 9.704394942648468,
+        "pick_priority_score_raw": 221.9690321883752,
+        "pick_priority_score": 9.824941202493603,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Phelia%2C%20Exuberant%20Shepherd%22",
+        "community": 0,
+        "x": 1130.3991052149925,
+        "y": 670.0853684029756,
+        "analysis_radius": 16.41589593398112,
+        "pick_radius": 30.0,
+        "radius": 16.41589593398112
+      },
+      {
+        "id": "Sunfall",
+        "label": "Sunfall",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1030,
+        "win_rate": 0.6203883495145631,
+        "standalone_delta": 0.0731315491457295,
+        "dependency_score": 2.272092008418301,
+        "degree": 3,
+        "signpost_score": 1254.27822684458,
+        "signpost_lift": 4.018319367291236,
+        "deck_prevalence": 0.15567962990241388,
+        "draft_weight": 1101.0,
+        "draft_drafts": 1101,
+        "draft_presence": 0.20235250873001287,
+        "draft_win_rate": 0.5418386374188792,
+        "draft_win_lift": -0.005596864688223291,
+        "analysis_score_raw": 1305.4142998765117,
+        "analysis_score": 9.728006724089042,
+        "pick_priority_score_raw": 173.74649154983783,
+        "pick_priority_score": 8.948972761542397,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sunfall%22",
+        "community": 1,
+        "x": 1041.2435284107385,
+        "y": 709.4557921100945,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Containment Priest",
+        "label": "Containment Priest",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Creature - Human Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1134,
+        "win_rate": 0.5652557319223986,
+        "standalone_delta": 0.017998931553565023,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 1192.5464982864362,
+        "signpost_lift": 2.7534945477567514,
+        "deck_prevalence": 0.1943395077446541,
+        "draft_weight": 1286.0,
+        "draft_drafts": 1286,
+        "draft_presence": 0.23635361146848005,
+        "draft_win_rate": 0.5542643184765466,
+        "draft_win_lift": 0.006828816369444102,
+        "analysis_score_raw": 1195.0663487039353,
+        "analysis_score": 9.65125813665027,
+        "pick_priority_score_raw": 70.50784683534638,
+        "pick_priority_score": 5.7371785005366895,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Containment%20Priest%22",
+        "community": 6,
+        "x": 712.6167029855649,
+        "y": 747.3832970144351,
+        "analysis_radius": 11.989941235446077,
+        "pick_radius": 30.0,
+        "radius": 11.989941235446077
+      },
+      {
+        "id": "Parallax Wave",
+        "label": "Parallax Wave",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 1513,
+        "win_rate": 0.658955717118308,
+        "standalone_delta": 0.11169891674947441,
+        "dependency_score": 0.10269110952319571,
+        "degree": 1,
+        "signpost_score": 1186.2098885034106,
+        "signpost_lift": 2.1439532705867754,
+        "deck_prevalence": 0.2481888060675066,
+        "draft_weight": 1399.0,
+        "draft_drafts": 1399,
+        "draft_presence": 0.25712185260062487,
+        "draft_win_rate": 0.576780147055031,
+        "draft_win_lift": 0.029344644947928544,
+        "analysis_score_raw": 1203.6961768197546,
+        "analysis_score": 9.657510582491774,
+        "pick_priority_score_raw": 378.3848757534693,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Parallax%20Wave%22",
+        "community": 2,
+        "x": 1073.1134120713152,
+        "y": 819.7679950849852,
+        "analysis_radius": 20.84032036405614,
+        "pick_radius": 30.0,
+        "radius": 20.84032036405614
+      },
+      {
+        "id": "Ancestral Recall",
+        "label": "Ancestral Recall",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 737,
+        "win_rate": 0.6716417910447762,
+        "standalone_delta": 0.12438499067594255,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 169.28147792325035,
+        "signpost_lift": 1.2810961316417004,
+        "deck_prevalence": 0.10957031127065489,
+        "draft_weight": 368.0,
+        "draft_drafts": 368,
+        "draft_presence": 0.06763462598786987,
+        "draft_win_rate": 0.5830115851103364,
+        "draft_win_lift": 0.035576083003233894,
+        "analysis_score_raw": 186.69537661788232,
+        "analysis_score": 8.040613230194056,
+        "pick_priority_score_raw": 205.09063792796053,
+        "pick_priority_score": 9.541993214372743,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ancestral%20Recall%22",
+        "community": 7,
+        "x": 655.171923884509,
+        "y": 661.4111095767488,
+        "analysis_radius": 17.84117448717684,
+        "pick_radius": 30.0,
+        "radius": 17.84117448717684
+      },
+      {
+        "id": "Time Walk",
+        "label": "Time Walk",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 642,
+        "win_rate": 0.6697819314641744,
+        "standalone_delta": 0.1225251310953408,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 90.21200875420155,
+        "signpost_lift": 1.160156300333481,
+        "deck_prevalence": 0.09742381916177749,
+        "draft_weight": 382.0,
+        "draft_drafts": 382,
+        "draft_presence": 0.07020768241132144,
+        "draft_win_rate": 0.573045022502153,
+        "draft_win_lift": 0.02560952039505049,
+        "analysis_score_raw": 107.36552710754927,
+        "analysis_score": 7.562882846296339,
+        "pick_priority_score_raw": 184.67464749459214,
+        "pick_priority_score": 9.1670140675558,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Time%20Walk%22",
+        "community": 8,
+        "x": 635.0,
+        "y": 560.0,
+        "analysis_radius": 17.738882210243744,
+        "pick_radius": 30.0,
+        "radius": 17.738882210243744
+      },
+      {
+        "id": "Sanguine Evangelist",
+        "label": "Sanguine Evangelist",
+        "color_identity": "W",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Vampire Cleric",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 915,
+        "win_rate": 0.6371584699453552,
+        "standalone_delta": 0.08990166957652157,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 420.8365018826355,
+        "signpost_lift": 1.5435974513756918,
+        "deck_prevalence": 0.1545181960697754,
+        "draft_weight": 1057.0,
+        "draft_drafts": 1057,
+        "draft_presence": 0.19426575997059364,
+        "draft_win_rate": 0.5678043310734668,
+        "draft_win_lift": 0.020368828966364383,
+        "analysis_score_raw": 433.4227356233485,
+        "analysis_score": 8.770456257710537,
+        "pick_priority_score_raw": 239.316961455729,
+        "pick_priority_score": 10.0,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sanguine%20Evangelist%22",
+        "community": 9,
+        "x": 655.1719238845089,
+        "y": 458.58889042325126,
+        "analysis_radius": 15.944591826708686,
+        "pick_radius": 30.0,
+        "radius": 15.944591826708686
+      },
+      {
+        "id": "Narset, Parter of Veils",
+        "label": "Narset, Parter of Veils",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Legendary Planeswalker - Narset",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 360,
+        "win_rate": 0.5722222222222222,
+        "standalone_delta": 0.02496542185338857,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -61.75939861289161,
+        "signpost_lift": 0.837574721389244,
+        "deck_prevalence": 0.05642922223882468,
+        "draft_weight": 351.0,
+        "draft_drafts": 351,
+        "draft_presence": 0.06451020033082154,
+        "draft_win_rate": 0.5113217838458728,
+        "draft_win_lift": -0.036113718261229666,
+        "analysis_score_raw": -58.26423955341721,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 25.72498656809124,
+        "pick_priority_score": 2.1994377474221447,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Narset%2C%20Parter%20of%20Veils%22",
+        "community": 10,
+        "x": 712.6167029855649,
+        "y": 372.6167029855649,
+        "analysis_radius": 12.373098201936372,
+        "pick_radius": 30.0,
+        "radius": 12.373098201936372
+      },
+      {
+        "id": "Treasure Cruise",
+        "label": "Treasure Cruise",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 8.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 362,
+        "win_rate": 0.6022099447513812,
+        "standalone_delta": 0.054953144382547614,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 46.09052119028535,
+        "signpost_lift": 1.140544236757059,
+        "deck_prevalence": 0.05742599497051882,
+        "draft_weight": 423.0,
+        "draft_drafts": 423,
+        "draft_presence": 0.0777430619371439,
+        "draft_win_rate": 0.5350943158720263,
+        "draft_win_lift": -0.012341186235076185,
+        "analysis_score_raw": 53.783961403842014,
+        "analysis_score": 6.969655492746104,
+        "pick_priority_score_raw": 63.03571519335212,
+        "pick_priority_score": 5.340466674692654,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Treasure%20Cruise%22",
+        "community": 11,
+        "x": 798.5888904232511,
+        "y": 315.17192388450906,
+        "analysis_radius": 14.02242294104012,
+        "pick_radius": 30.0,
+        "radius": 14.02242294104012
+      },
+      {
+        "id": "Consider",
+        "label": "Consider",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 276,
+        "win_rate": 0.5579710144927537,
+        "standalone_delta": 0.01071421412392004,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -59.9109178487981,
+        "signpost_lift": 0.8040101733719678,
+        "deck_prevalence": 0.04478522790373529,
+        "draft_weight": 383.0,
+        "draft_drafts": 383,
+        "draft_presence": 0.0703914721558537,
+        "draft_win_rate": 0.5217873644046339,
+        "draft_win_lift": -0.025648137702468543,
+        "analysis_score_raw": -58.410927871449296,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 11.5324717117582,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Consider%22",
+        "community": 12,
+        "x": 900.0,
+        "y": 295.0,
+        "analysis_radius": 11.589281776815602,
+        "pick_radius": 30.0,
+        "radius": 11.589281776815602
+      },
+      {
+        "id": "Thirst for Discovery",
+        "label": "Thirst for Discovery",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 251,
+        "win_rate": 0.5577689243027888,
+        "standalone_delta": 0.010512123933955175,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -42.62037804707911,
+        "signpost_lift": 0.8486899682158764,
+        "deck_prevalence": 0.04245125101980975,
+        "draft_weight": 346.0,
+        "draft_drafts": 346,
+        "draft_presence": 0.06359125160816026,
+        "draft_win_rate": 0.5265895603188206,
+        "draft_win_lift": -0.020845941788281808,
+        "analysis_score_raw": -41.148680696325385,
+        "analysis_score": 0.23424343528514951,
+        "pick_priority_score_raw": 10.75452445121612,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Thirst%20for%20Discovery%22",
+        "community": 13,
+        "x": 1001.4111095767489,
+        "y": 315.17192388450906,
+        "analysis_radius": 11.578166816367535,
+        "pick_radius": 30.0,
+        "radius": 11.578166816367535
+      },
+      {
+        "id": "Gitaxian Probe",
+        "label": "Gitaxian Probe",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 367,
+        "win_rate": 0.5640326975476839,
+        "standalone_delta": 0.016775897178850308,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -49.66785000849289,
+        "signpost_lift": 0.8804572424972156,
+        "deck_prevalence": 0.06298426989655781,
+        "draft_weight": 380.0,
+        "draft_drafts": 380,
+        "draft_presence": 0.06984010292225694,
+        "draft_win_rate": 0.5396968981444388,
+        "draft_win_lift": -0.0077386039626636816,
+        "analysis_score_raw": -47.319224403453845,
+        "analysis_score": 0.11542088748408139,
+        "pick_priority_score_raw": 17.98623417271063,
+        "pick_priority_score": 0.9705315189402768,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Gitaxian%20Probe%22",
+        "community": 14,
+        "x": 1087.3832970144351,
+        "y": 372.61670298556487,
+        "analysis_radius": 11.922674344836768,
+        "pick_radius": 30.0,
+        "radius": 11.922674344836768
+      },
+      {
+        "id": "Cryptic Command",
+        "label": "Cryptic Command",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 419,
+        "win_rate": 0.594272076372315,
+        "standalone_delta": 0.04701527600348143,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 73.74484447622224,
+        "signpost_lift": 1.2023728832549898,
+        "deck_prevalence": 0.0653075089819112,
+        "draft_weight": 507.0,
+        "draft_drafts": 507,
+        "draft_presence": 0.09318140047785334,
+        "draft_win_rate": 0.5420388421751864,
+        "draft_win_lift": -0.00539665993191607,
+        "analysis_score_raw": 80.32698311670964,
+        "analysis_score": 7.313253466480156,
+        "pick_priority_score_raw": 59.40279113994396,
+        "pick_priority_score": 5.130527267458817,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Cryptic%20Command%22",
+        "community": 15,
+        "x": 1144.8280761154908,
+        "y": 458.58889042325103,
+        "analysis_radius": 13.585840180191479,
+        "pick_radius": 30.0,
+        "radius": 13.585840180191479
+      }
+    ],
+    "edges": [
+      {
+        "from": "Fractured Identity",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 141,
+        "pair_win_rate": 0.7446808510638298,
+        "pair_expected_win_rate": 0.6742277571944222,
+        "pair_lift_vs_baseline": 0.19742405069499613,
+        "synergy_delta_logit": 0.3430719346868647,
+        "synergy_delta_prob": 0.07045309386940757,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.407675174227177,
+        "draft_pair_events": 345,
+        "quality_score": 1.6407214354612318,
+        "pick_score_raw": 4.327072880556179,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Fractured Identity",
+        "to": "Oust",
+        "pair_games": 122,
+        "pair_win_rate": 0.7622950819672131,
+        "pair_expected_win_rate": 0.6889238287444215,
+        "pair_lift_vs_baseline": 0.21503828159837945,
+        "synergy_delta_logit": 0.3702107574525739,
+        "synergy_delta_prob": 0.07337125322279159,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 294,
+        "quality_score": 1.2343846889026961,
+        "pick_score_raw": 3.4819141642144324,
+        "pick_score": 9.663929608383983
+      },
+      {
+        "from": "Reprieve",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 110,
+        "pair_win_rate": 0.7181818181818181,
+        "pair_expected_win_rate": 0.6319257047636231,
+        "pair_lift_vs_baseline": 0.17092501781298453,
+        "synergy_delta_logit": 0.3949736235203257,
+        "synergy_delta_prob": 0.08625611341819506,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 310,
+        "quality_score": 1.0178934727513278,
+        "pick_score_raw": 2.6920534119342308,
+        "pick_score": 6.7663363205299145
+      },
+      {
+        "from": "No More Lies",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 180,
+        "pair_win_rate": 0.6888888888888889,
+        "pair_expected_win_rate": 0.642355502920926,
+        "pair_lift_vs_baseline": 0.14163208852005527,
+        "synergy_delta_logit": 0.2093274496774653,
+        "synergy_delta_prob": 0.04653338596796286,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.8055723912209833,
+        "draft_pair_events": 409,
+        "quality_score": 0.8886700538768754,
+        "pick_score_raw": 3.7792985678761806,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Fractured Identity",
+        "to": "The Wandering Emperor",
+        "pair_games": 100,
+        "pair_win_rate": 0.74,
+        "pair_expected_win_rate": 0.6769838751054502,
+        "pair_lift_vs_baseline": 0.19274319963116637,
+        "synergy_delta_logit": 0.3060233449651383,
+        "synergy_delta_prob": 0.06301612489454977,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 266,
+        "quality_score": 0.8329210511623405,
+        "pick_score_raw": 2.8406214903454696,
+        "pick_score": 7.3559874722593985
+      },
+      {
+        "from": "Solitude",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 99,
+        "pair_win_rate": 0.7171717171717171,
+        "pair_expected_win_rate": 0.6553974519592012,
+        "pair_lift_vs_baseline": 0.1699149168028835,
+        "synergy_delta_logit": 0.28762523663835093,
+        "synergy_delta_prob": 0.061774265212515944,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 290,
+        "quality_score": 0.6976791710846635,
+        "pick_score_raw": 2.532858325475773,
+        "pick_score": 6.107572168545858
+      },
+      {
+        "from": "Sunfall",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 125,
+        "pair_win_rate": 0.704,
+        "pair_expected_win_rate": 0.6680880124144416,
+        "pair_lift_vs_baseline": 0.15674319963116634,
+        "synergy_delta_logit": 0.16686881800287812,
+        "synergy_delta_prob": 0.03591198758555836,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.3646768158272473,
+        "draft_pair_events": 325,
+        "quality_score": 0.606111374238451,
+        "pick_score_raw": 3.291675578723886,
+        "pick_score": 9.015665604303353
+      },
+      {
+        "from": "Reprieve",
+        "to": "The Wandering Emperor",
+        "pair_games": 109,
+        "pair_win_rate": 0.6880733944954128,
+        "pair_expected_win_rate": 0.6348458818379868,
+        "pair_lift_vs_baseline": 0.1408165941265792,
+        "synergy_delta_logit": 0.23806483125559874,
+        "synergy_delta_prob": 0.05322751265742598,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 344,
+        "quality_score": 0.5164894236882733,
+        "pick_score_raw": 2.267644270410601,
+        "pick_score": 4.941196652892242
+      },
+      {
+        "from": "No More Lies",
+        "to": "Sunfall",
+        "pair_games": 103,
+        "pair_win_rate": 0.6990291262135923,
+        "pair_expected_win_rate": 0.6634826606284263,
+        "pair_lift_vs_baseline": 0.15177232584475864,
+        "synergy_delta_logit": 0.16382587064045484,
+        "synergy_delta_prob": 0.03554646558516594,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.1310991999889435,
+        "draft_pair_events": 331,
+        "quality_score": 0.5098475219184241,
+        "pick_score_raw": 2.851419436322812,
+        "pick_score": 7.3979500728461085
+      },
+      {
+        "from": "Path to Exile",
+        "to": "Solitude",
+        "pair_games": 99,
+        "pair_win_rate": 0.6767676767676768,
+        "pair_expected_win_rate": 0.6162496964223176,
+        "pair_lift_vs_baseline": 0.12951087639884318,
+        "synergy_delta_logit": 0.26529657383844907,
+        "synergy_delta_prob": 0.06051798034535916,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 311,
+        "quality_score": 0.5079854120053575,
+        "pick_score_raw": 2.0002169046071154,
+        "pick_score": 3.665014210481853
+      },
+      {
+        "from": "Elspeth, Storm Slayer",
+        "to": "No More Lies",
+        "pair_games": 95,
+        "pair_win_rate": 0.7052631578947368,
+        "pair_expected_win_rate": 0.6576216502223556,
+        "pair_lift_vs_baseline": 0.1580063575259032,
+        "synergy_delta_logit": 0.21977475440706684,
+        "synergy_delta_prob": 0.04764150767238118,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 301,
+        "quality_score": 0.4901786751283372,
+        "pick_score_raw": 2.329443850710911,
+        "pick_score": 5.221229187044735
+      },
+      {
+        "from": "Swords to Plowshares",
+        "to": "Teferi, Hero of Dominaria",
+        "pair_games": 96,
+        "pair_win_rate": 0.6979166666666666,
+        "pair_expected_win_rate": 0.649855808888847,
+        "pair_lift_vs_baseline": 0.150659866297833,
+        "synergy_delta_logit": 0.21899132785048658,
+        "synergy_delta_prob": 0.048060857777819654,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 252,
+        "quality_score": 0.46749008989282426,
+        "pick_score_raw": 2.2272673000908405,
+        "pick_score": 4.755361175775145
+      },
+      {
+        "from": "Swords to Plowshares",
+        "to": "The Wandering Emperor",
+        "pair_games": 96,
+        "pair_win_rate": 0.6979166666666666,
+        "pair_expected_win_rate": 0.6527119118237354,
+        "pair_lift_vs_baseline": 0.150659866297833,
+        "synergy_delta_logit": 0.2064155946474857,
+        "synergy_delta_prob": 0.04520475484293118,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 259,
+        "quality_score": 0.44111513396084223,
+        "pick_score_raw": 2.23000544163616,
+        "pick_score": 4.768036799429387
+      },
+      {
+        "from": "No More Lies",
+        "to": "Oust",
+        "pair_games": 119,
+        "pair_win_rate": 0.6974789915966386,
+        "pair_expected_win_rate": 0.6577595443908524,
+        "pair_lift_vs_baseline": 0.150222191227805,
+        "synergy_delta_logit": 0.18199581544840637,
+        "synergy_delta_prob": 0.03971944720578624,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 373,
+        "quality_score": 0.4380537095465119,
+        "pick_score_raw": 2.516951649529104,
+        "pick_score": 6.040124754132192
+      },
+      {
+        "from": "Parallax Wave",
+        "to": "Solitude",
+        "pair_games": 127,
+        "pair_win_rate": 0.7322834645669292,
+        "pair_expected_win_rate": 0.711678042725249,
+        "pair_lift_vs_baseline": 0.18502666419809555,
+        "synergy_delta_logit": 0.10269110952319571,
+        "synergy_delta_prob": 0.020605421841680127,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 412,
+        "quality_score": 0.3087307502060854,
+        "pick_score_raw": 3.1455756874897127,
+        "pick_score": 8.497993374090763
+      },
+      {
+        "from": "Oust",
+        "to": "Teferi, Time Raveler",
+        "pair_games": 137,
+        "pair_win_rate": 0.6934306569343066,
+        "pair_expected_win_rate": 0.6718265662829053,
+        "pair_lift_vs_baseline": 0.146173856565473,
+        "synergy_delta_logit": 0.09974928196418664,
+        "synergy_delta_prob": 0.021604090651401342,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 347,
+        "quality_score": 0.2507842822658142,
+        "pick_score_raw": 2.6279724640552864,
+        "pick_score": 6.504644618749857
+      },
+      {
+        "from": "Teferi, Time Raveler",
+        "to": "The Wandering Emperor",
+        "pair_games": 108,
+        "pair_win_rate": 0.6851851851851852,
+        "pair_expected_win_rate": 0.6595546667883788,
+        "pair_lift_vs_baseline": 0.1379283848163516,
+        "synergy_delta_logit": 0.11639427273168079,
+        "synergy_delta_prob": 0.025630518396806412,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 279,
+        "quality_score": 0.24485188071048866,
+        "pick_score_raw": 2.1961224165857707,
+        "pick_score": 4.610421132041718
+      },
+      {
+        "from": "No More Lies",
+        "to": "Teferi, Time Raveler",
+        "pair_games": 185,
+        "pair_win_rate": 0.6648648648648648,
+        "pair_expected_win_rate": 0.652044343363967,
+        "pair_lift_vs_baseline": 0.11760806449603123,
+        "synergy_delta_logit": 0.0570124476146483,
+        "synergy_delta_prob": 0.012820521500897852,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 2.8055723912209833,
+        "draft_pair_events": 464,
+        "quality_score": 0.2099163408058862,
+        "pick_score_raw": 3.2800510810340064,
+        "pick_score": 8.975127009165055
+      },
+      {
+        "from": "Elspeth, Storm Slayer",
+        "to": "Solitude",
+        "pair_games": 103,
+        "pair_win_rate": 0.6893203883495146,
+        "pair_expected_win_rate": 0.6703925554007746,
+        "pair_lift_vs_baseline": 0.14206358798068097,
+        "synergy_delta_logit": 0.0869829143975559,
+        "synergy_delta_prob": 0.01892783294874001,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 350,
+        "quality_score": 0.18499063594484424,
+        "pick_score_raw": 2.223143018895594,
+        "pick_score": 4.736248410264011
+      },
+      {
+        "from": "Elspeth, Storm Slayer",
+        "to": "Teferi, Time Raveler",
+        "pair_games": 97,
+        "pair_win_rate": 0.6907216494845361,
+        "pair_expected_win_rate": 0.6716915109514465,
+        "pair_lift_vs_baseline": 0.14346484911570245,
+        "synergy_delta_logit": 0.08764974545921111,
+        "synergy_delta_prob": 0.019030138533089547,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 303,
+        "quality_score": 0.18144778930802696,
+        "pick_score_raw": 2.1621870539379153,
+        "pick_score": 4.4508782245538825
+      },
+      {
+        "from": "Oust",
+        "to": "Swords to Plowshares",
+        "pair_games": 100,
+        "pair_win_rate": 0.68,
+        "pair_expected_win_rate": 0.6651052265678571,
+        "pair_lift_vs_baseline": 0.13274319963116643,
+        "synergy_delta_logit": 0.06764291212271589,
+        "synergy_delta_prob": 0.01489477343214296,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 315,
+        "quality_score": 0.1330540976967119,
+        "pick_score_raw": 2.0549222854849267,
+        "pick_score": 3.9350866565136
+      },
+      {
+        "from": "Path to Exile",
+        "to": "Reprieve",
+        "pair_games": 97,
+        "pair_win_rate": 0.6185567010309279,
+        "pair_expected_win_rate": 0.5917723510781443,
+        "pair_lift_vs_baseline": 0.07129990066209424,
+        "synergy_delta_logit": 0.11212961259129672,
+        "synergy_delta_prob": 0.02678434995278356,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 322,
+        "quality_score": 0.12995406232746076,
+        "pick_score_raw": 1.2109155465824297,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Elspeth, Storm Slayer",
+        "to": "Oust",
+        "pair_games": 103,
+        "pair_win_rate": 0.6893203883495146,
+        "pair_expected_win_rate": 0.6772437424362499,
+        "pair_lift_vs_baseline": 0.14206358798068097,
+        "synergy_delta_logit": 0.055810150792585334,
+        "synergy_delta_prob": 0.012076645913264739,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 327,
+        "quality_score": 0.11838300221472872,
+        "pick_score_raw": 2.2164548142048086,
+        "pick_score": 4.705201848413352
+      },
+      {
+        "from": "Fractured Identity",
+        "to": "Reprieve",
+        "pair_games": 107,
+        "pair_win_rate": 0.6728971962616822,
+        "pair_expected_win_rate": 0.6596100682854542,
+        "pair_lift_vs_baseline": 0.1256403958928486,
+        "synergy_delta_logit": 0.05976102118361548,
+        "synergy_delta_prob": 0.013287127976227997,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 341,
+        "quality_score": 0.11629660541614655,
+        "pick_score_raw": 2.0339301026000625,
+        "pick_score": 3.8320275382672766
+      },
+      {
+        "from": "Phelia, Exuberant Shepherd",
+        "to": "Reprieve",
+        "pair_games": 101,
+        "pair_win_rate": 0.6534653465346535,
+        "pair_expected_win_rate": 0.6396678472618594,
+        "pair_lift_vs_baseline": 0.10620854616581987,
+        "synergy_delta_logit": 0.060383880126206435,
+        "synergy_delta_prob": 0.013797499272794056,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 391,
+        "quality_score": 0.09945658027433489,
+        "pick_score_raw": 1.7228100053643853,
+        "pick_score": 2.214925759810632
+      },
+      {
+        "from": "Oust",
+        "to": "Reprieve",
+        "pair_games": 126,
+        "pair_win_rate": 0.6587301587301587,
+        "pair_expected_win_rate": 0.6475324742591037,
+        "pair_lift_vs_baseline": 0.1114733583613251,
+        "synergy_delta_logit": 0.04943003894182696,
+        "synergy_delta_prob": 0.01119768447105507,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 417,
+        "quality_score": 0.09496194451967274,
+        "pick_score_raw": 2.010209088406024,
+        "pick_score": 3.714709829661059
+      },
+      {
+        "from": "Fractured Identity",
+        "to": "Sunfall",
+        "pair_games": 97,
+        "pair_win_rate": 0.7010309278350515,
+        "pair_expected_win_rate": 0.6943679533601558,
+        "pair_lift_vs_baseline": 0.15377412746621788,
+        "synergy_delta_logit": 0.03159177947705194,
+        "synergy_delta_prob": 0.006662974474895722,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.922442028420149,
+        "draft_pair_events": 301,
+        "quality_score": 0.09355827215504531,
+        "pick_score_raw": 2.7396250815860905,
+        "pick_score": 6.9576869781637765
+      },
+      {
+        "from": "No More Lies",
+        "to": "Swords to Plowshares",
+        "pair_games": 124,
+        "pair_win_rate": 0.6532258064516129,
+        "pair_expected_win_rate": 0.6451318543816383,
+        "pair_lift_vs_baseline": 0.10596900608277926,
+        "synergy_delta_logit": 0.03554061736552028,
+        "synergy_delta_prob": 0.008093952069974542,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 297,
+        "quality_score": 0.06405507170042414,
+        "pick_score_raw": 1.882221030434021,
+        "pick_score": 3.0653194248152555
+      },
+      {
+        "from": "Teferi, Hero of Dominaria",
+        "to": "The Wandering Emperor",
+        "pair_games": 93,
+        "pair_win_rate": 0.6559139784946236,
+        "pair_expected_win_rate": 0.649962686791163,
+        "pair_lift_vs_baseline": 0.10865717812579001,
+        "synergy_delta_logit": 0.02626276303751207,
+        "synergy_delta_prob": 0.005951291703460648,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 292,
+        "quality_score": 0.0418392464427478,
+        "pick_score_raw": 1.663576787144828,
+        "pick_score": 1.8861893212083696
+      },
+      {
+        "from": "Solitude",
+        "to": "Wrath of God",
+        "pair_games": 94,
+        "pair_win_rate": 0.648936170212766,
+        "pair_expected_win_rate": 0.6431216346933365,
+        "pair_lift_vs_baseline": 0.10167936984393233,
+        "synergy_delta_logit": 0.025427439170294774,
+        "synergy_delta_prob": 0.0058145355194294535,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 282,
+        "quality_score": 0.03846482656398093,
+        "pick_score_raw": 1.5793298392325055,
+        "pick_score": 1.4058125683723084
+      },
+      {
+        "from": "Path to Exile",
+        "to": "Swords to Plowshares",
+        "pair_games": 94,
+        "pair_win_rate": 0.6170212765957447,
+        "pair_expected_win_rate": 0.610452689699879,
+        "pair_lift_vs_baseline": 0.06976447622691107,
+        "synergy_delta_logit": 0.027708598011273844,
+        "synergy_delta_prob": 0.006568586895865702,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 243,
+        "quality_score": 0.03074290717056185,
+        "pick_score_raw": 1.1573496498000138,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Fractured Identity",
+        "to": "Path to Exile",
+        "pair_games": 100,
+        "pair_win_rate": 0.64,
+        "pair_expected_win_rate": 0.6360312047401636,
+        "pair_lift_vs_baseline": 0.0927431996311664,
+        "synergy_delta_logit": 0.01718465536398306,
+        "synergy_delta_prob": 0.0039687952598364,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 236,
+        "quality_score": 0.024671585148080336,
+        "pick_score_raw": 1.497323953963997,
+        "pick_score": 0.9229007894404754
+      },
+      {
+        "from": "Fractured Identity",
+        "to": "Wrath of God",
+        "pair_games": 104,
+        "pair_win_rate": 0.6634615384615384,
+        "pair_expected_win_rate": 0.6622770773349395,
+        "pair_lift_vs_baseline": 0.11620473809270482,
+        "synergy_delta_logit": 0.005300232784521297,
+        "synergy_delta_prob": 0.001184461126598979,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.9617491610753113,
+        "draft_pair_events": 304,
+        "quality_score": 0.012811049883062768,
+        "pick_score_raw": 2.231774481792263,
+        "pick_score": 4.776220468994675
+      },
+      {
+        "from": "No More Lies",
+        "to": "Reprieve",
+        "pair_games": 110,
+        "pair_win_rate": 0.6272727272727273,
+        "pair_expected_win_rate": 0.6270986563589023,
+        "pair_lift_vs_baseline": 0.0800159269038937,
+        "synergy_delta_logit": 0.0007444533720518676,
+        "synergy_delta_prob": 0.0001740709138250418,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 392,
+        "quality_score": 0.0010141651094166188,
+        "pick_score_raw": 1.4249588265450805,
+        "pick_score": 0.483403087132393
+      }
+    ],
+    "triplets": [],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 7,
+        "top_cards": [
+          "The Wandering Emperor",
+          "Reprieve",
+          "Oust",
+          "Teferi, Hero of Dominaria",
+          "Fractured Identity"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 4,
+        "top_cards": [
+          "No More Lies",
+          "Teferi, Time Raveler",
+          "Elspeth, Storm Slayer",
+          "Sunfall"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Solitude",
+          "Wrath of God",
+          "Path to Exile",
+          "Parallax Wave"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 1,
+        "top_cards": [
+          "Lingering Souls"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Overlord of the Mistmoors"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Vindicate"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Containment Priest"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Ancestral Recall"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Time Walk"
+        ]
+      },
+      {
+        "community_id": 9,
+        "size": 1,
+        "top_cards": [
+          "Sanguine Evangelist"
+        ]
+      },
+      {
+        "community_id": 10,
+        "size": 1,
+        "top_cards": [
+          "Narset, Parter of Veils"
+        ]
+      },
+      {
+        "community_id": 11,
+        "size": 1,
+        "top_cards": [
+          "Treasure Cruise"
+        ]
+      },
+      {
+        "community_id": 12,
+        "size": 1,
+        "top_cards": [
+          "Consider"
+        ]
+      },
+      {
+        "community_id": 13,
+        "size": 1,
+        "top_cards": [
+          "Thirst for Discovery"
+        ]
+      },
+      {
+        "community_id": 14,
+        "size": 1,
+        "top_cards": [
+          "Gitaxian Probe"
+        ]
+      },
+      {
+        "community_id": 15,
+        "size": 1,
+        "top_cards": [
+          "Cryptic Command"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Treasure Cruise",
+          "pick_priority_score": 5.340466674692654,
+          "pick_priority_score_raw": 63.03571519335212,
+          "draft_drafts": 423,
+          "draft_win_rate": 0.5350943158720263,
+          "draft_win_lift": -0.012341186235076185,
+          "draw_win_rate": 0.6022099447513812
+        },
+        {
+          "card": "Gitaxian Probe",
+          "pick_priority_score": 0.9705315189402768,
+          "pick_priority_score_raw": 17.98623417271063,
+          "draft_drafts": 380,
+          "draft_win_rate": 0.5396968981444388,
+          "draft_win_lift": -0.0077386039626636816,
+          "draw_win_rate": 0.5640326975476839
+        },
+        {
+          "card": "Consider",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 11.5324717117582,
+          "draft_drafts": 383,
+          "draft_win_rate": 0.5217873644046339,
+          "draft_win_lift": -0.025648137702468543,
+          "draw_win_rate": 0.5579710144927537
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Oust",
+          "pick_priority_score": 9.417967255332401,
+          "pick_priority_score_raw": 198.10090034384623,
+          "draft_drafts": 1447,
+          "draft_win_rate": 0.5549491433501839,
+          "draft_win_lift": 0.007513641243081404,
+          "draw_win_rate": 0.6143583227445998
+        },
+        {
+          "card": "No More Lies",
+          "pick_priority_score": 8.096394624886539,
+          "pick_priority_score_raw": 136.84735582399892,
+          "draft_drafts": 1349,
+          "draft_win_rate": 0.5509824743860654,
+          "draft_win_lift": 0.0035469722789629454,
+          "draw_win_rate": 0.5932094811018578
+        },
+        {
+          "card": "Lingering Souls",
+          "pick_priority_score": 8.066103235823915,
+          "pick_priority_score_raw": 135.69057794725435,
+          "draft_drafts": 1412,
+          "draft_win_rate": 0.5479804593776588,
+          "draft_win_lift": 0.0005449572705563677,
+          "draw_win_rate": 0.5945945945945946
+        },
+        {
+          "card": "Reprieve",
+          "pick_priority_score": 7.704278945263799,
+          "pick_priority_score_raw": 122.60109484751911,
+          "draft_drafts": 1464,
+          "draft_win_rate": 0.5553595896150798,
+          "draft_win_lift": 0.007924087507977351,
+          "draw_win_rate": 0.5822784810126582
+        },
+        {
+          "card": "Narset, Parter of Veils",
+          "pick_priority_score": 2.1994377474221447,
+          "pick_priority_score_raw": 25.72498656809124,
+          "draft_drafts": 351,
+          "draft_win_rate": 0.5113217838458728,
+          "draft_win_lift": -0.036113718261229666,
+          "draw_win_rate": 0.5722222222222222
+        },
+        {
+          "card": "Thirst for Discovery",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 10.75452445121612,
+          "draft_drafts": 346,
+          "draft_win_rate": 0.5265895603188206,
+          "draft_win_lift": -0.020845941788281808,
+          "draw_win_rate": 0.5577689243027888
+        }
+      ],
+      "rare": [
+        {
+          "card": "Parallax Wave",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 378.3848757534693,
+          "draft_drafts": 1399,
+          "draft_win_rate": 0.576780147055031,
+          "draft_win_lift": 0.029344644947928544,
+          "draw_win_rate": 0.658955717118308
+        },
+        {
+          "card": "Sanguine Evangelist",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 239.316961455729,
+          "draft_drafts": 1057,
+          "draft_win_rate": 0.5678043310734668,
+          "draft_win_lift": 0.020368828966364383,
+          "draw_win_rate": 0.6371584699453552
+        },
+        {
+          "card": "Phelia, Exuberant Shepherd",
+          "pick_priority_score": 9.824941202493603,
+          "pick_priority_score_raw": 221.9690321883752,
+          "draft_drafts": 1325,
+          "draft_win_rate": 0.5691294629219928,
+          "draft_win_lift": 0.02169396081489039,
+          "draw_win_rate": 0.6062036412677007
+        },
+        {
+          "card": "Sunfall",
+          "pick_priority_score": 8.948972761542397,
+          "pick_priority_score_raw": 173.74649154983783,
+          "draft_drafts": 1101,
+          "draft_win_rate": 0.5418386374188792,
+          "draft_win_lift": -0.005596864688223291,
+          "draw_win_rate": 0.6203883495145631
+        },
+        {
+          "card": "Teferi, Time Raveler",
+          "pick_priority_score": 8.403080269181523,
+          "pick_priority_score_raw": 149.12490704173936,
+          "draft_drafts": 1257,
+          "draft_win_rate": 0.5480366237103524,
+          "draft_win_lift": 0.0006011216032499878,
+          "draw_win_rate": 0.6083499005964215
+        },
+        {
+          "card": "Swords to Plowshares",
+          "pick_priority_score": 8.261565982059627,
+          "pick_priority_score_raw": 143.32937820085905,
+          "draft_drafts": 1188,
+          "draft_win_rate": 0.5543665266712402,
+          "draft_win_lift": 0.006931024564137744,
+          "draw_win_rate": 0.6011004126547456
+        },
+        {
+          "card": "Wrath of God",
+          "pick_priority_score": 6.688676921766487,
+          "pick_priority_score_raw": 92.17844385958661,
+          "draft_drafts": 1142,
+          "draft_win_rate": 0.5376018740924849,
+          "draft_win_lift": -0.009833628014617513,
+          "draw_win_rate": 0.5851703406813628
+        },
+        {
+          "card": "Containment Priest",
+          "pick_priority_score": 5.7371785005366895,
+          "pick_priority_score_raw": 70.50784683534638,
+          "draft_drafts": 1286,
+          "draft_win_rate": 0.5542643184765466,
+          "draft_win_lift": 0.006828816369444102,
+          "draw_win_rate": 0.5652557319223986
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Solitude",
+          "pick_priority_score": 9.639656656370791,
+          "pick_priority_score_raw": 210.76692792179307,
+          "draft_drafts": 1419,
+          "draft_win_rate": 0.5616270262958499,
+          "draft_win_lift": 0.014191524188747473,
+          "draw_win_rate": 0.6069469835466179
+        },
+        {
+          "card": "Ancestral Recall",
+          "pick_priority_score": 9.541993214372743,
+          "pick_priority_score_raw": 205.09063792796053,
+          "draft_drafts": 368,
+          "draft_win_rate": 0.5830115851103364,
+          "draft_win_lift": 0.035576083003233894,
+          "draw_win_rate": 0.6716417910447762
+        },
+        {
+          "card": "Elspeth, Storm Slayer",
+          "pick_priority_score": 9.511974946792783,
+          "pick_priority_score_raw": 203.37670939156476,
+          "draft_drafts": 1241,
+          "draft_win_rate": 0.5594867269166788,
+          "draft_win_lift": 0.012051224809576322,
+          "draw_win_rate": 0.6142131979695431
+        },
+        {
+          "card": "Fractured Identity",
+          "pick_priority_score": 9.435050879705889,
+          "pick_priority_score_raw": 199.04942073946265,
+          "draft_drafts": 1151,
+          "draft_win_rate": 0.5532470365586956,
+          "draft_win_lift": 0.005811534451593103,
+          "draw_win_rate": 0.6269177126917713
+        },
+        {
+          "card": "Time Walk",
+          "pick_priority_score": 9.1670140675558,
+          "pick_priority_score_raw": 184.67464749459214,
+          "draft_drafts": 382,
+          "draft_win_rate": 0.573045022502153,
+          "draft_win_lift": 0.02560952039505049,
+          "draw_win_rate": 0.6697819314641744
+        },
+        {
+          "card": "Overlord of the Mistmoors",
+          "pick_priority_score": 9.120771503194847,
+          "pick_priority_score_raw": 182.30128023032677,
+          "draft_drafts": 1143,
+          "draft_win_rate": 0.5536416079658001,
+          "draft_win_lift": 0.00620610585869763,
+          "draw_win_rate": 0.6132596685082873
+        },
+        {
+          "card": "The Wandering Emperor",
+          "pick_priority_score": 8.511492169800455,
+          "pick_priority_score_raw": 153.72171564060562,
+          "draft_drafts": 1247,
+          "draft_win_rate": 0.5514730821179009,
+          "draft_win_lift": 0.004037580010798458,
+          "draw_win_rate": 0.601213040181956
+        },
+        {
+          "card": "Teferi, Hero of Dominaria",
+          "pick_priority_score": 7.515667239166317,
+          "pick_priority_score_raw": 116.28268823907551,
+          "draft_drafts": 1131,
+          "draft_win_rate": 0.539722070666247,
+          "draft_win_lift": -0.007713431440855456,
+          "draw_win_rate": 0.5981941309255079
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Ancestral Recall",
+        "standalone_delta": 0.12438499067594255,
+        "win_rate": 0.6716417910447762,
+        "draw_games": 737
+      },
+      {
+        "card": "Time Walk",
+        "standalone_delta": 0.1225251310953408,
+        "win_rate": 0.6697819314641744,
+        "draw_games": 642
+      },
+      {
+        "card": "Parallax Wave",
+        "standalone_delta": 0.11169891674947441,
+        "win_rate": 0.658955717118308,
+        "draw_games": 1513
+      },
+      {
+        "card": "Sanguine Evangelist",
+        "standalone_delta": 0.08990166957652157,
+        "win_rate": 0.6371584699453552,
+        "draw_games": 915
+      },
+      {
+        "card": "Fractured Identity",
+        "standalone_delta": 0.0796609123229377,
+        "win_rate": 0.6269177126917713,
+        "draw_games": 1434
+      },
+      {
+        "card": "Sunfall",
+        "standalone_delta": 0.0731315491457295,
+        "win_rate": 0.6203883495145631,
+        "draw_games": 1030
+      },
+      {
+        "card": "Oust",
+        "standalone_delta": 0.06710152237576616,
+        "win_rate": 0.6143583227445998,
+        "draw_games": 1574
+      },
+      {
+        "card": "Elspeth, Storm Slayer",
+        "standalone_delta": 0.06695639760070948,
+        "win_rate": 0.6142131979695431,
+        "draw_games": 1379
+      },
+      {
+        "card": "Overlord of the Mistmoors",
+        "standalone_delta": 0.06600286813945366,
+        "win_rate": 0.6132596685082873,
+        "draw_games": 1086
+      },
+      {
+        "card": "Teferi, Time Raveler",
+        "standalone_delta": 0.06109310022758785,
+        "win_rate": 0.6083499005964215,
+        "draw_games": 1509
+      },
+      {
+        "card": "Solitude",
+        "standalone_delta": 0.059690183177784295,
+        "win_rate": 0.6069469835466179,
+        "draw_games": 1641
+      },
+      {
+        "card": "Phelia, Exuberant Shepherd",
+        "standalone_delta": 0.05894684089886704,
+        "win_rate": 0.6062036412677007,
+        "draw_games": 1483
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Sunfall",
+        "dependency_score": 2.272092008418301,
+        "standalone_delta": 0.0731315491457295,
+        "draw_games": 1030
+      },
+      {
+        "card": "Teferi, Hero of Dominaria",
+        "dependency_score": 1.4514513097040425,
+        "standalone_delta": 0.050937330556674265,
+        "draw_games": 1329
+      },
+      {
+        "card": "No More Lies",
+        "dependency_score": 1.3494271481721694,
+        "standalone_delta": 0.045952680733024165,
+        "draw_games": 1561
+      },
+      {
+        "card": "Fractured Identity",
+        "dependency_score": 1.0899874840852868,
+        "standalone_delta": 0.0796609123229377,
+        "draw_games": 1434
+      },
+      {
+        "card": "Wrath of God",
+        "dependency_score": 1.0207694984505788,
+        "standalone_delta": 0.03791354031252914,
+        "draw_games": 998
+      },
+      {
+        "card": "Teferi, Time Raveler",
+        "dependency_score": 0.9259763520737013,
+        "standalone_delta": 0.06109310022758785,
+        "draw_games": 1509
+      },
+      {
+        "card": "The Wandering Emperor",
+        "dependency_score": 0.17963537312732947,
+        "standalone_delta": 0.053956239813122364,
+        "draw_games": 1319
+      },
+      {
+        "card": "Solitude",
+        "dependency_score": 0.15266727350773993,
+        "standalone_delta": 0.059690183177784295,
+        "draw_games": 1641
+      },
+      {
+        "card": "Oust",
+        "dependency_score": 0.13900217470988205,
+        "standalone_delta": 0.06710152237576616,
+        "draw_games": 1574
+      },
+      {
+        "card": "Reprieve",
+        "dependency_score": 0.13061829107754405,
+        "standalone_delta": 0.035021680643824604,
+        "draw_games": 1580
+      },
+      {
+        "card": "Elspeth, Storm Slayer",
+        "dependency_score": 0.111660991757999,
+        "standalone_delta": 0.06695639760070948,
+        "draw_games": 1379
+      },
+      {
+        "card": "Swords to Plowshares",
+        "dependency_score": 0.10924659877521374,
+        "standalone_delta": 0.053843612285911946,
+        "draw_games": 1454
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Fractured Identity",
+          "Teferi, Hero of Dominaria"
+        ],
+        "quality_score": 1.6407214354612318,
+        "pair_win_rate": 0.7446808510638298,
+        "pair_games": 141,
+        "synergy_delta_logit": 0.3430719346868647
+      },
+      {
+        "cards": [
+          "Fractured Identity",
+          "Oust"
+        ],
+        "quality_score": 1.2343846889026961,
+        "pair_win_rate": 0.7622950819672131,
+        "pair_games": 122,
+        "synergy_delta_logit": 0.3702107574525739
+      },
+      {
+        "cards": [
+          "Reprieve",
+          "Teferi, Hero of Dominaria"
+        ],
+        "quality_score": 1.0178934727513278,
+        "pair_win_rate": 0.7181818181818181,
+        "pair_games": 110,
+        "synergy_delta_logit": 0.3949736235203257
+      },
+      {
+        "cards": [
+          "No More Lies",
+          "Teferi, Hero of Dominaria"
+        ],
+        "quality_score": 0.8886700538768754,
+        "pair_win_rate": 0.6888888888888889,
+        "pair_games": 180,
+        "synergy_delta_logit": 0.2093274496774653
+      },
+      {
+        "cards": [
+          "Fractured Identity",
+          "The Wandering Emperor"
+        ],
+        "quality_score": 0.8329210511623405,
+        "pair_win_rate": 0.74,
+        "pair_games": 100,
+        "synergy_delta_logit": 0.3060233449651383
+      },
+      {
+        "cards": [
+          "Solitude",
+          "Teferi, Hero of Dominaria"
+        ],
+        "quality_score": 0.6976791710846635,
+        "pair_win_rate": 0.7171717171717171,
+        "pair_games": 99,
+        "synergy_delta_logit": 0.28762523663835093
+      },
+      {
+        "cards": [
+          "Sunfall",
+          "Teferi, Hero of Dominaria"
+        ],
+        "quality_score": 0.606111374238451,
+        "pair_win_rate": 0.704,
+        "pair_games": 125,
+        "synergy_delta_logit": 0.16686881800287812
+      },
+      {
+        "cards": [
+          "Reprieve",
+          "The Wandering Emperor"
+        ],
+        "quality_score": 0.5164894236882733,
+        "pair_win_rate": 0.6880733944954128,
+        "pair_games": 109,
+        "synergy_delta_logit": 0.23806483125559874
+      },
+      {
+        "cards": [
+          "No More Lies",
+          "Sunfall"
+        ],
+        "quality_score": 0.5098475219184241,
+        "pair_win_rate": 0.6990291262135923,
+        "pair_games": 103,
+        "synergy_delta_logit": 0.16382587064045484
+      },
+      {
+        "cards": [
+          "Path to Exile",
+          "Solitude"
+        ],
+        "quality_score": 0.5079854120053575,
+        "pair_win_rate": 0.6767676767676768,
+        "pair_games": 99,
+        "synergy_delta_logit": 0.26529657383844907
+      },
+      {
+        "cards": [
+          "Elspeth, Storm Slayer",
+          "No More Lies"
+        ],
+        "quality_score": 0.4901786751283372,
+        "pair_win_rate": 0.7052631578947368,
+        "pair_games": 95,
+        "synergy_delta_logit": 0.21977475440706684
+      },
+      {
+        "cards": [
+          "Swords to Plowshares",
+          "Teferi, Hero of Dominaria"
+        ],
+        "quality_score": 0.46749008989282426,
+        "pair_win_rate": 0.6979166666666666,
+        "pair_games": 96,
+        "synergy_delta_logit": 0.21899132785048658
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Parallax Wave",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 378.3848757534693,
+        "draft_drafts": 1399,
+        "draft_win_lift": 0.029344644947928544,
+        "rarity": "rare"
+      },
+      {
+        "card": "Sanguine Evangelist",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 239.316961455729,
+        "draft_drafts": 1057,
+        "draft_win_lift": 0.020368828966364383,
+        "rarity": "rare"
+      },
+      {
+        "card": "Phelia, Exuberant Shepherd",
+        "pick_priority_score": 9.824941202493603,
+        "pick_priority_score_raw": 221.9690321883752,
+        "draft_drafts": 1325,
+        "draft_win_lift": 0.02169396081489039,
+        "rarity": "rare"
+      },
+      {
+        "card": "Solitude",
+        "pick_priority_score": 9.639656656370791,
+        "pick_priority_score_raw": 210.76692792179307,
+        "draft_drafts": 1419,
+        "draft_win_lift": 0.014191524188747473,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Ancestral Recall",
+        "pick_priority_score": 9.541993214372743,
+        "pick_priority_score_raw": 205.09063792796053,
+        "draft_drafts": 368,
+        "draft_win_lift": 0.035576083003233894,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Elspeth, Storm Slayer",
+        "pick_priority_score": 9.511974946792783,
+        "pick_priority_score_raw": 203.37670939156476,
+        "draft_drafts": 1241,
+        "draft_win_lift": 0.012051224809576322,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Fractured Identity",
+        "pick_priority_score": 9.435050879705889,
+        "pick_priority_score_raw": 199.04942073946265,
+        "draft_drafts": 1151,
+        "draft_win_lift": 0.005811534451593103,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Oust",
+        "pick_priority_score": 9.417967255332401,
+        "pick_priority_score_raw": 198.10090034384623,
+        "draft_drafts": 1447,
+        "draft_win_lift": 0.007513641243081404,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Time Walk",
+        "pick_priority_score": 9.1670140675558,
+        "pick_priority_score_raw": 184.67464749459214,
+        "draft_drafts": 382,
+        "draft_win_lift": 0.02560952039505049,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Overlord of the Mistmoors",
+        "pick_priority_score": 9.120771503194847,
+        "pick_priority_score_raw": 182.30128023032677,
+        "draft_drafts": 1143,
+        "draft_win_lift": 0.00620610585869763,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Sunfall",
+        "pick_priority_score": 8.948972761542397,
+        "pick_priority_score_raw": 173.74649154983783,
+        "draft_drafts": 1101,
+        "draft_win_lift": -0.005596864688223291,
+        "rarity": "rare"
+      },
+      {
+        "card": "The Wandering Emperor",
+        "pick_priority_score": 8.511492169800455,
+        "pick_priority_score_raw": 153.72171564060562,
+        "draft_drafts": 1247,
+        "draft_win_lift": 0.004037580010798458,
+        "rarity": "mythic"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Fractured Identity",
+          "Teferi, Hero of Dominaria"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 4.327072880556179,
+        "pair_win_rate": 0.7446808510638298,
+        "pair_games": 141,
+        "draft_pair_events": 345
+      },
+      {
+        "cards": [
+          "No More Lies",
+          "Teferi, Hero of Dominaria"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.7792985678761806,
+        "pair_win_rate": 0.6888888888888889,
+        "pair_games": 180,
+        "draft_pair_events": 409
+      },
+      {
+        "cards": [
+          "Fractured Identity",
+          "Oust"
+        ],
+        "pick_score": 9.663929608383983,
+        "pick_score_raw": 3.4819141642144324,
+        "pair_win_rate": 0.7622950819672131,
+        "pair_games": 122,
+        "draft_pair_events": 294
+      },
+      {
+        "cards": [
+          "Sunfall",
+          "Teferi, Hero of Dominaria"
+        ],
+        "pick_score": 9.015665604303353,
+        "pick_score_raw": 3.291675578723886,
+        "pair_win_rate": 0.704,
+        "pair_games": 125,
+        "draft_pair_events": 325
+      },
+      {
+        "cards": [
+          "No More Lies",
+          "Teferi, Time Raveler"
+        ],
+        "pick_score": 8.975127009165055,
+        "pick_score_raw": 3.2800510810340064,
+        "pair_win_rate": 0.6648648648648648,
+        "pair_games": 185,
+        "draft_pair_events": 464
+      },
+      {
+        "cards": [
+          "Parallax Wave",
+          "Solitude"
+        ],
+        "pick_score": 8.497993374090763,
+        "pick_score_raw": 3.1455756874897127,
+        "pair_win_rate": 0.7322834645669292,
+        "pair_games": 127,
+        "draft_pair_events": 412
+      },
+      {
+        "cards": [
+          "No More Lies",
+          "Sunfall"
+        ],
+        "pick_score": 7.3979500728461085,
+        "pick_score_raw": 2.851419436322812,
+        "pair_win_rate": 0.6990291262135923,
+        "pair_games": 103,
+        "draft_pair_events": 331
+      },
+      {
+        "cards": [
+          "Fractured Identity",
+          "The Wandering Emperor"
+        ],
+        "pick_score": 7.3559874722593985,
+        "pick_score_raw": 2.8406214903454696,
+        "pair_win_rate": 0.74,
+        "pair_games": 100,
+        "draft_pair_events": 266
+      },
+      {
+        "cards": [
+          "Fractured Identity",
+          "Sunfall"
+        ],
+        "pick_score": 6.9576869781637765,
+        "pick_score_raw": 2.7396250815860905,
+        "pair_win_rate": 0.7010309278350515,
+        "pair_games": 97,
+        "draft_pair_events": 301
+      },
+      {
+        "cards": [
+          "Reprieve",
+          "Teferi, Hero of Dominaria"
+        ],
+        "pick_score": 6.7663363205299145,
+        "pick_score_raw": 2.6920534119342308,
+        "pair_win_rate": 0.7181818181818181,
+        "pair_games": 110,
+        "draft_pair_events": 310
+      },
+      {
+        "cards": [
+          "Oust",
+          "Teferi, Time Raveler"
+        ],
+        "pick_score": 6.504644618749857,
+        "pick_score_raw": 2.6279724640552864,
+        "pair_win_rate": 0.6934306569343066,
+        "pair_games": 137,
+        "draft_pair_events": 347
+      },
+      {
+        "cards": [
+          "Solitude",
+          "Teferi, Hero of Dominaria"
+        ],
+        "pick_score": 6.107572168545858,
+        "pick_score_raw": 2.532858325475773,
+        "pair_win_rate": 0.7171717171717171,
+        "pair_games": 99,
+        "draft_pair_events": 290
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
+      "color_name": "Boros Tokens",
+      "deck_count": 12970,
+      "games": 68705,
+      "win_rate": 0.6112510006549742,
+      "signposts": [
+        "Guide of Souls",
+        "Sanguine Evangelist",
+        "Luminarch Aspirant",
+        "Death-Greeter's Champion"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Ajani, Nacatl Pariah",
+        "Phlage, Titan of Fire's Fury",
+        "Broadside Bombardiers"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Red Base Midrange | Fire Covenant / Fury",
+      "color_name": "Red Base Midrange",
+      "deck_count": 5538,
+      "games": 26131,
+      "win_rate": 0.5561593509624584,
+      "signposts": [
+        "Fire Covenant",
+        "Fury",
+        "Pyrogoyf",
+        "Fiery Confluence"
+      ],
+      "pick_cards": [
+        "Pyrogoyf",
+        "Broadside Bombardiers",
+        "Laelia, the Blade Reforged",
+        "Fury"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "White Base Control | No More Lies / The Wandering Emperor",
+      "color_name": "White Base Control",
+      "deck_count": 5654,
+      "games": 26028,
+      "win_rate": 0.5472568003688336,
+      "signposts": [
+        "No More Lies",
+        "The Wandering Emperor",
+        "Solitude",
+        "Teferi, Time Raveler"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Sanguine Evangelist",
+        "Phelia, Exuberant Shepherd",
+        "Solitude"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Black Base Reanimator | Animate Dead / Necromancy",
+      "color_name": "Black Base Reanimator",
+      "deck_count": 7492,
+      "games": 33181,
+      "win_rate": 0.5180072933305204,
+      "signposts": [
+        "Animate Dead",
+        "Necromancy",
+        "Archon of Cruelty",
+        "Entomb"
+      ],
+      "pick_cards": [
+        "Archon of Cruelty",
+        "Animate Dead",
+        "Necromancy",
+        "Barrowgoyf"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
+      "color_name": "Green Base Ramp",
+      "deck_count": 9261,
+      "games": 39563,
+      "win_rate": 0.5142683820741601,
+      "signposts": [
+        "Birds of Paradise",
+        "Titania, Protector of Argoth",
+        "Noble Hierarch",
+        "Nadu, Winged Wisdom"
+      ],
+      "pick_cards": [
+        "Malevolent Rumble",
+        "Pest Infestation",
+        "Oko, Thief of Crowns",
+        "Nadu, Winged Wisdom"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
+      "color_name": "Blue Base Storm",
+      "deck_count": 9349,
+      "games": 40088,
+      "win_rate": 0.508955298343644,
+      "signposts": [
+        "Brain Freeze",
+        "Snapcaster Mage",
+        "Underworld Breach",
+        "Narset, Parter of Veils"
+      ],
+      "pick_cards": [
+        "Mystic Confluence",
+        "Time Walk",
+        "Cryptic Command",
+        "Remand"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer",
+      "color_name": "Blue Base Artifacts",
+      "deck_count": 7649,
+      "games": 32421,
+      "win_rate": 0.5056290675796552,
+      "signposts": [
+        "Mox Opal",
+        "Urza, Lord High Artificer",
+        "Retrofitter Foundry",
+        "Kappa Cannoneer"
+      ],
+      "pick_cards": [
+        "Ugin, Eye of the Storms",
+        "Urza, Lord High Artificer",
+        "Upheaval",
+        "Retrofitter Foundry"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

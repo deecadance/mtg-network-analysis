@@ -1,0 +1,4485 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth | Powered Cube Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "Cube - Powered",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 57913,
+      "cluster_feature_count": 539,
+      "svd_components": 48,
+      "svd_explained_variance": 0.23329785466194153,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.11178616434335709,
+          "dominant_main_color_share": 0.3637786402379163,
+          "objective": 0.13361288275763206
+        },
+        {
+          "k": 8,
+          "silhouette": 0.08127741515636444,
+          "dominant_main_color_share": 0.4612962424071051,
+          "objective": 0.10895518970079074
+        },
+        {
+          "k": 9,
+          "silhouette": 0.0866159126162529,
+          "dominant_main_color_share": 0.4338965083091679,
+          "objective": 0.11264970311480298
+        },
+        {
+          "k": 10,
+          "silhouette": 0.08284851163625717,
+          "dominant_main_color_share": 0.48828557861292066,
+          "objective": 0.11214564635303241
+        },
+        {
+          "k": 11,
+          "silhouette": 0.08475761115550995,
+          "dominant_main_color_share": 0.5052627611749999,
+          "objective": 0.11507337682600995
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "1": 12970,
+        "0": 9261,
+        "5": 5538,
+        "6": 9349,
+        "2": 7492,
+        "3": 5654,
+        "4": 7649
+      }
+    },
+    "deck_count": 57913,
+    "game_count": 266117
+  },
+  "segment": {
+    "cluster_id": 0,
+    "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
+    "color_signature": "G",
+    "color_name": "Green Base Ramp",
+    "deck_count": 9261,
+    "draft_count": 8090,
+    "games": 39563,
+    "wins": 20346,
+    "win_rate": 0.5142683820741601,
+    "draft_match_win_rate": 0.5127302786962683,
+    "top_deck_colors": [
+      {
+        "colors": "WUBRG",
+        "count": 2366
+      },
+      {
+        "colors": "WURG",
+        "count": 984
+      },
+      {
+        "colors": "UBRG",
+        "count": 877
+      },
+      {
+        "colors": "UBG",
+        "count": 834
+      },
+      {
+        "colors": "WUBG",
+        "count": 782
+      },
+      {
+        "colors": "URG",
+        "count": 710
+      },
+      {
+        "colors": "BRG",
+        "count": 449
+      },
+      {
+        "colors": "UG",
+        "count": 445
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "UG",
+        "count": 1953
+      },
+      {
+        "colors": "RG",
+        "count": 1174
+      },
+      {
+        "colors": "BG",
+        "count": 1143
+      },
+      {
+        "colors": "G",
+        "count": 934
+      },
+      {
+        "colors": "UBG",
+        "count": 933
+      },
+      {
+        "colors": "URG",
+        "count": 856
+      },
+      {
+        "colors": "WG",
+        "count": 433
+      },
+      {
+        "colors": "WUG",
+        "count": 423
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Birds of Paradise",
+        "score": 3867.1311718838856,
+        "z_score": 74.98045735504313,
+        "log_odds": 3.1895442258301445,
+        "cluster_prevalence": 0.28655755154502066,
+        "global_prevalence": 0.05958136305093627,
+        "lift": 4.809516547985682,
+        "support_decks": 2660
+      },
+      {
+        "card": "Titania, Protector of Argoth",
+        "score": 3815.1205796656477,
+        "z_score": 72.99076597113388,
+        "log_odds": 3.72818045902783,
+        "cluster_prevalence": 0.2942897940904245,
+        "global_prevalence": 0.05548802456449125,
+        "lift": 5.303663203010311,
+        "support_decks": 2732
+      },
+      {
+        "card": "Noble Hierarch",
+        "score": 3740.8103999140235,
+        "z_score": 73.61860401244284,
+        "log_odds": 3.22954150217985,
+        "cluster_prevalence": 0.2781559139455612,
+        "global_prevalence": 0.05718151931829266,
+        "lift": 4.86443727382,
+        "support_decks": 2582
+      },
+      {
+        "card": "Nadu, Winged Wisdom",
+        "score": 3560.6566377066956,
+        "z_score": 71.57189136097898,
+        "log_odds": 2.7467928454706207,
+        "cluster_prevalence": 0.26665078352228316,
+        "global_prevalence": 0.06186035247755805,
+        "lift": 4.310528033590171,
+        "support_decks": 2475
+      },
+      {
+        "card": "Ignoble Hierarch",
+        "score": 3548.1109518613243,
+        "z_score": 71.72659382001179,
+        "log_odds": 2.9639261033173305,
+        "cluster_prevalence": 0.26362591400225294,
+        "global_prevalence": 0.05747502532058086,
+        "lift": 4.586790741401428,
+        "support_decks": 2447
+      },
+      {
+        "card": "Scythecat Cub",
+        "score": 3475.900821328226,
+        "z_score": 70.02401756252412,
+        "log_odds": 3.5459718568201746,
+        "cluster_prevalence": 0.26543983007517463,
+        "global_prevalence": 0.05119054786300046,
+        "lift": 5.185328955368134,
+        "support_decks": 2464
+      },
+      {
+        "card": "Malevolent Rumble",
+        "score": 3451.4686228897845,
+        "z_score": 69.40517784723814,
+        "log_odds": 2.454115744536187,
+        "cluster_prevalence": 0.2664844322775197,
+        "global_prevalence": 0.06811706090969463,
+        "lift": 3.9121539995803434,
+        "support_decks": 2473
+      },
+      {
+        "card": "Icetill Explorer",
+        "score": 3439.9741282306336,
+        "z_score": 68.67597686153472,
+        "log_odds": 3.794873389685338,
+        "cluster_prevalence": 0.270280988575894,
+        "global_prevalence": 0.05024097095556197,
+        "lift": 5.379692777334198,
+        "support_decks": 2509
+      },
+      {
+        "card": "Springheart Nantuko",
+        "score": 3339.3910247696117,
+        "z_score": 69.19624557751031,
+        "log_odds": 3.291462903113149,
+        "cluster_prevalence": 0.25090749488822817,
+        "global_prevalence": 0.05053447652465971,
+        "lift": 4.965075571046844,
+        "support_decks": 2329
+      },
+      {
+        "card": "Llanowar Elves",
+        "score": 3207.2137414096314,
+        "z_score": 67.41951547083407,
+        "log_odds": 3.4215651596708923,
+        "cluster_prevalence": 0.24382071717651482,
+        "global_prevalence": 0.0478114402652089,
+        "lift": 5.099631297949763,
+        "support_decks": 2263
+      },
+      {
+        "card": "Bristly Bill, Spine Sower",
+        "score": 3124.887403793114,
+        "z_score": 66.48696603815137,
+        "log_odds": 3.420731370079999,
+        "cluster_prevalence": 0.23797508292402844,
+        "global_prevalence": 0.04661402716891414,
+        "lift": 5.105224701175974,
+        "support_decks": 2209
+      },
+      {
+        "card": "Once Upon a Time",
+        "score": 3068.5675950509867,
+        "z_score": 66.33287299601261,
+        "log_odds": 2.7599687773547106,
+        "cluster_prevalence": 0.23056964794779464,
+        "global_prevalence": 0.05257175097974889,
+        "lift": 4.38580879751584,
+        "support_decks": 2140
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Birds of Paradise",
+        "label": "Birds of Paradise",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Creature - Bird",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 2045,
+        "win_rate": 0.5344743276283619,
+        "standalone_delta": 0.020205945554201743,
+        "dependency_score": 0.36146281831365296,
+        "degree": 6,
+        "signpost_score": 3867.1311718838856,
+        "signpost_lift": 4.809516547985682,
+        "deck_prevalence": 0.28655755154502066,
+        "draft_weight": 2253.0,
+        "draft_drafts": 2253,
+        "draft_presence": 0.2784919653893696,
+        "draft_win_rate": 0.5266159292779976,
+        "draft_win_lift": 0.013885650581729303,
+        "analysis_score_raw": 3876.4663349911198,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 163.8627837319834,
+        "pick_priority_score": 8.217134903582592,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Birds%20of%20Paradise%22",
+        "community": 0,
+        "x": 1129.4279375534027,
+        "y": 570.0651871860363,
+        "analysis_radius": 25.1239884647726,
+        "pick_radius": 30.0,
+        "radius": 25.1239884647726
+      },
+      {
+        "id": "Titania, Protector of Argoth",
+        "label": "Titania, Protector of Argoth",
+        "color_identity": "G",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Legendary Creature - Elemental",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 2432,
+        "win_rate": 0.571546052631579,
+        "standalone_delta": 0.057277670557418836,
+        "dependency_score": 0.40416038106654745,
+        "degree": 10,
+        "signpost_score": 3815.1205796656477,
+        "signpost_lift": 5.303663203010311,
+        "deck_prevalence": 0.2942897940904245,
+        "draft_weight": 2547.0,
+        "draft_drafts": 2547,
+        "draft_presence": 0.31483312731767615,
+        "draft_win_rate": 0.5189977831969734,
+        "draft_win_lift": 0.006267504500705123,
+        "analysis_score_raw": 3830.414340402884,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 272.65364034676844,
+        "pick_priority_score": 9.63644738975005,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Titania%2C%20Protector%20of%20Argoth%22",
+        "community": 0,
+        "x": 1172.0673518546075,
+        "y": 552.3868104240588,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Noble Hierarch",
+        "label": "Noble Hierarch",
+        "color_identity": "WUG",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Creature - Human Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 2082,
+        "win_rate": 0.5417867435158501,
+        "standalone_delta": 0.027518361441689954,
+        "dependency_score": 0.3642794229060986,
+        "degree": 10,
+        "signpost_score": 3740.8103999140235,
+        "signpost_lift": 4.86443727382,
+        "deck_prevalence": 0.2781559139455612,
+        "draft_weight": 2192.0,
+        "draft_drafts": 2192,
+        "draft_presence": 0.2709517923362176,
+        "draft_win_rate": 0.5304616224544779,
+        "draft_win_lift": 0.017731343758209617,
+        "analysis_score_raw": 3751.22000012817,
+        "analysis_score": 9.99035129948777,
+        "pick_priority_score_raw": 213.34143940684058,
+        "pick_priority_score": 8.95222783889287,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Noble%20Hierarch%22",
+        "community": 1,
+        "x": 1107.2678814801075,
+        "y": 631.0997023614013,
+        "analysis_radius": 25.627569103912496,
+        "pick_radius": 30.0,
+        "radius": 25.627569103912496
+      },
+      {
+        "id": "Nadu, Winged Wisdom",
+        "label": "Nadu, Winged Wisdom",
+        "color_identity": "UG",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Bird Wizard",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "UG"
+        },
+        "draw_games": 2063,
+        "win_rate": 0.575860397479399,
+        "standalone_delta": 0.06159201540523884,
+        "dependency_score": 0.14547302049573935,
+        "degree": 14,
+        "signpost_score": 3560.6566377066956,
+        "signpost_lift": 4.310528033590171,
+        "deck_prevalence": 0.26665078352228316,
+        "draft_weight": 2119.0,
+        "draft_drafts": 2119,
+        "draft_presence": 0.2619283065512979,
+        "draft_win_rate": 0.5260527999913281,
+        "draft_win_lift": 0.013322521295059842,
+        "analysis_score_raw": 3571.898034232352,
+        "analysis_score": 9.955547347217303,
+        "pick_priority_score_raw": 289.19151923967667,
+        "pick_priority_score": 9.800793355942547,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Nadu%2C%20Winged%20Wisdom%22",
+        "community": 1,
+        "x": 1107.2132076755984,
+        "y": 688.7663069851072,
+        "analysis_radius": 19.62458958513475,
+        "pick_radius": 30.0,
+        "radius": 19.62458958513475
+      },
+      {
+        "id": "Ignoble Hierarch",
+        "label": "Ignoble Hierarch",
+        "color_identity": "BRG",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Creature - Goblin Shaman",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 1925,
+        "win_rate": 0.5376623376623376,
+        "standalone_delta": 0.023393955588177473,
+        "dependency_score": 0.44690209907975353,
+        "degree": 8,
+        "signpost_score": 3548.1109518613243,
+        "signpost_lift": 4.586790741401428,
+        "deck_prevalence": 0.26362591400225294,
+        "draft_weight": 2157.0,
+        "draft_drafts": 2157,
+        "draft_presence": 0.2666254635352287,
+        "draft_win_rate": 0.5332629155014351,
+        "draft_win_lift": 0.020532636805166815,
+        "analysis_score_raw": 3559.4303434271046,
+        "analysis_score": 9.953062972104322,
+        "pick_priority_score_raw": 210.7557755501419,
+        "pick_priority_score": 8.918235330497593,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ignoble%20Hierarch%22",
+        "community": 2,
+        "x": 1120.3405775127944,
+        "y": 760.5806475280147,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Scythecat Cub",
+        "label": "Scythecat Cub",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Creature - Cat",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 2105,
+        "win_rate": 0.5577197149643706,
+        "standalone_delta": 0.043451332890210415,
+        "dependency_score": 0.1743310139869572,
+        "degree": 10,
+        "signpost_score": 3475.900821328226,
+        "signpost_lift": 5.185328955368134,
+        "deck_prevalence": 0.26543983007517463,
+        "draft_weight": 2217.0,
+        "draft_drafts": 2217,
+        "draft_presence": 0.27404202719406673,
+        "draft_win_rate": 0.5254771616724158,
+        "draft_win_lift": 0.012746882976147456,
+        "analysis_score_raw": 3485.1219661846208,
+        "analysis_score": 9.938073024402307,
+        "pick_priority_score_raw": 244.7588249736491,
+        "pick_priority_score": 9.335324557054683,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Scythecat%20Cub%22",
+        "community": 3,
+        "x": 817.7095326504344,
+        "y": 892.4303805073399,
+        "analysis_radius": 19.66573981249203,
+        "pick_radius": 30.0,
+        "radius": 19.66573981249203
+      },
+      {
+        "id": "Malevolent Rumble",
+        "label": "Malevolent Rumble",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 2098,
+        "win_rate": 0.5810295519542421,
+        "standalone_delta": 0.06676116988008196,
+        "dependency_score": 0.4401339114722007,
+        "degree": 6,
+        "signpost_score": 3451.4686228897845,
+        "signpost_lift": 3.9121539995803434,
+        "deck_prevalence": 0.2664844322775197,
+        "draft_weight": 2302.0,
+        "draft_drafts": 2302,
+        "draft_presence": 0.284548825710754,
+        "draft_win_rate": 0.5329150688764095,
+        "draft_win_lift": 0.020184790180141188,
+        "analysis_score_raw": 3468.7375970794956,
+        "analysis_score": 9.934724891855828,
+        "pick_priority_score_raw": 352.5249257117514,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Malevolent%20Rumble%22",
+        "community": 2,
+        "x": 954.9345963758155,
+        "y": 777.1795650425167,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Icetill Explorer",
+        "label": "Icetill Explorer",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Creature - Insect Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 2029,
+        "win_rate": 0.5480532281912273,
+        "standalone_delta": 0.03378484611706711,
+        "dependency_score": 0.5166838901737177,
+        "degree": 10,
+        "signpost_score": 3439.9741282306336,
+        "signpost_lift": 5.379692777334198,
+        "deck_prevalence": 0.270280988575894,
+        "draft_weight": 2246.0,
+        "draft_drafts": 2246,
+        "draft_presence": 0.2776266996291718,
+        "draft_win_rate": 0.5127617704668204,
+        "draft_win_lift": 3.1491770552061205e-05,
+        "analysis_score_raw": 3454.00431671015,
+        "analysis_score": 9.931700629676541,
+        "pick_priority_score_raw": 126.84534299008874,
+        "pick_priority_score": 7.504909232745496,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Icetill%20Explorer%22",
+        "community": 3,
+        "x": 894.580934699131,
+        "y": 821.1572533186358,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Springheart Nantuko",
+        "label": "Springheart Nantuko",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Enchantment Creature - Insect Monk",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1936,
+        "win_rate": 0.5397727272727273,
+        "standalone_delta": 0.025504345198567147,
+        "dependency_score": 0.19813632337423143,
+        "degree": 12,
+        "signpost_score": 3339.3910247696117,
+        "signpost_lift": 4.965075571046844,
+        "deck_prevalence": 0.25090749488822817,
+        "draft_weight": 2180.0,
+        "draft_drafts": 2180,
+        "draft_presence": 0.2694684796044499,
+        "draft_win_rate": 0.5188596243277698,
+        "draft_win_lift": 0.0061293456315014705,
+        "analysis_score_raw": 3346.5280869181474,
+        "analysis_score": 9.909241089224002,
+        "pick_priority_score_raw": 131.42916046984314,
+        "pick_priority_score": 7.603572412987555,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Springheart%20Nantuko%22",
+        "community": 3,
+        "x": 987.7095326504344,
+        "y": 761.4123661740243,
+        "analysis_radius": 19.535646627393525,
+        "pick_radius": 30.0,
+        "radius": 19.535646627393525
+      },
+      {
+        "id": "Llanowar Elves",
+        "label": "Llanowar Elves",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Creature - Elf Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1853,
+        "win_rate": 0.5196977873718295,
+        "standalone_delta": 0.005429405297669332,
+        "dependency_score": 0.12100060020662391,
+        "degree": 6,
+        "signpost_score": 3207.2137414096314,
+        "signpost_lift": 5.099631297949763,
+        "deck_prevalence": 0.24382071717651482,
+        "draft_weight": 2084.0,
+        "draft_drafts": 2084,
+        "draft_presence": 0.257601977750309,
+        "draft_win_rate": 0.5244500740120147,
+        "draft_win_lift": 0.011719795315746406,
+        "analysis_score_raw": 3210.1518689550244,
+        "analysis_score": 9.879680864822618,
+        "pick_priority_score_raw": 94.65645526932869,
+        "pick_priority_score": 6.69250999765924,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Llanowar%20Elves%22",
+        "community": 2,
+        "x": 996.6906256421216,
+        "y": 698.6928056142712,
+        "analysis_radius": 15.654638898810274,
+        "pick_radius": 30.0,
+        "radius": 15.654638898810274
+      },
+      {
+        "id": "Bristly Bill, Spine Sower",
+        "label": "Bristly Bill, Spine Sower",
+        "color_identity": "G",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Legendary Creature - Plant Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1817,
+        "win_rate": 0.538800220143093,
+        "standalone_delta": 0.024531838068932887,
+        "dependency_score": 0.8311601670634777,
+        "degree": 6,
+        "signpost_score": 3124.887403793114,
+        "signpost_lift": 5.105224701175974,
+        "deck_prevalence": 0.23797508292402844,
+        "draft_weight": 2019.0,
+        "draft_drafts": 2019,
+        "draft_presence": 0.2495673671199011,
+        "draft_win_rate": 0.5237062324101611,
+        "draft_win_lift": 0.010975953713892816,
+        "analysis_score_raw": 3143.2827441299073,
+        "analysis_score": 9.86472473134342,
+        "pick_priority_score_raw": 155.07967691914493,
+        "pick_priority_score": 8.06379896571163,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bristly%20Bill%2C%20Spine%20Sower%22",
+        "community": 0,
+        "x": 1222.403033296292,
+        "y": 576.6466807444598,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Once Upon a Time",
+        "label": "Once Upon a Time",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1718,
+        "win_rate": 0.5314318975552969,
+        "standalone_delta": 0.017163515481136704,
+        "dependency_score": 0.21042726742277632,
+        "degree": 8,
+        "signpost_score": 3068.5675950509867,
+        "signpost_lift": 4.38580879751584,
+        "deck_prevalence": 0.23056964794779464,
+        "draft_weight": 1968.0,
+        "draft_drafts": 1968,
+        "draft_presence": 0.24326328800988875,
+        "draft_win_rate": 0.5226330763374385,
+        "draft_win_lift": 0.009902797641170191,
+        "analysis_score_raw": 3074.7581780319556,
+        "analysis_score": 9.849064666914987,
+        "pick_priority_score_raw": 114.86162599618991,
+        "pick_priority_score": 7.229239864696475,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Once%20Upon%20a%20Time%22",
+        "community": 1,
+        "x": 1155.4432054743368,
+        "y": 738.957647729888,
+        "analysis_radius": 19.519374978682464,
+        "pick_radius": 30.0,
+        "radius": 19.519374978682464
+      },
+      {
+        "id": "Lotus Cobra",
+        "label": "Lotus Cobra",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Creature - Snake",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1721,
+        "win_rate": 0.5142359093550262,
+        "standalone_delta": -3.24727191339802e-05,
+        "dependency_score": 0.21196464037098559,
+        "degree": 8,
+        "signpost_score": 3067.7277031750427,
+        "signpost_lift": 5.123024552484428,
+        "deck_prevalence": 0.2342120517302844,
+        "draft_weight": 1983.0,
+        "draft_drafts": 1983,
+        "draft_presence": 0.24511742892459826,
+        "draft_win_rate": 0.514371697871074,
+        "draft_win_lift": 0.0016414191748056473,
+        "analysis_score_raw": 3071.5430667017204,
+        "analysis_score": 9.848321367418393,
+        "pick_priority_score_raw": 10.32306290314843,
+        "pick_priority_score": 0.7157891562488354,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Lotus%20Cobra%22",
+        "community": 2,
+        "x": 1084.6834924396978,
+        "y": 868.6928056142712,
+        "analysis_radius": 18.630727053355482,
+        "pick_radius": 30.0,
+        "radius": 18.630727053355482
+      },
+      {
+        "id": "Six",
+        "label": "Six",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Treefolk",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1690,
+        "win_rate": 0.5497041420118344,
+        "standalone_delta": 0.03543575993767423,
+        "dependency_score": 0.7123965111972279,
+        "degree": 5,
+        "signpost_score": 3031.1249439871854,
+        "signpost_lift": 4.596264596363513,
+        "deck_prevalence": 0.22679435418229016,
+        "draft_weight": 1968.0,
+        "draft_drafts": 1968,
+        "draft_presence": 0.24326328800988875,
+        "draft_win_rate": 0.5102929993086343,
+        "draft_win_lift": -0.0024372793876340504,
+        "analysis_score_raw": 3048.90908758001,
+        "analysis_score": 9.843066516361159,
+        "pick_priority_score_raw": 117.5537790645225,
+        "pick_priority_score": 7.293574850358251,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Six%22",
+        "community": 1,
+        "x": 1050.1426042386292,
+        "y": 628.7892265896487,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Elvish Mystic",
+        "label": "Elvish Mystic",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Creature - Elf Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1715,
+        "win_rate": 0.5469387755102041,
+        "standalone_delta": 0.03267039343604394,
+        "dependency_score": 0.20005192088765564,
+        "degree": 7,
+        "signpost_score": 3012.6742454758805,
+        "signpost_lift": 5.094859868769228,
+        "deck_prevalence": 0.22960514577068264,
+        "draft_weight": 2011.0,
+        "draft_drafts": 2011,
+        "draft_presence": 0.24857849196538936,
+        "draft_win_rate": 0.5197821806252206,
+        "draft_win_lift": 0.007051901928952331,
+        "analysis_score_raw": 3020.849035132904,
+        "analysis_score": 9.836497504755112,
+        "pick_priority_score_raw": 158.14841209762238,
+        "pick_priority_score": 8.118332385863042,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Elvish%20Mystic%22",
+        "community": 1,
+        "x": 1183.5240143351639,
+        "y": 668.5978897443061,
+        "analysis_radius": 19.99874079093802,
+        "pick_radius": 30.0,
+        "radius": 19.99874079093802
+      },
+      {
+        "id": "Pest Infestation",
+        "label": "Pest Infestation",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 2002,
+        "win_rate": 0.5854145854145855,
+        "standalone_delta": 0.07114620334042532,
+        "dependency_score": 0.11703459048947429,
+        "degree": 10,
+        "signpost_score": 2995.195929782194,
+        "signpost_lift": 3.506861600151776,
+        "deck_prevalence": 0.24460534528888533,
+        "draft_weight": 2063.0,
+        "draft_drafts": 2063,
+        "draft_presence": 0.2550061804697157,
+        "draft_win_rate": 0.5298283168982437,
+        "draft_win_lift": 0.01709803820197542,
+        "analysis_score_raw": 3007.263020878664,
+        "analysis_score": 9.833294995897862,
+        "pick_priority_score_raw": 319.4140902412825,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Pest%20Infestation%22",
+        "community": 0,
+        "x": 1085.01355266743,
+        "y": 551.5401157118108,
+        "analysis_radius": 19.12628644134447,
+        "pick_radius": 30.0,
+        "radius": 19.12628644134447
+      },
+      {
+        "id": "Sentinel of the Nameless City",
+        "label": "Sentinel of the Nameless City",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Creature - Merfolk Warrior Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1768,
+        "win_rate": 0.5384615384615384,
+        "standalone_delta": 0.02419315638737829,
+        "dependency_score": 0.5273063986355601,
+        "degree": 8,
+        "signpost_score": 2914.2118961366496,
+        "signpost_lift": 4.321325606276194,
+        "deck_prevalence": 0.22001729981088533,
+        "draft_weight": 2008.0,
+        "draft_drafts": 2008,
+        "draft_presence": 0.24820766378244746,
+        "draft_win_rate": 0.520531464657011,
+        "draft_win_lift": 0.00780118596074264,
+        "analysis_score_raw": 2927.0904532063223,
+        "analysis_score": 9.814097023273858,
+        "pick_priority_score_raw": 125.9982433910458,
+        "pick_priority_score": 7.486289352609321,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sentinel%20of%20the%20Nameless%20City%22",
+        "community": 0,
+        "x": 1255.01355266743,
+        "y": 609.4302263505473,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Fastbond",
+        "label": "Fastbond",
+        "color_identity": "G",
+        "rarity": "mythic",
+        "mana_value": 1.0,
+        "types": "Enchantment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 1664,
+        "win_rate": 0.5162259615384616,
+        "standalone_delta": 0.0019575794643014177,
+        "dependency_score": 0.14928901811295503,
+        "degree": 7,
+        "signpost_score": 2876.283574911052,
+        "signpost_lift": 4.913232566901524,
+        "deck_prevalence": 0.21698043504291553,
+        "draft_weight": 1966.0,
+        "draft_drafts": 1966,
+        "draft_presence": 0.24301606922126082,
+        "draft_win_rate": 0.5062588476596204,
+        "draft_win_lift": -0.006471431036647934,
+        "analysis_score_raw": 2879.244838362087,
+        "analysis_score": 9.802387931603413,
+        "pick_priority_score_raw": 6.642046188777889,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fastbond%22",
+        "community": 0,
+        "x": 1126.074571960838,
+        "y": 499.93097958308715,
+        "analysis_radius": 16.482071522602958,
+        "pick_radius": 30.0,
+        "radius": 16.482071522602958
+      },
+      {
+        "id": "Time Walk",
+        "label": "Time Walk",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 964,
+        "win_rate": 0.6732365145228216,
+        "standalone_delta": 0.15896813244866148,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 209.68285346188873,
+        "signpost_lift": 1.214751014748793,
+        "deck_prevalence": 0.10200839589756505,
+        "draft_weight": 542.0,
+        "draft_drafts": 542,
+        "draft_presence": 0.06699629171817058,
+        "draft_win_rate": 0.5403389560258814,
+        "draft_win_lift": 0.02760867732961314,
+        "analysis_score_raw": 231.93839200470134,
+        "analysis_score": 8.015052158485421,
+        "pick_priority_score_raw": 273.5776681639148,
+        "pick_priority_score": 9.645888784074527,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Time%20Walk%22",
+        "community": 4,
+        "x": 767.5,
+        "y": 789.4967320028762,
+        "analysis_radius": 19.743247284676382,
+        "pick_radius": 30.0,
+        "radius": 19.743247284676382
+      },
+      {
+        "id": "Oko, Thief of Crowns",
+        "label": "Oko, Thief of Crowns",
+        "color_identity": "UG",
+        "rarity": "mythic",
+        "mana_value": 3.0,
+        "types": "Legendary Planeswalker - Oko",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "UG"
+        },
+        "draw_games": 1881,
+        "win_rate": 0.5858585858585859,
+        "standalone_delta": 0.07159020378442571,
+        "dependency_score": 0.18823970870356035,
+        "degree": 12,
+        "signpost_score": 2433.578826832877,
+        "signpost_lift": 3.0812144747536867,
+        "deck_prevalence": 0.21671911967632568,
+        "draft_weight": 1649.0,
+        "draft_drafts": 1649,
+        "draft_presence": 0.203831891223733,
+        "draft_win_rate": 0.5334509482104624,
+        "draft_win_lift": 0.020720669514194046,
+        "analysis_score_raw": 2446.9897701193604,
+        "analysis_score": 9.686820583070888,
+        "pick_priority_score_raw": 294.8229562782606,
+        "pick_priority_score": 9.854625139799655,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Oko%2C%20Thief%20of%20Crowns%22",
+        "community": 2,
+        "x": 1005.8507080295708,
+        "y": 842.3378362153074,
+        "analysis_radius": 21.714090721471585,
+        "pick_radius": 30.0,
+        "radius": 21.714090721471585
+      },
+      {
+        "id": "Minsc & Boo, Timeless Heroes",
+        "label": "Minsc & Boo, Timeless Heroes",
+        "color_identity": "RG",
+        "rarity": "mythic",
+        "mana_value": 4.0,
+        "types": "Legendary Planeswalker - Minsc",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(211, 32, 42)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "RG"
+        },
+        "draw_games": 1860,
+        "win_rate": 0.5811827956989247,
+        "standalone_delta": 0.06691441362476458,
+        "dependency_score": 0.31539333052017,
+        "degree": 7,
+        "signpost_score": 2030.9886356844438,
+        "signpost_lift": 2.365438298699017,
+        "deck_prevalence": 0.2268974675850494,
+        "draft_weight": 1534.0,
+        "draft_drafts": 1534,
+        "draft_presence": 0.1896168108776267,
+        "draft_win_rate": 0.5330362058390147,
+        "draft_win_lift": 0.02030592714274637,
+        "analysis_score_raw": 2046.033733541274,
+        "analysis_score": 9.559691901508238,
+        "pick_priority_score_raw": 254.21567077391305,
+        "pick_priority_score": 9.44107855570059,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Minsc%20%26%20Boo%2C%20Timeless%20Heroes%22",
+        "community": 1,
+        "x": 1173.3894788134223,
+        "y": 798.7892265896487,
+        "analysis_radius": 26.034452648088173,
+        "pick_radius": 30.0,
+        "radius": 26.034452648088173
+      },
+      {
+        "id": "Ancestral Recall",
+        "label": "Ancestral Recall",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 801,
+        "win_rate": 0.6079900124843945,
+        "standalone_delta": 0.0937216304102344,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 5.829786392465764,
+        "signpost_lift": 1.0064632818111554,
+        "deck_prevalence": 0.08608135825780174,
+        "draft_weight": 483.0,
+        "draft_drafts": 483,
+        "draft_presence": 0.05970333745364648,
+        "draft_win_rate": 0.554466477497864,
+        "draft_win_lift": 0.041736198801595736,
+        "analysis_score_raw": 18.95081464989858,
+        "analysis_score": 6.268477460723003,
+        "pick_priority_score_raw": 205.1431976922062,
+        "pick_priority_score": 8.842998290281503,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ancestral%20Recall%22",
+        "community": 5,
+        "x": 670.5032679971238,
+        "y": 692.5,
+        "analysis_radius": 16.154689672562892,
+        "pick_radius": 30.0,
+        "radius": 16.154689672562892
+      },
+      {
+        "id": "Elspeth, Storm Slayer",
+        "label": "Elspeth, Storm Slayer",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Legendary Planeswalker - Elspeth",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 180,
+        "win_rate": 0.5611111111111111,
+        "standalone_delta": 0.04684272903695097,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -306.6749819585237,
+        "signpost_lift": 0.304695434978609,
+        "deck_prevalence": 0.02493441848014312,
+        "draft_weight": 296.0,
+        "draft_drafts": 296,
+        "draft_presence": 0.03658838071693449,
+        "draft_win_rate": 0.5007761685782265,
+        "draft_win_lift": -0.011954110118041816,
+        "analysis_score_raw": -300.11699989335057,
+        "analysis_score": 0.08474690429761847,
+        "pick_priority_score_raw": 44.325203072897416,
+        "pick_priority_score": 4.6005809746560296,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Elspeth%2C%20Storm%20Slayer%22",
+        "community": 6,
+        "x": 635.0,
+        "y": 560.0,
+        "analysis_radius": 13.576350097032304,
+        "pick_radius": 30.0,
+        "radius": 13.576350097032304
+      },
+      {
+        "id": "Thoughtseize",
+        "label": "Thoughtseize",
+        "color_identity": "B",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 291,
+        "win_rate": 0.47079037800687284,
+        "standalone_delta": -0.0434780040672873,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -312.1698038403707,
+        "signpost_lift": 0.4900852163045496,
+        "deck_prevalence": 0.04174816764998794,
+        "draft_weight": 376.0,
+        "draft_drafts": 376,
+        "draft_presence": 0.04647713226205192,
+        "draft_win_rate": 0.4961362659112125,
+        "draft_win_lift": -0.01659401278505579,
+        "analysis_score_raw": -312.1698038403707,
+        "analysis_score": 0.05685388237174222,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Thoughtseize%22",
+        "community": 7,
+        "x": 670.5032679971237,
+        "y": 427.50000000000006,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Ocelot Pride",
+        "label": "Ocelot Pride",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 1.0,
+        "types": "Creature - Cat",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 164,
+        "win_rate": 0.5304878048780488,
+        "standalone_delta": 0.01621942280388866,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -340.66673206517737,
+        "signpost_lift": 0.2215260096759811,
+        "deck_prevalence": 0.02184967071207727,
+        "draft_weight": 232.0,
+        "draft_drafts": 232,
+        "draft_presence": 0.028677379480840544,
+        "draft_win_rate": 0.5328845787402973,
+        "draft_win_lift": 0.02015430004402896,
+        "analysis_score_raw": -338.396012872633,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 44.28569408663952,
+        "pick_priority_score": 4.598138500388314,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ocelot%20Pride%22",
+        "community": 8,
+        "x": 767.4999999999999,
+        "y": 330.5032679971238,
+        "analysis_radius": 11.892068254213877,
+        "pick_radius": 30.0,
+        "radius": 11.892068254213877
+      },
+      {
+        "id": "Ajani, Nacatl Pariah",
+        "label": "Ajani, Nacatl Pariah",
+        "color_identity": "W",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Legendary Creature - Cat Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 192,
+        "win_rate": 0.5729166666666666,
+        "standalone_delta": 0.05864828459250648,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -383.1877403145388,
+        "signpost_lift": 0.2510323686711562,
+        "deck_prevalence": 0.02660192034443912,
+        "draft_weight": 269.0,
+        "draft_drafts": 269,
+        "draft_presence": 0.033250927070457355,
+        "draft_win_rate": 0.5332252431371064,
+        "draft_win_lift": 0.020494964440838093,
+        "analysis_score_raw": -374.9769804715879,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 86.51892725856142,
+        "pick_priority_score": 6.443494802039889,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ajani%2C%20Nacatl%20Pariah%22",
+        "community": 9,
+        "x": 900.0,
+        "y": 295.0,
+        "analysis_radius": 14.225655652587857,
+        "pick_radius": 30.0,
+        "radius": 14.225655652587857
+      },
+      {
+        "id": "Sheoldred's Edict",
+        "label": "Sheoldred's Edict",
+        "color_identity": "B",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 216,
+        "win_rate": 0.5694444444444444,
+        "standalone_delta": 0.05517606237028427,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -212.7932018478817,
+        "signpost_lift": 0.4983511331161744,
+        "deck_prevalence": 0.029548050753393684,
+        "draft_weight": 362.0,
+        "draft_drafts": 362,
+        "draft_presence": 0.044746600741656366,
+        "draft_win_rate": 0.484038227491425,
+        "draft_win_lift": -0.028692051204843305,
+        "analysis_score_raw": -205.0685531160419,
+        "analysis_score": 0.3543124085800617,
+        "pick_priority_score_raw": 57.73879003891523,
+        "pick_priority_score": 5.326656262164514,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sheoldred%27s%20Edict%22",
+        "community": 10,
+        "x": 1032.5,
+        "y": 330.50326799712377,
+        "analysis_radius": 14.034683430365636,
+        "pick_radius": 30.0,
+        "radius": 14.034683430365636
+      },
+      {
+        "id": "Fiery Confluence",
+        "label": "Fiery Confluence",
+        "color_identity": "R",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 237,
+        "win_rate": 0.6118143459915611,
+        "standalone_delta": 0.097545963917401,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -351.639359021957,
+        "signpost_lift": 0.3536028685756448,
+        "deck_prevalence": 0.03239901736033409,
+        "draft_weight": 379.0,
+        "draft_drafts": 379,
+        "draft_presence": 0.04684796044499382,
+        "draft_win_rate": 0.5363921328437341,
+        "draft_win_lift": 0.0236618541474658,
+        "analysis_score_raw": -337.98292407352085,
+        "analysis_score": 0.000562609933659195,
+        "pick_priority_score_raw": 150.5106626062547,
+        "pick_priority_score": 7.98058498735029,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fiery%20Confluence%22",
+        "community": 11,
+        "x": 1129.4967320028761,
+        "y": 427.4999999999999,
+        "analysis_radius": 16.365028015457057,
+        "pick_radius": 30.0,
+        "radius": 16.365028015457057
+      }
+    ],
+    "edges": [
+      {
+        "from": "Icetill Explorer",
+        "to": "Scythecat Cub",
+        "pair_games": 123,
+        "pair_win_rate": 0.7154471544715447,
+        "pair_expected_win_rate": 0.5908865892783228,
+        "pair_lift_vs_baseline": 0.20117877239738458,
+        "synergy_delta_logit": 0.5543570557450213,
+        "synergy_delta_prob": 0.1245605651932219,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 683,
+        "quality_score": 1.8036796391826038,
+        "pick_score_raw": 3.413772668742562,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Icetill Explorer",
+        "to": "Springheart Nantuko",
+        "pair_games": 106,
+        "pair_win_rate": 0.6981132075471698,
+        "pair_expected_win_rate": 0.5732556635216306,
+        "pair_lift_vs_baseline": 0.18384482547300962,
+        "synergy_delta_logit": 0.543182479343544,
+        "synergy_delta_prob": 0.12485754402553917,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 609,
+        "quality_score": 1.5055447169914435,
+        "pick_score_raw": 2.9063107136764126,
+        "pick_score": 9.5112921755189
+      },
+      {
+        "from": "Minsc & Boo, Timeless Heroes",
+        "to": "Once Upon a Time",
+        "pair_games": 103,
+        "pair_win_rate": 0.7087378640776699,
+        "pair_expected_win_rate": 0.5978309133244589,
+        "pair_lift_vs_baseline": 0.19446948200350977,
+        "synergy_delta_logit": 0.492826712962637,
+        "synergy_delta_prob": 0.110906950753211,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 413,
+        "quality_score": 1.395897561575984,
+        "pick_score_raw": 2.963591458372897,
+        "pick_score": 9.749339867404252
+      },
+      {
+        "from": "Birds of Paradise",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 140,
+        "pair_win_rate": 0.6785714285714286,
+        "pair_expected_win_rate": 0.5912630530033567,
+        "pair_lift_vs_baseline": 0.16430304649726846,
+        "synergy_delta_logit": 0.3780251730548889,
+        "synergy_delta_prob": 0.08730837556807192,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 712,
+        "quality_score": 1.095141748205091,
+        "pick_score_raw": 3.040268346766829,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Lotus Cobra",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 92,
+        "pair_win_rate": 0.6847826086956522,
+        "pair_expected_win_rate": 0.5858270446768438,
+        "pair_lift_vs_baseline": 0.17051422662149207,
+        "synergy_delta_logit": 0.4290979490609857,
+        "synergy_delta_prob": 0.09895556401880845,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 399,
+        "quality_score": 1.0190101745642934,
+        "pick_score_raw": 2.4842578088816416,
+        "pick_score": 7.64156256477887
+      },
+      {
+        "from": "Noble Hierarch",
+        "to": "Six",
+        "pair_games": 107,
+        "pair_win_rate": 0.6728971962616822,
+        "pair_expected_win_rate": 0.5768667379024148,
+        "pair_lift_vs_baseline": 0.15862881418752206,
+        "synergy_delta_logit": 0.4113939443860375,
+        "synergy_delta_prob": 0.09603045835926738,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 501,
+        "quality_score": 0.996508030636659,
+        "pick_score_raw": 2.537176230379687,
+        "pick_score": 7.888056516801854
+      },
+      {
+        "from": "Birds of Paradise",
+        "to": "Pest Infestation",
+        "pair_games": 112,
+        "pair_win_rate": 0.6875,
+        "pair_expected_win_rate": 0.604934519248647,
+        "pair_lift_vs_baseline": 0.17323161792583985,
+        "synergy_delta_logit": 0.3623886660540487,
+        "synergy_delta_prob": 0.08256548075135295,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 604,
+        "quality_score": 0.9784119347702129,
+        "pick_score_raw": 2.83088169937184,
+        "pick_score": 9.192442647617916
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Once Upon a Time",
+        "pair_games": 121,
+        "pair_win_rate": 0.6776859504132231,
+        "pair_expected_win_rate": 0.5925717666960219,
+        "pair_lift_vs_baseline": 0.16341756833906296,
+        "synergy_delta_logit": 0.36855041281449163,
+        "synergy_delta_prob": 0.08511418371720125,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 536,
+        "quality_score": 0.9772934657261881,
+        "pick_score_raw": 2.7785484918816996,
+        "pick_score": 8.967511785658818
+      },
+      {
+        "from": "Bristly Bill, Spine Sower",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 128,
+        "pair_win_rate": 0.6640625,
+        "pair_expected_win_rate": 0.5954606553265557,
+        "pair_lift_vs_baseline": 0.14979411792583985,
+        "synergy_delta_logit": 0.29486482335816755,
+        "synergy_delta_prob": 0.06860184467344432,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.3933903067151774,
+        "draft_pair_events": 732,
+        "quality_score": 0.9422085945421588,
+        "pick_score_raw": 3.0550107178394788,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Oko, Thief of Crowns",
+        "to": "Scythecat Cub",
+        "pair_games": 95,
+        "pair_win_rate": 0.7052631578947368,
+        "pair_expected_win_rate": 0.6275439440209786,
+        "pair_lift_vs_baseline": 0.19099477582057667,
+        "synergy_delta_logit": 0.35079347068394207,
+        "synergy_delta_prob": 0.07771921387375824,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 441,
+        "quality_score": 0.9411327652315802,
+        "pick_score_raw": 2.8081377059895605,
+        "pick_score": 9.095067669222088
+      },
+      {
+        "from": "Bristly Bill, Spine Sower",
+        "to": "Sentinel of the Nameless City",
+        "pair_games": 102,
+        "pair_win_rate": 0.6470588235294118,
+        "pair_expected_win_rate": 0.5628102419419346,
+        "pair_lift_vs_baseline": 0.13279044145525165,
+        "synergy_delta_logit": 0.3535606101158964,
+        "synergy_delta_prob": 0.08424858158747717,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.0416668599540584,
+        "draft_pair_events": 591,
+        "quality_score": 0.8546657469409702,
+        "pick_score_raw": 2.3564398403650952,
+        "pick_score": 7.030396758575332
+      },
+      {
+        "from": "Elvish Mystic",
+        "to": "Springheart Nantuko",
+        "pair_games": 95,
+        "pair_win_rate": 0.6631578947368421,
+        "pair_expected_win_rate": 0.5721548418412418,
+        "pair_lift_vs_baseline": 0.1488895126626819,
+        "synergy_delta_logit": 0.3867505164463927,
+        "synergy_delta_prob": 0.09100305289560029,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 515,
+        "quality_score": 0.8354688901245145,
+        "pick_score_raw": 2.2630460754895814,
+        "pick_score": 6.568931060778032
+      },
+      {
+        "from": "Malevolent Rumble",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 116,
+        "pair_win_rate": 0.7068965517241379,
+        "pair_expected_win_rate": 0.6494865725486467,
+        "pair_lift_vs_baseline": 0.19262816964997775,
+        "synergy_delta_logit": 0.26357557543115173,
+        "synergy_delta_prob": 0.05740997917549118,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 462,
+        "quality_score": 0.7888470058578381,
+        "pick_score_raw": 3.133426963383201,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Noble Hierarch",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 136,
+        "pair_win_rate": 0.6764705882352942,
+        "pair_expected_win_rate": 0.6123781365066112,
+        "pair_lift_vs_baseline": 0.162202206161134,
+        "synergy_delta_logit": 0.28027926710021667,
+        "synergy_delta_prob": 0.06409245172868294,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 497,
+        "quality_score": 0.7804786491213039,
+        "pick_score_raw": 2.9166107474346408,
+        "pick_score": 9.554353453317784
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Noble Hierarch",
+        "pair_games": 152,
+        "pair_win_rate": 0.6644736842105263,
+        "pair_expected_win_rate": 0.602585882769541,
+        "pair_lift_vs_baseline": 0.15020530213636618,
+        "synergy_delta_logit": 0.26704353836350647,
+        "synergy_delta_prob": 0.06188780144098538,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 608,
+        "quality_score": 0.7400230672741355,
+        "pick_score_raw": 2.9057177334962287,
+        "pick_score": 9.50880965214375
+      },
+      {
+        "from": "Icetill Explorer",
+        "to": "Six",
+        "pair_games": 109,
+        "pair_win_rate": 0.6422018348623854,
+        "pair_expected_win_rate": 0.5830227040899258,
+        "pair_lift_vs_baseline": 0.1279334527882252,
+        "synergy_delta_logit": 0.24973924083476295,
+        "synergy_delta_prob": 0.05917913077245951,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.2223914633243527,
+        "draft_pair_events": 625,
+        "quality_score": 0.6220966882125123,
+        "pick_score_raw": 2.4029315314836737,
+        "pick_score": 7.255350317543727
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Six",
+        "pair_games": 122,
+        "pair_win_rate": 0.6639344262295082,
+        "pair_expected_win_rate": 0.6102085582344253,
+        "pair_lift_vs_baseline": 0.149666044155348,
+        "synergy_delta_logit": 0.23268812187226817,
+        "synergy_delta_prob": 0.05372586799508283,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 496,
+        "quality_score": 0.5714295899726342,
+        "pick_score_raw": 2.572125032432989,
+        "pick_score": 8.048834234050958
+      },
+      {
+        "from": "Elvish Mystic",
+        "to": "Once Upon a Time",
+        "pair_games": 94,
+        "pair_win_rate": 0.6382978723404256,
+        "pair_expected_win_rate": 0.5639267598468104,
+        "pair_lift_vs_baseline": 0.12402949026626542,
+        "synergy_delta_logit": 0.3108698642122233,
+        "synergy_delta_prob": 0.07437111249361517,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 512,
+        "quality_score": 0.5695506796729931,
+        "pick_score_raw": 1.9192596228781418,
+        "pick_score": 4.74837725533056
+      },
+      {
+        "from": "Bristly Bill, Spine Sower",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 90,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.609520106360646,
+        "pair_lift_vs_baseline": 0.15239828459250648,
+        "synergy_delta_logit": 0.2478517230906726,
+        "synergy_delta_prob": 0.05714656030602061,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 399,
+        "quality_score": 0.5268013669677162,
+        "pick_score_raw": 2.2234610845695415,
+        "pick_score": 6.369339569383636
+      },
+      {
+        "from": "Sentinel of the Nameless City",
+        "to": "Springheart Nantuko",
+        "pair_games": 98,
+        "pair_win_rate": 0.6326530612244898,
+        "pair_expected_win_rate": 0.5637731107158407,
+        "pair_lift_vs_baseline": 0.11838467915032969,
+        "synergy_delta_logit": 0.2871260582548877,
+        "synergy_delta_prob": 0.06887995050864915,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 568,
+        "quality_score": 0.5181117109414085,
+        "pick_score_raw": 1.8913819668860143,
+        "pick_score": 4.591466583249926
+      },
+      {
+        "from": "Ignoble Hierarch",
+        "to": "Scythecat Cub",
+        "pair_games": 119,
+        "pair_win_rate": 0.6386554621848739,
+        "pair_expected_win_rate": 0.580727104655023,
+        "pair_lift_vs_baseline": 0.12438708011071375,
+        "synergy_delta_logit": 0.24377428692977626,
+        "synergy_delta_prob": 0.05792835752985093,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 598,
+        "quality_score": 0.5067405800862065,
+        "pick_score_raw": 2.1794588916657642,
+        "pick_score": 6.144579029012435
+      },
+      {
+        "from": "Lotus Cobra",
+        "to": "Pest Infestation",
+        "pair_games": 93,
+        "pair_win_rate": 0.6451612903225806,
+        "pair_expected_win_rate": 0.5853830343489231,
+        "pair_lift_vs_baseline": 0.13089290824842048,
+        "synergy_delta_logit": 0.2529257279073442,
+        "synergy_delta_prob": 0.05977825597365749,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 505,
+        "quality_score": 0.48262994015469013,
+        "pick_score_raw": 1.9987943785843956,
+        "pick_score": 5.187940287559869
+      },
+      {
+        "from": "Llanowar Elves",
+        "to": "Malevolent Rumble",
+        "pair_games": 103,
+        "pair_win_rate": 0.6407766990291263,
+        "pair_expected_win_rate": 0.5863130060661856,
+        "pair_lift_vs_baseline": 0.12650831695496612,
+        "synergy_delta_logit": 0.22999267693543318,
+        "synergy_delta_prob": 0.054463692962940624,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 586,
+        "quality_score": 0.4509805180246831,
+        "pick_score_raw": 2.0556373474080654,
+        "pick_score": 5.495007263006463
+      },
+      {
+        "from": "Minsc & Boo, Timeless Heroes",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 112,
+        "pair_win_rate": 0.6875,
+        "pair_expected_win_rate": 0.6496298762026188,
+        "pair_lift_vs_baseline": 0.17323161792583985,
+        "synergy_delta_logit": 0.17104467317496508,
+        "synergy_delta_prob": 0.037870123797381194,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 300,
+        "quality_score": 0.44959349588016784,
+        "pick_score_raw": 2.745223802320942,
+        "pick_score": 8.822651181141465
+      },
+      {
+        "from": "Fastbond",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 156,
+        "pair_win_rate": 0.6217948717948718,
+        "pair_expected_win_rate": 0.5734642517327143,
+        "pair_lift_vs_baseline": 0.10752648972071166,
+        "synergy_delta_logit": 0.20117411464181212,
+        "synergy_delta_prob": 0.04833062006215749,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 760,
+        "quality_score": 0.42672838347630593,
+        "pick_score_raw": 2.2268661150050657,
+        "pick_score": 6.386604159705194
+      },
+      {
+        "from": "Ignoble Hierarch",
+        "to": "Lotus Cobra",
+        "pair_games": 117,
+        "pair_win_rate": 0.5982905982905983,
+        "pair_expected_win_rate": 0.5376300227734115,
+        "pair_lift_vs_baseline": 0.08402221621643813,
+        "synergy_delta_logit": 0.24754239386405485,
+        "synergy_delta_prob": 0.06066057551718673,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 541,
+        "quality_score": 0.36619818919425984,
+        "pick_score_raw": 1.5501678397829783,
+        "pick_score": 2.5379814624233914
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Springheart Nantuko",
+        "pair_games": 149,
+        "pair_win_rate": 0.6375838926174496,
+        "pair_expected_win_rate": 0.6006421191232145,
+        "pair_lift_vs_baseline": 0.12331551054328949,
+        "synergy_delta_logit": 0.15675152296445438,
+        "synergy_delta_prob": 0.03694177349423511,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 686,
+        "quality_score": 0.3637839742759393,
+        "pick_score_raw": 2.435044277384331,
+        "pick_score": 7.408942835293618
+      },
+      {
+        "from": "Elvish Mystic",
+        "to": "Noble Hierarch",
+        "pair_games": 106,
+        "pair_win_rate": 0.6226415094339622,
+        "pair_expected_win_rate": 0.5741389524415986,
+        "pair_lift_vs_baseline": 0.10837312735980209,
+        "synergy_delta_logit": 0.20201695708546064,
+        "synergy_delta_prob": 0.04850255699236361,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 588,
+        "quality_score": 0.35215492312953606,
+        "pick_score_raw": 1.8274973954501177,
+        "pick_score": 4.226107339116936
+      },
+      {
+        "from": "Elvish Mystic",
+        "to": "Sentinel of the Nameless City",
+        "pair_games": 115,
+        "pair_win_rate": 0.6173913043478261,
+        "pair_expected_win_rate": 0.5708625625641667,
+        "pair_lift_vs_baseline": 0.10312292227366593,
+        "synergy_delta_logit": 0.193118993078485,
+        "synergy_delta_prob": 0.0465287417836594,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 532,
+        "quality_score": 0.3350300432218804,
+        "pick_score_raw": 1.817735577273831,
+        "pick_score": 4.169552957038053
+      },
+      {
+        "from": "Minsc & Boo, Timeless Heroes",
+        "to": "Scythecat Cub",
+        "pair_games": 119,
+        "pair_win_rate": 0.6554621848739496,
+        "pair_expected_win_rate": 0.6230359663209522,
+        "pair_lift_vs_baseline": 0.14119380279978944,
+        "synergy_delta_logit": 0.14068229352711548,
+        "synergy_delta_prob": 0.03242621855299743,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 467,
+        "quality_score": 0.32342792928235287,
+        "pick_score_raw": 2.407110982246686,
+        "pick_score": 7.275422122523682
+      },
+      {
+        "from": "Noble Hierarch",
+        "to": "Sentinel of the Nameless City",
+        "pair_games": 107,
+        "pair_win_rate": 0.6074766355140186,
+        "pair_expected_win_rate": 0.5657665911343926,
+        "pair_lift_vs_baseline": 0.0932082534398585,
+        "synergy_delta_logit": 0.1721182395965592,
+        "synergy_delta_prob": 0.041710044379626,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7906445077662662,
+        "draft_pair_events": 572,
+        "quality_score": 0.3033530463287452,
+        "pick_score_raw": 1.7451298810306557,
+        "pick_score": 3.7426651163993574
+      },
+      {
+        "from": "Elvish Mystic",
+        "to": "Nadu, Winged Wisdom",
+        "pair_games": 101,
+        "pair_win_rate": 0.6435643564356436,
+        "pair_expected_win_rate": 0.6075494868921872,
+        "pair_lift_vs_baseline": 0.12929597436148343,
+        "synergy_delta_logit": 0.15384514765724,
+        "synergy_delta_prob": 0.03601486954345634,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 513,
+        "quality_score": 0.3028748539937369,
+        "pick_score_raw": 2.062358117429351,
+        "pick_score": 5.53093476667964
+      },
+      {
+        "from": "Ignoble Hierarch",
+        "to": "Noble Hierarch",
+        "pair_games": 121,
+        "pair_win_rate": 0.6033057851239669,
+        "pair_expected_win_rate": 0.5649764730673109,
+        "pair_lift_vs_baseline": 0.08903740304980678,
+        "synergy_delta_logit": 0.15787445507876519,
+        "synergy_delta_prob": 0.03832931205665602,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.9614405596618588,
+        "draft_pair_events": 665,
+        "quality_score": 0.2943316938378002,
+        "pick_score_raw": 1.8275732557585722,
+        "pick_score": 4.226546065299378
+      },
+      {
+        "from": "Oko, Thief of Crowns",
+        "to": "Sentinel of the Nameless City",
+        "pair_games": 109,
+        "pair_win_rate": 0.6422018348623854,
+        "pair_expected_win_rate": 0.6091956894932217,
+        "pair_lift_vs_baseline": 0.1279334527882252,
+        "synergy_delta_logit": 0.14100100067160937,
+        "synergy_delta_prob": 0.033006145369163686,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 427,
+        "quality_score": 0.28374723684078584,
+        "pick_score_raw": 2.1059588446473883,
+        "pick_score": 5.762115303575754
+      },
+      {
+        "from": "Lotus Cobra",
+        "to": "Nadu, Winged Wisdom",
+        "pair_games": 132,
+        "pair_win_rate": 0.6136363636363636,
+        "pair_expected_win_rate": 0.5758286461456503,
+        "pair_lift_vs_baseline": 0.0993679815622035,
+        "synergy_delta_logit": 0.1569509048811753,
+        "synergy_delta_prob": 0.03780771749071332,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 520,
+        "quality_score": 0.2825745686489993,
+        "pick_score_raw": 1.8861944802667947,
+        "pick_score": 4.562101692492016
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Sentinel of the Nameless City",
+        "pair_games": 138,
+        "pair_win_rate": 0.6304347826086957,
+        "pair_expected_win_rate": 0.5993756356116428,
+        "pair_lift_vs_baseline": 0.11616640053453553,
+        "synergy_delta_logit": 0.13121822095929014,
+        "synergy_delta_prob": 0.031059146997052922,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 527,
+        "quality_score": 0.2756885838695601,
+        "pick_score_raw": 2.201273180258801,
+        "pick_score": 6.256391236425469
+      },
+      {
+        "from": "Fastbond",
+        "to": "Pest Infestation",
+        "pair_games": 91,
+        "pair_win_rate": 0.6263736263736264,
+        "pair_expected_win_rate": 0.5873155266256544,
+        "pair_lift_vs_baseline": 0.11210524429946622,
+        "synergy_delta_logit": 0.1638118577276484,
+        "synergy_delta_prob": 0.03905809974797192,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 492,
+        "quality_score": 0.27043682335108277,
+        "pick_score_raw": 1.7290379933314541,
+        "pick_score": 3.646524452593217
+      },
+      {
+        "from": "Pest Infestation",
+        "to": "Springheart Nantuko",
+        "pair_games": 122,
+        "pair_win_rate": 0.639344262295082,
+        "pair_expected_win_rate": 0.6100161199385192,
+        "pair_lift_vs_baseline": 0.12507588022092186,
+        "synergy_delta_logit": 0.12513921491818036,
+        "synergy_delta_prob": 0.02932814235656278,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 595,
+        "quality_score": 0.2645951691323445,
+        "pick_score_raw": 2.2168047027805877,
+        "pick_score": 6.335536855340191
+      },
+      {
+        "from": "Scythecat Cub",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 155,
+        "pair_win_rate": 0.6387096774193548,
+        "pair_expected_win_rate": 0.6137221799597382,
+        "pair_lift_vs_baseline": 0.12444129534519466,
+        "synergy_delta_logit": 0.10678266089830668,
+        "synergy_delta_prob": 0.024987497459616592,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 797,
+        "quality_score": 0.2561817064100568,
+        "pick_score_raw": 2.519257609361296,
+        "pick_score": 7.80500697750188
+      },
+      {
+        "from": "Fastbond",
+        "to": "Springheart Nantuko",
+        "pair_games": 93,
+        "pair_win_rate": 0.5913978494623656,
+        "pair_expected_win_rate": 0.5417191165216709,
+        "pair_lift_vs_baseline": 0.07712946738820547,
+        "synergy_delta_logit": 0.20248167243355725,
+        "synergy_delta_prob": 0.04967873294069469,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 547,
+        "quality_score": 0.24946381851004068,
+        "pick_score_raw": 1.2911013855133349,
+        "pick_score": 0.7861836233627163
+      },
+      {
+        "from": "Springheart Nantuko",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 154,
+        "pair_win_rate": 0.6233766233766234,
+        "pair_expected_win_rate": 0.5964031816392465,
+        "pair_lift_vs_baseline": 0.10910824130246322,
+        "synergy_delta_logit": 0.11340466860315568,
+        "synergy_delta_prob": 0.026973441737376813,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 714,
+        "quality_score": 0.24140381295119334,
+        "pick_score_raw": 2.233994310971256,
+        "pick_score": 6.422687474885117
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Scythecat Cub",
+        "pair_games": 156,
+        "pair_win_rate": 0.6410256410256411,
+        "pair_expected_win_rate": 0.6178957574326261,
+        "pair_lift_vs_baseline": 0.12675725895148093,
+        "synergy_delta_logit": 0.09919218699825783,
+        "synergy_delta_prob": 0.023129883593014933,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 678,
+        "quality_score": 0.24109769156683922,
+        "pick_score_raw": 2.550134540369531,
+        "pick_score": 7.947854199777171
+      },
+      {
+        "from": "Minsc & Boo, Timeless Heroes",
+        "to": "Springheart Nantuko",
+        "pair_games": 91,
+        "pair_win_rate": 0.6373626373626373,
+        "pair_expected_win_rate": 0.605866380579762,
+        "pair_lift_vs_baseline": 0.12309425528847717,
+        "synergy_delta_logit": 0.13396596880464307,
+        "synergy_delta_prob": 0.031496256782875265,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 453,
+        "quality_score": 0.23880802789019048,
+        "pick_score_raw": 1.866116175450749,
+        "pick_score": 4.447944452914291
+      },
+      {
+        "from": "Fastbond",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 103,
+        "pair_win_rate": 0.6213592233009708,
+        "pair_expected_win_rate": 0.5877589248485201,
+        "pair_lift_vs_baseline": 0.10709084122681067,
+        "synergy_delta_logit": 0.14061287724348787,
+        "synergy_delta_prob": 0.033600298452450716,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 399,
+        "quality_score": 0.23569953050945172,
+        "pick_score_raw": 1.7535098288874313,
+        "pick_score": 3.7925080243789977
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 175,
+        "pair_win_rate": 0.6628571428571428,
+        "pair_expected_win_rate": 0.6446454675738841,
+        "pair_lift_vs_baseline": 0.14858876078298267,
+        "synergy_delta_logit": 0.08046821821482375,
+        "synergy_delta_prob": 0.018211675283258733,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 504,
+        "quality_score": 0.23531532748517042,
+        "pick_score_raw": 3.0631476347526703,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Bristly Bill, Spine Sower",
+        "to": "Malevolent Rumble",
+        "pair_games": 109,
+        "pair_win_rate": 0.6330275229357798,
+        "pair_expected_win_rate": 0.604780851337677,
+        "pair_lift_vs_baseline": 0.11875914086161965,
+        "synergy_delta_logit": 0.11980130506006736,
+        "synergy_delta_prob": 0.02824667159810279,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 559,
+        "quality_score": 0.2284668695814793,
+        "pick_score_raw": 1.9987203118948846,
+        "pick_score": 5.187536392447751
+      },
+      {
+        "from": "Nadu, Winged Wisdom",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 135,
+        "pair_win_rate": 0.6518518518518519,
+        "pair_expected_win_rate": 0.6310852546719667,
+        "pair_lift_vs_baseline": 0.13758346977769176,
+        "synergy_delta_logit": 0.090313823813013,
+        "synergy_delta_prob": 0.02076659717988516,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 634,
+        "quality_score": 0.21871923113073458,
+        "pick_score_raw": 2.5399320716281544,
+        "pick_score": 7.9007919980414565
+      },
+      {
+        "from": "Ignoble Hierarch",
+        "to": "Nadu, Winged Wisdom",
+        "pair_games": 115,
+        "pair_win_rate": 0.6260869565217392,
+        "pair_expected_win_rate": 0.5986032843706709,
+        "pair_lift_vs_baseline": 0.11181857444757903,
+        "synergy_delta_logit": 0.1158171752054995,
+        "synergy_delta_prob": 0.027483672151068284,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 535,
+        "quality_score": 0.21516031858916437,
+        "pick_score_raw": 1.9465906153888797,
+        "pick_score": 4.900763076320049
+      },
+      {
+        "from": "Fastbond",
+        "to": "Nadu, Winged Wisdom",
+        "pair_games": 120,
+        "pair_win_rate": 0.6083333333333333,
+        "pair_expected_win_rate": 0.5777735503163042,
+        "pair_lift_vs_baseline": 0.09406495125917314,
+        "synergy_delta_logit": 0.12667160972893038,
+        "synergy_delta_prob": 0.030559783017029107,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 494,
+        "quality_score": 0.2073810031554336,
+        "pick_score_raw": 1.7146816815265902,
+        "pick_score": 3.5602732577720855
+      },
+      {
+        "from": "Birds of Paradise",
+        "to": "Lotus Cobra",
+        "pair_games": 116,
+        "pair_win_rate": 0.5775862068965517,
+        "pair_expected_win_rate": 0.5344419828570859,
+        "pair_lift_vs_baseline": 0.06331782482239157,
+        "synergy_delta_logit": 0.17488586439320436,
+        "synergy_delta_prob": 0.04314422403946583,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 588,
+        "quality_score": 0.2069857802573667,
+        "pick_score_raw": 1.2407852741814358,
+        "pick_score": 0.4230530130168214
+      },
+      {
+        "from": "Once Upon a Time",
+        "to": "Springheart Nantuko",
+        "pair_games": 108,
+        "pair_win_rate": 0.5925925925925926,
+        "pair_expected_win_rate": 0.5568116817685549,
+        "pair_lift_vs_baseline": 0.07832421051843241,
+        "synergy_delta_logit": 0.1464611377581696,
+        "synergy_delta_prob": 0.03578091082403767,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 548,
+        "quality_score": 0.19685851826245176,
+        "pick_score_raw": 1.4085578100453402,
+        "pick_score": 1.6037402509470122
+      },
+      {
+        "from": "Oko, Thief of Crowns",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 126,
+        "pair_win_rate": 0.6587301587301587,
+        "pair_expected_win_rate": 0.6405941190354958,
+        "pair_lift_vs_baseline": 0.14446177665599857,
+        "synergy_delta_logit": 0.07969677287076482,
+        "synergy_delta_prob": 0.01813603969466293,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 495,
+        "quality_score": 0.19278412628788913,
+        "pick_score_raw": 2.533548582718135,
+        "pick_score": 7.871277048844626
+      },
+      {
+        "from": "Six",
+        "to": "Springheart Nantuko",
+        "pair_games": 99,
+        "pair_win_rate": 0.6060606060606061,
+        "pair_expected_win_rate": 0.5748859260560851,
+        "pair_lift_vs_baseline": 0.09179222398644593,
+        "synergy_delta_logit": 0.12896882663346554,
+        "synergy_delta_prob": 0.03117468000452095,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 556,
+        "quality_score": 0.18880441997551506,
+        "pick_score_raw": 1.534280993346779,
+        "pick_score": 2.4357905648359917
+      },
+      {
+        "from": "Lotus Cobra",
+        "to": "Noble Hierarch",
+        "pair_games": 112,
+        "pair_win_rate": 0.5803571428571429,
+        "pair_expected_win_rate": 0.5417544712071151,
+        "pair_lift_vs_baseline": 0.06608876078298276,
+        "synergy_delta_logit": 0.15683190407389958,
+        "synergy_delta_prob": 0.03860267165002784,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 571,
+        "quality_score": 0.1882462422369652,
+        "pick_score_raw": 1.2581513844925702,
+        "pick_score": 0.5492973243743079
+      },
+      {
+        "from": "Ignoble Hierarch",
+        "to": "Llanowar Elves",
+        "pair_games": 112,
+        "pair_win_rate": 0.5803571428571429,
+        "pair_expected_win_rate": 0.5430625915851048,
+        "pair_lift_vs_baseline": 0.06608876078298276,
+        "synergy_delta_logit": 0.1515615045616212,
+        "synergy_delta_prob": 0.03729455127203807,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 607,
+        "quality_score": 0.1823415561782189,
+        "pick_score_raw": 1.2614878912126002,
+        "pick_score": 0.5734411059111131
+      },
+      {
+        "from": "Scythecat Cub",
+        "to": "Springheart Nantuko",
+        "pair_games": 130,
+        "pair_win_rate": 0.6076923076923076,
+        "pair_expected_win_rate": 0.5827934546475659,
+        "pair_lift_vs_baseline": 0.0934239256181475,
+        "synergy_delta_logit": 0.10337078812488487,
+        "synergy_delta_prob": 0.02489885304474171,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 694,
+        "quality_score": 0.17742266915514301,
+        "pick_score_raw": 1.800999390762481,
+        "pick_score": 4.072135625703504
+      },
+      {
+        "from": "Malevolent Rumble",
+        "to": "Minsc & Boo, Timeless Heroes",
+        "pair_games": 100,
+        "pair_win_rate": 0.66,
+        "pair_expected_win_rate": 0.6450939766959195,
+        "pair_lift_vs_baseline": 0.14573161792583988,
+        "synergy_delta_logit": 0.06575124226697604,
+        "synergy_delta_prob": 0.014906023304080529,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.1670167918252514,
+        "draft_pair_events": 476,
+        "quality_score": 0.1725241249676475,
+        "pick_score_raw": 2.5355913992271892,
+        "pick_score": 7.88072809259218
+      },
+      {
+        "from": "Llanowar Elves",
+        "to": "Oko, Thief of Crowns",
+        "pair_games": 94,
+        "pair_win_rate": 0.6170212765957447,
+        "pair_expected_win_rate": 0.591123996812159,
+        "pair_lift_vs_baseline": 0.10275289452158454,
+        "synergy_delta_logit": 0.10831020759752413,
+        "synergy_delta_prob": 0.02589727978358569,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 401,
+        "quality_score": 0.1675518170158357,
+        "pick_score_raw": 1.6183281677715453,
+        "pick_score": 2.969311446153403
+      },
+      {
+        "from": "Icetill Explorer",
+        "to": "Ignoble Hierarch",
+        "pair_games": 104,
+        "pair_win_rate": 0.5961538461538461,
+        "pair_expected_win_rate": 0.5711768332920659,
+        "pair_lift_vs_baseline": 0.081885464079686,
+        "synergy_delta_logit": 0.10281054965564251,
+        "synergy_delta_prob": 0.024977012861780223,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7302996897419896,
+        "draft_pair_events": 589,
+        "quality_score": 0.15942274114414576,
+        "pick_score_raw": 1.5417090765924415,
+        "pick_score": 2.483650630745698
+      },
+      {
+        "from": "Icetill Explorer",
+        "to": "Lotus Cobra",
+        "pair_games": 107,
+        "pair_win_rate": 0.5794392523364486,
+        "pair_expected_win_rate": 0.5480210290421927,
+        "pair_lift_vs_baseline": 0.0651708702622884,
+        "synergy_delta_logit": 0.1277938892187468,
+        "synergy_delta_prob": 0.03141822329425581,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 617,
+        "quality_score": 0.14876560182495938,
+        "pick_score_raw": 1.2207240388528204,
+        "pick_score": 0.27599260061479053
+      },
+      {
+        "from": "Elvish Mystic",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 101,
+        "pair_win_rate": 0.6237623762376238,
+        "pair_expected_win_rate": 0.6033354479525089,
+        "pair_lift_vs_baseline": 0.10949399416346361,
+        "synergy_delta_logit": 0.08616619263641051,
+        "synergy_delta_prob": 0.02042692828511483,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 575,
+        "quality_score": 0.14777415827261137,
+        "pick_score_raw": 1.7977082869103986,
+        "pick_score": 4.052910427390697
+      },
+      {
+        "from": "Fastbond",
+        "to": "Lotus Cobra",
+        "pair_games": 93,
+        "pair_win_rate": 0.5591397849462365,
+        "pair_expected_win_rate": 0.5161934965712345,
+        "pair_lift_vs_baseline": 0.04487140287207636,
+        "synergy_delta_logit": 0.17287500380946547,
+        "synergy_delta_prob": 0.04294628837500203,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 509,
+        "quality_score": 0.14186272071433934,
+        "pick_score_raw": 0.8596109299646165,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Noble Hierarch",
+        "to": "Once Upon a Time",
+        "pair_games": 111,
+        "pair_win_rate": 0.5855855855855856,
+        "pair_expected_win_rate": 0.5588120794070246,
+        "pair_lift_vs_baseline": 0.07131720351142545,
+        "synergy_delta_logit": 0.1094035380416859,
+        "synergy_delta_prob": 0.026773506178561002,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 568,
+        "quality_score": 0.13864212637339113,
+        "pick_score_raw": 1.3282881176256411,
+        "pick_score": 1.0494708547924323
+      },
+      {
+        "from": "Bristly Bill, Spine Sower",
+        "to": "Scythecat Cub",
+        "pair_games": 143,
+        "pair_win_rate": 0.6013986013986014,
+        "pair_expected_win_rate": 0.5818414294719655,
+        "pair_lift_vs_baseline": 0.0871302193244412,
+        "synergy_delta_logit": 0.0809587916808216,
+        "synergy_delta_prob": 0.019557171926635863,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 725,
+        "quality_score": 0.13787716806946362,
+        "pick_score_raw": 1.7874461963123347,
+        "pick_score": 3.9928182241879733
+      },
+      {
+        "from": "Icetill Explorer",
+        "to": "Pest Infestation",
+        "pair_games": 96,
+        "pair_win_rate": 0.6354166666666666,
+        "pair_expected_win_rate": 0.6179273791188197,
+        "pair_lift_vs_baseline": 0.12114828459250648,
+        "synergy_delta_logit": 0.07476555920478611,
+        "synergy_delta_prob": 0.017489287547846954,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 548,
+        "quality_score": 0.13601044749015792,
+        "pick_score_raw": 1.9063979012871175,
+        "pick_score": 4.676171495227241
+      },
+      {
+        "from": "Bristly Bill, Spine Sower",
+        "to": "Icetill Explorer",
+        "pair_games": 103,
+        "pair_win_rate": 0.5922330097087378,
+        "pair_expected_win_rate": 0.5722978464880903,
+        "pair_lift_vs_baseline": 0.07796462763457768,
+        "synergy_delta_logit": 0.08197172970871852,
+        "synergy_delta_prob": 0.019935163220647478,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.3933903067151774,
+        "draft_pair_events": 605,
+        "quality_score": 0.1345954978091013,
+        "pick_score_raw": 1.568218184868371,
+        "pick_score": 2.6533191544275634
+      },
+      {
+        "from": "Icetill Explorer",
+        "to": "Noble Hierarch",
+        "pair_games": 109,
+        "pair_win_rate": 0.5963302752293578,
+        "pair_expected_win_rate": 0.5752384590170824,
+        "pair_lift_vs_baseline": 0.08206189315519763,
+        "synergy_delta_logit": 0.08694090123486153,
+        "synergy_delta_prob": 0.021091816212275405,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 548,
+        "quality_score": 0.12185980230058778,
+        "pick_score_raw": 1.46885592382446,
+        "pick_score": 2.008086334520118
+      },
+      {
+        "from": "Elvish Mystic",
+        "to": "Pest Infestation",
+        "pair_games": 90,
+        "pair_win_rate": 0.6333333333333333,
+        "pair_expected_win_rate": 0.6168647749400813,
+        "pair_lift_vs_baseline": 0.11906495125917316,
+        "synergy_delta_logit": 0.07028186680444426,
+        "synergy_delta_prob": 0.01646855839325201,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 508,
+        "quality_score": 0.12161609556580105,
+        "pick_score_raw": 1.8126288381756006,
+        "pick_score": 4.139889328857924
+      },
+      {
+        "from": "Noble Hierarch",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 127,
+        "pair_win_rate": 0.6141732283464567,
+        "pair_expected_win_rate": 0.5983537807267906,
+        "pair_lift_vs_baseline": 0.09990484627229657,
+        "synergy_delta_logit": 0.06627799257908878,
+        "synergy_delta_prob": 0.015819447619666138,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 661,
+        "quality_score": 0.11864412129906936,
+        "pick_score_raw": 1.8778661516878348,
+        "pick_score": 4.514846819869183
+      },
+      {
+        "from": "Scythecat Cub",
+        "to": "Sentinel of the Nameless City",
+        "pair_games": 105,
+        "pair_win_rate": 0.6,
+        "pair_expected_win_rate": 0.5815098054569665,
+        "pair_lift_vs_baseline": 0.08573161792583983,
+        "synergy_delta_logit": 0.07649073359119768,
+        "synergy_delta_prob": 0.018490194543033467,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 637,
+        "quality_score": 0.10963290518014775,
+        "pick_score_raw": 1.5032548448451928,
+        "pick_score": 2.2343568354246974
+      },
+      {
+        "from": "Malevolent Rumble",
+        "to": "Once Upon a Time",
+        "pair_games": 129,
+        "pair_win_rate": 0.6124031007751938,
+        "pair_expected_win_rate": 0.5976795442700947,
+        "pair_lift_vs_baseline": 0.09813471870103363,
+        "synergy_delta_logit": 0.06161904048764205,
+        "synergy_delta_prob": 0.014723556505099045,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 622,
+        "quality_score": 0.10927711149867947,
+        "pick_score_raw": 1.8597666048448074,
+        "pick_score": 4.411676832146096
+      },
+      {
+        "from": "Llanowar Elves",
+        "to": "Springheart Nantuko",
+        "pair_games": 114,
+        "pair_win_rate": 0.5701754385964912,
+        "pair_expected_win_rate": 0.5451691836448859,
+        "pair_lift_vs_baseline": 0.05590705652233108,
+        "synergy_delta_logit": 0.10139631420623452,
+        "synergy_delta_prob": 0.025006254951605356,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 599,
+        "quality_score": 0.10846263837933862,
+        "pick_score_raw": 1.1215350614740858,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Birds of Paradise",
+        "to": "Once Upon a Time",
+        "pair_games": 99,
+        "pair_win_rate": 0.5757575757575758,
+        "pair_expected_win_rate": 0.5515464690059453,
+        "pair_lift_vs_baseline": 0.061489193683415655,
+        "synergy_delta_logit": 0.09846062141086992,
+        "synergy_delta_prob": 0.024211106751630518,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 586,
+        "quality_score": 0.10527932010533114,
+        "pick_score_raw": 1.120942216399417,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Llanowar Elves",
+        "to": "Once Upon a Time",
+        "pair_games": 96,
+        "pair_win_rate": 0.5625,
+        "pair_expected_win_rate": 0.5368422358057765,
+        "pair_lift_vs_baseline": 0.048231617925839854,
+        "synergy_delta_logit": 0.10367790445382735,
+        "synergy_delta_prob": 0.025657764194223498,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 553,
+        "quality_score": 0.09120456979991513,
+        "pick_score_raw": 0.9219236642071245,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Ignoble Hierarch",
+        "to": "Malevolent Rumble",
+        "pair_games": 124,
+        "pair_win_rate": 0.6129032258064516,
+        "pair_expected_win_rate": 0.6036860185384675,
+        "pair_lift_vs_baseline": 0.09863484373229148,
+        "synergy_delta_logit": 0.03868488303032824,
+        "synergy_delta_prob": 0.00921720726798414,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7383368457720666,
+        "draft_pair_events": 637,
+        "quality_score": 0.07659294729522537,
+        "pick_score_raw": 1.9683087036899527,
+        "pick_score": 5.020849296043806
+      },
+      {
+        "from": "Birds of Paradise",
+        "to": "Icetill Explorer",
+        "pair_games": 122,
+        "pair_win_rate": 0.5819672131147541,
+        "pair_expected_win_rate": 0.5680342534383053,
+        "pair_lift_vs_baseline": 0.06769883104059393,
+        "synergy_delta_logit": 0.057018816799019434,
+        "synergy_delta_prob": 0.013932959676448808,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 608,
+        "quality_score": 0.07293907067338477,
+        "pick_score_raw": 1.3413195822005601,
+        "pick_score": 1.1407414626177828
+      },
+      {
+        "from": "Ignoble Hierarch",
+        "to": "Pest Infestation",
+        "pair_games": 97,
+        "pair_win_rate": 0.6185567010309279,
+        "pair_expected_win_rate": 0.6079939085255902,
+        "pair_lift_vs_baseline": 0.10428831895676771,
+        "synergy_delta_logit": 0.0445391656795443,
+        "synergy_delta_prob": 0.010562792505337648,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 581,
+        "quality_score": 0.07187539753873268,
+        "pick_score_raw": 1.6916889966522142,
+        "pick_score": 3.4211808354501034
+      },
+      {
+        "from": "Minsc & Boo, Timeless Heroes",
+        "to": "Pest Infestation",
+        "pair_games": 93,
+        "pair_win_rate": 0.6559139784946236,
+        "pair_expected_win_rate": 0.6492133084144492,
+        "pair_lift_vs_baseline": 0.14164559642046348,
+        "synergy_delta_logit": 0.029554948680076354,
+        "synergy_delta_prob": 0.006700670080174387,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 404,
+        "quality_score": 0.059902346841517524,
+        "pick_score_raw": 2.12040456547821,
+        "pick_score": 5.8379944637775205
+      },
+      {
+        "from": "Fastbond",
+        "to": "Icetill Explorer",
+        "pair_games": 151,
+        "pair_win_rate": 0.5629139072847682,
+        "pair_expected_win_rate": 0.549993793493212,
+        "pair_lift_vs_baseline": 0.048645525210608054,
+        "synergy_delta_logit": 0.052350895765401806,
+        "synergy_delta_prob": 0.01292011379155622,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 689,
+        "quality_score": 0.058592442780867365,
+        "pick_score_raw": 1.1743641956572364,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Llanowar Elves",
+        "to": "Nadu, Winged Wisdom",
+        "pair_games": 127,
+        "pair_win_rate": 0.5905511811023622,
+        "pair_expected_win_rate": 0.5811620479377274,
+        "pair_lift_vs_baseline": 0.07628279902820201,
+        "synergy_delta_logit": 0.03869886073923312,
+        "synergy_delta_prob": 0.009389133164634744,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 534,
+        "quality_score": 0.05517998405690207,
+        "pick_score_raw": 1.4940472202476325,
+        "pick_score": 2.1740967867070937
+      },
+      {
+        "from": "Birds of Paradise",
+        "to": "Sentinel of the Nameless City",
+        "pair_games": 116,
+        "pair_win_rate": 0.5689655172413793,
+        "pair_expected_win_rate": 0.5585250290528102,
+        "pair_lift_vs_baseline": 0.05469713516721919,
+        "synergy_delta_logit": 0.04245363180711431,
+        "synergy_delta_prob": 0.01044048818856913,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.0416668599540584,
+        "draft_pair_events": 638,
+        "quality_score": 0.053658644363925846,
+        "pick_score_raw": 1.2326224607686354,
+        "pick_score": 0.3633743821516454
+      },
+      {
+        "from": "Pest Infestation",
+        "to": "Scythecat Cub",
+        "pair_games": 120,
+        "pair_win_rate": 0.6333333333333333,
+        "pair_expected_win_rate": 0.6271161898463647,
+        "pair_lift_vs_baseline": 0.11906495125917316,
+        "synergy_delta_logit": 0.026678742332046923,
+        "synergy_delta_prob": 0.006217143486968557,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 564,
+        "quality_score": 0.053518890056860065,
+        "pick_score_raw": 2.1025839120428924,
+        "pick_score": 5.744336912508011
+      },
+      {
+        "from": "Six",
+        "to": "Titania, Protector of Argoth",
+        "pair_games": 139,
+        "pair_win_rate": 0.6115107913669064,
+        "pair_expected_win_rate": 0.6060045555054604,
+        "pair_lift_vs_baseline": 0.0972424092927463,
+        "synergy_delta_logit": 0.02311905358373001,
+        "synergy_delta_prob": 0.005506235861446052,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.2223914633243527,
+        "draft_pair_events": 681,
+        "quality_score": 0.05170811946515656,
+        "pick_score_raw": 2.158546031319748,
+        "pick_score": 6.036664622852793
+      },
+      {
+        "from": "Minsc & Boo, Timeless Heroes",
+        "to": "Nadu, Winged Wisdom",
+        "pair_games": 107,
+        "pair_win_rate": 0.6448598130841121,
+        "pair_expected_win_rate": 0.6402258098408907,
+        "pair_lift_vs_baseline": 0.13059143100995196,
+        "synergy_delta_logit": 0.02017598795870368,
+        "synergy_delta_prob": 0.004634003243221385,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 377,
+        "quality_score": 0.04075505129009411,
+        "pick_score_raw": 2.1124275944131305,
+        "pick_score": 5.7961372992056965
+      },
+      {
+        "from": "Oko, Thief of Crowns",
+        "to": "Pest Infestation",
+        "pair_games": 105,
+        "pair_win_rate": 0.6571428571428571,
+        "pair_expected_win_rate": 0.6535822988117816,
+        "pair_lift_vs_baseline": 0.142874475068697,
+        "synergy_delta_logit": 0.015764381373989722,
+        "synergy_delta_prob": 0.003560558331075492,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 443,
+        "quality_score": 0.03432935468585645,
+        "pick_score_raw": 2.2793904291822855,
+        "pick_score": 6.650635588300508
+      }
+    ],
+    "triplets": [],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 6,
+        "top_cards": [
+          "Birds of Paradise",
+          "Titania, Protector of Argoth",
+          "Bristly Bill, Spine Sower",
+          "Pest Infestation",
+          "Sentinel of the Nameless City"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 6,
+        "top_cards": [
+          "Noble Hierarch",
+          "Nadu, Winged Wisdom",
+          "Once Upon a Time",
+          "Six",
+          "Elvish Mystic"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 5,
+        "top_cards": [
+          "Ignoble Hierarch",
+          "Malevolent Rumble",
+          "Llanowar Elves",
+          "Lotus Cobra",
+          "Oko, Thief of Crowns"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 3,
+        "top_cards": [
+          "Scythecat Cub",
+          "Icetill Explorer",
+          "Springheart Nantuko"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Time Walk"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Ancestral Recall"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Elspeth, Storm Slayer"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Thoughtseize"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Ocelot Pride"
+        ]
+      },
+      {
+        "community_id": 9,
+        "size": 1,
+        "top_cards": [
+          "Ajani, Nacatl Pariah"
+        ]
+      },
+      {
+        "community_id": 10,
+        "size": 1,
+        "top_cards": [
+          "Sheoldred's Edict"
+        ]
+      },
+      {
+        "community_id": 11,
+        "size": 1,
+        "top_cards": [
+          "Fiery Confluence"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Malevolent Rumble",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 352.5249257117514,
+          "draft_drafts": 2302,
+          "draft_win_rate": 0.5329150688764095,
+          "draft_win_lift": 0.020184790180141188,
+          "draw_win_rate": 0.5810295519542421
+        },
+        {
+          "card": "Elvish Mystic",
+          "pick_priority_score": 8.118332385863042,
+          "pick_priority_score_raw": 158.14841209762238,
+          "draft_drafts": 2011,
+          "draft_win_rate": 0.5197821806252206,
+          "draft_win_lift": 0.007051901928952331,
+          "draw_win_rate": 0.5469387755102041
+        },
+        {
+          "card": "Llanowar Elves",
+          "pick_priority_score": 6.69250999765924,
+          "pick_priority_score_raw": 94.65645526932869,
+          "draft_drafts": 2084,
+          "draft_win_rate": 0.5244500740120147,
+          "draft_win_lift": 0.011719795315746406,
+          "draw_win_rate": 0.5196977873718295
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Sheoldred's Edict",
+          "pick_priority_score": 5.326656262164514,
+          "pick_priority_score_raw": 57.73879003891523,
+          "draft_drafts": 362,
+          "draft_win_rate": 0.484038227491425,
+          "draft_win_lift": -0.028692051204843305,
+          "draw_win_rate": 0.5694444444444444
+        }
+      ],
+      "rare": [
+        {
+          "card": "Pest Infestation",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 319.4140902412825,
+          "draft_drafts": 2063,
+          "draft_win_rate": 0.5298283168982437,
+          "draft_win_lift": 0.01709803820197542,
+          "draw_win_rate": 0.5854145854145855
+        },
+        {
+          "card": "Nadu, Winged Wisdom",
+          "pick_priority_score": 9.800793355942547,
+          "pick_priority_score_raw": 289.19151923967667,
+          "draft_drafts": 2119,
+          "draft_win_rate": 0.5260527999913281,
+          "draft_win_lift": 0.013322521295059842,
+          "draw_win_rate": 0.575860397479399
+        },
+        {
+          "card": "Scythecat Cub",
+          "pick_priority_score": 9.335324557054683,
+          "pick_priority_score_raw": 244.7588249736491,
+          "draft_drafts": 2217,
+          "draft_win_rate": 0.5254771616724158,
+          "draft_win_lift": 0.012746882976147456,
+          "draw_win_rate": 0.5577197149643706
+        },
+        {
+          "card": "Noble Hierarch",
+          "pick_priority_score": 8.95222783889287,
+          "pick_priority_score_raw": 213.34143940684058,
+          "draft_drafts": 2192,
+          "draft_win_rate": 0.5304616224544779,
+          "draft_win_lift": 0.017731343758209617,
+          "draw_win_rate": 0.5417867435158501
+        },
+        {
+          "card": "Ignoble Hierarch",
+          "pick_priority_score": 8.918235330497593,
+          "pick_priority_score_raw": 210.7557755501419,
+          "draft_drafts": 2157,
+          "draft_win_rate": 0.5332629155014351,
+          "draft_win_lift": 0.020532636805166815,
+          "draw_win_rate": 0.5376623376623376
+        },
+        {
+          "card": "Birds of Paradise",
+          "pick_priority_score": 8.217134903582592,
+          "pick_priority_score_raw": 163.8627837319834,
+          "draft_drafts": 2253,
+          "draft_win_rate": 0.5266159292779976,
+          "draft_win_lift": 0.013885650581729303,
+          "draw_win_rate": 0.5344743276283619
+        },
+        {
+          "card": "Fiery Confluence",
+          "pick_priority_score": 7.98058498735029,
+          "pick_priority_score_raw": 150.5106626062547,
+          "draft_drafts": 379,
+          "draft_win_rate": 0.5363921328437341,
+          "draft_win_lift": 0.0236618541474658,
+          "draw_win_rate": 0.6118143459915611
+        },
+        {
+          "card": "Springheart Nantuko",
+          "pick_priority_score": 7.603572412987555,
+          "pick_priority_score_raw": 131.42916046984314,
+          "draft_drafts": 2180,
+          "draft_win_rate": 0.5188596243277698,
+          "draft_win_lift": 0.0061293456315014705,
+          "draw_win_rate": 0.5397727272727273
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Oko, Thief of Crowns",
+          "pick_priority_score": 9.854625139799655,
+          "pick_priority_score_raw": 294.8229562782606,
+          "draft_drafts": 1649,
+          "draft_win_rate": 0.5334509482104624,
+          "draft_win_lift": 0.020720669514194046,
+          "draw_win_rate": 0.5858585858585859
+        },
+        {
+          "card": "Time Walk",
+          "pick_priority_score": 9.645888784074527,
+          "pick_priority_score_raw": 273.5776681639148,
+          "draft_drafts": 542,
+          "draft_win_rate": 0.5403389560258814,
+          "draft_win_lift": 0.02760867732961314,
+          "draw_win_rate": 0.6732365145228216
+        },
+        {
+          "card": "Titania, Protector of Argoth",
+          "pick_priority_score": 9.63644738975005,
+          "pick_priority_score_raw": 272.65364034676844,
+          "draft_drafts": 2547,
+          "draft_win_rate": 0.5189977831969734,
+          "draft_win_lift": 0.006267504500705123,
+          "draw_win_rate": 0.571546052631579
+        },
+        {
+          "card": "Minsc & Boo, Timeless Heroes",
+          "pick_priority_score": 9.44107855570059,
+          "pick_priority_score_raw": 254.21567077391305,
+          "draft_drafts": 1534,
+          "draft_win_rate": 0.5330362058390147,
+          "draft_win_lift": 0.02030592714274637,
+          "draw_win_rate": 0.5811827956989247
+        },
+        {
+          "card": "Ancestral Recall",
+          "pick_priority_score": 8.842998290281503,
+          "pick_priority_score_raw": 205.1431976922062,
+          "draft_drafts": 483,
+          "draft_win_rate": 0.554466477497864,
+          "draft_win_lift": 0.041736198801595736,
+          "draw_win_rate": 0.6079900124843945
+        },
+        {
+          "card": "Bristly Bill, Spine Sower",
+          "pick_priority_score": 8.06379896571163,
+          "pick_priority_score_raw": 155.07967691914493,
+          "draft_drafts": 2019,
+          "draft_win_rate": 0.5237062324101611,
+          "draft_win_lift": 0.010975953713892816,
+          "draw_win_rate": 0.538800220143093
+        },
+        {
+          "card": "Ajani, Nacatl Pariah",
+          "pick_priority_score": 6.443494802039889,
+          "pick_priority_score_raw": 86.51892725856142,
+          "draft_drafts": 269,
+          "draft_win_rate": 0.5332252431371064,
+          "draft_win_lift": 0.020494964440838093,
+          "draw_win_rate": 0.5729166666666666
+        },
+        {
+          "card": "Elspeth, Storm Slayer",
+          "pick_priority_score": 4.6005809746560296,
+          "pick_priority_score_raw": 44.325203072897416,
+          "draft_drafts": 296,
+          "draft_win_rate": 0.5007761685782265,
+          "draft_win_lift": -0.011954110118041816,
+          "draw_win_rate": 0.5611111111111111
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Time Walk",
+        "standalone_delta": 0.15896813244866148,
+        "win_rate": 0.6732365145228216,
+        "draw_games": 964
+      },
+      {
+        "card": "Fiery Confluence",
+        "standalone_delta": 0.097545963917401,
+        "win_rate": 0.6118143459915611,
+        "draw_games": 237
+      },
+      {
+        "card": "Ancestral Recall",
+        "standalone_delta": 0.0937216304102344,
+        "win_rate": 0.6079900124843945,
+        "draw_games": 801
+      },
+      {
+        "card": "Oko, Thief of Crowns",
+        "standalone_delta": 0.07159020378442571,
+        "win_rate": 0.5858585858585859,
+        "draw_games": 1881
+      },
+      {
+        "card": "Pest Infestation",
+        "standalone_delta": 0.07114620334042532,
+        "win_rate": 0.5854145854145855,
+        "draw_games": 2002
+      },
+      {
+        "card": "Minsc & Boo, Timeless Heroes",
+        "standalone_delta": 0.06691441362476458,
+        "win_rate": 0.5811827956989247,
+        "draw_games": 1860
+      },
+      {
+        "card": "Malevolent Rumble",
+        "standalone_delta": 0.06676116988008196,
+        "win_rate": 0.5810295519542421,
+        "draw_games": 2098
+      },
+      {
+        "card": "Nadu, Winged Wisdom",
+        "standalone_delta": 0.06159201540523884,
+        "win_rate": 0.575860397479399,
+        "draw_games": 2063
+      },
+      {
+        "card": "Ajani, Nacatl Pariah",
+        "standalone_delta": 0.05864828459250648,
+        "win_rate": 0.5729166666666666,
+        "draw_games": 192
+      },
+      {
+        "card": "Titania, Protector of Argoth",
+        "standalone_delta": 0.057277670557418836,
+        "win_rate": 0.571546052631579,
+        "draw_games": 2432
+      },
+      {
+        "card": "Sheoldred's Edict",
+        "standalone_delta": 0.05517606237028427,
+        "win_rate": 0.5694444444444444,
+        "draw_games": 216
+      },
+      {
+        "card": "Elspeth, Storm Slayer",
+        "standalone_delta": 0.04684272903695097,
+        "win_rate": 0.5611111111111111,
+        "draw_games": 180
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Bristly Bill, Spine Sower",
+        "dependency_score": 0.8311601670634777,
+        "standalone_delta": 0.024531838068932887,
+        "draw_games": 1817
+      },
+      {
+        "card": "Six",
+        "dependency_score": 0.7123965111972279,
+        "standalone_delta": 0.03543575993767423,
+        "draw_games": 1690
+      },
+      {
+        "card": "Sentinel of the Nameless City",
+        "dependency_score": 0.5273063986355601,
+        "standalone_delta": 0.02419315638737829,
+        "draw_games": 1768
+      },
+      {
+        "card": "Icetill Explorer",
+        "dependency_score": 0.5166838901737177,
+        "standalone_delta": 0.03378484611706711,
+        "draw_games": 2029
+      },
+      {
+        "card": "Ignoble Hierarch",
+        "dependency_score": 0.44690209907975353,
+        "standalone_delta": 0.023393955588177473,
+        "draw_games": 1925
+      },
+      {
+        "card": "Malevolent Rumble",
+        "dependency_score": 0.4401339114722007,
+        "standalone_delta": 0.06676116988008196,
+        "draw_games": 2098
+      },
+      {
+        "card": "Titania, Protector of Argoth",
+        "dependency_score": 0.40416038106654745,
+        "standalone_delta": 0.057277670557418836,
+        "draw_games": 2432
+      },
+      {
+        "card": "Noble Hierarch",
+        "dependency_score": 0.3642794229060986,
+        "standalone_delta": 0.027518361441689954,
+        "draw_games": 2082
+      },
+      {
+        "card": "Birds of Paradise",
+        "dependency_score": 0.36146281831365296,
+        "standalone_delta": 0.020205945554201743,
+        "draw_games": 2045
+      },
+      {
+        "card": "Minsc & Boo, Timeless Heroes",
+        "dependency_score": 0.31539333052017,
+        "standalone_delta": 0.06691441362476458,
+        "draw_games": 1860
+      },
+      {
+        "card": "Lotus Cobra",
+        "dependency_score": 0.21196464037098559,
+        "standalone_delta": -3.24727191339802e-05,
+        "draw_games": 1721
+      },
+      {
+        "card": "Once Upon a Time",
+        "dependency_score": 0.21042726742277632,
+        "standalone_delta": 0.017163515481136704,
+        "draw_games": 1718
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Icetill Explorer",
+          "Scythecat Cub"
+        ],
+        "quality_score": 1.8036796391826038,
+        "pair_win_rate": 0.7154471544715447,
+        "pair_games": 123,
+        "synergy_delta_logit": 0.5543570557450213
+      },
+      {
+        "cards": [
+          "Icetill Explorer",
+          "Springheart Nantuko"
+        ],
+        "quality_score": 1.5055447169914435,
+        "pair_win_rate": 0.6981132075471698,
+        "pair_games": 106,
+        "synergy_delta_logit": 0.543182479343544
+      },
+      {
+        "cards": [
+          "Minsc & Boo, Timeless Heroes",
+          "Once Upon a Time"
+        ],
+        "quality_score": 1.395897561575984,
+        "pair_win_rate": 0.7087378640776699,
+        "pair_games": 103,
+        "synergy_delta_logit": 0.492826712962637
+      },
+      {
+        "cards": [
+          "Birds of Paradise",
+          "Titania, Protector of Argoth"
+        ],
+        "quality_score": 1.095141748205091,
+        "pair_win_rate": 0.6785714285714286,
+        "pair_games": 140,
+        "synergy_delta_logit": 0.3780251730548889
+      },
+      {
+        "cards": [
+          "Lotus Cobra",
+          "Oko, Thief of Crowns"
+        ],
+        "quality_score": 1.0190101745642934,
+        "pair_win_rate": 0.6847826086956522,
+        "pair_games": 92,
+        "synergy_delta_logit": 0.4290979490609857
+      },
+      {
+        "cards": [
+          "Noble Hierarch",
+          "Six"
+        ],
+        "quality_score": 0.996508030636659,
+        "pair_win_rate": 0.6728971962616822,
+        "pair_games": 107,
+        "synergy_delta_logit": 0.4113939443860375
+      },
+      {
+        "cards": [
+          "Birds of Paradise",
+          "Pest Infestation"
+        ],
+        "quality_score": 0.9784119347702129,
+        "pair_win_rate": 0.6875,
+        "pair_games": 112,
+        "synergy_delta_logit": 0.3623886660540487
+      },
+      {
+        "cards": [
+          "Nadu, Winged Wisdom",
+          "Once Upon a Time"
+        ],
+        "quality_score": 0.9772934657261881,
+        "pair_win_rate": 0.6776859504132231,
+        "pair_games": 121,
+        "synergy_delta_logit": 0.36855041281449163
+      },
+      {
+        "cards": [
+          "Bristly Bill, Spine Sower",
+          "Titania, Protector of Argoth"
+        ],
+        "quality_score": 0.9422085945421588,
+        "pair_win_rate": 0.6640625,
+        "pair_games": 128,
+        "synergy_delta_logit": 0.29486482335816755
+      },
+      {
+        "cards": [
+          "Oko, Thief of Crowns",
+          "Scythecat Cub"
+        ],
+        "quality_score": 0.9411327652315802,
+        "pair_win_rate": 0.7052631578947368,
+        "pair_games": 95,
+        "synergy_delta_logit": 0.35079347068394207
+      },
+      {
+        "cards": [
+          "Bristly Bill, Spine Sower",
+          "Sentinel of the Nameless City"
+        ],
+        "quality_score": 0.8546657469409702,
+        "pair_win_rate": 0.6470588235294118,
+        "pair_games": 102,
+        "synergy_delta_logit": 0.3535606101158964
+      },
+      {
+        "cards": [
+          "Elvish Mystic",
+          "Springheart Nantuko"
+        ],
+        "quality_score": 0.8354688901245145,
+        "pair_win_rate": 0.6631578947368421,
+        "pair_games": 95,
+        "synergy_delta_logit": 0.3867505164463927
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Malevolent Rumble",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 352.5249257117514,
+        "draft_drafts": 2302,
+        "draft_win_lift": 0.020184790180141188,
+        "rarity": "common"
+      },
+      {
+        "card": "Pest Infestation",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 319.4140902412825,
+        "draft_drafts": 2063,
+        "draft_win_lift": 0.01709803820197542,
+        "rarity": "rare"
+      },
+      {
+        "card": "Oko, Thief of Crowns",
+        "pick_priority_score": 9.854625139799655,
+        "pick_priority_score_raw": 294.8229562782606,
+        "draft_drafts": 1649,
+        "draft_win_lift": 0.020720669514194046,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Nadu, Winged Wisdom",
+        "pick_priority_score": 9.800793355942547,
+        "pick_priority_score_raw": 289.19151923967667,
+        "draft_drafts": 2119,
+        "draft_win_lift": 0.013322521295059842,
+        "rarity": "rare"
+      },
+      {
+        "card": "Time Walk",
+        "pick_priority_score": 9.645888784074527,
+        "pick_priority_score_raw": 273.5776681639148,
+        "draft_drafts": 542,
+        "draft_win_lift": 0.02760867732961314,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Titania, Protector of Argoth",
+        "pick_priority_score": 9.63644738975005,
+        "pick_priority_score_raw": 272.65364034676844,
+        "draft_drafts": 2547,
+        "draft_win_lift": 0.006267504500705123,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Minsc & Boo, Timeless Heroes",
+        "pick_priority_score": 9.44107855570059,
+        "pick_priority_score_raw": 254.21567077391305,
+        "draft_drafts": 1534,
+        "draft_win_lift": 0.02030592714274637,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Scythecat Cub",
+        "pick_priority_score": 9.335324557054683,
+        "pick_priority_score_raw": 244.7588249736491,
+        "draft_drafts": 2217,
+        "draft_win_lift": 0.012746882976147456,
+        "rarity": "rare"
+      },
+      {
+        "card": "Noble Hierarch",
+        "pick_priority_score": 8.95222783889287,
+        "pick_priority_score_raw": 213.34143940684058,
+        "draft_drafts": 2192,
+        "draft_win_lift": 0.017731343758209617,
+        "rarity": "rare"
+      },
+      {
+        "card": "Ignoble Hierarch",
+        "pick_priority_score": 8.918235330497593,
+        "pick_priority_score_raw": 210.7557755501419,
+        "draft_drafts": 2157,
+        "draft_win_lift": 0.020532636805166815,
+        "rarity": "rare"
+      },
+      {
+        "card": "Ancestral Recall",
+        "pick_priority_score": 8.842998290281503,
+        "pick_priority_score_raw": 205.1431976922062,
+        "draft_drafts": 483,
+        "draft_win_lift": 0.041736198801595736,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Birds of Paradise",
+        "pick_priority_score": 8.217134903582592,
+        "pick_priority_score_raw": 163.8627837319834,
+        "draft_drafts": 2253,
+        "draft_win_lift": 0.013885650581729303,
+        "rarity": "rare"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Icetill Explorer",
+          "Scythecat Cub"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.413772668742562,
+        "pair_win_rate": 0.7154471544715447,
+        "pair_games": 123,
+        "draft_pair_events": 683
+      },
+      {
+        "cards": [
+          "Malevolent Rumble",
+          "Oko, Thief of Crowns"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.133426963383201,
+        "pair_win_rate": 0.7068965517241379,
+        "pair_games": 116,
+        "draft_pair_events": 462
+      },
+      {
+        "cards": [
+          "Nadu, Winged Wisdom",
+          "Oko, Thief of Crowns"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.0631476347526703,
+        "pair_win_rate": 0.6628571428571428,
+        "pair_games": 175,
+        "draft_pair_events": 504
+      },
+      {
+        "cards": [
+          "Bristly Bill, Spine Sower",
+          "Titania, Protector of Argoth"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.0550107178394788,
+        "pair_win_rate": 0.6640625,
+        "pair_games": 128,
+        "draft_pair_events": 732
+      },
+      {
+        "cards": [
+          "Birds of Paradise",
+          "Titania, Protector of Argoth"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 3.040268346766829,
+        "pair_win_rate": 0.6785714285714286,
+        "pair_games": 140,
+        "draft_pair_events": 712
+      },
+      {
+        "cards": [
+          "Minsc & Boo, Timeless Heroes",
+          "Once Upon a Time"
+        ],
+        "pick_score": 9.749339867404252,
+        "pick_score_raw": 2.963591458372897,
+        "pair_win_rate": 0.7087378640776699,
+        "pair_games": 103,
+        "draft_pair_events": 413
+      },
+      {
+        "cards": [
+          "Noble Hierarch",
+          "Oko, Thief of Crowns"
+        ],
+        "pick_score": 9.554353453317784,
+        "pick_score_raw": 2.9166107474346408,
+        "pair_win_rate": 0.6764705882352942,
+        "pair_games": 136,
+        "draft_pair_events": 497
+      },
+      {
+        "cards": [
+          "Icetill Explorer",
+          "Springheart Nantuko"
+        ],
+        "pick_score": 9.5112921755189,
+        "pick_score_raw": 2.9063107136764126,
+        "pair_win_rate": 0.6981132075471698,
+        "pair_games": 106,
+        "draft_pair_events": 609
+      },
+      {
+        "cards": [
+          "Nadu, Winged Wisdom",
+          "Noble Hierarch"
+        ],
+        "pick_score": 9.50880965214375,
+        "pick_score_raw": 2.9057177334962287,
+        "pair_win_rate": 0.6644736842105263,
+        "pair_games": 152,
+        "draft_pair_events": 608
+      },
+      {
+        "cards": [
+          "Birds of Paradise",
+          "Pest Infestation"
+        ],
+        "pick_score": 9.192442647617916,
+        "pick_score_raw": 2.83088169937184,
+        "pair_win_rate": 0.6875,
+        "pair_games": 112,
+        "draft_pair_events": 604
+      },
+      {
+        "cards": [
+          "Oko, Thief of Crowns",
+          "Scythecat Cub"
+        ],
+        "pick_score": 9.095067669222088,
+        "pick_score_raw": 2.8081377059895605,
+        "pair_win_rate": 0.7052631578947368,
+        "pair_games": 95,
+        "draft_pair_events": 441
+      },
+      {
+        "cards": [
+          "Nadu, Winged Wisdom",
+          "Once Upon a Time"
+        ],
+        "pick_score": 8.967511785658818,
+        "pick_score_raw": 2.7785484918816996,
+        "pair_win_rate": 0.6776859504132231,
+        "pair_games": 121,
+        "draft_pair_events": 536
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
+      "color_name": "Boros Tokens",
+      "deck_count": 12970,
+      "games": 68705,
+      "win_rate": 0.6112510006549742,
+      "signposts": [
+        "Guide of Souls",
+        "Sanguine Evangelist",
+        "Luminarch Aspirant",
+        "Death-Greeter's Champion"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Ajani, Nacatl Pariah",
+        "Phlage, Titan of Fire's Fury",
+        "Broadside Bombardiers"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Red Base Midrange | Fire Covenant / Fury",
+      "color_name": "Red Base Midrange",
+      "deck_count": 5538,
+      "games": 26131,
+      "win_rate": 0.5561593509624584,
+      "signposts": [
+        "Fire Covenant",
+        "Fury",
+        "Pyrogoyf",
+        "Fiery Confluence"
+      ],
+      "pick_cards": [
+        "Pyrogoyf",
+        "Broadside Bombardiers",
+        "Laelia, the Blade Reforged",
+        "Fury"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "White Base Control | No More Lies / The Wandering Emperor",
+      "color_name": "White Base Control",
+      "deck_count": 5654,
+      "games": 26028,
+      "win_rate": 0.5472568003688336,
+      "signposts": [
+        "No More Lies",
+        "The Wandering Emperor",
+        "Solitude",
+        "Teferi, Time Raveler"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Sanguine Evangelist",
+        "Phelia, Exuberant Shepherd",
+        "Solitude"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Black Base Reanimator | Animate Dead / Necromancy",
+      "color_name": "Black Base Reanimator",
+      "deck_count": 7492,
+      "games": 33181,
+      "win_rate": 0.5180072933305204,
+      "signposts": [
+        "Animate Dead",
+        "Necromancy",
+        "Archon of Cruelty",
+        "Entomb"
+      ],
+      "pick_cards": [
+        "Archon of Cruelty",
+        "Animate Dead",
+        "Necromancy",
+        "Barrowgoyf"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
+      "color_name": "Green Base Ramp",
+      "deck_count": 9261,
+      "games": 39563,
+      "win_rate": 0.5142683820741601,
+      "signposts": [
+        "Birds of Paradise",
+        "Titania, Protector of Argoth",
+        "Noble Hierarch",
+        "Nadu, Winged Wisdom"
+      ],
+      "pick_cards": [
+        "Malevolent Rumble",
+        "Pest Infestation",
+        "Oko, Thief of Crowns",
+        "Nadu, Winged Wisdom"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
+      "color_name": "Blue Base Storm",
+      "deck_count": 9349,
+      "games": 40088,
+      "win_rate": 0.508955298343644,
+      "signposts": [
+        "Brain Freeze",
+        "Snapcaster Mage",
+        "Underworld Breach",
+        "Narset, Parter of Veils"
+      ],
+      "pick_cards": [
+        "Mystic Confluence",
+        "Time Walk",
+        "Cryptic Command",
+        "Remand"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer",
+      "color_name": "Blue Base Artifacts",
+      "deck_count": 7649,
+      "games": 32421,
+      "win_rate": 0.5056290675796552,
+      "signposts": [
+        "Mox Opal",
+        "Urza, Lord High Artificer",
+        "Retrofitter Foundry",
+        "Kappa Cannoneer"
+      ],
+      "pick_cards": [
+        "Ugin, Eye of the Storms",
+        "Urza, Lord High Artificer",
+        "Upheaval",
+        "Retrofitter Foundry"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

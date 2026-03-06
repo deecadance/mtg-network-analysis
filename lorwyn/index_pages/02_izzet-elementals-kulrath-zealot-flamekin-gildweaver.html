@@ -1,0 +1,4482 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Izzet Elementals | Kulrath Zealot / Flamekin Gildweaver | Lorwyn Eclipsed Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "ECL",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 82906,
+      "cluster_feature_count": 263,
+      "svd_components": 48,
+      "svd_explained_variance": 0.41585496068000793,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.192540243268013,
+          "dominant_main_color_share": 0.7279459549142004,
+          "objective": 0.23621700056286504
+        },
+        {
+          "k": 8,
+          "silhouette": 0.17198492586612701,
+          "dominant_main_color_share": 0.6955971152387095,
+          "objective": 0.21372075278044958
+        },
+        {
+          "k": 9,
+          "silhouette": 0.15807880461215973,
+          "dominant_main_color_share": 0.7346713431984758,
+          "objective": 0.20215908520406828
+        },
+        {
+          "k": 10,
+          "silhouette": 0.1304016262292862,
+          "dominant_main_color_share": 0.7372495498149798,
+          "objective": 0.17463659921818497
+        },
+        {
+          "k": 11,
+          "silhouette": 0.12515881657600403,
+          "dominant_main_color_share": 0.7103820495023637,
+          "objective": 0.16778173954614584
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "4": 17005,
+        "2": 15634,
+        "0": 14756,
+        "3": 11302,
+        "6": 10159,
+        "5": 5824,
+        "1": 8226
+      }
+    },
+    "deck_count": 82906,
+    "game_count": 362682
+  },
+  "segment": {
+    "cluster_id": 2,
+    "title": "Izzet Elementals | Kulrath Zealot / Flamekin Gildweaver",
+    "color_signature": "UR",
+    "color_name": "Izzet Elementals",
+    "deck_count": 15634,
+    "draft_count": 11850,
+    "games": 67280,
+    "wins": 37060,
+    "win_rate": 0.5508323424494649,
+    "draft_match_win_rate": 0.5500341363503365,
+    "top_deck_colors": [
+      {
+        "colors": "UR",
+        "count": 2589
+      },
+      {
+        "colors": "WURG",
+        "count": 2425
+      },
+      {
+        "colors": "WUBRG",
+        "count": 2282
+      },
+      {
+        "colors": "URG",
+        "count": 2092
+      },
+      {
+        "colors": "WUR",
+        "count": 1794
+      },
+      {
+        "colors": "UBRG",
+        "count": 1669
+      },
+      {
+        "colors": "WUBR",
+        "count": 1307
+      },
+      {
+        "colors": "UBR",
+        "count": 1085
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "UR",
+        "count": 12064
+      },
+      {
+        "colors": "URG",
+        "count": 1155
+      },
+      {
+        "colors": "WUR",
+        "count": 624
+      },
+      {
+        "colors": "WR",
+        "count": 513
+      },
+      {
+        "colors": "RG",
+        "count": 369
+      },
+      {
+        "colors": "UBR",
+        "count": 357
+      },
+      {
+        "colors": "R",
+        "count": 221
+      },
+      {
+        "colors": "BR",
+        "count": 157
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Kulrath Zealot",
+        "score": 14257.877288655127,
+        "z_score": 140.8773865232382,
+        "log_odds": 3.123572873262465,
+        "cluster_prevalence": 0.6543159337425526,
+        "global_prevalence": 0.18589279427683206,
+        "lift": 3.519856357466678,
+        "support_decks": 10243
+      },
+      {
+        "card": "Flamekin Gildweaver",
+        "score": 13920.84667759798,
+        "z_score": 141.80603720042603,
+        "log_odds": 3.4627774543327083,
+        "cluster_prevalence": 0.6155732366771903,
+        "global_prevalence": 0.15497901007176026,
+        "lift": 3.9719781175022355,
+        "support_decks": 9637
+      },
+      {
+        "card": "Flaring Cinder",
+        "score": 13254.609420841402,
+        "z_score": 138.31670754657532,
+        "log_odds": 3.5056621394761573,
+        "cluster_prevalence": 0.5865697437419249,
+        "global_prevalence": 0.14388237274492996,
+        "lift": 4.076731100214596,
+        "support_decks": 9183
+      },
+      {
+        "card": "Flame-Chain Mauler",
+        "score": 10539.133807041013,
+        "z_score": 122.11951883324693,
+        "log_odds": 3.327139864776459,
+        "cluster_prevalence": 0.47575530394428517,
+        "global_prevalence": 0.11540502412683613,
+        "lift": 4.122483466763157,
+        "support_decks": 7448
+      },
+      {
+        "card": "Cinder Strike",
+        "score": 10310.872164692037,
+        "z_score": 108.69217429939725,
+        "log_odds": 2.1364309733131943,
+        "cluster_prevalence": 0.574959609424627,
+        "global_prevalence": 0.2202682468653824,
+        "lift": 2.6102700575631097,
+        "support_decks": 8999
+      },
+      {
+        "card": "Feed the Flames",
+        "score": 9944.46142692483,
+        "z_score": 109.24022805301587,
+        "log_odds": 2.205632817816388,
+        "cluster_prevalence": 0.529449932430213,
+        "global_prevalence": 0.18942683203418126,
+        "lift": 2.7950102250280784,
+        "support_decks": 8287
+      },
+      {
+        "card": "Tweeze",
+        "score": 9433.949446878543,
+        "z_score": 105.14015946376333,
+        "log_odds": 2.110589939433796,
+        "cluster_prevalence": 0.5143834519062372,
+        "global_prevalence": 0.18937858578493416,
+        "lift": 2.7161648175490734,
+        "support_decks": 8051
+      },
+      {
+        "card": "Summit Sentinel",
+        "score": 9281.316692841345,
+        "z_score": 112.32971067843465,
+        "log_odds": 2.6874231787816614,
+        "cluster_prevalence": 0.4361236473752828,
+        "global_prevalence": 0.1228952543224466,
+        "lift": 3.548742787341509,
+        "support_decks": 6827
+      },
+      {
+        "card": "Flamebraider",
+        "score": 9243.14522211682,
+        "z_score": 113.09191164099192,
+        "log_odds": 3.5450514249428275,
+        "cluster_prevalence": 0.4266858771974295,
+        "global_prevalence": 0.09761184086053808,
+        "lift": 4.371251207187585,
+        "support_decks": 6680
+      },
+      {
+        "card": "Eclipsed Flamekin",
+        "score": 9115.775946661885,
+        "z_score": 112.78998898433157,
+        "log_odds": 3.3149111684755,
+        "cluster_prevalence": 0.41724026809033515,
+        "global_prevalence": 0.09933660685964803,
+        "lift": 4.200266963817789,
+        "support_decks": 6532
+      },
+      {
+        "card": "Twinflame Travelers",
+        "score": 8370.049075516095,
+        "z_score": 104.83878394546291,
+        "log_odds": 3.9535107309521393,
+        "cluster_prevalence": 0.4071329887568142,
+        "global_prevalence": 0.0874079837618091,
+        "lift": 4.657846700437238,
+        "support_decks": 6374
+      },
+      {
+        "card": "Stratosoarer",
+        "score": 7578.476682797911,
+        "z_score": 97.0324509109648,
+        "log_odds": 2.181109394734149,
+        "cluster_prevalence": 0.3897208495994836,
+        "global_prevalence": 0.12812997236575568,
+        "lift": 3.0416056634040243,
+        "support_decks": 6100
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Kulrath Zealot",
+        "label": "Kulrath Zealot",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 6.0,
+        "types": "Creature - Elemental Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 16049,
+        "win_rate": 0.5946787961866783,
+        "standalone_delta": 0.04384645373721341,
+        "dependency_score": 0.17049818826489746,
+        "degree": 8,
+        "signpost_score": 14257.877288655127,
+        "signpost_lift": 3.519856357466678,
+        "deck_prevalence": 0.6543159337425526,
+        "draft_weight": 12310.0,
+        "draft_drafts": 8089,
+        "draft_presence": 0.6826160337552742,
+        "draft_win_rate": 0.5581335648397571,
+        "draft_win_lift": 0.00809942848942058,
+        "analysis_score_raw": 14267.084759567106,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 362.7476466267455,
+        "pick_priority_score": 9.268178554617423,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kulrath%20Zealot%22",
+        "community": 5,
+        "x": 627.6167029855649,
+        "y": 456.33309644851875,
+        "analysis_radius": 19.549489733083046,
+        "pick_radius": 30.0,
+        "radius": 19.549489733083046
+      },
+      {
+        "id": "Flamekin Gildweaver",
+        "label": "Flamekin Gildweaver",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Creature - Elemental Sorcerer",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 15213,
+        "win_rate": 0.579635837770328,
+        "standalone_delta": 0.028803495320863126,
+        "dependency_score": 0.04537004401076424,
+        "degree": 5,
+        "signpost_score": 13920.84667759798,
+        "signpost_lift": 3.9719781175022355,
+        "deck_prevalence": 0.6155732366771903,
+        "draft_weight": 12404.0,
+        "draft_drafts": 7966,
+        "draft_presence": 0.6722362869198312,
+        "draft_win_rate": 0.5536979381337326,
+        "draft_win_lift": 0.0036638017833960923,
+        "analysis_score_raw": 13925.695827735095,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 225.83353772499544,
+        "pick_priority_score": 8.482639478985112,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Flamekin%20Gildweaver%22",
+        "community": 4,
+        "x": 550.0,
+        "y": 643.7163934629536,
+        "analysis_radius": 14.217513827034985,
+        "pick_radius": 30.0,
+        "radius": 14.217513827034985
+      },
+      {
+        "id": "Flaring Cinder",
+        "label": "Flaring Cinder",
+        "color_identity": "UR",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Elemental Sorcerer",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 13425,
+        "win_rate": 0.5709497206703911,
+        "standalone_delta": 0.020117378220926185,
+        "dependency_score": 0.05265903671160895,
+        "degree": 6,
+        "signpost_score": 13254.609420841402,
+        "signpost_lift": 4.076731100214596,
+        "deck_prevalence": 0.5865697437419249,
+        "draft_weight": 12137.0,
+        "draft_drafts": 7950,
+        "draft_presence": 0.6708860759493671,
+        "draft_win_rate": 0.5531099318099106,
+        "draft_win_lift": 0.003075795459574149,
+        "analysis_score_raw": 13258.37371645314,
+        "analysis_score": 9.970339872428626,
+        "pick_priority_score_raw": 164.87052609941313,
+        "pick_priority_score": 7.961974785715523,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Flaring%20Cinder%22",
+        "community": 3,
+        "x": 811.0983154141749,
+        "y": 772.1552558362184,
+        "analysis_radius": 14.002181123768862,
+        "pick_radius": 30.0,
+        "radius": 14.002181123768862
+      },
+      {
+        "id": "Flame-Chain Mauler",
+        "label": "Flame-Chain Mauler",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Elemental Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 11044,
+        "win_rate": 0.5602136906917783,
+        "standalone_delta": 0.009381348242313403,
+        "dependency_score": 0.08800243309740585,
+        "degree": 7,
+        "signpost_score": 10539.133807041013,
+        "signpost_lift": 4.122483466763157,
+        "deck_prevalence": 0.47575530394428517,
+        "draft_weight": 10801.0,
+        "draft_drafts": 7173,
+        "draft_presence": 0.6053164556962025,
+        "draft_win_rate": 0.5504789297385729,
+        "draft_win_lift": 0.0004447933882364419,
+        "analysis_score_raw": 10542.031239590691,
+        "analysis_score": 9.785712892367915,
+        "pick_priority_score_raw": 62.28823562795567,
+        "pick_priority_score": 6.3592580370493215,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Flame-Chain%20Mauler%22",
+        "community": 1,
+        "x": 1059.5617980359389,
+        "y": 705.9849592961605,
+        "analysis_radius": 14.684061744833848,
+        "pick_radius": 30.0,
+        "radius": 14.684061744833848
+      },
+      {
+        "id": "Cinder Strike",
+        "label": "Cinder Strike",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 14220,
+        "win_rate": 0.5789732770745429,
+        "standalone_delta": 0.02814093462507805,
+        "dependency_score": 0.08252422377037275,
+        "degree": 4,
+        "signpost_score": 10310.872164692037,
+        "signpost_lift": 2.6102700575631097,
+        "deck_prevalence": 0.574959609424627,
+        "draft_weight": 10189.0,
+        "draft_drafts": 6905,
+        "draft_presence": 0.5827004219409283,
+        "draft_win_rate": 0.5541626503249124,
+        "draft_win_lift": 0.00412851397457592,
+        "analysis_score_raw": 10316.297331567413,
+        "analysis_score": 9.76828166290035,
+        "pick_priority_score_raw": 189.15323883854745,
+        "pick_priority_score": 8.189235535484293,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Cinder%20Strike%22",
+        "community": 2,
+        "x": 998.598128245532,
+        "y": 822.0753374035697,
+        "analysis_radius": 15.51862346011271,
+        "pick_radius": 30.0,
+        "radius": 15.51862346011271
+      },
+      {
+        "id": "Feed the Flames",
+        "label": "Feed the Flames",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 12447,
+        "win_rate": 0.5833534184944164,
+        "standalone_delta": 0.03252107604495147,
+        "dependency_score": 0.14081214789182142,
+        "degree": 7,
+        "signpost_score": 9944.46142692483,
+        "signpost_lift": 2.7950102250280784,
+        "deck_prevalence": 0.529449932430213,
+        "draft_weight": 9279.0,
+        "draft_drafts": 6680,
+        "draft_presence": 0.5637130801687764,
+        "draft_win_rate": 0.5492810255806452,
+        "draft_win_lift": -0.000753110769691312,
+        "analysis_score_raw": 9951.548996233178,
+        "analysis_score": 9.739293202082747,
+        "pick_priority_score_raw": 172.43052455170846,
+        "pick_priority_score": 8.03611260455523,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Feed%20the%20Flames%22",
+        "community": 2,
+        "x": 854.4327417397205,
+        "y": 785.9746244610221,
+        "analysis_radius": 17.8578965065779,
+        "pick_radius": 30.0,
+        "radius": 17.8578965065779
+      },
+      {
+        "id": "Tweeze",
+        "label": "Tweeze",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 11976,
+        "win_rate": 0.5799933199732799,
+        "standalone_delta": 0.029160977523814968,
+        "dependency_score": 0.15226495658843292,
+        "degree": 7,
+        "signpost_score": 9433.949446878543,
+        "signpost_lift": 2.7161648175490734,
+        "deck_prevalence": 0.5143834519062372,
+        "draft_weight": 8942.0,
+        "draft_drafts": 6436,
+        "draft_presence": 0.5431223628691983,
+        "draft_win_rate": 0.5508064418182305,
+        "draft_win_lift": 0.0007723054678939745,
+        "analysis_score_raw": 9440.772752950468,
+        "analysis_score": 9.69686135424946,
+        "pick_priority_score_raw": 158.00942226788703,
+        "pick_priority_score": 7.891705250332202,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Tweeze%22",
+        "community": 5,
+        "x": 797.6167029855649,
+        "y": 288.90030952261117,
+        "analysis_radius": 18.085392200993407,
+        "pick_radius": 30.0,
+        "radius": 18.085392200993407
+      },
+      {
+        "id": "Summit Sentinel",
+        "label": "Summit Sentinel",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Elemental Soldier",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 9957,
+        "win_rate": 0.5591041478356935,
+        "standalone_delta": 0.008271805386228626,
+        "dependency_score": 0.07403279504034546,
+        "degree": 8,
+        "signpost_score": 9281.316692841345,
+        "signpost_lift": 3.548742787341509,
+        "deck_prevalence": 0.4361236473752828,
+        "draft_weight": 9319.0,
+        "draft_drafts": 6473,
+        "draft_presence": 0.5462447257383967,
+        "draft_win_rate": 0.5512697281745494,
+        "draft_win_lift": 0.001235591824212956,
+        "analysis_score_raw": 9283.807335906144,
+        "analysis_score": 9.683359572334753,
+        "pick_priority_score_raw": 58.40671081016964,
+        "pick_priority_score": 6.25397653899305,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Summit%20Sentinel%22",
+        "community": 0,
+        "x": 1182.9544567623825,
+        "y": 632.9771868058162,
+        "analysis_radius": 14.12012991769501,
+        "pick_radius": 30.0,
+        "radius": 14.12012991769501
+      },
+      {
+        "id": "Flamebraider",
+        "label": "Flamebraider",
+        "color_identity": "R",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Elemental Bard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 9439,
+        "win_rate": 0.5671151605042907,
+        "standalone_delta": 0.016282818054825787,
+        "dependency_score": 0.09067775011620137,
+        "degree": 9,
+        "signpost_score": 9243.14522211682,
+        "signpost_lift": 4.371251207187585,
+        "deck_prevalence": 0.4266858771974295,
+        "draft_weight": 6482.0,
+        "draft_drafts": 5024,
+        "draft_presence": 0.4239662447257384,
+        "draft_win_rate": 0.5629325097828207,
+        "draft_win_lift": 0.012898373432484234,
+        "analysis_score_raw": 9247.057016146588,
+        "analysis_score": 9.680165427857629,
+        "pick_priority_score_raw": 207.12202293368972,
+        "pick_priority_score": 8.339432690525642,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Flamebraider%22",
+        "community": 3,
+        "x": 722.960828809574,
+        "y": 705.0087221413236,
+        "analysis_radius": 15.159953997198667,
+        "pick_radius": 30.0,
+        "radius": 15.159953997198667
+      },
+      {
+        "id": "Eclipsed Flamekin",
+        "label": "Eclipsed Flamekin",
+        "color_identity": "UR",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Elemental Scout",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 9604,
+        "win_rate": 0.6142232403165347,
+        "standalone_delta": 0.06339089786706986,
+        "dependency_score": 0.05259529926854886,
+        "degree": 5,
+        "signpost_score": 9115.775946661885,
+        "signpost_lift": 4.200266963817789,
+        "deck_prevalence": 0.41724026809033515,
+        "draft_weight": 6441.0,
+        "draft_drafts": 4982,
+        "draft_presence": 0.42042194092827007,
+        "draft_win_rate": 0.5680870568745091,
+        "draft_win_lift": 0.018052920524172622,
+        "analysis_score_raw": 9125.597387750107,
+        "analysis_score": 9.669517759741005,
+        "pick_priority_score_raw": 493.04583580533983,
+        "pick_priority_score": 9.777463863678033,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Eclipsed%20Flamekin%22",
+        "community": 2,
+        "x": 918.3710017692154,
+        "y": 821.6106718397447,
+        "analysis_radius": 16.3799301563566,
+        "pick_radius": 30.0,
+        "radius": 16.3799301563566
+      },
+      {
+        "id": "Twinflame Travelers",
+        "label": "Twinflame Travelers",
+        "color_identity": "UR",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Elemental Sorcerer",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 9396,
+        "win_rate": 0.5914218816517667,
+        "standalone_delta": 0.040589539202301794,
+        "dependency_score": 0.06589315017596514,
+        "degree": 9,
+        "signpost_score": 8370.049075516095,
+        "signpost_lift": 4.657846700437238,
+        "deck_prevalence": 0.4071329887568142,
+        "draft_weight": 6245.0,
+        "draft_drafts": 4926,
+        "draft_presence": 0.4156962025316456,
+        "draft_win_rate": 0.5535653373992575,
+        "draft_win_lift": 0.0035312010489210177,
+        "analysis_score_raw": 8376.917687707584,
+        "analysis_score": 9.600581706060638,
+        "pick_priority_score_raw": 247.84576260098493,
+        "pick_priority_score": 8.63670001179075,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Twinflame%20Travelers%22",
+        "community": 0,
+        "x": 1245.1009670224407,
+        "y": 560.804415037565,
+        "analysis_radius": 15.604578062461343,
+        "pick_radius": 30.0,
+        "radius": 15.604578062461343
+      },
+      {
+        "id": "Stratosoarer",
+        "label": "Stratosoarer",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Elemental",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 8559,
+        "win_rate": 0.5845309031428906,
+        "standalone_delta": 0.033698560693425694,
+        "dependency_score": 0.0739205753446783,
+        "degree": 14,
+        "signpost_score": 7578.476682797911,
+        "signpost_lift": 3.0416056634040243,
+        "deck_prevalence": 0.3897208495994836,
+        "draft_weight": 7930.0,
+        "draft_drafts": 6000,
+        "draft_presence": 0.5063291139240507,
+        "draft_win_rate": 0.5518466651102533,
+        "draft_win_lift": 0.001812528759916776,
+        "analysis_score_raw": 7584.525051651195,
+        "analysis_score": 9.52056026737916,
+        "pick_priority_score_raw": 189.78190450966173,
+        "pick_priority_score": 8.194725891652695,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Stratosoarer%22",
+        "community": 3,
+        "x": 675.3093523043358,
+        "y": 799.1009046898747,
+        "analysis_radius": 15.514561550546834,
+        "pick_radius": 30.0,
+        "radius": 15.514561550546834
+      },
+      {
+        "id": "Enraged Flamecaster",
+        "label": "Enraged Flamecaster",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Elemental Sorcerer",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 8154,
+        "win_rate": 0.5440274711797891,
+        "standalone_delta": -0.006804871269675772,
+        "dependency_score": 0.0916368385377327,
+        "degree": 6,
+        "signpost_score": 7503.137425611619,
+        "signpost_lift": 4.633479482496617,
+        "deck_prevalence": 0.3663951629553901,
+        "draft_weight": 9391.0,
+        "draft_drafts": 6491,
+        "draft_presence": 0.5477637130801688,
+        "draft_win_rate": 0.5460080848276462,
+        "draft_win_lift": -0.00402605152269031,
+        "analysis_score_raw": 7504.786888705298,
+        "analysis_score": 9.512049304759458,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "needs_support",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Enraged%20Flamecaster%22",
+        "community": 1,
+        "x": 1105.6719993262677,
+        "y": 815.6462152534511,
+        "analysis_radius": 14.298926187358378,
+        "pick_radius": 30.0,
+        "radius": 14.298926187358378
+      },
+      {
+        "id": "Kulrath Mystic",
+        "label": "Kulrath Mystic",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Elemental Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6865,
+        "win_rate": 0.5514930808448653,
+        "standalone_delta": 0.0006607383954003732,
+        "dependency_score": 0.060671298389140656,
+        "degree": 7,
+        "signpost_score": 6784.026148410049,
+        "signpost_lift": 4.184737187988765,
+        "deck_prevalence": 0.3172320165469406,
+        "draft_weight": 8851.0,
+        "draft_drafts": 6335,
+        "draft_presence": 0.5345991561181435,
+        "draft_win_rate": 0.5505851386944559,
+        "draft_win_lift": 0.0005510023441194223,
+        "analysis_score_raw": 6785.21073515641,
+        "analysis_score": 9.430880974340223,
+        "pick_priority_score_raw": 9.595884748218836,
+        "pick_priority_score": 3.3863410369516393,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kulrath%20Mystic%22",
+        "community": 2,
+        "x": 828.598128245532,
+        "y": 870.3393662956635,
+        "analysis_radius": 13.220507353756084,
+        "pick_radius": 30.0,
+        "radius": 13.220507353756084
+      },
+      {
+        "id": "Explosive Prodigy",
+        "label": "Explosive Prodigy",
+        "color_identity": "R",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Elemental Sorcerer",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 7458,
+        "win_rate": 0.5969428801287209,
+        "standalone_delta": 0.04611053767925599,
+        "dependency_score": 0.10621941801617948,
+        "degree": 5,
+        "signpost_score": 6765.2489182050285,
+        "signpost_lift": 3.1941427556088784,
+        "deck_prevalence": 0.34083439936731275,
+        "draft_weight": 4943.0,
+        "draft_drafts": 4027,
+        "draft_presence": 0.339831223628692,
+        "draft_win_rate": 0.5655987911727711,
+        "draft_win_lift": 0.015564654822434631,
+        "analysis_score_raw": 6773.616343004415,
+        "analysis_score": 9.429503773354803,
+        "pick_priority_score_raw": 316.69088158126283,
+        "pick_priority_score": 9.042982501499768,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Explosive%20Prodigy%22",
+        "community": 0,
+        "x": 1152.3292258819183,
+        "y": 568.4672827816415,
+        "analysis_radius": 17.35997862094154,
+        "pick_radius": 30.0,
+        "radius": 17.35997862094154
+      },
+      {
+        "id": "Tanufel Rimespeaker",
+        "label": "Tanufel Rimespeaker",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 4.0,
+        "types": "Creature - Elemental Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6791,
+        "win_rate": 0.5759092917096157,
+        "standalone_delta": 0.025076949260150805,
+        "dependency_score": 0.10610334534395943,
+        "degree": 18,
+        "signpost_score": 6260.79693532055,
+        "signpost_lift": 3.238765455363857,
+        "deck_prevalence": 0.31457930934547995,
+        "draft_weight": 4643.0,
+        "draft_drafts": 3893,
+        "draft_presence": 0.32852320675105484,
+        "draft_win_rate": 0.5581316977519792,
+        "draft_win_lift": 0.00809756140164275,
+        "analysis_score_raw": 6266.217568433162,
+        "analysis_score": 9.366804078705592,
+        "pick_priority_score_raw": 167.15649802793862,
+        "pick_priority_score": 7.984742922298602,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Tanufel%20Rimespeaker%22",
+        "community": 1,
+        "x": 1106.6162175568663,
+        "y": 730.4801181978046,
+        "analysis_radius": 16.198952641690834,
+        "pick_radius": 30.0,
+        "radius": 16.198952641690834
+      },
+      {
+        "id": "Soulbright Seeker",
+        "label": "Soulbright Seeker",
+        "color_identity": "R",
+        "rarity": "uncommon",
+        "mana_value": 1.0,
+        "types": "Creature - Elemental Sorcerer",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 6434,
+        "win_rate": 0.5500466272925085,
+        "standalone_delta": -0.000785715156956357,
+        "dependency_score": 0.07671892985540862,
+        "degree": 6,
+        "signpost_score": 5776.958231377769,
+        "signpost_lift": 4.810961683950212,
+        "deck_prevalence": 0.30347724689166244,
+        "draft_weight": 5247.0,
+        "draft_drafts": 4223,
+        "draft_presence": 0.35637130801687766,
+        "draft_win_rate": 0.5476574089296262,
+        "draft_win_lift": -0.0023767274207102673,
+        "analysis_score_raw": 5778.339172115167,
+        "analysis_score": 9.301532866061809,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Soulbright%20Seeker%22",
+        "community": 0,
+        "x": 1127.8115807747436,
+        "y": 462.97718680581625,
+        "analysis_radius": 13.761881474794711,
+        "pick_radius": 30.0,
+        "radius": 13.761881474794711
+      },
+      {
+        "id": "Blossombind",
+        "label": "Blossombind",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Enchantment - Aura",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 9714,
+        "win_rate": 0.5785464278361129,
+        "standalone_delta": 0.02771408538664799,
+        "dependency_score": 0.1075082064179404,
+        "degree": 3,
+        "signpost_score": 5664.194713422131,
+        "signpost_lift": 2.0146794566940094,
+        "deck_prevalence": 0.42236145175134293,
+        "draft_weight": 7437.0,
+        "draft_drafts": 5507,
+        "draft_presence": 0.46472573839662445,
+        "draft_win_rate": 0.5516320227787266,
+        "draft_win_lift": 0.001597886428390094,
+        "analysis_score_raw": 5670.0098330917845,
+        "analysis_score": 9.28629318988696,
+        "pick_priority_score_raw": 137.6536789751927,
+        "pick_priority_score": 7.663843328768112,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Blossombind%22",
+        "community": 1,
+        "x": 1171.9235365922161,
+        "y": 685.9176575888845,
+        "analysis_radius": 16.394570127311493,
+        "pick_radius": 30.0,
+        "radius": 16.394570127311493
+      },
+      {
+        "id": "Ashling's Command",
+        "label": "Ashling's Command",
+        "color_identity": "UR",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Kindred Instant - Elemental",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 3891,
+        "win_rate": 0.7054741711642252,
+        "standalone_delta": 0.1546418287147603,
+        "dependency_score": 0.03908750306710455,
+        "degree": 3,
+        "signpost_score": 3578.012758733637,
+        "signpost_lift": 3.487431257987579,
+        "deck_prevalence": 0.17825410325536067,
+        "draft_weight": 1635.0,
+        "draft_drafts": 1553,
+        "draft_presence": 0.1310548523206751,
+        "draft_win_rate": 0.6129887358978766,
+        "draft_win_lift": 0.06295459954754012,
+        "analysis_score_raw": 3600.3661898089113,
+        "analysis_score": 8.920603381137086,
+        "pick_priority_score_raw": 728.3546051280936,
+        "pick_priority_score": 10.0,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ashling%27s%20Command%22",
+        "community": 4,
+        "x": 720.0,
+        "y": 476.28360653704635,
+        "analysis_radius": 20.912450689727578,
+        "pick_radius": 30.0,
+        "radius": 20.912450689727578
+      },
+      {
+        "id": "Sunderflock",
+        "label": "Sunderflock",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 9.0,
+        "types": "Creature - Elemental",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 3691,
+        "win_rate": 0.6838255215388783,
+        "standalone_delta": 0.13299317908941344,
+        "dependency_score": 0.0947447285214854,
+        "degree": 5,
+        "signpost_score": 3498.9454350417886,
+        "signpost_lift": 3.826624132356068,
+        "deck_prevalence": 0.16956166089565286,
+        "draft_weight": 1466.0,
+        "draft_drafts": 1401,
+        "draft_presence": 0.11822784810126583,
+        "draft_win_rate": 0.5996792194441612,
+        "draft_win_lift": 0.04964508309382476,
+        "analysis_score_raw": 3519.2698852276935,
+        "analysis_score": 8.90226016546473,
+        "pick_priority_score_raw": 589.5208166915104,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sunderflock%22",
+        "community": 3,
+        "x": 641.0983154141749,
+        "y": 713.2683053903239,
+        "analysis_radius": 21.725435076691213,
+        "pick_radius": 30.0,
+        "radius": 21.725435076691213
+      },
+      {
+        "id": "Rimekin Recluse",
+        "label": "Rimekin Recluse",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Creature - Elemental Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6856,
+        "win_rate": 0.6236872812135356,
+        "standalone_delta": 0.07285493876407068,
+        "dependency_score": 0.059399455715926384,
+        "degree": 2,
+        "signpost_score": 4965.60825455998,
+        "signpost_lift": 2.4586538961523274,
+        "deck_prevalence": 0.30722067581586743,
+        "draft_weight": 4226.0,
+        "draft_drafts": 3540,
+        "draft_presence": 0.29873417721518986,
+        "draft_win_rate": 0.569141826137254,
+        "draft_win_lift": 0.01910768978691746,
+        "analysis_score_raw": 4976.877136189837,
+        "analysis_score": 9.18129978258201,
+        "pick_priority_score_raw": 403.4547448747879,
+        "pick_priority_score": 9.444633119124605,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Rimekin%20Recluse%22",
+        "community": 1,
+        "x": 1001.9235365922161,
+        "y": 784.6377044915251,
+        "analysis_radius": 17.145402037797236,
+        "pick_radius": 30.0,
+        "radius": 17.145402037797236
+      },
+      {
+        "id": "Shinestriker",
+        "label": "Shinestriker",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 6.0,
+        "types": "Creature - Elemental",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6293,
+        "win_rate": 0.6211663753376768,
+        "standalone_delta": 0.07033403288821194,
+        "dependency_score": 0.08924041111261938,
+        "degree": 11,
+        "signpost_score": 5006.279095076227,
+        "signpost_lift": 2.6447225456104464,
+        "deck_prevalence": 0.2912990927500602,
+        "draft_weight": 4152.0,
+        "draft_drafts": 3577,
+        "draft_presence": 0.30185654008438817,
+        "draft_win_rate": 0.5682507462842331,
+        "draft_win_lift": 0.01821660993389662,
+        "analysis_score_raw": 5017.7321870806045,
+        "analysis_score": 9.187882888850092,
+        "pick_priority_score_raw": 396.2811232749017,
+        "pick_priority_score": 9.414865084633984,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Shinestriker%22",
+        "community": 0,
+        "x": 1188.1884539039872,
+        "y": 524.1445536349985,
+        "analysis_radius": 18.081026608905955,
+        "pick_radius": 30.0,
+        "radius": 18.081026608905955
+      },
+      {
+        "id": "Soul Immolation",
+        "label": "Soul Immolation",
+        "color_identity": "R",
+        "rarity": "mythic",
+        "mana_value": 5.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 1559,
+        "win_rate": 0.6818473380372033,
+        "standalone_delta": 0.13101499558773844,
+        "dependency_score": 0.18024999446862738,
+        "degree": 9,
+        "signpost_score": 1097.4967871128163,
+        "signpost_lift": 2.4226754864751197,
+        "deck_prevalence": 0.07275423690513191,
+        "draft_weight": 702.0,
+        "draft_drafts": 690,
+        "draft_presence": 0.05822784810126582,
+        "draft_win_rate": 0.5930972382963005,
+        "draft_win_lift": 0.043063101945963966,
+        "analysis_score_raw": 1119.083386395535,
+        "analysis_score": 7.979982005873712,
+        "pick_priority_score_raw": 345.42061750273695,
+        "pick_priority_score": 9.186992682102128,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Soul%20Immolation%22",
+        "community": 1,
+        "x": 1078.6026939831056,
+        "y": 761.6331272587851,
+        "analysis_radius": 24.694824558196203,
+        "pick_radius": 30.0,
+        "radius": 24.694824558196203
+      },
+      {
+        "id": "End-Blaze Epiphany",
+        "label": "End-Blaze Epiphany",
+        "color_identity": "R",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 2643,
+        "win_rate": 0.6341278849791903,
+        "standalone_delta": 0.08329554252972537,
+        "dependency_score": 0.12167428608810885,
+        "degree": 6,
+        "signpost_score": 2143.584184909593,
+        "signpost_lift": 2.543626985039747,
+        "deck_prevalence": 0.1336945256116698,
+        "draft_weight": 1415.0,
+        "draft_drafts": 1336,
+        "draft_presence": 0.11274261603375528,
+        "draft_win_rate": 0.5670610446287713,
+        "draft_win_lift": 0.017026908278434782,
+        "analysis_score_raw": 2157.4356980133407,
+        "analysis_score": 8.508301236306338,
+        "pick_priority_score_raw": 265.14163811632403,
+        "pick_priority_score": 8.748473996584757,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22End-Blaze%20Epiphany%22",
+        "community": 0,
+        "x": 1093.6153156545279,
+        "y": 610.6293749341625,
+        "analysis_radius": 19.961529138306815,
+        "pick_radius": 30.0,
+        "radius": 19.961529138306815
+      },
+      {
+        "id": "Lys Alana Informant",
+        "label": "Lys Alana Informant",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Elf Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 197,
+        "win_rate": 0.5736040609137056,
+        "standalone_delta": 0.022771718464240753,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -550.0201928399905,
+        "signpost_lift": 0.05639781628132709,
+        "deck_prevalence": 0.010878490209335864,
+        "draft_weight": 695.0,
+        "draft_drafts": 648,
+        "draft_presence": 0.05468354430379747,
+        "draft_win_rate": 0.5451567511336731,
+        "draft_win_lift": -0.004877385216663366,
+        "analysis_score_raw": -546.8321522549968,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 31.88203235976439,
+        "pick_priority_score": 5.270096641007544,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Lys%20Alana%20Informant%22",
+        "community": 6,
+        "x": 900.0,
+        "y": 295.0,
+        "analysis_radius": 12.252444515533242,
+        "pick_radius": 30.0,
+        "radius": 12.252444515533242
+      },
+      {
+        "id": "Mistmeadow Council",
+        "label": "Mistmeadow Council",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Kithkin Advisor",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 237,
+        "win_rate": 0.540084388185654,
+        "standalone_delta": -0.010747954263810922,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -486.76200528444764,
+        "signpost_lift": 0.06961796796490831,
+        "deck_prevalence": 0.010483672427468529,
+        "draft_weight": 823.0,
+        "draft_drafts": 743,
+        "draft_presence": 0.06270042194092827,
+        "draft_win_rate": 0.5510117546557676,
+        "draft_win_lift": 0.0009776183054310827,
+        "analysis_score_raw": -486.76200528444764,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 2.664794552076499,
+        "pick_priority_score": 1.620300987319923,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mistmeadow%20Council%22",
+        "community": 7,
+        "x": 1087.3832970144351,
+        "y": 372.61670298556487,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      }
+    ],
+    "edges": [
+      {
+        "from": "Soul Immolation",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 148,
+        "pair_win_rate": 0.8175675675675675,
+        "pair_expected_win_rate": 0.7035463734483407,
+        "pair_lift_vs_baseline": 0.26673522511810266,
+        "synergy_delta_logit": 0.6357106903624891,
+        "synergy_delta_prob": 0.11402119411922684,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 217,
+        "quality_score": 2.814556392823862,
+        "pick_score_raw": 4.61524362862433,
+        "pick_score": 4.358643249633811
+      },
+      {
+        "from": "Enraged Flamecaster",
+        "to": "Soul Immolation",
+        "pair_games": 187,
+        "pair_win_rate": 0.7433155080213903,
+        "pair_expected_win_rate": 0.6758593285445385,
+        "pair_lift_vs_baseline": 0.19248316557192546,
+        "synergy_delta_logit": 0.32846555442953196,
+        "synergy_delta_prob": 0.0674561794768519,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 378,
+        "quality_score": 1.2377527170787967,
+        "pick_score_raw": 3.9408125532579295,
+        "pick_score": 2.9392071637656016
+      },
+      {
+        "from": "Stratosoarer",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1058,
+        "pair_win_rate": 0.6568998109640832,
+        "pair_expected_win_rate": 0.6090617293542325,
+        "pair_lift_vs_baseline": 0.10606746851461835,
+        "synergy_delta_logit": 0.20613905883262895,
+        "synergy_delta_prob": 0.0478380816098507,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2064,
+        "quality_score": 1.167891228664436,
+        "pick_score_raw": 5.978543399142314,
+        "pick_score": 6.769814731782603
+      },
+      {
+        "from": "Flame-Chain Mauler",
+        "to": "Soul Immolation",
+        "pair_games": 274,
+        "pair_win_rate": 0.7408759124087592,
+        "pair_expected_win_rate": 0.6900321355635304,
+        "pair_lift_vs_baseline": 0.19004356995929428,
+        "synergy_delta_logit": 0.2502565612108282,
+        "synergy_delta_prob": 0.05084377684522878,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 419,
+        "quality_score": 1.132883828285499,
+        "pick_score_raw": 4.736899591985324,
+        "pick_score": 4.596414944074292
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Sunderflock",
+        "pair_games": 538,
+        "pair_win_rate": 0.7323420074349443,
+        "pair_expected_win_rate": 0.697931043528507,
+        "pair_lift_vs_baseline": 0.18150966498547938,
+        "synergy_delta_logit": 0.16907262734419215,
+        "synergy_delta_prob": 0.034410963906437275,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 618,
+        "quality_score": 1.0442304490409329,
+        "pick_score_raw": 6.476672651002179,
+        "pick_score": 7.534666793709464
+      },
+      {
+        "from": "Explosive Prodigy",
+        "to": "Shinestriker",
+        "pair_games": 884,
+        "pair_win_rate": 0.6968325791855203,
+        "pair_expected_win_rate": 0.6644549187312737,
+        "pair_lift_vs_baseline": 0.14600023673605544,
+        "synergy_delta_logit": 0.14904926734505264,
+        "synergy_delta_prob": 0.032377660454246615,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1230,
+        "quality_score": 0.9973638485074984,
+        "pick_score_raw": 7.042697070488087,
+        "pick_score": 8.344213208731334
+      },
+      {
+        "from": "Kulrath Zealot",
+        "to": "Tweeze",
+        "pair_games": 3112,
+        "pair_win_rate": 0.6458868894601543,
+        "pair_expected_win_rate": 0.6229417379284355,
+        "pair_lift_vs_baseline": 0.09505454701068938,
+        "synergy_delta_logit": 0.09895473231150131,
+        "synergy_delta_prob": 0.02294515153171872,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.39077790515190164,
+        "draft_pair_events": 4464,
+        "quality_score": 0.9654544692892894,
+        "pick_score_raw": 10.032038739945367,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Flame-Chain Mauler",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1253,
+        "pair_win_rate": 0.6288906624102155,
+        "pair_expected_win_rate": 0.5851613303566595,
+        "pair_lift_vs_baseline": 0.07805831996075063,
+        "synergy_delta_logit": 0.1834627934723766,
+        "synergy_delta_prob": 0.043729332053556,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2300,
+        "quality_score": 0.8832866236394337,
+        "pick_score_raw": 5.083224149631852,
+        "pick_score": 5.246654780632889
+      },
+      {
+        "from": "End-Blaze Epiphany",
+        "to": "Explosive Prodigy",
+        "pair_games": 326,
+        "pair_win_rate": 0.7177914110429447,
+        "pair_expected_win_rate": 0.6767061924883448,
+        "pair_lift_vs_baseline": 0.16695906859347986,
+        "synergy_delta_logit": 0.19485687465003154,
+        "synergy_delta_prob": 0.0410852185545999,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 440,
+        "quality_score": 0.8580236378718155,
+        "pick_score_raw": 4.608897037267729,
+        "pick_score": 4.346098110933507
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Shinestriker",
+        "pair_games": 1065,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6365816937694949,
+        "pair_lift_vs_baseline": 0.11583432421720175,
+        "synergy_delta_logit": 0.13258895194903697,
+        "synergy_delta_prob": 0.030084972897171713,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1575,
+        "quality_score": 0.8041179424093166,
+        "pick_score_raw": 6.391119176263432,
+        "pick_score": 7.406998233461172
+      },
+      {
+        "from": "End-Blaze Epiphany",
+        "to": "Flamebraider",
+        "pair_games": 410,
+        "pair_win_rate": 0.6902439024390243,
+        "pair_expected_win_rate": 0.6493135427260612,
+        "pair_lift_vs_baseline": 0.13941155998955945,
+        "synergy_delta_logit": 0.18523663459271877,
+        "synergy_delta_prob": 0.040930359712963105,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 552,
+        "quality_score": 0.7867158666412876,
+        "pick_score_raw": 4.450935255764245,
+        "pick_score": 4.029199014790643
+      },
+      {
+        "from": "Blossombind",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1247,
+        "pair_win_rate": 0.6383319967923016,
+        "pair_expected_win_rate": 0.6031907306639321,
+        "pair_lift_vs_baseline": 0.08749965434283669,
+        "synergy_delta_logit": 0.1493541320623002,
+        "synergy_delta_prob": 0.03514126612836943,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1923,
+        "quality_score": 0.7813413642212734,
+        "pick_score_raw": 5.518536980575435,
+        "pick_score": 6.01336463392691
+      },
+      {
+        "from": "Soul Immolation",
+        "to": "Summit Sentinel",
+        "pair_games": 271,
+        "pair_win_rate": 0.7269372693726938,
+        "pair_expected_win_rate": 0.6890683317861498,
+        "pair_lift_vs_baseline": 0.17610492692322888,
+        "synergy_delta_logit": 0.1833713658151278,
+        "synergy_delta_prob": 0.03786893758654397,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 368,
+        "quality_score": 0.7669294949245508,
+        "pick_score_raw": 4.373202080132971,
+        "pick_score": 3.86986497464268
+      },
+      {
+        "from": "Explosive Prodigy",
+        "to": "Twinflame Travelers",
+        "pair_games": 1114,
+        "pair_win_rate": 0.6642728904847397,
+        "pair_expected_win_rate": 0.6361182117697494,
+        "pair_lift_vs_baseline": 0.11344054803527481,
+        "synergy_delta_logit": 0.12383903243466443,
+        "synergy_delta_prob": 0.028154678714990333,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1666,
+        "quality_score": 0.7561467811849739,
+        "pick_score_raw": 6.4363015526033625,
+        "pick_score": 7.474605408274086
+      },
+      {
+        "from": "Kulrath Zealot",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1826,
+        "pair_win_rate": 0.6445783132530121,
+        "pair_expected_win_rate": 0.6190009935623595,
+        "pair_lift_vs_baseline": 0.09374597080354719,
+        "synergy_delta_logit": 0.10998128011213781,
+        "synergy_delta_prob": 0.025577319690652578,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2596,
+        "quality_score": 0.744713488290231,
+        "pick_score_raw": 7.153417730887531,
+        "pick_score": 8.49588770893396
+      },
+      {
+        "from": "Tanufel Rimespeaker",
+        "to": "Tweeze",
+        "pair_games": 1385,
+        "pair_win_rate": 0.6346570397111914,
+        "pair_expected_win_rate": 0.6046108379714022,
+        "pair_lift_vs_baseline": 0.08382469726172648,
+        "synergy_delta_logit": 0.1275337205745748,
+        "synergy_delta_prob": 0.030046201739789113,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2095,
+        "quality_score": 0.6812099050239876,
+        "pick_score_raw": 5.636912703225728,
+        "pick_score": 6.213008813381326
+      },
+      {
+        "from": "Shinestriker",
+        "to": "Summit Sentinel",
+        "pair_games": 1195,
+        "pair_win_rate": 0.6552301255230125,
+        "pair_expected_win_rate": 0.6290152759283331,
+        "pair_lift_vs_baseline": 0.10439778307354763,
+        "synergy_delta_logit": 0.11411469093189142,
+        "synergy_delta_prob": 0.026214849594679457,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2069,
+        "quality_score": 0.678066675094824,
+        "pick_score_raw": 6.270314641269455,
+        "pick_score": 7.2241862721091055
+      },
+      {
+        "from": "End-Blaze Epiphany",
+        "to": "Summit Sentinel",
+        "pair_games": 418,
+        "pair_win_rate": 0.6794258373205742,
+        "pair_expected_win_rate": 0.64186307199042,
+        "pair_lift_vs_baseline": 0.12859349487110927,
+        "synergy_delta_logit": 0.16767483451989018,
+        "synergy_delta_prob": 0.037562765330154124,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 713,
+        "quality_score": 0.6767555333346847,
+        "pick_score_raw": 4.235742191237395,
+        "pick_score": 3.582379364216609
+      },
+      {
+        "from": "Stratosoarer",
+        "to": "Sunderflock",
+        "pair_games": 512,
+        "pair_win_rate": 0.734375,
+        "pair_expected_win_rate": 0.7127495764292617,
+        "pair_lift_vs_baseline": 0.18354265755053512,
+        "synergy_delta_logit": 0.10815851543750499,
+        "synergy_delta_prob": 0.021625423570738267,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 742,
+        "quality_score": 0.66279218248846,
+        "pick_score_raw": 6.432435577450988,
+        "pick_score": 7.468836774469984
+      },
+      {
+        "from": "Cinder Strike",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1632,
+        "pair_win_rate": 0.6311274509803921,
+        "pair_expected_win_rate": 0.6036097212707939,
+        "pair_lift_vs_baseline": 0.08029510853092725,
+        "synergy_delta_logit": 0.11652808192888353,
+        "synergy_delta_prob": 0.027517729709598204,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2188,
+        "quality_score": 0.6537056069849644,
+        "pick_score_raw": 5.9214808734915305,
+        "pick_score": 6.678734137199438
+      },
+      {
+        "from": "Blossombind",
+        "to": "Twinflame Travelers",
+        "pair_games": 1505,
+        "pair_win_rate": 0.6431893687707642,
+        "pair_expected_win_rate": 0.6183666867065135,
+        "pair_lift_vs_baseline": 0.09235702632129927,
+        "synergy_delta_logit": 0.10661260183470711,
+        "synergy_delta_prob": 0.024822682064250645,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2326,
+        "quality_score": 0.6448319755384211,
+        "pick_score_raw": 6.3862754184827395,
+        "pick_score": 7.399725920695144
+      },
+      {
+        "from": "Cinder Strike",
+        "to": "Shinestriker",
+        "pair_games": 1572,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6477189503083817,
+        "pair_lift_vs_baseline": 0.11583432421720175,
+        "synergy_delta_logit": 0.08411959059177654,
+        "synergy_delta_prob": 0.01894771635828496,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2042,
+        "quality_score": 0.6256923109172434,
+        "pick_score_raw": 7.848629786916185,
+        "pick_score": 9.403595943151183
+      },
+      {
+        "from": "Feed the Flames",
+        "to": "Shinestriker",
+        "pair_games": 1310,
+        "pair_win_rate": 0.6709923664122137,
+        "pair_expected_win_rate": 0.6518140048728334,
+        "pair_lift_vs_baseline": 0.12016002396274883,
+        "synergy_delta_logit": 0.08565436070469756,
+        "synergy_delta_prob": 0.01917836153938035,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1960,
+        "quality_score": 0.5992286996907962,
+        "pick_score_raw": 7.3804828016860204,
+        "pick_score": 8.800600231820837
+      },
+      {
+        "from": "Shinestriker",
+        "to": "Soulbright Seeker",
+        "pair_games": 668,
+        "pair_win_rate": 0.6526946107784432,
+        "pair_expected_win_rate": 0.6204189106264041,
+        "pair_lift_vs_baseline": 0.10186226832897827,
+        "synergy_delta_logit": 0.13957820774926244,
+        "synergy_delta_prob": 0.032275700152039066,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1228,
+        "quality_score": 0.5959886642763595,
+        "pick_score_raw": 4.493988567849786,
+        "pick_score": 4.116472847732951
+      },
+      {
+        "from": "Enraged Flamecaster",
+        "to": "Stratosoarer",
+        "pair_games": 1139,
+        "pair_win_rate": 0.6119402985074627,
+        "pair_expected_win_rate": 0.5778452950670094,
+        "pair_lift_vs_baseline": 0.06110795605799779,
+        "synergy_delta_logit": 0.14154119765216733,
+        "synergy_delta_prob": 0.03409500344045324,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3285,
+        "quality_score": 0.5443080161950569,
+        "pick_score_raw": 4.067232463713487,
+        "pick_score": 3.2194776163409955
+      },
+      {
+        "from": "Eclipsed Flamekin",
+        "to": "Feed the Flames",
+        "pair_games": 1915,
+        "pair_win_rate": 0.6600522193211488,
+        "pair_expected_win_rate": 0.6451116559334139,
+        "pair_lift_vs_baseline": 0.10921987687168389,
+        "synergy_delta_logit": 0.06590673695632832,
+        "synergy_delta_prob": 0.014940563387734862,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2790,
+        "quality_score": 0.5205339604968421,
+        "pick_score_raw": 8.346695677480898,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Cinder Strike",
+        "to": "Eclipsed Flamekin",
+        "pair_games": 2216,
+        "pair_win_rate": 0.6552346570397112,
+        "pair_expected_win_rate": 0.6409811922036439,
+        "pair_lift_vs_baseline": 0.10440231459024629,
+        "synergy_delta_logit": 0.06250406758487881,
+        "synergy_delta_prob": 0.014253464836067264,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2832,
+        "quality_score": 0.5115161139083393,
+        "pick_score_raw": 8.649237165413359,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Feed the Flames",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1479,
+        "pair_win_rate": 0.6301555104800541,
+        "pair_expected_win_rate": 0.6079071329322844,
+        "pair_lift_vs_baseline": 0.07932316803058925,
+        "synergy_delta_logit": 0.09436060136907054,
+        "synergy_delta_prob": 0.02224837754776976,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2180,
+        "quality_score": 0.49897605655780564,
+        "pick_score_raw": 5.58161485623052,
+        "pick_score": 6.120194349367544
+      },
+      {
+        "from": "Ashling's Command",
+        "to": "Flamekin Gildweaver",
+        "pair_games": 962,
+        "pair_win_rate": 0.7401247401247402,
+        "pair_expected_win_rate": 0.7292356103435649,
+        "pair_lift_vs_baseline": 0.18929239767527528,
+        "synergy_delta_logit": 0.0558691489884634,
+        "synergy_delta_prob": 0.010889129781175289,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1043,
+        "quality_score": 0.4887141898768148,
+        "pick_score_raw": 9.19868659413978,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Feed the Flames",
+        "to": "Stratosoarer",
+        "pair_games": 1666,
+        "pair_win_rate": 0.634453781512605,
+        "pair_expected_win_rate": 0.616311625816541,
+        "pair_lift_vs_baseline": 0.08362143906314012,
+        "synergy_delta_logit": 0.07744969403691337,
+        "synergy_delta_prob": 0.018142155696064033,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3330,
+        "quality_score": 0.46041933567028054,
+        "pick_score_raw": 6.287807860533292,
+        "pick_score": 7.250845806803562
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Kulrath Zealot",
+        "pair_games": 2548,
+        "pair_win_rate": 0.6263736263736264,
+        "pair_expected_win_rate": 0.6104960849259818,
+        "pair_lift_vs_baseline": 0.07554128392416148,
+        "synergy_delta_logit": 0.06729277938404876,
+        "synergy_delta_prob": 0.015877541447644528,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3485,
+        "quality_score": 0.4568862436816067,
+        "pick_score_raw": 7.182893009019805,
+        "pick_score": 8.535918335083393
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Flaring Cinder",
+        "pair_games": 2111,
+        "pair_win_rate": 0.6082425390810042,
+        "pair_expected_win_rate": 0.5870499888000114,
+        "pair_lift_vs_baseline": 0.057410196631539345,
+        "synergy_delta_logit": 0.08814736060704392,
+        "synergy_delta_prob": 0.021192550280992872,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3346,
+        "quality_score": 0.440729736721574,
+        "pick_score_raw": 5.288571906079725,
+        "pick_score": 5.614940672805535
+      },
+      {
+        "from": "Kulrath Mystic",
+        "to": "Shinestriker",
+        "pair_games": 703,
+        "pair_win_rate": 0.6458036984352774,
+        "pair_expected_win_rate": 0.6217946890337559,
+        "pair_lift_vs_baseline": 0.09497135598581252,
+        "synergy_delta_logit": 0.10347154413677817,
+        "synergy_delta_prob": 0.02400900940152151,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1927,
+        "quality_score": 0.4347146229029643,
+        "pick_score_raw": 4.431882154902064,
+        "pick_score": 3.990356015814284
+      },
+      {
+        "from": "Rimekin Recluse",
+        "to": "Soul Immolation",
+        "pair_games": 153,
+        "pair_win_rate": 0.7647058823529411,
+        "pair_expected_win_rate": 0.7433528757770386,
+        "pair_lift_vs_baseline": 0.21387353990347624,
+        "synergy_delta_logit": 0.11518621450797295,
+        "synergy_delta_prob": 0.021353006575902556,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 180,
+        "quality_score": 0.4198285342630503,
+        "pick_score_raw": 3.7951661002003814,
+        "pick_score": 2.607281612189897
+      },
+      {
+        "from": "Cinder Strike",
+        "to": "Stratosoarer",
+        "pair_games": 1756,
+        "pair_win_rate": 0.6287015945330297,
+        "pair_expected_win_rate": 0.6120475434011844,
+        "pair_lift_vs_baseline": 0.07786925208356477,
+        "synergy_delta_logit": 0.07072349769552377,
+        "synergy_delta_prob": 0.01665405113184526,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3369,
+        "quality_score": 0.4078484167774567,
+        "pick_score_raw": 6.09992712676482,
+        "pick_score": 6.96110978610973
+      },
+      {
+        "from": "Feed the Flames",
+        "to": "Kulrath Zealot",
+        "pair_games": 3204,
+        "pair_win_rate": 0.6363920099875156,
+        "pair_expected_win_rate": 0.62617969816347,
+        "pair_lift_vs_baseline": 0.08555966753805067,
+        "synergy_delta_logit": 0.04387622247449052,
+        "synergy_delta_prob": 0.010212311824045583,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.383733504194206,
+        "draft_pair_events": 4576,
+        "quality_score": 0.3983905083670001,
+        "pick_score_raw": 9.342095678093708,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Shinestriker",
+        "to": "Twinflame Travelers",
+        "pair_games": 1109,
+        "pair_win_rate": 0.672678088367899,
+        "pair_expected_win_rate": 0.6593309323197077,
+        "pair_lift_vs_baseline": 0.12184574591843411,
+        "synergy_delta_logit": 0.060008714064692215,
+        "synergy_delta_prob": 0.013347156048191255,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1539,
+        "quality_score": 0.3874873951915233,
+        "pick_score_raw": 6.803883014589128,
+        "pick_score": 8.009829429173625
+      },
+      {
+        "from": "Flamekin Gildweaver",
+        "to": "Twinflame Travelers",
+        "pair_games": 2092,
+        "pair_win_rate": 0.6328871892925431,
+        "pair_expected_win_rate": 0.6194208757023637,
+        "pair_lift_vs_baseline": 0.08205484684307818,
+        "synergy_delta_logit": 0.05753213717783845,
+        "synergy_delta_prob": 0.013466313590179357,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3242,
+        "quality_score": 0.37710117090338313,
+        "pick_score_raw": 6.931976564220689,
+        "pick_score": 8.190436341520552
+      },
+      {
+        "from": "Flaring Cinder",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1734,
+        "pair_win_rate": 0.6141868512110726,
+        "pair_expected_win_rate": 0.5957278330809613,
+        "pair_lift_vs_baseline": 0.06335450876160775,
+        "synergy_delta_logit": 0.07725044278641674,
+        "synergy_delta_prob": 0.018459018130111304,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2664,
+        "quality_score": 0.37388785761130167,
+        "pick_score_raw": 5.113734981527446,
+        "pick_score": 5.302154574775154
+      },
+      {
+        "from": "Blossombind",
+        "to": "Stratosoarer",
+        "pair_games": 1430,
+        "pair_win_rate": 0.627972027972028,
+        "pair_expected_win_rate": 0.6116317331914348,
+        "pair_lift_vs_baseline": 0.07713968552256312,
+        "synergy_delta_logit": 0.06935025145226326,
+        "synergy_delta_prob": 0.01634029478059318,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2963,
+        "quality_score": 0.3565761495136782,
+        "pick_score_raw": 5.435330666285653,
+        "pick_score": 5.870852846143082
+      },
+      {
+        "from": "Enraged Flamecaster",
+        "to": "Sunderflock",
+        "pair_games": 442,
+        "pair_win_rate": 0.6945701357466063,
+        "pair_expected_win_rate": 0.6778571534356067,
+        "pair_lift_vs_baseline": 0.14373779329714143,
+        "synergy_delta_logit": 0.07763146159797152,
+        "synergy_delta_prob": 0.016712982310999602,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 767,
+        "quality_score": 0.35601134071336643,
+        "pick_score_raw": 4.814620879229418,
+        "pick_score": 4.745692794337834
+      },
+      {
+        "from": "Flame-Chain Mauler",
+        "to": "Twinflame Travelers",
+        "pair_games": 1513,
+        "pair_win_rate": 0.6173165895571712,
+        "pair_expected_win_rate": 0.6005702144649505,
+        "pair_lift_vs_baseline": 0.06648424710770628,
+        "synergy_delta_logit": 0.07033239320410023,
+        "synergy_delta_prob": 0.016746375092220656,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2928,
+        "quality_score": 0.3310297963787242,
+        "pick_score_raw": 4.9751764816310375,
+        "pick_score": 5.047850698259693
+      },
+      {
+        "from": "Explosive Prodigy",
+        "to": "Stratosoarer",
+        "pair_games": 888,
+        "pair_win_rate": 0.6452702702702703,
+        "pair_expected_win_rate": 0.6295088356735591,
+        "pair_lift_vs_baseline": 0.0944379278208054,
+        "synergy_delta_logit": 0.06820278496480092,
+        "synergy_delta_prob": 0.0157614345967112,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1991,
+        "quality_score": 0.3209288749345606,
+        "pick_score_raw": 4.964577104505396,
+        "pick_score": 5.028154922969705
+      },
+      {
+        "from": "Flame-Chain Mauler",
+        "to": "Shinestriker",
+        "pair_games": 1027,
+        "pair_win_rate": 0.6445959104186952,
+        "pair_expected_win_rate": 0.6300652919699852,
+        "pair_lift_vs_baseline": 0.09376356796923035,
+        "synergy_delta_logit": 0.06287127557417849,
+        "synergy_delta_prob": 0.014530618448710064,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2082,
+        "quality_score": 0.3167913550397523,
+        "pick_score_raw": 5.3173228898414155,
+        "pick_score": 5.66554268302153
+      },
+      {
+        "from": "Summit Sentinel",
+        "to": "Tweeze",
+        "pair_games": 1920,
+        "pair_win_rate": 0.6046875,
+        "pair_expected_win_rate": 0.588129646822146,
+        "pair_lift_vs_baseline": 0.05385515755053516,
+        "synergy_delta_logit": 0.06879641599035696,
+        "synergy_delta_prob": 0.016557853177854076,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3423,
+        "quality_score": 0.31323422117198696,
+        "pick_score_raw": 4.816438026093442,
+        "pick_score": 4.7491590354032915
+      },
+      {
+        "from": "Kulrath Mystic",
+        "to": "Sunderflock",
+        "pair_games": 483,
+        "pair_win_rate": 0.6977225672877847,
+        "pair_expected_win_rate": 0.6844027125141643,
+        "pair_lift_vs_baseline": 0.14689022483831982,
+        "synergy_delta_logit": 0.062396797437329954,
+        "synergy_delta_prob": 0.01331985477362041,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 808,
+        "quality_score": 0.3054778262986773,
+        "pick_score_raw": 5.141317094467365,
+        "pick_score": 5.352089119040593
+      },
+      {
+        "from": "Summit Sentinel",
+        "to": "Twinflame Travelers",
+        "pair_games": 1664,
+        "pair_win_rate": 0.6141826923076923,
+        "pair_expected_win_rate": 0.5994896968967738,
+        "pair_lift_vs_baseline": 0.0633503498582274,
+        "synergy_delta_logit": 0.061589170692894324,
+        "synergy_delta_prob": 0.014692995410918508,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2791,
+        "quality_score": 0.2924822805393512,
+        "pick_score_raw": 5.018700502605907,
+        "pick_score": 5.128362456872761
+      },
+      {
+        "from": "Eclipsed Flamekin",
+        "to": "Shinestriker",
+        "pair_games": 1144,
+        "pair_win_rate": 0.6888111888111889,
+        "pair_expected_win_rate": 0.6803905434755414,
+        "pair_lift_vs_baseline": 0.13797884636172397,
+        "synergy_delta_logit": 0.039000199137866454,
+        "synergy_delta_prob": 0.008420645335647459,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1561,
+        "quality_score": 0.28501335686564605,
+        "pick_score_raw": 7.700931085476062,
+        "pick_score": 9.216868279611832
+      },
+      {
+        "from": "Flame-Chain Mauler",
+        "to": "Stratosoarer",
+        "pair_games": 1389,
+        "pair_win_rate": 0.6097912167026638,
+        "pair_expected_win_rate": 0.593727538801558,
+        "pair_lift_vs_baseline": 0.0589588742531989,
+        "synergy_delta_logit": 0.06703818918537457,
+        "synergy_delta_prob": 0.016063677901105744,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3576,
+        "quality_score": 0.27798442972222737,
+        "pick_score_raw": 4.387441112160822,
+        "pick_score": 3.8992232456544067
+      },
+      {
+        "from": "Kulrath Zealot",
+        "to": "Stratosoarer",
+        "pair_games": 1969,
+        "pair_win_rate": 0.6368715083798883,
+        "pair_expected_win_rate": 0.6273134746722084,
+        "pair_lift_vs_baseline": 0.08603916593042338,
+        "synergy_delta_logit": 0.04110245482592201,
+        "synergy_delta_prob": 0.009558033707679825,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3962,
+        "quality_score": 0.2735138809671392,
+        "pick_score_raw": 7.044265801721469,
+        "pick_score": 8.346376736487576
+      },
+      {
+        "from": "End-Blaze Epiphany",
+        "to": "Stratosoarer",
+        "pair_games": 348,
+        "pair_win_rate": 0.6810344827586207,
+        "pair_expected_win_rate": 0.6653735854466138,
+        "pair_lift_vs_baseline": 0.13020214030915578,
+        "synergy_delta_logit": 0.07119600339227339,
+        "synergy_delta_prob": 0.015660897312006816,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 656,
+        "quality_score": 0.2642015428986972,
+        "pick_score_raw": 3.8926880349231263,
+        "pick_score": 2.8306271978865327
+      },
+      {
+        "from": "Flamekin Gildweaver",
+        "to": "Flaring Cinder",
+        "pair_games": 3587,
+        "pair_win_rate": 0.6085865625871202,
+        "pair_expected_win_rate": 0.5994013672062278,
+        "pair_lift_vs_baseline": 0.0577542201376553,
+        "synergy_delta_logit": 0.03840334645589022,
+        "synergy_delta_prob": 0.009185195380892353,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 5333,
+        "quality_score": 0.25557547131254316,
+        "pick_score_raw": 7.054673073756037,
+        "pick_score": 8.360719330379887
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Stratosoarer",
+        "pair_games": 1305,
+        "pair_win_rate": 0.61455938697318,
+        "pair_expected_win_rate": 0.6004781520203976,
+        "pair_lift_vs_baseline": 0.06372704452371514,
+        "synergy_delta_logit": 0.05906063190917149,
+        "synergy_delta_prob": 0.014081234952782462,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2541,
+        "quality_score": 0.24866769116813167,
+        "pick_score_raw": 4.447531476662932,
+        "pick_score": 4.022269800943093
+      },
+      {
+        "from": "Soul Immolation",
+        "to": "Soulbright Seeker",
+        "pair_games": 131,
+        "pair_win_rate": 0.7022900763358778,
+        "pair_expected_win_rate": 0.6811581453456553,
+        "pair_lift_vs_baseline": 0.15145773388641293,
+        "synergy_delta_logit": 0.09912765297662574,
+        "synergy_delta_prob": 0.02113193099022248,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 237,
+        "quality_score": 0.2477565907133029,
+        "pick_score_raw": 2.606758202451832,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Ashling's Command",
+        "to": "Feed the Flames",
+        "pair_games": 810,
+        "pair_win_rate": 0.7382716049382716,
+        "pair_expected_win_rate": 0.7322413320145,
+        "pair_lift_vs_baseline": 0.1874392624888067,
+        "synergy_delta_logit": 0.030980413340655932,
+        "synergy_delta_prob": 0.006030272923771562,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 866,
+        "quality_score": 0.24477021057431478,
+        "pick_score_raw": 8.300201248385163,
+        "pick_score": 9.955743891607566
+      },
+      {
+        "from": "Flamekin Gildweaver",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1652,
+        "pair_win_rate": 0.6162227602905569,
+        "pair_expected_win_rate": 0.6042600120985424,
+        "pair_lift_vs_baseline": 0.06539041784109201,
+        "synergy_delta_logit": 0.050299053155399676,
+        "synergy_delta_prob": 0.011962748192014483,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2520,
+        "quality_score": 0.24293763662917053,
+        "pick_score_raw": 5.101702666265227,
+        "pick_score": 5.280300707679717
+      },
+      {
+        "from": "Sunderflock",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 393,
+        "pair_win_rate": 0.7150127226463104,
+        "pair_expected_win_rate": 0.7054479220711415,
+        "pair_lift_vs_baseline": 0.16418038019684555,
+        "synergy_delta_logit": 0.046478669051201016,
+        "synergy_delta_prob": 0.009564800575168952,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 468,
+        "quality_score": 0.2218937305138776,
+        "pick_score_raw": 4.998671091310554,
+        "pick_score": 5.091384144879188
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1145,
+        "pair_win_rate": 0.6069868995633187,
+        "pair_expected_win_rate": 0.5919564581023011,
+        "pair_lift_vs_baseline": 0.056154557113853865,
+        "synergy_delta_logit": 0.06260507017171035,
+        "synergy_delta_prob": 0.015030441461017618,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1681,
+        "quality_score": 0.22124229593392478,
+        "pick_score_raw": 3.7253416309468554,
+        "pick_score": 2.444560724020209
+      },
+      {
+        "from": "Soulbright Seeker",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 720,
+        "pair_win_rate": 0.5972222222222222,
+        "pair_expected_win_rate": 0.5751336080344897,
+        "pair_lift_vs_baseline": 0.046389879772757325,
+        "synergy_delta_logit": 0.09107665775581814,
+        "synergy_delta_prob": 0.022088614187732558,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1378,
+        "quality_score": 0.22089135937796425,
+        "pick_score_raw": 2.5541159071148787,
+        "pick_score": 0.0
+      },
+      {
+        "from": "End-Blaze Epiphany",
+        "to": "Soulbright Seeker",
+        "pair_games": 279,
+        "pair_win_rate": 0.6523297491039427,
+        "pair_expected_win_rate": 0.6333909006070945,
+        "pair_lift_vs_baseline": 0.10149740665447782,
+        "synergy_delta_logit": 0.08250409665893144,
+        "synergy_delta_prob": 0.018938848496848237,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 472,
+        "quality_score": 0.21899658829640947,
+        "pick_score_raw": 2.779365393990955,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Kulrath Mystic",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 884,
+        "pair_win_rate": 0.5961538461538461,
+        "pair_expected_win_rate": 0.5765614986173274,
+        "pair_lift_vs_baseline": 0.04532150370438126,
+        "synergy_delta_logit": 0.08079104530405279,
+        "synergy_delta_prob": 0.01959234753651873,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2159,
+        "quality_score": 0.2171441336118553,
+        "pick_score_raw": 2.836840731542398,
+        "pick_score": 0.13394578707730323
+      },
+      {
+        "from": "Eclipsed Flamekin",
+        "to": "Kulrath Mystic",
+        "pair_games": 952,
+        "pair_win_rate": 0.6271008403361344,
+        "pair_expected_win_rate": 0.6148559295230768,
+        "pair_lift_vs_baseline": 0.07626849788666956,
+        "synergy_delta_logit": 0.05202881781215063,
+        "synergy_delta_prob": 0.012244910813057674,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2693,
+        "quality_score": 0.21557673044593031,
+        "pick_score_raw": 4.378028927925659,
+        "pick_score": 3.879825756424528
+      },
+      {
+        "from": "Eclipsed Flamekin",
+        "to": "Explosive Prodigy",
+        "pair_games": 1074,
+        "pair_win_rate": 0.6657355679702048,
+        "pair_expected_win_rate": 0.6578681774859501,
+        "pair_lift_vs_baseline": 0.11490322552073995,
+        "synergy_delta_logit": 0.035151689862945146,
+        "synergy_delta_prob": 0.007867390484254777,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1691,
+        "quality_score": 0.21316924256516498,
+        "pick_score_raw": 6.3929126709625805,
+        "pick_score": 7.409689738492666
+      },
+      {
+        "from": "Flaring Cinder",
+        "to": "Stratosoarer",
+        "pair_games": 1894,
+        "pair_win_rate": 0.6140443505807814,
+        "pair_expected_win_rate": 0.6042234243944439,
+        "pair_lift_vs_baseline": 0.06321200813131655,
+        "synergy_delta_logit": 0.041250504311118485,
+        "synergy_delta_prob": 0.009820926186337564,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4056,
+        "quality_score": 0.21144016928350262,
+        "pick_score_raw": 5.426632389113748,
+        "pick_score": 5.8558486049530085
+      },
+      {
+        "from": "Flaring Cinder",
+        "to": "Twinflame Travelers",
+        "pair_games": 2167,
+        "pair_win_rate": 0.6192893401015228,
+        "pair_expected_win_rate": 0.6110051424887687,
+        "pair_lift_vs_baseline": 0.06845699765205793,
+        "synergy_delta_logit": 0.03499367931446512,
+        "synergy_delta_prob": 0.008284197612754118,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3383,
+        "quality_score": 0.20264775613082575,
+        "pick_score_raw": 6.125624851012586,
+        "pick_score": 7.001188520237018
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Soul Immolation",
+        "pair_games": 189,
+        "pair_win_rate": 0.708994708994709,
+        "pair_expected_win_rate": 0.6960018796438187,
+        "pair_lift_vs_baseline": 0.15816236654524407,
+        "synergy_delta_logit": 0.062175772098226334,
+        "synergy_delta_prob": 0.0129928293508903,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 269,
+        "quality_score": 0.1949176918206426,
+        "pick_score_raw": 3.272069754627683,
+        "pick_score": 1.32590360298345
+      },
+      {
+        "from": "Flame-Chain Mauler",
+        "to": "Summit Sentinel",
+        "pair_games": 1615,
+        "pair_win_rate": 0.58328173374613,
+        "pair_expected_win_rate": 0.568448084429882,
+        "pair_lift_vs_baseline": 0.03244939129666513,
+        "synergy_delta_logit": 0.060737773644720716,
+        "synergy_delta_prob": 0.014833649316247977,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3748,
+        "quality_score": 0.1806986228551114,
+        "pick_score_raw": 3.1485166209145596,
+        "pick_score": 1.0003439438454802
+      },
+      {
+        "from": "Rimekin Recluse",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 862,
+        "pair_win_rate": 0.6554524361948956,
+        "pair_expected_win_rate": 0.647301165149474,
+        "pair_lift_vs_baseline": 0.10462009374543069,
+        "synergy_delta_logit": 0.03589646050156603,
+        "synergy_delta_prob": 0.008151271045421571,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1217,
+        "quality_score": 0.17799680087164038,
+        "pick_score_raw": 5.218575337420603,
+        "pick_score": 5.4907722947569715
+      },
+      {
+        "from": "Enraged Flamecaster",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 904,
+        "pair_win_rate": 0.5873893805309734,
+        "pair_expected_win_rate": 0.5691871991528418,
+        "pair_lift_vs_baseline": 0.036557038081508564,
+        "synergy_delta_logit": 0.07464788379635234,
+        "synergy_delta_prob": 0.018202181378131677,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2091,
+        "quality_score": 0.17546428463206865,
+        "pick_score_raw": 2.480575788622407,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Tanufel Rimespeaker",
+        "to": "Twinflame Travelers",
+        "pair_games": 1133,
+        "pair_win_rate": 0.6248896734333628,
+        "pair_expected_win_rate": 0.6158132562460059,
+        "pair_lift_vs_baseline": 0.07405733098389788,
+        "synergy_delta_logit": 0.038539908877277096,
+        "synergy_delta_prob": 0.009076417187356856,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1626,
+        "quality_score": 0.16712890296851127,
+        "pick_score_raw": 4.570623130409315,
+        "pick_score": 4.270140846647911
+      },
+      {
+        "from": "Feed the Flames",
+        "to": "Kulrath Mystic",
+        "pair_games": 1405,
+        "pair_win_rate": 0.595729537366548,
+        "pair_expected_win_rate": 0.5840024465768573,
+        "pair_lift_vs_baseline": 0.044897194917083105,
+        "synergy_delta_logit": 0.04847685865453888,
+        "synergy_delta_prob": 0.011727090789690697,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3562,
+        "quality_score": 0.16614384093581405,
+        "pick_score_raw": 3.6262252124508807,
+        "pick_score": 2.209399632483254
+      },
+      {
+        "from": "Kulrath Zealot",
+        "to": "Soulbright Seeker",
+        "pair_games": 1602,
+        "pair_win_rate": 0.6036204744069913,
+        "pair_expected_win_rate": 0.5939132357604789,
+        "pair_lift_vs_baseline": 0.05278813195752641,
+        "synergy_delta_logit": 0.04040709740370885,
+        "synergy_delta_prob": 0.00970723864651235,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2899,
+        "quality_score": 0.1646456433272454,
+        "pick_score_raw": 4.306936772968633,
+        "pick_score": 3.7322065246089133
+      },
+      {
+        "from": "Flamekin Gildweaver",
+        "to": "Stratosoarer",
+        "pair_games": 1833,
+        "pair_win_rate": 0.6197490452809602,
+        "pair_expected_win_rate": 0.6126928737854735,
+        "pair_lift_vs_baseline": 0.06891670283149531,
+        "synergy_delta_logit": 0.029837385773843095,
+        "synergy_delta_prob": 0.007056171495486652,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3956,
+        "quality_score": 0.16062921507790398,
+        "pick_score_raw": 5.6988179467141284,
+        "pick_score": 6.316000394713166
+      },
+      {
+        "from": "Shinestriker",
+        "to": "Stratosoarer",
+        "pair_games": 924,
+        "pair_win_rate": 0.6590909090909091,
+        "pair_expected_win_rate": 0.6529131287805254,
+        "pair_lift_vs_baseline": 0.10825856664144418,
+        "synergy_delta_logit": 0.027376640434759403,
+        "synergy_delta_prob": 0.006177780310383629,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1847,
+        "quality_score": 0.14687581638478528,
+        "pick_score_raw": 5.6582615786950745,
+        "pick_score": 6.248634999168704
+      },
+      {
+        "from": "Soulbright Seeker",
+        "to": "Twinflame Travelers",
+        "pair_games": 965,
+        "pair_win_rate": 0.6020725388601036,
+        "pair_expected_win_rate": 0.5906544040703073,
+        "pair_lift_vs_baseline": 0.051240196410638705,
+        "synergy_delta_logit": 0.04743689965931319,
+        "synergy_delta_prob": 0.011418134789796253,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1755,
+        "quality_score": 0.14419369630920692,
+        "pick_score_raw": 3.2050262453565788,
+        "pick_score": 1.1504320667982169
+      },
+      {
+        "from": "Summit Sentinel",
+        "to": "Tanufel Rimespeaker",
+        "pair_games": 1351,
+        "pair_win_rate": 0.5943745373797187,
+        "pair_expected_win_rate": 0.5840679977365315,
+        "pair_lift_vs_baseline": 0.0435421949302538,
+        "synergy_delta_logit": 0.04258380727155264,
+        "synergy_delta_prob": 0.010306539643187174,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2280,
+        "quality_score": 0.13790860094142854,
+        "pick_score_raw": 3.4191157476460963,
+        "pick_score": 1.7013116738971812
+      },
+      {
+        "from": "End-Blaze Epiphany",
+        "to": "Tweeze",
+        "pair_games": 492,
+        "pair_win_rate": 0.6686991869918699,
+        "pair_expected_win_rate": 0.6612071882803197,
+        "pair_lift_vs_baseline": 0.11786684454240504,
+        "synergy_delta_logit": 0.033629058172261694,
+        "synergy_delta_prob": 0.007491998711550263,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 706,
+        "quality_score": 0.13657525470981116,
+        "pick_score_raw": 4.261866050406807,
+        "pick_score": 3.6375916662268017
+      },
+      {
+        "from": "Ashling's Command",
+        "to": "Enraged Flamecaster",
+        "pair_games": 485,
+        "pair_win_rate": 0.7051546391752578,
+        "pair_expected_win_rate": 0.6997350207977252,
+        "pair_lift_vs_baseline": 0.1543222967257929,
+        "synergy_delta_logit": 0.02592973395750342,
+        "synergy_delta_prob": 0.005419618377532576,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 826,
+        "quality_score": 0.13298193394190183,
+        "pick_score_raw": 5.386449783605707,
+        "pick_score": 5.786270292372305
+      },
+      {
+        "from": "Flame-Chain Mauler",
+        "to": "Tweeze",
+        "pair_games": 2171,
+        "pair_win_rate": 0.5964993090741594,
+        "pair_expected_win_rate": 0.5892198117938833,
+        "pair_lift_vs_baseline": 0.045666966624694494,
+        "synergy_delta_logit": 0.030158823814388946,
+        "synergy_delta_prob": 0.007279497280276104,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3954,
+        "quality_score": 0.13049164000734853,
+        "pick_score_raw": 4.580240341405569,
+        "pick_score": 4.289275858671215
+      },
+      {
+        "from": "Kulrath Mystic",
+        "to": "Tweeze",
+        "pair_games": 1246,
+        "pair_win_rate": 0.5906902086677368,
+        "pair_expected_win_rate": 0.5806438195292835,
+        "pair_lift_vs_baseline": 0.03985786621827192,
+        "synergy_delta_logit": 0.04140250296812298,
+        "synergy_delta_prob": 0.010046389138453349,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 3361,
+        "quality_score": 0.12299760903639566,
+        "pick_score_raw": 3.142351284709623,
+        "pick_score": 0.9838454296622166
+      },
+      {
+        "from": "Flaring Cinder",
+        "to": "Soul Immolation",
+        "pair_games": 373,
+        "pair_win_rate": 0.7050938337801609,
+        "pair_expected_win_rate": 0.6993001010403548,
+        "pair_lift_vs_baseline": 0.154261491330696,
+        "synergy_delta_logit": 0.027706441164970452,
+        "synergy_delta_prob": 0.005793732739806101,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 469,
+        "quality_score": 0.1219336759469104,
+        "pick_score_raw": 4.607987599460833,
+        "pick_score": 4.344299286664785
+      },
+      {
+        "from": "Enraged Flamecaster",
+        "to": "Kulrath Zealot",
+        "pair_games": 1893,
+        "pair_win_rate": 0.595351294241944,
+        "pair_expected_win_rate": 0.5880413986161965,
+        "pair_lift_vs_baseline": 0.04451895179247911,
+        "synergy_delta_logit": 0.030257855291790148,
+        "synergy_delta_prob": 0.0073098956257474645,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4400,
+        "quality_score": 0.12056738221410598,
+        "pick_score_raw": 4.220170513010348,
+        "pick_score": 3.5493377102128436
+      },
+      {
+        "from": "Soul Immolation",
+        "to": "Tweeze",
+        "pair_games": 272,
+        "pair_win_rate": 0.7132352941176471,
+        "pair_expected_win_rate": 0.7070265355331367,
+        "pair_lift_vs_baseline": 0.1624029516681822,
+        "synergy_delta_logit": 0.030163174559102002,
+        "synergy_delta_prob": 0.006208758584510421,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 386,
+        "quality_score": 0.11777190476052411,
+        "pick_score_raw": 4.083738324366352,
+        "pick_score": 3.2555536650824726
+      },
+      {
+        "from": "Kulrath Zealot",
+        "to": "Summit Sentinel",
+        "pair_games": 2521,
+        "pair_win_rate": 0.60769535898453,
+        "pair_expected_win_rate": 0.6027254998218385,
+        "pair_lift_vs_baseline": 0.05686301653506509,
+        "synergy_delta_logit": 0.02080062774500757,
+        "synergy_delta_prob": 0.004969859162691437,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 4323,
+        "quality_score": 0.11387785228286702,
+        "pick_score_raw": 5.797826158995888,
+        "pick_score": 6.478757965463393
+      },
+      {
+        "from": "Flamebraider",
+        "to": "Kulrath Mystic",
+        "pair_games": 1009,
+        "pair_win_rate": 0.5797819623389494,
+        "pair_expected_win_rate": 0.5677707415427861,
+        "pair_lift_vs_baseline": 0.028949619889484524,
+        "synergy_delta_logit": 0.04911681715193722,
+        "synergy_delta_prob": 0.012011220796163347,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2652,
+        "quality_score": 0.10647351169681844,
+        "pick_score_raw": 2.290338391878237,
+        "pick_score": 0.0
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Feed the Flames",
+          "Kulrath Zealot",
+          "Tweeze"
+        ],
+        "games": 690,
+        "win_rate": 0.6753623188405797,
+        "expected_win_rate": 0.6535258528196338,
+        "synergy_delta_logit": 0.09796569397282884,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2536,
+        "quality": 3.7836563589194907
+      },
+      {
+        "cards": [
+          "Cinder Strike",
+          "Kulrath Zealot",
+          "Tweeze"
+        ],
+        "games": 763,
+        "win_rate": 0.6684141546526867,
+        "expected_win_rate": 0.6494401033943128,
+        "synergy_delta_logit": 0.0844422056016364,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2661,
+        "quality": 3.436263741712371
+      },
+      {
+        "cards": [
+          "Cinder Strike",
+          "Flamekin Gildweaver",
+          "Tweeze"
+        ],
+        "games": 705,
+        "win_rate": 0.64822695035461,
+        "expected_win_rate": 0.6351827270513474,
+        "synergy_delta_logit": 0.05673853426621467,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2569,
+        "quality": 2.21622969262634
+      },
+      {
+        "cards": [
+          "Cinder Strike",
+          "Feed the Flames",
+          "Kulrath Zealot"
+        ],
+        "games": 792,
+        "win_rate": 0.6578282828282829,
+        "expected_win_rate": 0.6525774199495646,
+        "synergy_delta_logit": 0.023243286413048847,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2702,
+        "quality": 0.9642619747982322
+      },
+      {
+        "cards": [
+          "Cinder Strike",
+          "Feed the Flames",
+          "Flamekin Gildweaver"
+        ],
+        "games": 731,
+        "win_rate": 0.6415868673050615,
+        "expected_win_rate": 0.6383765910012942,
+        "synergy_delta_logit": 0.013933251150771486,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2625,
+        "quality": 0.5546702908286738
+      },
+      {
+        "cards": [
+          "Flamekin Gildweaver",
+          "Kulrath Zealot",
+          "Tweeze"
+        ],
+        "games": 737,
+        "win_rate": 0.6526458616010855,
+        "expected_win_rate": 0.6500587970323136,
+        "synergy_delta_logit": 0.01139215870511845,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 2991,
+        "quality": 0.45779029158206536
+      },
+      {
+        "cards": [
+          "Cinder Strike",
+          "Explosive Prodigy",
+          "Kulrath Zealot"
+        ],
+        "games": 473,
+        "win_rate": 0.6680761099365751,
+        "expected_win_rate": 0.6652048538258793,
+        "synergy_delta_logit": 0.012920204977107885,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 1644,
+        "quality": 0.4058507266456387
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 6,
+        "top_cards": [
+          "Summit Sentinel",
+          "Twinflame Travelers",
+          "Explosive Prodigy",
+          "Soulbright Seeker",
+          "Shinestriker"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 6,
+        "top_cards": [
+          "Flame-Chain Mauler",
+          "Enraged Flamecaster",
+          "Tanufel Rimespeaker",
+          "Blossombind",
+          "Rimekin Recluse"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Cinder Strike",
+          "Feed the Flames",
+          "Eclipsed Flamekin",
+          "Kulrath Mystic"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 4,
+        "top_cards": [
+          "Flaring Cinder",
+          "Flamebraider",
+          "Stratosoarer",
+          "Sunderflock"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 2,
+        "top_cards": [
+          "Flamekin Gildweaver",
+          "Ashling's Command"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 2,
+        "top_cards": [
+          "Kulrath Zealot",
+          "Tweeze"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Lys Alana Informant"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Mistmeadow Council"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Kulrath Zealot",
+          "pick_priority_score": 9.268178554617423,
+          "pick_priority_score_raw": 362.7476466267455,
+          "draft_drafts": 8089,
+          "draft_win_rate": 0.5581335648397571,
+          "draft_win_lift": 0.00809942848942058,
+          "draw_win_rate": 0.5946787961866783
+        },
+        {
+          "card": "Flamekin Gildweaver",
+          "pick_priority_score": 8.482639478985112,
+          "pick_priority_score_raw": 225.83353772499544,
+          "draft_drafts": 7966,
+          "draft_win_rate": 0.5536979381337326,
+          "draft_win_lift": 0.0036638017833960923,
+          "draw_win_rate": 0.579635837770328
+        },
+        {
+          "card": "Stratosoarer",
+          "pick_priority_score": 8.194725891652695,
+          "pick_priority_score_raw": 189.78190450966173,
+          "draft_drafts": 6000,
+          "draft_win_rate": 0.5518466651102533,
+          "draft_win_lift": 0.001812528759916776,
+          "draw_win_rate": 0.5845309031428906
+        },
+        {
+          "card": "Cinder Strike",
+          "pick_priority_score": 8.189235535484293,
+          "pick_priority_score_raw": 189.15323883854745,
+          "draft_drafts": 6905,
+          "draft_win_rate": 0.5541626503249124,
+          "draft_win_lift": 0.00412851397457592,
+          "draw_win_rate": 0.5789732770745429
+        },
+        {
+          "card": "Feed the Flames",
+          "pick_priority_score": 8.03611260455523,
+          "pick_priority_score_raw": 172.43052455170846,
+          "draft_drafts": 6680,
+          "draft_win_rate": 0.5492810255806452,
+          "draft_win_lift": -0.000753110769691312,
+          "draw_win_rate": 0.5833534184944164
+        },
+        {
+          "card": "Flaring Cinder",
+          "pick_priority_score": 7.961974785715523,
+          "pick_priority_score_raw": 164.87052609941313,
+          "draft_drafts": 7950,
+          "draft_win_rate": 0.5531099318099106,
+          "draft_win_lift": 0.003075795459574149,
+          "draw_win_rate": 0.5709497206703911
+        },
+        {
+          "card": "Tweeze",
+          "pick_priority_score": 7.891705250332202,
+          "pick_priority_score_raw": 158.00942226788703,
+          "draft_drafts": 6436,
+          "draft_win_rate": 0.5508064418182305,
+          "draft_win_lift": 0.0007723054678939745,
+          "draw_win_rate": 0.5799933199732799
+        },
+        {
+          "card": "Blossombind",
+          "pick_priority_score": 7.663843328768112,
+          "pick_priority_score_raw": 137.6536789751927,
+          "draft_drafts": 5507,
+          "draft_win_rate": 0.5516320227787266,
+          "draft_win_lift": 0.001597886428390094,
+          "draw_win_rate": 0.5785464278361129
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Eclipsed Flamekin",
+          "pick_priority_score": 9.777463863678033,
+          "pick_priority_score_raw": 493.04583580533983,
+          "draft_drafts": 4982,
+          "draft_win_rate": 0.5680870568745091,
+          "draft_win_lift": 0.018052920524172622,
+          "draw_win_rate": 0.6142232403165347
+        },
+        {
+          "card": "Rimekin Recluse",
+          "pick_priority_score": 9.444633119124605,
+          "pick_priority_score_raw": 403.4547448747879,
+          "draft_drafts": 3540,
+          "draft_win_rate": 0.569141826137254,
+          "draft_win_lift": 0.01910768978691746,
+          "draw_win_rate": 0.6236872812135356
+        },
+        {
+          "card": "Shinestriker",
+          "pick_priority_score": 9.414865084633984,
+          "pick_priority_score_raw": 396.2811232749017,
+          "draft_drafts": 3577,
+          "draft_win_rate": 0.5682507462842331,
+          "draft_win_lift": 0.01821660993389662,
+          "draw_win_rate": 0.6211663753376768
+        },
+        {
+          "card": "Explosive Prodigy",
+          "pick_priority_score": 9.042982501499768,
+          "pick_priority_score_raw": 316.69088158126283,
+          "draft_drafts": 4027,
+          "draft_win_rate": 0.5655987911727711,
+          "draft_win_lift": 0.015564654822434631,
+          "draw_win_rate": 0.5969428801287209
+        },
+        {
+          "card": "Twinflame Travelers",
+          "pick_priority_score": 8.63670001179075,
+          "pick_priority_score_raw": 247.84576260098493,
+          "draft_drafts": 4926,
+          "draft_win_rate": 0.5535653373992575,
+          "draft_win_lift": 0.0035312010489210177,
+          "draw_win_rate": 0.5914218816517667
+        },
+        {
+          "card": "Flamebraider",
+          "pick_priority_score": 8.339432690525642,
+          "pick_priority_score_raw": 207.12202293368972,
+          "draft_drafts": 5024,
+          "draft_win_rate": 0.5629325097828207,
+          "draft_win_lift": 0.012898373432484234,
+          "draw_win_rate": 0.5671151605042907
+        },
+        {
+          "card": "Tanufel Rimespeaker",
+          "pick_priority_score": 7.984742922298602,
+          "pick_priority_score_raw": 167.15649802793862,
+          "draft_drafts": 3893,
+          "draft_win_rate": 0.5581316977519792,
+          "draft_win_lift": 0.00809756140164275,
+          "draw_win_rate": 0.5759092917096157
+        },
+        {
+          "card": "Soulbright Seeker",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 4223,
+          "draft_win_rate": 0.5476574089296262,
+          "draft_win_lift": -0.0023767274207102673,
+          "draw_win_rate": 0.5500466272925085
+        }
+      ],
+      "rare": [
+        {
+          "card": "Ashling's Command",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 728.3546051280936,
+          "draft_drafts": 1553,
+          "draft_win_rate": 0.6129887358978766,
+          "draft_win_lift": 0.06295459954754012,
+          "draw_win_rate": 0.7054741711642252
+        },
+        {
+          "card": "Sunderflock",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 589.5208166915104,
+          "draft_drafts": 1401,
+          "draft_win_rate": 0.5996792194441612,
+          "draft_win_lift": 0.04964508309382476,
+          "draw_win_rate": 0.6838255215388783
+        },
+        {
+          "card": "End-Blaze Epiphany",
+          "pick_priority_score": 8.748473996584757,
+          "pick_priority_score_raw": 265.14163811632403,
+          "draft_drafts": 1336,
+          "draft_win_rate": 0.5670610446287713,
+          "draft_win_lift": 0.017026908278434782,
+          "draw_win_rate": 0.6341278849791903
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Soul Immolation",
+          "pick_priority_score": 9.186992682102128,
+          "pick_priority_score_raw": 345.42061750273695,
+          "draft_drafts": 690,
+          "draft_win_rate": 0.5930972382963005,
+          "draft_win_lift": 0.043063101945963966,
+          "draw_win_rate": 0.6818473380372033
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Ashling's Command",
+        "standalone_delta": 0.1546418287147603,
+        "win_rate": 0.7054741711642252,
+        "draw_games": 3891
+      },
+      {
+        "card": "Sunderflock",
+        "standalone_delta": 0.13299317908941344,
+        "win_rate": 0.6838255215388783,
+        "draw_games": 3691
+      },
+      {
+        "card": "Soul Immolation",
+        "standalone_delta": 0.13101499558773844,
+        "win_rate": 0.6818473380372033,
+        "draw_games": 1559
+      },
+      {
+        "card": "End-Blaze Epiphany",
+        "standalone_delta": 0.08329554252972537,
+        "win_rate": 0.6341278849791903,
+        "draw_games": 2643
+      },
+      {
+        "card": "Rimekin Recluse",
+        "standalone_delta": 0.07285493876407068,
+        "win_rate": 0.6236872812135356,
+        "draw_games": 6856
+      },
+      {
+        "card": "Shinestriker",
+        "standalone_delta": 0.07033403288821194,
+        "win_rate": 0.6211663753376768,
+        "draw_games": 6293
+      },
+      {
+        "card": "Eclipsed Flamekin",
+        "standalone_delta": 0.06339089786706986,
+        "win_rate": 0.6142232403165347,
+        "draw_games": 9604
+      },
+      {
+        "card": "Explosive Prodigy",
+        "standalone_delta": 0.04611053767925599,
+        "win_rate": 0.5969428801287209,
+        "draw_games": 7458
+      },
+      {
+        "card": "Kulrath Zealot",
+        "standalone_delta": 0.04384645373721341,
+        "win_rate": 0.5946787961866783,
+        "draw_games": 16049
+      },
+      {
+        "card": "Twinflame Travelers",
+        "standalone_delta": 0.040589539202301794,
+        "win_rate": 0.5914218816517667,
+        "draw_games": 9396
+      },
+      {
+        "card": "Stratosoarer",
+        "standalone_delta": 0.033698560693425694,
+        "win_rate": 0.5845309031428906,
+        "draw_games": 8559
+      },
+      {
+        "card": "Feed the Flames",
+        "standalone_delta": 0.03252107604495147,
+        "win_rate": 0.5833534184944164,
+        "draw_games": 12447
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Soul Immolation",
+        "dependency_score": 0.18024999446862738,
+        "standalone_delta": 0.13101499558773844,
+        "draw_games": 1559
+      },
+      {
+        "card": "Kulrath Zealot",
+        "dependency_score": 0.17049818826489746,
+        "standalone_delta": 0.04384645373721341,
+        "draw_games": 16049
+      },
+      {
+        "card": "Tweeze",
+        "dependency_score": 0.15226495658843292,
+        "standalone_delta": 0.029160977523814968,
+        "draw_games": 11976
+      },
+      {
+        "card": "Feed the Flames",
+        "dependency_score": 0.14081214789182142,
+        "standalone_delta": 0.03252107604495147,
+        "draw_games": 12447
+      },
+      {
+        "card": "End-Blaze Epiphany",
+        "dependency_score": 0.12167428608810885,
+        "standalone_delta": 0.08329554252972537,
+        "draw_games": 2643
+      },
+      {
+        "card": "Blossombind",
+        "dependency_score": 0.1075082064179404,
+        "standalone_delta": 0.02771408538664799,
+        "draw_games": 9714
+      },
+      {
+        "card": "Explosive Prodigy",
+        "dependency_score": 0.10621941801617948,
+        "standalone_delta": 0.04611053767925599,
+        "draw_games": 7458
+      },
+      {
+        "card": "Tanufel Rimespeaker",
+        "dependency_score": 0.10610334534395943,
+        "standalone_delta": 0.025076949260150805,
+        "draw_games": 6791
+      },
+      {
+        "card": "Sunderflock",
+        "dependency_score": 0.0947447285214854,
+        "standalone_delta": 0.13299317908941344,
+        "draw_games": 3691
+      },
+      {
+        "card": "Enraged Flamecaster",
+        "dependency_score": 0.0916368385377327,
+        "standalone_delta": -0.006804871269675772,
+        "draw_games": 8154
+      },
+      {
+        "card": "Flamebraider",
+        "dependency_score": 0.09067775011620137,
+        "standalone_delta": 0.016282818054825787,
+        "draw_games": 9439
+      },
+      {
+        "card": "Shinestriker",
+        "dependency_score": 0.08924041111261938,
+        "standalone_delta": 0.07033403288821194,
+        "draw_games": 6293
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Soul Immolation",
+          "Tanufel Rimespeaker"
+        ],
+        "quality_score": 2.814556392823862,
+        "pair_win_rate": 0.8175675675675675,
+        "pair_games": 148,
+        "synergy_delta_logit": 0.6357106903624891
+      },
+      {
+        "cards": [
+          "Enraged Flamecaster",
+          "Soul Immolation"
+        ],
+        "quality_score": 1.2377527170787967,
+        "pair_win_rate": 0.7433155080213903,
+        "pair_games": 187,
+        "synergy_delta_logit": 0.32846555442953196
+      },
+      {
+        "cards": [
+          "Stratosoarer",
+          "Tanufel Rimespeaker"
+        ],
+        "quality_score": 1.167891228664436,
+        "pair_win_rate": 0.6568998109640832,
+        "pair_games": 1058,
+        "synergy_delta_logit": 0.20613905883262895
+      },
+      {
+        "cards": [
+          "Flame-Chain Mauler",
+          "Soul Immolation"
+        ],
+        "quality_score": 1.132883828285499,
+        "pair_win_rate": 0.7408759124087592,
+        "pair_games": 274,
+        "synergy_delta_logit": 0.2502565612108282
+      },
+      {
+        "cards": [
+          "Flamebraider",
+          "Sunderflock"
+        ],
+        "quality_score": 1.0442304490409329,
+        "pair_win_rate": 0.7323420074349443,
+        "pair_games": 538,
+        "synergy_delta_logit": 0.16907262734419215
+      },
+      {
+        "cards": [
+          "Explosive Prodigy",
+          "Shinestriker"
+        ],
+        "quality_score": 0.9973638485074984,
+        "pair_win_rate": 0.6968325791855203,
+        "pair_games": 884,
+        "synergy_delta_logit": 0.14904926734505264
+      },
+      {
+        "cards": [
+          "Kulrath Zealot",
+          "Tweeze"
+        ],
+        "quality_score": 0.9654544692892894,
+        "pair_win_rate": 0.6458868894601543,
+        "pair_games": 3112,
+        "synergy_delta_logit": 0.09895473231150131
+      },
+      {
+        "cards": [
+          "Flame-Chain Mauler",
+          "Tanufel Rimespeaker"
+        ],
+        "quality_score": 0.8832866236394337,
+        "pair_win_rate": 0.6288906624102155,
+        "pair_games": 1253,
+        "synergy_delta_logit": 0.1834627934723766
+      },
+      {
+        "cards": [
+          "End-Blaze Epiphany",
+          "Explosive Prodigy"
+        ],
+        "quality_score": 0.8580236378718155,
+        "pair_win_rate": 0.7177914110429447,
+        "pair_games": 326,
+        "synergy_delta_logit": 0.19485687465003154
+      },
+      {
+        "cards": [
+          "Flamebraider",
+          "Shinestriker"
+        ],
+        "quality_score": 0.8041179424093166,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_games": 1065,
+        "synergy_delta_logit": 0.13258895194903697
+      },
+      {
+        "cards": [
+          "End-Blaze Epiphany",
+          "Flamebraider"
+        ],
+        "quality_score": 0.7867158666412876,
+        "pair_win_rate": 0.6902439024390243,
+        "pair_games": 410,
+        "synergy_delta_logit": 0.18523663459271877
+      },
+      {
+        "cards": [
+          "Blossombind",
+          "Tanufel Rimespeaker"
+        ],
+        "quality_score": 0.7813413642212734,
+        "pair_win_rate": 0.6383319967923016,
+        "pair_games": 1247,
+        "synergy_delta_logit": 0.1493541320623002
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Ashling's Command",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 728.3546051280936,
+        "draft_drafts": 1553,
+        "draft_win_lift": 0.06295459954754012,
+        "rarity": "rare"
+      },
+      {
+        "card": "Sunderflock",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 589.5208166915104,
+        "draft_drafts": 1401,
+        "draft_win_lift": 0.04964508309382476,
+        "rarity": "rare"
+      },
+      {
+        "card": "Eclipsed Flamekin",
+        "pick_priority_score": 9.777463863678033,
+        "pick_priority_score_raw": 493.04583580533983,
+        "draft_drafts": 4982,
+        "draft_win_lift": 0.018052920524172622,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Rimekin Recluse",
+        "pick_priority_score": 9.444633119124605,
+        "pick_priority_score_raw": 403.4547448747879,
+        "draft_drafts": 3540,
+        "draft_win_lift": 0.01910768978691746,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Shinestriker",
+        "pick_priority_score": 9.414865084633984,
+        "pick_priority_score_raw": 396.2811232749017,
+        "draft_drafts": 3577,
+        "draft_win_lift": 0.01821660993389662,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Kulrath Zealot",
+        "pick_priority_score": 9.268178554617423,
+        "pick_priority_score_raw": 362.7476466267455,
+        "draft_drafts": 8089,
+        "draft_win_lift": 0.00809942848942058,
+        "rarity": "common"
+      },
+      {
+        "card": "Soul Immolation",
+        "pick_priority_score": 9.186992682102128,
+        "pick_priority_score_raw": 345.42061750273695,
+        "draft_drafts": 690,
+        "draft_win_lift": 0.043063101945963966,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Explosive Prodigy",
+        "pick_priority_score": 9.042982501499768,
+        "pick_priority_score_raw": 316.69088158126283,
+        "draft_drafts": 4027,
+        "draft_win_lift": 0.015564654822434631,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "End-Blaze Epiphany",
+        "pick_priority_score": 8.748473996584757,
+        "pick_priority_score_raw": 265.14163811632403,
+        "draft_drafts": 1336,
+        "draft_win_lift": 0.017026908278434782,
+        "rarity": "rare"
+      },
+      {
+        "card": "Twinflame Travelers",
+        "pick_priority_score": 8.63670001179075,
+        "pick_priority_score_raw": 247.84576260098493,
+        "draft_drafts": 4926,
+        "draft_win_lift": 0.0035312010489210177,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Flamekin Gildweaver",
+        "pick_priority_score": 8.482639478985112,
+        "pick_priority_score_raw": 225.83353772499544,
+        "draft_drafts": 7966,
+        "draft_win_lift": 0.0036638017833960923,
+        "rarity": "common"
+      },
+      {
+        "card": "Flamebraider",
+        "pick_priority_score": 8.339432690525642,
+        "pick_priority_score_raw": 207.12202293368972,
+        "draft_drafts": 5024,
+        "draft_win_lift": 0.012898373432484234,
+        "rarity": "uncommon"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Kulrath Zealot",
+          "Tweeze"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 10.032038739945367,
+        "pair_win_rate": 0.6458868894601543,
+        "pair_games": 3112,
+        "draft_pair_events": 4464
+      },
+      {
+        "cards": [
+          "Feed the Flames",
+          "Kulrath Zealot"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 9.342095678093708,
+        "pair_win_rate": 0.6363920099875156,
+        "pair_games": 3204,
+        "draft_pair_events": 4576
+      },
+      {
+        "cards": [
+          "Ashling's Command",
+          "Flamekin Gildweaver"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 9.19868659413978,
+        "pair_win_rate": 0.7401247401247402,
+        "pair_games": 962,
+        "draft_pair_events": 1043
+      },
+      {
+        "cards": [
+          "Cinder Strike",
+          "Eclipsed Flamekin"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 8.649237165413359,
+        "pair_win_rate": 0.6552346570397112,
+        "pair_games": 2216,
+        "draft_pair_events": 2832
+      },
+      {
+        "cards": [
+          "Eclipsed Flamekin",
+          "Feed the Flames"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 8.346695677480898,
+        "pair_win_rate": 0.6600522193211488,
+        "pair_games": 1915,
+        "draft_pair_events": 2790
+      },
+      {
+        "cards": [
+          "Ashling's Command",
+          "Feed the Flames"
+        ],
+        "pick_score": 9.955743891607566,
+        "pick_score_raw": 8.300201248385163,
+        "pair_win_rate": 0.7382716049382716,
+        "pair_games": 810,
+        "draft_pair_events": 866
+      },
+      {
+        "cards": [
+          "Cinder Strike",
+          "Shinestriker"
+        ],
+        "pick_score": 9.403595943151183,
+        "pick_score_raw": 7.848629786916185,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_games": 1572,
+        "draft_pair_events": 2042
+      },
+      {
+        "cards": [
+          "Eclipsed Flamekin",
+          "Shinestriker"
+        ],
+        "pick_score": 9.216868279611832,
+        "pick_score_raw": 7.700931085476062,
+        "pair_win_rate": 0.6888111888111889,
+        "pair_games": 1144,
+        "draft_pair_events": 1561
+      },
+      {
+        "cards": [
+          "Feed the Flames",
+          "Shinestriker"
+        ],
+        "pick_score": 8.800600231820837,
+        "pick_score_raw": 7.3804828016860204,
+        "pair_win_rate": 0.6709923664122137,
+        "pair_games": 1310,
+        "draft_pair_events": 1960
+      },
+      {
+        "cards": [
+          "Flamebraider",
+          "Kulrath Zealot"
+        ],
+        "pick_score": 8.535918335083393,
+        "pick_score_raw": 7.182893009019805,
+        "pair_win_rate": 0.6263736263736264,
+        "pair_games": 2548,
+        "draft_pair_events": 3485
+      },
+      {
+        "cards": [
+          "Kulrath Zealot",
+          "Tanufel Rimespeaker"
+        ],
+        "pick_score": 8.49588770893396,
+        "pick_score_raw": 7.153417730887531,
+        "pair_win_rate": 0.6445783132530121,
+        "pair_games": 1826,
+        "draft_pair_events": 2596
+      },
+      {
+        "cards": [
+          "Flamekin Gildweaver",
+          "Flaring Cinder"
+        ],
+        "pick_score": 8.360719330379887,
+        "pick_score_raw": 7.054673073756037,
+        "pair_win_rate": 0.6085865625871202,
+        "pair_games": 3587,
+        "draft_pair_events": 5333
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Selesnya Kithkin | Mistmeadow Council / Crossroads Watcher",
+      "color_name": "Selesnya Kithkin",
+      "deck_count": 8226,
+      "games": 38928,
+      "win_rate": 0.5777332511302918,
+      "signposts": [
+        "Mistmeadow Council",
+        "Crossroads Watcher",
+        "Surly Farrier",
+        "Wary Farmer"
+      ],
+      "pick_cards": [
+        "Eclipsed Kithkin",
+        "Brigid's Command",
+        "Thoughtweft Imbuer",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Golgari Elves | Scarblade Scout / Safewright Cavalry",
+      "color_name": "Golgari Elves",
+      "deck_count": 17005,
+      "games": 79178,
+      "win_rate": 0.5701710070979312,
+      "signposts": [
+        "Scarblade Scout",
+        "Safewright Cavalry",
+        "Lys Alana Informant",
+        "Dawnhand Eulogist"
+      ],
+      "pick_cards": [
+        "Gloom Ripper",
+        "Eclipsed Elf",
+        "Morcant's Loyalist",
+        "Trystan's Command"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Azorius Merfolk | Merrow Skyswimmer / Wanderbrine Preacher",
+      "color_name": "Azorius Merfolk",
+      "deck_count": 14756,
+      "games": 65697,
+      "win_rate": 0.5584425468438438,
+      "signposts": [
+        "Merrow Skyswimmer",
+        "Wanderbrine Preacher",
+        "Gravelgill Scoundrel",
+        "Silvergill Peddler"
+      ],
+      "pick_cards": [
+        "Deepchannel Duelist",
+        "Eclipsed Merrow",
+        "Champions of the Shoal",
+        "Kinbinding"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Izzet Elementals | Kulrath Zealot / Flamekin Gildweaver",
+      "color_name": "Izzet Elementals",
+      "deck_count": 15634,
+      "games": 67280,
+      "win_rate": 0.5508323424494649,
+      "signposts": [
+        "Kulrath Zealot",
+        "Flamekin Gildweaver",
+        "Flaring Cinder",
+        "Flame-Chain Mauler"
+      ],
+      "pick_cards": [
+        "Ashling's Command",
+        "Sunderflock",
+        "Eclipsed Flamekin",
+        "Rimekin Recluse"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Rakdos Goblins | Gristle Glutton / Elder Auntie",
+      "color_name": "Rakdos Goblins",
+      "deck_count": 10159,
+      "games": 43081,
+      "win_rate": 0.5284232028040203,
+      "signposts": [
+        "Gristle Glutton",
+        "Elder Auntie",
+        "Bile-Vial Boggart",
+        "Boggart Prankster"
+      ],
+      "pick_cards": [
+        "Grub's Command",
+        "Eclipsed Boggart",
+        "Boggart Mischief",
+        "Boggart Cursecrafter"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "White Base Kithkin | Timid Shieldbearer / Reluctant Dounguard",
+      "color_name": "White Base Kithkin",
+      "deck_count": 5824,
+      "games": 24407,
+      "win_rate": 0.516286311304134,
+      "signposts": [
+        "Timid Shieldbearer",
+        "Reluctant Dounguard",
+        "Spiral into Solitude",
+        "Sun-Dappled Celebrant"
+      ],
+      "pick_cards": [
+        "Kinbinding",
+        "Thoughtweft Imbuer",
+        "Pyrrhic Strike",
+        "Figure of Fable"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "Five-Color | Great Forest Druid / Foraging Wickermaw",
+      "color_name": "Five-Color",
+      "deck_count": 11302,
+      "games": 44111,
+      "win_rate": 0.5071524109632518,
+      "signposts": [
+        "Great Forest Druid",
+        "Foraging Wickermaw",
+        "Wildvine Pummeler",
+        "Tend the Sprigs"
+      ],
+      "pick_cards": [
+        "Shinestriker",
+        "Explosive Prodigy",
+        "Prismabasher",
+        "Noggle Robber"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

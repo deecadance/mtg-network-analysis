@@ -1,0 +1,363 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tarkir Dragonstorm Analysis</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #97aac6;
+      --line: rgba(126, 157, 197, 0.18);
+      --panel: rgba(13, 20, 34, 0.9);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .muted { color: var(--muted); }
+    .hero {
+      display: grid;
+      gap: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+    }
+    .hero .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(92, 200, 255, 0.16);
+      border: 1px solid rgba(92, 200, 255, 0.34);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-btn.secondary {
+      background: rgba(244, 201, 93, 0.14);
+      border-color: rgba(244, 201, 93, 0.28);
+    }
+    .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Tarkir Dragonstorm Analysis</h1>
+      <div class="muted">This landing page keeps the network pages clean. Open any archetype below, then switch between the analysis-focused view and the draft pick-focused view on that archetype page.</div>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div>
+  <div class="section-title">Archetypes</div>
+  <div id="archetypeGrid" class="grid"></div>
+</div>
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "TDM",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 9,
+    "fit_summary": {
+      "deck_count": 126902,
+      "cluster_feature_count": 274,
+      "svd_components": 48,
+      "svd_explained_variance": 0.36968672275543213,
+      "k_search": [],
+      "chosen_k": 9,
+      "label_counts": {
+        "3": 15854,
+        "2": 12817,
+        "8": 16514,
+        "5": 7372,
+        "1": 18554,
+        "4": 12416,
+        "6": 16554,
+        "0": 14930,
+        "7": 11891
+      }
+    },
+    "deck_count": 126902,
+    "game_count": 552428
+  },
+  "overview": [
+    {
+      "cluster_id": 0,
+      "title": "Five-Color Dragons | Dragonstorm Globe / Boulderborn Dragon",
+      "color_name": "Five-Color Dragons",
+      "deck_count": 14930,
+      "games": 63631,
+      "win_rate": 0.5379296254970062,
+      "signposts": [
+        "Dragonstorm Globe",
+        "Boulderborn Dragon",
+        "Dragonstorm Forecaster",
+        "Dragonbroods' Relic"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Sonic Shrieker",
+        "Roar of Endless Song",
+        "Jeskai Revelation"
+      ],
+      "href": "index_pages/00_five-color-dragons-dragonstorm-globe-boulderborn-dragon.html"
+    },
+    {
+      "cluster_id": 1,
+      "title": "Jeskai | Monastery Messenger / Jeskai Devotee",
+      "color_name": "Jeskai",
+      "deck_count": 18554,
+      "games": 78954,
+      "win_rate": 0.5454568482914102,
+      "signposts": [
+        "Monastery Messenger",
+        "Jeskai Devotee",
+        "Narset's Rebuke",
+        "Jeskai Monument"
+      ],
+      "pick_cards": [
+        "Jeskai Revelation",
+        "Marang River Regent",
+        "Jeskai Shrinekeeper",
+        "Sage of the Skies"
+      ],
+      "href": "index_pages/01_jeskai-monastery-messenger-jeskai-devotee.html"
+    },
+    {
+      "cluster_id": 2,
+      "title": "Abzan Counters | Abzan Devotee / Reputable Merchant",
+      "color_name": "Abzan Counters",
+      "deck_count": 12817,
+      "games": 55636,
+      "win_rate": 0.531382558055935,
+      "signposts": [
+        "Abzan Devotee",
+        "Reputable Merchant",
+        "Skirmish Rhino",
+        "Armament Dragon"
+      ],
+      "pick_cards": [
+        "Revival of the Ancestors",
+        "Betor, Kin to All",
+        "Yathan Roadwatcher",
+        "Qarsi Revenant"
+      ],
+      "href": "index_pages/02_abzan-counters-abzan-devotee-reputable-merchant.html"
+    },
+    {
+      "cluster_id": 3,
+      "title": "Mardu Humans | Reigning Victor / Nightblade Brigade",
+      "color_name": "Mardu Humans",
+      "deck_count": 15854,
+      "games": 70132,
+      "win_rate": 0.548351679689728,
+      "signposts": [
+        "Reigning Victor",
+        "Nightblade Brigade",
+        "Mardu Devotee",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sonic Shrieker",
+        "Mardu Monument",
+        "Inevitable Defeat",
+        "Elspeth, Storm Slayer"
+      ],
+      "href": "index_pages/03_mardu-humans-reigning-victor-nightblade-brigade.html"
+    },
+    {
+      "cluster_id": 4,
+      "title": "Temur | Temur Tawnyback / Mammoth Bellow",
+      "color_name": "Temur",
+      "deck_count": 12416,
+      "games": 52886,
+      "win_rate": 0.5349809023181938,
+      "signposts": [
+        "Temur Tawnyback",
+        "Mammoth Bellow",
+        "Temur Devotee",
+        "Dragonclaw Strike"
+      ],
+      "pick_cards": [
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Marang River Regent",
+        "Dragonback Assault"
+      ],
+      "href": "index_pages/04_temur-temur-tawnyback-mammoth-bellow.html"
+    },
+    {
+      "cluster_id": 5,
+      "title": "Golgari Counters | Champion of Dusan / Trade Route Envoy",
+      "color_name": "Golgari Counters",
+      "deck_count": 7372,
+      "games": 31688,
+      "win_rate": 0.5407409745013886,
+      "signposts": [
+        "Champion of Dusan",
+        "Trade Route Envoy",
+        "Snakeskin Veil",
+        "Formation Breaker"
+      ],
+      "pick_cards": [
+        "Synchronized Charge",
+        "Qarsi Revenant",
+        "Knockout Maneuver",
+        "Marang River Regent"
+      ],
+      "href": "index_pages/05_golgari-counters-champion-of-dusan-trade-route-envoy.html"
+    },
+    {
+      "cluster_id": 6,
+      "title": "Boros Go-Wide | Shock Brigade / Mardu Devotee",
+      "color_name": "Boros Go-Wide",
+      "deck_count": 16554,
+      "games": 74760,
+      "win_rate": 0.5793472445157838,
+      "signposts": [
+        "Shock Brigade",
+        "Mardu Devotee",
+        "Fortress Kin-Guard",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sage of the Skies",
+        "Elspeth, Storm Slayer",
+        "Rally the Monastery",
+        "Shocking Sharpshooter"
+      ],
+      "href": "index_pages/06_boros-go-wide-shock-brigade-mardu-devotee.html"
+    },
+    {
+      "cluster_id": 7,
+      "title": "Temur | Temur Tawnyback / Sibsig Appraiser",
+      "color_name": "Temur",
+      "deck_count": 11891,
+      "games": 53510,
+      "win_rate": 0.575686787516352,
+      "signposts": [
+        "Temur Tawnyback",
+        "Sibsig Appraiser",
+        "Dispelling Exhale",
+        "Riverwalk Technique"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Karakyk Guardian"
+      ],
+      "href": "index_pages/07_temur-temur-tawnyback-sibsig-appraiser.html"
+    },
+    {
+      "cluster_id": 8,
+      "title": "Sultai | Gurmag Nightwatch / Lie in Wait",
+      "color_name": "Sultai",
+      "deck_count": 16514,
+      "games": 71231,
+      "win_rate": 0.5484550266035855,
+      "signposts": [
+        "Gurmag Nightwatch",
+        "Lie in Wait",
+        "Sultai Devotee",
+        "Sultai Monument"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Fangkeeper's Familiar",
+        "Awaken the Honored Dead",
+        "Sibsig Appraiser"
+      ],
+      "href": "index_pages/08_sultai-gurmag-nightwatch-lie-in-wait.html"
+    }
+  ]
+}</script>
+<script>
+(function() {
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var heroStats = document.getElementById('heroStats');
+  [
+    'Deck builds: ' + payload.meta.deck_count,
+    'Game rows: ' + payload.meta.game_count,
+    'Archetypes: ' + payload.meta.n_clusters,
+    'Views per page: analysis + pick'
+  ].forEach(function(text) {
+    var span = document.createElement('span');
+    span.className = 'pill';
+    span.textContent = text;
+    heroStats.appendChild(span);
+  });
+  var grid = document.getElementById('archetypeGrid');
+  payload.overview.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '' +
+      '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
+      '<div class="row"><span>Game WR</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
+      '<div class="row"><span>Games</span><strong>' + row.games + '</strong></div>' +
+      '<div><div class="muted">Archetype-defining cards</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Draft priority candidates</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Archetype Page</a><span class="link-btn secondary">Mode switch inside page</span></div>';
+    grid.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

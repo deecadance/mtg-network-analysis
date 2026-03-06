@@ -1,0 +1,4486 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Temur | Temur Tawnyback / Sibsig Appraiser | Tarkir Dragonstorm Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "TDM",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 9,
+    "fit_summary": {
+      "deck_count": 126902,
+      "cluster_feature_count": 274,
+      "svd_components": 48,
+      "svd_explained_variance": 0.36968672275543213,
+      "k_search": [],
+      "chosen_k": 9,
+      "label_counts": {
+        "3": 15854,
+        "2": 12817,
+        "8": 16514,
+        "5": 7372,
+        "1": 18554,
+        "4": 12416,
+        "6": 16554,
+        "0": 14930,
+        "7": 11891
+      }
+    },
+    "deck_count": 126902,
+    "game_count": 552428
+  },
+  "segment": {
+    "cluster_id": 7,
+    "title": "Temur | Temur Tawnyback / Sibsig Appraiser",
+    "color_signature": "URG",
+    "color_name": "Temur",
+    "deck_count": 11891,
+    "draft_count": 5219,
+    "games": 53510,
+    "wins": 30805,
+    "win_rate": 0.575686787516352,
+    "draft_match_win_rate": 0.5778738499057754,
+    "top_deck_colors": [
+      {
+        "colors": "URG",
+        "count": 4433
+      },
+      {
+        "colors": "UBRG",
+        "count": 2837
+      },
+      {
+        "colors": "WUBRG",
+        "count": 2280
+      },
+      {
+        "colors": "WURG",
+        "count": 1971
+      },
+      {
+        "colors": "UG",
+        "count": 204
+      },
+      {
+        "colors": "UBG",
+        "count": 100
+      },
+      {
+        "colors": "WUG",
+        "count": 28
+      },
+      {
+        "colors": "WUBG",
+        "count": 23
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "URG",
+        "count": 7919
+      },
+      {
+        "colors": "UG",
+        "count": 2116
+      },
+      {
+        "colors": "UBRG",
+        "count": 629
+      },
+      {
+        "colors": "WURG",
+        "count": 512
+      },
+      {
+        "colors": "UBG",
+        "count": 326
+      },
+      {
+        "colors": "UR",
+        "count": 146
+      },
+      {
+        "colors": "WUBRG",
+        "count": 128
+      },
+      {
+        "colors": "WUG",
+        "count": 52
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Temur Tawnyback",
+        "score": 9373.252876248864,
+        "z_score": 109.98470941384319,
+        "log_odds": 2.267491311610241,
+        "cluster_prevalence": 0.6097757741260734,
+        "global_prevalence": 0.1834693930872981,
+        "lift": 3.323583099421553,
+        "support_decks": 7263
+      },
+      {
+        "card": "Sibsig Appraiser",
+        "score": 9171.056527220455,
+        "z_score": 96.48933808979604,
+        "log_odds": 2.163412591322391,
+        "cluster_prevalence": 0.7586383106603615,
+        "global_prevalence": 0.3116923021884329,
+        "lift": 2.4339334187397683,
+        "support_decks": 9034
+      },
+      {
+        "card": "Dispelling Exhale",
+        "score": 8210.42922129397,
+        "z_score": 91.99685302478024,
+        "log_odds": 1.9023350595285962,
+        "cluster_prevalence": 0.668872951772986,
+        "global_prevalence": 0.27266279943659416,
+        "lift": 2.4531140777366214,
+        "support_decks": 7965
+      },
+      {
+        "card": "Riverwalk Technique",
+        "score": 6952.995911344201,
+        "z_score": 85.5012989495361,
+        "log_odds": 1.7043030656347962,
+        "cluster_prevalence": 0.5553356574644746,
+        "global_prevalence": 0.21987486506660261,
+        "lift": 2.5256895884677726,
+        "support_decks": 6613
+      },
+      {
+        "card": "Ainok Wayfarer",
+        "score": 5966.483266395375,
+        "z_score": 74.48798896484878,
+        "log_odds": 1.4703916573292921,
+        "cluster_prevalence": 0.538863170207475,
+        "global_prevalence": 0.24242734576027564,
+        "lift": 2.2227821226914313,
+        "support_decks": 6416
+      },
+      {
+        "card": "Unending Whisper",
+        "score": 5309.129181695477,
+        "z_score": 73.03682544127625,
+        "log_odds": 1.4722145600531187,
+        "cluster_prevalence": 0.4437623983693133,
+        "global_prevalence": 0.18184611879558019,
+        "lift": 2.4403182278977464,
+        "support_decks": 5284
+      },
+      {
+        "card": "Karakyk Guardian",
+        "score": 5094.304585519113,
+        "z_score": 77.43570944073474,
+        "log_odds": 1.66309189079942,
+        "cluster_prevalence": 0.3634139526889763,
+        "global_prevalence": 0.12259470898039383,
+        "lift": 2.964352668328418,
+        "support_decks": 4328
+      },
+      {
+        "card": "Temur Devotee",
+        "score": 4727.55311881519,
+        "z_score": 68.64514946183927,
+        "log_odds": 1.411229917456992,
+        "cluster_prevalence": 0.39833684102838846,
+        "global_prevalence": 0.163343943858912,
+        "lift": 2.4386385660704453,
+        "support_decks": 4743
+      },
+      {
+        "card": "Piercing Exhale",
+        "score": 4529.969830030702,
+        "z_score": 60.223201346156515,
+        "log_odds": 1.1855914020155998,
+        "cluster_prevalence": 0.47527464297693073,
+        "global_prevalence": 0.24104047063725453,
+        "lift": 1.971762840158816,
+        "support_decks": 5658
+      },
+      {
+        "card": "Sagu Wildling",
+        "score": 4489.908287484883,
+        "z_score": 59.423393368756294,
+        "log_odds": 1.1679559458467272,
+        "cluster_prevalence": 0.4795664670112477,
+        "global_prevalence": 0.24685589018719536,
+        "lift": 1.942698092589906,
+        "support_decks": 5709
+      },
+      {
+        "card": "Temur Monument",
+        "score": 4158.665260200871,
+        "z_score": 68.70308392517853,
+        "log_odds": 1.5414547440665427,
+        "cluster_prevalence": 0.30767937233074166,
+        "global_prevalence": 0.10759932543232215,
+        "lift": 2.859491647317677,
+        "support_decks": 3664
+      },
+      {
+        "card": "Kishla Skimmer",
+        "score": 4013.83862445892,
+        "z_score": 66.62030172126235,
+        "log_odds": 1.4931594891806688,
+        "cluster_prevalence": 0.3048322565954278,
+        "global_prevalence": 0.10987660597500037,
+        "lift": 2.774314458391485,
+        "support_decks": 3630
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Temur Tawnyback",
+        "label": "Temur Tawnyback",
+        "color_identity": "URG",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Beast",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 12713,
+        "win_rate": 0.6041846928341068,
+        "standalone_delta": 0.028497905317754757,
+        "dependency_score": 0.293754434581728,
+        "degree": 2,
+        "signpost_score": 9373.252876248864,
+        "signpost_lift": 3.323583099421553,
+        "deck_prevalence": 0.6097757741260734,
+        "draft_weight": 5397.0,
+        "draft_drafts": 3483,
+        "draft_presence": 0.6673692278214217,
+        "draft_win_rate": 0.5815753741358691,
+        "draft_win_lift": 0.0037015242300937334,
+        "analysis_score_raw": 9382.53016281582,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 140.91712957089524,
+        "pick_priority_score": 8.483167240917505,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temur%20Tawnyback%22",
+        "community": 0,
+        "x": 1138.6574698677446,
+        "y": 671.946074732147,
+        "analysis_radius": 23.14254443741872,
+        "pick_radius": 30.0,
+        "radius": 23.14254443741872
+      },
+      {
+        "id": "Sibsig Appraiser",
+        "label": "Sibsig Appraiser",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Zombie Advisor",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 16493,
+        "win_rate": 0.6115927969441581,
+        "standalone_delta": 0.035906009427806085,
+        "dependency_score": 0.13649953310953208,
+        "degree": 7,
+        "signpost_score": 9171.056527220455,
+        "signpost_lift": 2.4339334187397683,
+        "deck_prevalence": 0.7586383106603615,
+        "draft_weight": 7432.0,
+        "draft_drafts": 4309,
+        "draft_presence": 0.8256370952289711,
+        "draft_win_rate": 0.5803213689560831,
+        "draft_win_lift": 0.0024475190503077116,
+        "analysis_score_raw": 9178.54036013632,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 166.59239929959332,
+        "pick_priority_score": 8.781732343928597,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sibsig%20Appraiser%22",
+        "community": 0,
+        "x": 1153.6592295721064,
+        "y": 608.6215074241123,
+        "analysis_radius": 17.88881371047249,
+        "pick_radius": 30.0,
+        "radius": 17.88881371047249
+      },
+      {
+        "id": "Dispelling Exhale",
+        "label": "Dispelling Exhale",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 13396,
+        "win_rate": 0.5964467005076142,
+        "standalone_delta": 0.02075991299126212,
+        "dependency_score": 0.06807889576061768,
+        "degree": 7,
+        "signpost_score": 8210.42922129397,
+        "signpost_lift": 2.4531140777366214,
+        "deck_prevalence": 0.668872951772986,
+        "draft_weight": 6258.0,
+        "draft_drafts": 3958,
+        "draft_presence": 0.7583828319601457,
+        "draft_win_rate": 0.5751741942589867,
+        "draft_win_lift": -0.0026996556467886457,
+        "analysis_score_raw": 8214.56102923644,
+        "analysis_score": 9.942314176957794,
+        "pick_priority_score_raw": 82.2715538605538,
+        "pick_priority_score": 7.525957463218992,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dispelling%20Exhale%22",
+        "community": 0,
+        "x": 1151.3293188848388,
+        "y": 516.903724530754,
+        "analysis_radius": 14.592635461901653,
+        "pick_radius": 30.0,
+        "radius": 14.592635461901653
+      },
+      {
+        "id": "Riverwalk Technique",
+        "label": "Riverwalk Technique",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 4.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 10081,
+        "win_rate": 0.6104553119730185,
+        "standalone_delta": 0.03476852445666645,
+        "dependency_score": 0.030713380926950248,
+        "degree": 11,
+        "signpost_score": 6952.995911344201,
+        "signpost_lift": 2.5256895884677726,
+        "deck_prevalence": 0.5553356574644746,
+        "draft_weight": 5266.0,
+        "draft_drafts": 3694,
+        "draft_presence": 0.7077984288177812,
+        "draft_win_rate": 0.5793395412676177,
+        "draft_win_lift": 0.0014656913618422696,
+        "analysis_score_raw": 6958.41634562482,
+        "analysis_score": 9.827279595371204,
+        "pick_priority_score_raw": 144.22399985692434,
+        "pick_priority_score": 8.524523365174142,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Riverwalk%20Technique%22",
+        "community": 2,
+        "x": 837.9875566294255,
+        "y": 786.5001681635534,
+        "analysis_radius": 14.017950558486863,
+        "pick_radius": 30.0,
+        "radius": 14.017950558486863
+      },
+      {
+        "id": "Ainok Wayfarer",
+        "label": "Ainok Wayfarer",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Dog Scout",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 10287,
+        "win_rate": 0.5849129969864878,
+        "standalone_delta": 0.009226209470135749,
+        "dependency_score": 0.062499089439683526,
+        "degree": 7,
+        "signpost_score": 5966.483266395375,
+        "signpost_lift": 2.2227821226914313,
+        "deck_prevalence": 0.538863170207475,
+        "draft_weight": 4880.0,
+        "draft_drafts": 3249,
+        "draft_presence": 0.6225330523088715,
+        "draft_win_rate": 0.5818374092722643,
+        "draft_win_lift": 0.003963559366488956,
+        "analysis_score_raw": 5968.899919331108,
+        "analysis_score": 9.720958500529484,
+        "pick_priority_score_raw": 57.81579510722728,
+        "pick_priority_score": 6.901692055990161,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ainok%20Wayfarer%22",
+        "community": 1,
+        "x": 1095.2580758875888,
+        "y": 754.0948746776252,
+        "analysis_radius": 13.757408740686072,
+        "pick_radius": 30.0,
+        "radius": 13.757408740686072
+      },
+      {
+        "id": "Unending Whisper",
+        "label": "Unending Whisper",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 7774,
+        "win_rate": 0.590686905068176,
+        "standalone_delta": 0.015000117551823955,
+        "dependency_score": 0.057204989201424056,
+        "degree": 10,
+        "signpost_score": 5309.129181695477,
+        "signpost_lift": 2.4403182278977464,
+        "deck_prevalence": 0.4437623983693133,
+        "draft_weight": 4546.0,
+        "draft_drafts": 3182,
+        "draft_presence": 0.6096953439356199,
+        "draft_win_rate": 0.5759638291259541,
+        "draft_win_lift": -0.0019100207798212754,
+        "analysis_score_raw": 5312.258887958358,
+        "analysis_score": 9.64017731220981,
+        "pick_priority_score_raw": 53.240919181984275,
+        "pick_priority_score": 6.756307241201921,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Unending%20Whisper%22",
+        "community": 1,
+        "x": 1113.7782663651126,
+        "y": 822.3045195303413,
+        "analysis_radius": 13.884386076601583,
+        "pick_radius": 30.0,
+        "radius": 13.884386076601583
+      },
+      {
+        "id": "Karakyk Guardian",
+        "label": "Karakyk Guardian",
+        "color_identity": "URG",
+        "rarity": "uncommon",
+        "mana_value": 6.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 6836,
+        "win_rate": 0.6391164423639555,
+        "standalone_delta": 0.06342965484760343,
+        "dependency_score": 0.039747297841152655,
+        "degree": 7,
+        "signpost_score": 5094.304585519113,
+        "signpost_lift": 2.964352668328418,
+        "deck_prevalence": 0.3634139526889763,
+        "draft_weight": 2401.0,
+        "draft_drafts": 1985,
+        "draft_presence": 0.38034106150603564,
+        "draft_win_rate": 0.5936732995487057,
+        "draft_win_lift": 0.01579944964293034,
+        "analysis_score_raw": 5103.900188558918,
+        "analysis_score": 9.612444081027885,
+        "pick_priority_score_raw": 270.18138450156255,
+        "pick_priority_score": 9.64578935234236,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Karakyk%20Guardian%22",
+        "community": 2,
+        "x": 849.1936969742897,
+        "y": 903.7597577125978,
+        "analysis_radius": 15.919533738899684,
+        "pick_radius": 30.0,
+        "radius": 15.919533738899684
+      },
+      {
+        "id": "Temur Devotee",
+        "label": "Temur Devotee",
+        "color_identity": "URG",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Human Druid",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 6835,
+        "win_rate": 0.5761521580102414,
+        "standalone_delta": 0.00046537049388939433,
+        "dependency_score": 0.05106640906200598,
+        "degree": 7,
+        "signpost_score": 4727.55311881519,
+        "signpost_lift": 2.4386385660704453,
+        "deck_prevalence": 0.39833684102838846,
+        "draft_weight": 3495.0,
+        "draft_drafts": 2671,
+        "draft_presence": 0.511783866641119,
+        "draft_win_rate": 0.5756896222277491,
+        "draft_win_lift": -0.002184227678026285,
+        "analysis_score_raw": 4728.537466047451,
+        "analysis_score": 9.559497911946218,
+        "pick_priority_score_raw": 1.5131180607045567,
+        "pick_priority_score": 1.2409003432438515,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temur%20Devotee%22",
+        "community": 0,
+        "x": 1198.6992586247527,
+        "y": 543.5367150941328,
+        "analysis_radius": 12.863986103396133,
+        "pick_radius": 30.0,
+        "radius": 12.863986103396133
+      },
+      {
+        "id": "Piercing Exhale",
+        "label": "Piercing Exhale",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 8978,
+        "win_rate": 0.6220761862330141,
+        "standalone_delta": 0.046389398716662034,
+        "dependency_score": 0.03315090669415102,
+        "degree": 8,
+        "signpost_score": 4529.969830030702,
+        "signpost_lift": 1.971762840158816,
+        "deck_prevalence": 0.47527464297693073,
+        "draft_weight": 3740.0,
+        "draft_drafts": 2757,
+        "draft_presence": 0.5282621191799195,
+        "draft_win_rate": 0.5778614369010224,
+        "draft_win_lift": -1.2413004752964696e-05,
+        "analysis_score_raw": 4537.06106217153,
+        "analysis_score": 9.530847441155851,
+        "pick_priority_score_raw": 146.98608667030516,
+        "pick_priority_score": 8.558350883649217,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Piercing%20Exhale%22",
+        "community": 2,
+        "x": 843.9988970636562,
+        "y": 849.4039033239842,
+        "analysis_radius": 14.744849570405849,
+        "pick_radius": 30.0,
+        "radius": 14.744849570405849
+      },
+      {
+        "id": "Sagu Wildling",
+        "label": "Sagu Wildling",
+        "color_identity": "G",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 10051,
+        "win_rate": 0.6097900706397373,
+        "standalone_delta": 0.034103283123385286,
+        "dependency_score": 0.04904776670654121,
+        "degree": 5,
+        "signpost_score": 4489.908287484883,
+        "signpost_lift": 1.942698092589906,
+        "deck_prevalence": 0.4795664670112477,
+        "draft_weight": 3378.0,
+        "draft_drafts": 2597,
+        "draft_presence": 0.4976049051542441,
+        "draft_win_rate": 0.5820851958885946,
+        "draft_win_lift": 0.004211345982819248,
+        "analysis_score_raw": 4495.565606922874,
+        "analysis_score": 9.524479261877467,
+        "pick_priority_score_raw": 128.08151030121817,
+        "pick_priority_score": 8.312961710954072,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Sagu%20Wildling%22",
+        "community": 3,
+        "x": 649.9927944951528,
+        "y": 591.9143964343891,
+        "analysis_radius": 14.641400173221674,
+        "pick_radius": 30.0,
+        "radius": 14.641400173221674
+      },
+      {
+        "id": "Temur Monument",
+        "label": "Temur Monument",
+        "color_identity": "URG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 5126,
+        "win_rate": 0.6012485368708544,
+        "standalone_delta": 0.025561749354502394,
+        "dependency_score": 0.04383958287751212,
+        "degree": 12,
+        "signpost_score": 4158.665260200871,
+        "signpost_lift": 2.859491647317677,
+        "deck_prevalence": 0.30767937233074166,
+        "draft_weight": 1992.0,
+        "draft_drafts": 1732,
+        "draft_presence": 0.3318643418279364,
+        "draft_win_rate": 0.5745631435437638,
+        "draft_win_lift": -0.003310706362011584,
+        "analysis_score_raw": 4163.033017602296,
+        "analysis_score": 9.471216735272112,
+        "pick_priority_score_raw": 69.3894234432708,
+        "pick_priority_score": 7.224210065713106,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Temur%20Monument%22",
+        "community": 0,
+        "x": 1186.7722695018472,
+        "y": 565.124889620914,
+        "analysis_radius": 13.984121198088069,
+        "pick_radius": 30.0,
+        "radius": 13.984121198088069
+      },
+      {
+        "id": "Kishla Skimmer",
+        "label": "Kishla Skimmer",
+        "color_identity": "UG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Bird Scout",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "UG"
+        },
+        "draw_games": 5292,
+        "win_rate": 0.6033635676492819,
+        "standalone_delta": 0.027676780132929846,
+        "dependency_score": 0.07816136721958673,
+        "degree": 9,
+        "signpost_score": 4013.83862445892,
+        "signpost_lift": 2.774314458391485,
+        "deck_prevalence": 0.3048322565954278,
+        "draft_weight": 2097.0,
+        "draft_drafts": 1746,
+        "draft_presence": 0.334546848055183,
+        "draft_win_rate": 0.574419575387005,
+        "draft_win_lift": -0.0034542745187703394,
+        "analysis_score_raw": 4019.120278287483,
+        "analysis_score": 9.446833453470436,
+        "pick_priority_score_raw": 74.89209909232787,
+        "pick_priority_score": 7.359351427524651,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kishla%20Skimmer%22",
+        "community": 1,
+        "x": 1059.4181148623952,
+        "y": 836.9853899987852,
+        "analysis_radius": 15.336032127216264,
+        "pick_radius": 30.0,
+        "radius": 15.336032127216264
+      },
+      {
+        "id": "Iceridge Serpent",
+        "label": "Iceridge Serpent",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Creature - Serpent",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6014,
+        "win_rate": 0.6007648819421351,
+        "standalone_delta": 0.025078094425783015,
+        "dependency_score": 0.06717481664375258,
+        "degree": 6,
+        "signpost_score": 3971.7659561276523,
+        "signpost_lift": 2.4793049219165955,
+        "deck_prevalence": 0.33300567353327426,
+        "draft_weight": 4076.0,
+        "draft_drafts": 2970,
+        "draft_presence": 0.5690745353515999,
+        "draft_win_rate": 0.573805169458459,
+        "draft_win_lift": -0.004068680447316342,
+        "analysis_score_raw": 3976.4860360468497,
+        "analysis_score": 9.439442090233486,
+        "pick_priority_score_raw": 86.2881264803261,
+        "pick_priority_score": 7.610535660961103,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Iceridge%20Serpent%22",
+        "community": 1,
+        "x": 995.3273771752209,
+        "y": 760.7259442451457,
+        "analysis_radius": 14.79758859259316,
+        "pick_radius": 30.0,
+        "radius": 14.79758859259316
+      },
+      {
+        "id": "Spectral Denial",
+        "label": "Spectral Denial",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 1.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 4358,
+        "win_rate": 0.5995869664983937,
+        "standalone_delta": 0.023900178982041664,
+        "dependency_score": 0.046398949524661226,
+        "degree": 7,
+        "signpost_score": 3305.420605475141,
+        "signpost_lift": 2.6834930386957074,
+        "deck_prevalence": 0.2603435617879961,
+        "draft_weight": 2091.0,
+        "draft_drafts": 1770,
+        "draft_presence": 0.3391454301590343,
+        "draft_win_rate": 0.5770754560604623,
+        "draft_win_lift": -0.0007983938453131056,
+        "analysis_score_raw": 3309.6018116240707,
+        "analysis_score": 9.312216268096764,
+        "pick_priority_score_raw": 64.61348712101005,
+        "pick_priority_score": 7.098059903344638,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Spectral%20Denial%22",
+        "community": 1,
+        "x": 1079.6425984695898,
+        "y": 666.9853899987852,
+        "analysis_radius": 13.984872026900096,
+        "pick_radius": 30.0,
+        "radius": 13.984872026900096
+      },
+      {
+        "id": "Focus the Mind",
+        "label": "Focus the Mind",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 5.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 6082,
+        "win_rate": 0.5958566261098323,
+        "standalone_delta": 0.020169838593480205,
+        "dependency_score": 0.08153933456535051,
+        "degree": 10,
+        "signpost_score": 3099.915713160197,
+        "signpost_lift": 1.8216964362472603,
+        "deck_prevalence": 0.37318478547492073,
+        "draft_weight": 3427.0,
+        "draft_drafts": 2725,
+        "draft_presence": 0.5221306763747844,
+        "draft_win_rate": 0.5710558951222064,
+        "draft_win_lift": -0.006817954783568947,
+        "analysis_score_raw": 3104.2071985854604,
+        "analysis_score": 9.267813713167515,
+        "pick_priority_score_raw": 62.667693812032354,
+        "pick_priority_score": 7.0440102309026935,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Focus%20the%20Mind%22",
+        "community": 0,
+        "x": 1177.3672658013672,
+        "y": 537.9172026393111,
+        "analysis_radius": 15.044757166994028,
+        "pick_radius": 30.0,
+        "radius": 15.044757166994028
+      },
+      {
+        "id": "Dirgur Island Dragon",
+        "label": "Dirgur Island Dragon",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 6.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 7505,
+        "win_rate": 0.607728181212525,
+        "standalone_delta": 0.03204139369617298,
+        "dependency_score": 0.07089481265446068,
+        "degree": 9,
+        "signpost_score": 2987.6598478295396,
+        "signpost_lift": 1.7456320580562137,
+        "deck_prevalence": 0.38320161426998334,
+        "draft_weight": 2743.0,
+        "draft_drafts": 2176,
+        "draft_presence": 0.4169381107491857,
+        "draft_win_rate": 0.5723025703243609,
+        "draft_win_lift": -0.005571279581414457,
+        "analysis_score_raw": 2993.421749574784,
+        "analysis_score": 9.24262830622447,
+        "pick_priority_score_raw": 88.33554625545663,
+        "pick_priority_score": 7.65216277576858,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Dirgur%20Island%20Dragon%22",
+        "community": 0,
+        "x": 1160.3177077791906,
+        "y": 541.9135699589988,
+        "analysis_radius": 15.3144899088501,
+        "pick_radius": 30.0,
+        "radius": 15.3144899088501
+      },
+      {
+        "id": "Fresh Start",
+        "label": "Fresh Start",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Enchantment - Aura",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 5006,
+        "win_rate": 0.6110667199360768,
+        "standalone_delta": 0.0353799324197247,
+        "dependency_score": 0.09001478757922338,
+        "degree": 10,
+        "signpost_score": 2933.598681282546,
+        "signpost_lift": 2.1813256870908,
+        "deck_prevalence": 0.2847450556884046,
+        "draft_weight": 1927.0,
+        "draft_drafts": 1620,
+        "draft_presence": 0.3104042920099636,
+        "draft_win_rate": 0.5855260950576411,
+        "draft_win_lift": 0.007652245151865689,
+        "analysis_score_raw": 2940.1721379977334,
+        "analysis_score": 9.230189296084259,
+        "pick_priority_score_raw": 122.01119301736055,
+        "pick_priority_score": 8.226478072801632,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Fresh%20Start%22",
+        "community": 0,
+        "x": 1162.28955352626,
+        "y": 572.1077891269142,
+        "analysis_radius": 16.1864286359369,
+        "pick_radius": 30.0,
+        "radius": 16.1864286359369
+      },
+      {
+        "id": "Bewildering Blizzard",
+        "label": "Bewildering Blizzard",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 6.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 4295,
+        "win_rate": 0.6048894062863795,
+        "standalone_delta": 0.0292026187700275,
+        "dependency_score": 0.0619417206789305,
+        "degree": 10,
+        "signpost_score": 2846.821236825275,
+        "signpost_lift": 2.2677922912645974,
+        "deck_prevalence": 0.26542105603832816,
+        "draft_weight": 1885.0,
+        "draft_drafts": 1712,
+        "draft_presence": 0.32803219007472695,
+        "draft_win_rate": 0.5785224741901587,
+        "draft_win_lift": 0.0006486242843832812,
+        "analysis_score_raw": 2852.0245544252994,
+        "analysis_score": 9.209094633170372,
+        "pick_priority_score_raw": 77.90562963493042,
+        "pick_priority_score": 7.4292655257985345,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Bewildering%20Blizzard%22",
+        "community": 3,
+        "x": 660.7190656927082,
+        "y": 671.1087797296807,
+        "analysis_radius": 14.83604597679301,
+        "pick_radius": 30.0,
+        "radius": 14.83604597679301
+      },
+      {
+        "id": "Marang River Regent",
+        "label": "Marang River Regent",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Creature - Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1875,
+        "win_rate": 0.7456,
+        "standalone_delta": 0.169913212483648,
+        "dependency_score": 0.03969277321927496,
+        "degree": 4,
+        "signpost_score": 632.3661544969464,
+        "signpost_lift": 1.6480260716136557,
+        "deck_prevalence": 0.09851033122905135,
+        "draft_weight": 588.0,
+        "draft_drafts": 563,
+        "draft_presence": 0.10787507185284537,
+        "draft_win_rate": 0.638186163502093,
+        "draft_win_lift": 0.06031231359631761,
+        "analysis_score_raw": 656.8684741626041,
+        "analysis_score": 8.192002049892526,
+        "pick_priority_score_raw": 388.48979125860893,
+        "pick_priority_score": 10.0,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Marang%20River%20Regent%22",
+        "community": 0,
+        "x": 1182.4127839649973,
+        "y": 501.94607473214705,
+        "analysis_radius": 21.77416652249454,
+        "pick_radius": 30.0,
+        "radius": 21.77416652249454
+      },
+      {
+        "id": "Roar of Endless Song",
+        "label": "Roar of Endless Song",
+        "color_identity": "URG",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Enchantment - Saga",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 2765,
+        "win_rate": 0.6911392405063291,
+        "standalone_delta": 0.11545245298997708,
+        "dependency_score": 0.038098180147387556,
+        "degree": 7,
+        "signpost_score": 1957.4163851871035,
+        "signpost_lift": 2.633625469595076,
+        "deck_prevalence": 0.15958248877450357,
+        "draft_weight": 824.0,
+        "draft_drafts": 784,
+        "draft_presence": 0.15022034872580955,
+        "draft_win_rate": 0.6193063984304482,
+        "draft_win_lift": 0.04143254852467282,
+        "analysis_score_raw": 1974.265495848353,
+        "analysis_score": 8.954201457100924,
+        "pick_priority_score_raw": 341.80512253556253,
+        "pick_priority_score": 10.0,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Roar%20of%20Endless%20Song%22",
+        "community": 3,
+        "x": 673.017889829716,
+        "y": 761.9143964343891,
+        "analysis_radius": 18.72141939975469,
+        "pick_radius": 30.0,
+        "radius": 18.72141939975469
+      },
+      {
+        "id": "Ureni, the Song Unending",
+        "label": "Ureni, the Song Unending",
+        "color_identity": "URG",
+        "rarity": "mythic",
+        "mana_value": 8.0,
+        "types": "Legendary Creature - Spirit Dragon",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 1209,
+        "win_rate": 0.7485525227460711,
+        "standalone_delta": 0.17286573522971904,
+        "dependency_score": 0.15398906875966256,
+        "degree": 8,
+        "signpost_score": 618.8639025305924,
+        "signpost_lift": 2.1675161147611224,
+        "deck_prevalence": 0.06363613860659323,
+        "draft_weight": 315.0,
+        "draft_drafts": 309,
+        "draft_presence": 0.05920674458708565,
+        "draft_win_rate": 0.6328379752636198,
+        "draft_win_lift": 0.05496412535784445,
+        "analysis_score_raw": 645.836908700427,
+        "analysis_score": 8.18027855909151,
+        "pick_priority_score_raw": 294.53960002098546,
+        "pick_priority_score": 9.800223272960588,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ureni%2C%20the%20Song%20Unending%22",
+        "community": 1,
+        "x": 1047.9243521954795,
+        "y": 762.0159386734848,
+        "analysis_radius": 26.0512219129824,
+        "pick_radius": 30.0,
+        "radius": 26.0512219129824
+      },
+      {
+        "id": "Ugin, Eye of the Storms",
+        "label": "Ugin, Eye of the Storms",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 7.0,
+        "types": "Legendary Planeswalker - Ugin",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 552,
+        "win_rate": 0.7554347826086957,
+        "standalone_delta": 0.17974799509234363,
+        "dependency_score": 0.15393995009201944,
+        "degree": 4,
+        "signpost_score": 68.22087264940063,
+        "signpost_lift": 1.1729538355467417,
+        "deck_prevalence": 0.03377132347885982,
+        "draft_weight": 173.0,
+        "draft_drafts": 171,
+        "draft_presence": 0.0327648974899406,
+        "draft_win_rate": 0.6066559933318916,
+        "draft_win_lift": 0.02878214342611618,
+        "analysis_score_raw": 96.15651106398508,
+        "analysis_score": 6.866029170064146,
+        "pick_priority_score_raw": 169.8024575707394,
+        "pick_priority_score": 8.815796769076542,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ugin%2C%20Eye%20of%20the%20Storms%22",
+        "community": 2,
+        "x": 832.9476593389354,
+        "y": 733.7597577125978,
+        "analysis_radius": 26.4279779333916,
+        "pick_radius": 30.0,
+        "radius": 26.4279779333916
+      },
+      {
+        "id": "Jeskai Revelation",
+        "label": "Jeskai Revelation",
+        "color_identity": "WUR",
+        "rarity": "mythic",
+        "mana_value": 7.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 650,
+        "win_rate": 0.74,
+        "standalone_delta": 0.16431321248364794,
+        "dependency_score": 0.23938726790652626,
+        "degree": 3,
+        "signpost_score": 29.760018140433193,
+        "signpost_lift": 1.0691281330449283,
+        "deck_prevalence": 0.03512047507769449,
+        "draft_weight": 196.0,
+        "draft_drafts": 194,
+        "draft_presence": 0.037171872006131444,
+        "draft_win_rate": 0.6290261910006315,
+        "draft_win_lift": 0.05115234109485611,
+        "analysis_score_raw": 57.072838710461376,
+        "analysis_score": 6.509263628886747,
+        "pick_priority_score_raw": 198.4836295029279,
+        "pick_priority_score": 9.094491760587687,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Jeskai%20Revelation%22",
+        "community": 0,
+        "x": 1138.495142476895,
+        "y": 539.9824521405689,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Devoted Duelist",
+        "label": "Devoted Duelist",
+        "color_identity": "R",
+        "rarity": "common",
+        "mana_value": 2.0,
+        "types": "Creature - Goblin Monk",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(211, 32, 42)"
+          ]
+        },
+        "draw_games": 116,
+        "win_rate": 0.5603448275862069,
+        "standalone_delta": -0.0153419599301452,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -229.4533485784821,
+        "signpost_lift": 0.07009990054746816,
+        "deck_prevalence": 0.006943482770294372,
+        "draft_weight": 535.0,
+        "draft_drafts": 485,
+        "draft_presence": 0.0929296800153286,
+        "draft_win_rate": 0.5472227789315732,
+        "draft_win_lift": -0.030651070974202166,
+        "analysis_score_raw": -229.4533485784821,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Devoted%20Duelist%22",
+        "community": 4,
+        "x": 661.243250005859,
+        "y": 445.02080913384714,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Inevitable Defeat",
+        "label": "Inevitable Defeat",
+        "color_identity": "WBR",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Instant",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 111,
+        "win_rate": 0.6036036036036037,
+        "standalone_delta": 0.027916816087251606,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -149.96898255456517,
+        "signpost_lift": 0.15007933328737716,
+        "deck_prevalence": 0.006369300431297018,
+        "draft_weight": 82.0,
+        "draft_drafts": 80,
+        "draft_presence": 0.015328607012837708,
+        "draft_win_rate": 0.594308920405172,
+        "draft_win_lift": 0.01643507049939663,
+        "analysis_score_raw": -146.06062830234995,
+        "analysis_score": 0.23355884255043738,
+        "pick_priority_score_raw": 28.433231607680863,
+        "pick_priority_score": 5.658739709911142,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Inevitable%20Defeat%22",
+        "community": 5,
+        "x": 841.0319525015766,
+        "y": 301.64410327181673,
+        "analysis_radius": 12.535424884798838,
+        "pick_radius": 24.32180621858452,
+        "radius": 12.535424884798838
+      },
+      {
+        "id": "Abzan Monument",
+        "label": "Abzan Monument",
+        "color_identity": "WBG",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 177,
+        "win_rate": 0.5706214689265536,
+        "standalone_delta": -0.005065318589798418,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -249.13787769343307,
+        "signpost_lift": 0.23740892102450886,
+        "deck_prevalence": 0.013714428366402118,
+        "draft_weight": 260.0,
+        "draft_drafts": 253,
+        "draft_presence": 0.04847671967809925,
+        "draft_win_rate": 0.5733616530304534,
+        "draft_win_lift": -0.004512196875322005,
+        "analysis_score_raw": -249.13787769343307,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Abzan%20Monument%22",
+        "community": 6,
+        "x": 1065.2247974925644,
+        "y": 352.8146571459721,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      }
+    ],
+    "edges": [
+      {
+        "from": "Iceridge Serpent",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 128,
+        "pair_win_rate": 0.8359375,
+        "pair_expected_win_rate": 0.767539304000794,
+        "pair_lift_vs_baseline": 0.26025071248364795,
+        "synergy_delta_logit": 0.4338378694350111,
+        "synergy_delta_prob": 0.06839819599920605,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 171,
+        "quality_score": 1.7295929030702781,
+        "pick_score_raw": 4.149936749819795,
+        "pick_score": 5.251037207762386
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Jeskai Revelation",
+        "pair_games": 95,
+        "pair_win_rate": 0.8210526315789474,
+        "pair_expected_win_rate": 0.7647048757803174,
+        "pair_lift_vs_baseline": 0.24536584406259532,
+        "synergy_delta_logit": 0.3448460805043734,
+        "synergy_delta_prob": 0.05634775579862994,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 76,
+        "quality_score": 1.0856518885845385,
+        "pick_score_raw": 3.2605726905986714,
+        "pick_score": 2.8999393371038793
+      },
+      {
+        "from": "Ainok Wayfarer",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 225,
+        "pair_win_rate": 0.7955555555555556,
+        "pair_expected_win_rate": 0.7556155954922801,
+        "pair_lift_vs_baseline": 0.21986876803920352,
+        "synergy_delta_logit": 0.22995404797689356,
+        "synergy_delta_prob": 0.03993996006327549,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 189,
+        "quality_score": 1.0444465536025198,
+        "pick_score_raw": 4.730769000643115,
+        "pick_score": 6.5763333569022935
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Fresh Start",
+        "pair_games": 709,
+        "pair_win_rate": 0.6699576868829337,
+        "pair_expected_win_rate": 0.6306338196428447,
+        "pair_lift_vs_baseline": 0.09427089936658162,
+        "synergy_delta_logit": 0.1730568227779652,
+        "synergy_delta_prob": 0.03932386724008896,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 852,
+        "quality_score": 0.704240731978437,
+        "pick_score_raw": 4.274763384804102,
+        "pick_score": 5.548046948819523
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Sagu Wildling",
+        "pair_games": 854,
+        "pair_win_rate": 0.6721311475409836,
+        "pair_expected_win_rate": 0.6381209861633403,
+        "pair_lift_vs_baseline": 0.09644436002463153,
+        "synergy_delta_logit": 0.15062183434117737,
+        "synergy_delta_prob": 0.03401016137764323,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 832,
+        "quality_score": 0.6848943616931211,
+        "pick_score_raw": 4.775957299968527,
+        "pick_score": 6.673738679749095
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Unending Whisper",
+        "pair_games": 827,
+        "pair_win_rate": 0.6577992744860943,
+        "pair_expected_win_rate": 0.6256294587489648,
+        "pair_lift_vs_baseline": 0.08211248696974227,
+        "synergy_delta_logit": 0.1399901312489502,
+        "synergy_delta_prob": 0.032169815737129515,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 973,
+        "quality_score": 0.5525239391408692,
+        "pick_score_raw": 4.148951173871682,
+        "pick_score": 5.248663616090409
+      },
+      {
+        "from": "Kishla Skimmer",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 109,
+        "pair_win_rate": 0.7981651376146789,
+        "pair_expected_win_rate": 0.7694689897711955,
+        "pair_lift_vs_baseline": 0.22247835009832684,
+        "synergy_delta_logit": 0.1695504000250343,
+        "synergy_delta_prob": 0.0286961478434834,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 80,
+        "quality_score": 0.5235354041279496,
+        "pick_score_raw": 3.199033913174948,
+        "pick_score": 2.7195077368524343
+      },
+      {
+        "from": "Unending Whisper",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 176,
+        "pair_win_rate": 0.7840909090909091,
+        "pair_expected_win_rate": 0.7599893497832856,
+        "pair_lift_vs_baseline": 0.208404121574557,
+        "synergy_delta_logit": 0.13704640395206336,
+        "synergy_delta_prob": 0.024101559307623477,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 172,
+        "quality_score": 0.5222671914653664,
+        "pick_score_raw": 3.967029557509245,
+        "pick_score": 4.802566535356272
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Roar of Endless Song",
+        "pair_games": 244,
+        "pair_win_rate": 0.7418032786885246,
+        "pair_expected_win_rate": 0.7163116035412772,
+        "pair_lift_vs_baseline": 0.16611649117217253,
+        "synergy_delta_logit": 0.12912347234289057,
+        "synergy_delta_prob": 0.025491675147247372,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 267,
+        "quality_score": 0.48033253695369527,
+        "pick_score_raw": 3.882490483094507,
+        "pick_score": 4.589674541605005
+      },
+      {
+        "from": "Ainok Wayfarer",
+        "to": "Kishla Skimmer",
+        "pair_games": 1206,
+        "pair_win_rate": 0.6401326699834162,
+        "pair_expected_win_rate": 0.6123931657785433,
+        "pair_lift_vs_baseline": 0.06444588246706418,
+        "synergy_delta_logit": 0.11855702394916035,
+        "synergy_delta_prob": 0.027739504204872922,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1093,
+        "quality_score": 0.4693258977602856,
+        "pick_score_raw": 4.163862307928233,
+        "pick_score": 5.284526074529146
+      },
+      {
+        "from": "Kishla Skimmer",
+        "to": "Riverwalk Technique",
+        "pair_games": 1062,
+        "pair_win_rate": 0.660075329566855,
+        "pair_expected_win_rate": 0.6372930812861932,
+        "pair_lift_vs_baseline": 0.08438854205050295,
+        "synergy_delta_logit": 0.0999954044202025,
+        "synergy_delta_prob": 0.022782248280661777,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1226,
+        "quality_score": 0.46113908862058267,
+        "pick_score_raw": 4.8535534884572,
+        "pick_score": 6.839236253879127
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Temur Devotee",
+        "pair_games": 975,
+        "pair_win_rate": 0.6297435897435898,
+        "pair_expected_win_rate": 0.5963153871983751,
+        "pair_lift_vs_baseline": 0.054056802227237744,
+        "synergy_delta_logit": 0.14098118126427095,
+        "synergy_delta_prob": 0.033428202545214725,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1394,
+        "quality_score": 0.4440336404673055,
+        "pick_score_raw": 3.3170295618594117,
+        "pick_score": 3.0631931818450697
+      },
+      {
+        "from": "Spectral Denial",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 110,
+        "pair_win_rate": 0.7909090909090909,
+        "pair_expected_win_rate": 0.766662329725696,
+        "pair_lift_vs_baseline": 0.21522230339273885,
+        "synergy_delta_logit": 0.14085407946426431,
+        "synergy_delta_prob": 0.02424676118339486,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 106,
+        "quality_score": 0.42867999889815755,
+        "pick_score_raw": 3.1587135195221747,
+        "pick_score": 2.599848801694327
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Focus the Mind",
+        "pair_games": 1098,
+        "pair_win_rate": 0.6502732240437158,
+        "pair_expected_win_rate": 0.6273608162581016,
+        "pair_lift_vs_baseline": 0.07458643652736374,
+        "synergy_delta_logit": 0.09932918576865324,
+        "synergy_delta_prob": 0.02291240778561421,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1146,
+        "quality_score": 0.4209808842756831,
+        "pick_score_raw": 4.459042664971,
+        "pick_score": 5.973911686507465
+      },
+      {
+        "from": "Kishla Skimmer",
+        "to": "Unending Whisper",
+        "pair_games": 1028,
+        "pair_win_rate": 0.6429961089494164,
+        "pair_expected_win_rate": 0.6180344436574101,
+        "pair_lift_vs_baseline": 0.06730932143306434,
+        "synergy_delta_logit": 0.1071782397179164,
+        "synergy_delta_prob": 0.024961665292006274,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1082,
+        "quality_score": 0.4048520036004062,
+        "pick_score_raw": 3.972975565373784,
+        "pick_score": 4.817403503582181
+      },
+      {
+        "from": "Riverwalk Technique",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 135,
+        "pair_win_rate": 0.8,
+        "pair_expected_win_rate": 0.7810757052238814,
+        "pair_lift_vs_baseline": 0.224313212483648,
+        "synergy_delta_logit": 0.11434826637216089,
+        "synergy_delta_prob": 0.018924294776118677,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 122,
+        "quality_score": 0.4026970302857747,
+        "pick_score_raw": 3.6582731931276835,
+        "pick_score": 4.006669679746306
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Marang River Regent",
+        "pair_games": 229,
+        "pair_win_rate": 0.777292576419214,
+        "pair_expected_win_rate": 0.761045494624279,
+        "pair_lift_vs_baseline": 0.20160578890286196,
+        "synergy_delta_logit": 0.09153795854207458,
+        "synergy_delta_prob": 0.01624708179493506,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 295,
+        "quality_score": 0.3943122324898204,
+        "pick_score_raw": 4.498462731816599,
+        "pick_score": 6.063142279780967
+      },
+      {
+        "from": "Dispelling Exhale",
+        "to": "Focus the Mind",
+        "pair_games": 1839,
+        "pair_win_rate": 0.6356715606307776,
+        "pair_expected_win_rate": 0.6162874616595995,
+        "pair_lift_vs_baseline": 0.059984773114425516,
+        "synergy_delta_logit": 0.08280641004285916,
+        "synergy_delta_prob": 0.0193840989711781,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2054,
+        "quality_score": 0.3923576092792029,
+        "pick_score_raw": 4.999895567877709,
+        "pick_score": 7.145469822162445
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Temur Monument",
+        "pair_games": 774,
+        "pair_win_rate": 0.6563307493540051,
+        "pair_expected_win_rate": 0.6325915802760177,
+        "pair_lift_vs_baseline": 0.0806439618376531,
+        "synergy_delta_logit": 0.1036342272940024,
+        "synergy_delta_prob": 0.023739169077987454,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 711,
+        "quality_score": 0.3854708654004914,
+        "pick_score_raw": 3.90343864752665,
+        "pick_score": 4.642769198057782
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Piercing Exhale",
+        "pair_games": 1157,
+        "pair_win_rate": 0.6949006050129646,
+        "pair_expected_win_rate": 0.6823969966357786,
+        "pair_lift_vs_baseline": 0.11921381749661253,
+        "synergy_delta_logit": 0.058321803021138985,
+        "synergy_delta_prob": 0.012503608377186004,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1042,
+        "quality_score": 0.3721400611496485,
+        "pick_score_raw": 6.709902858674543,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Fresh Start",
+        "pair_games": 808,
+        "pair_win_rate": 0.6621287128712872,
+        "pair_expected_win_rate": 0.6420974143610383,
+        "pair_lift_vs_baseline": 0.08644192535493511,
+        "synergy_delta_logit": 0.08831576598602864,
+        "synergy_delta_prob": 0.020031298510248874,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 668,
+        "quality_score": 0.3541337366073078,
+        "pick_score_raw": 4.206700757884933,
+        "pick_score": 5.386982718270159
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Unending Whisper",
+        "pair_games": 1012,
+        "pair_win_rate": 0.6689723320158103,
+        "pair_expected_win_rate": 0.6532249349373249,
+        "pair_lift_vs_baseline": 0.09328554449945825,
+        "synergy_delta_logit": 0.07029554948007877,
+        "synergy_delta_prob": 0.01574739707848538,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1172,
+        "quality_score": 0.3428529116022998,
+        "pick_score_raw": 5.132000550904001,
+        "pick_score": 7.415563193805845
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Sibsig Appraiser",
+        "pair_games": 1705,
+        "pair_win_rate": 0.6586510263929619,
+        "pair_expected_win_rate": 0.6458207628458944,
+        "pair_lift_vs_baseline": 0.08296423887660986,
+        "synergy_delta_logit": 0.056569603259188916,
+        "synergy_delta_prob": 0.01283026354706751,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.10237277726653653,
+        "draft_pair_events": 1322,
+        "quality_score": 0.33296874899632206,
+        "pick_score_raw": 6.147384193755275,
+        "pick_score": 9.315796775587643
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Riverwalk Technique",
+        "pair_games": 1679,
+        "pair_win_rate": 0.6670637284097677,
+        "pair_expected_win_rate": 0.6553194087759787,
+        "pair_lift_vs_baseline": 0.09137694089341564,
+        "synergy_delta_logit": 0.05242989302761203,
+        "synergy_delta_prob": 0.011744319633788969,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1896,
+        "quality_score": 0.3295794618961099,
+        "pick_score_raw": 6.630570519188729,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Temur Monument",
+        "pair_games": 462,
+        "pair_win_rate": 0.6558441558441559,
+        "pair_expected_win_rate": 0.6298231372614832,
+        "pair_lift_vs_baseline": 0.08015736832780385,
+        "synergy_delta_logit": 0.11337045665297263,
+        "synergy_delta_prob": 0.026021018582672695,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 577,
+        "quality_score": 0.32167119909095787,
+        "pick_score_raw": 2.974254860507432,
+        "pick_score": 2.0372086902205226
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Temur Monument",
+        "pair_games": 703,
+        "pair_win_rate": 0.6443812233285917,
+        "pair_expected_win_rate": 0.6210032279023013,
+        "pair_lift_vs_baseline": 0.06869443581223966,
+        "synergy_delta_logit": 0.1006226159440512,
+        "synergy_delta_prob": 0.023377995426290377,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 873,
+        "quality_score": 0.31676558232564334,
+        "pick_score_raw": 3.3073351683305274,
+        "pick_score": 3.0353127204214423
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Karakyk Guardian",
+        "pair_games": 655,
+        "pair_win_rate": 0.6870229007633588,
+        "pair_expected_win_rate": 0.6722188509292474,
+        "pair_lift_vs_baseline": 0.11133611324700676,
+        "synergy_delta_logit": 0.0679998023417937,
+        "synergy_delta_prob": 0.014804049834111432,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 633,
+        "quality_score": 0.30230253016817155,
+        "pick_score_raw": 4.662509856103468,
+        "pick_score": 6.427731733431297
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Marang River Regent",
+        "pair_games": 278,
+        "pair_win_rate": 0.7805755395683454,
+        "pair_expected_win_rate": 0.7699381991937602,
+        "pair_lift_vs_baseline": 0.2048887520519933,
+        "synergy_delta_logit": 0.06106121051541935,
+        "synergy_delta_prob": 0.010637340374585191,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 218,
+        "quality_score": 0.29065136648771683,
+        "pick_score_raw": 4.962071121915404,
+        "pick_score": 7.067040641528601
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Unending Whisper",
+        "pair_games": 714,
+        "pair_win_rate": 0.6414565826330533,
+        "pair_expected_win_rate": 0.6195394321590115,
+        "pair_lift_vs_baseline": 0.06576979511670122,
+        "synergy_delta_logit": 0.09409792845325304,
+        "synergy_delta_prob": 0.021917150474041747,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1010,
+        "quality_score": 0.2902602405224991,
+        "pick_score_raw": 3.243226449925895,
+        "pick_score": 2.8493453133561832
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Kishla Skimmer",
+        "pair_games": 522,
+        "pair_win_rate": 0.6590038314176245,
+        "pair_expected_win_rate": 0.6378873529246661,
+        "pair_lift_vs_baseline": 0.08331704390127248,
+        "synergy_delta_logit": 0.0926517453250798,
+        "synergy_delta_prob": 0.02111647849295839,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 517,
+        "quality_score": 0.2870514403578216,
+        "pick_score_raw": 3.2457080463579966,
+        "pick_score": 2.856596085035451
+      },
+      {
+        "from": "Kishla Skimmer",
+        "to": "Sagu Wildling",
+        "pair_games": 1092,
+        "pair_win_rate": 0.6510989010989011,
+        "pair_expected_win_rate": 0.6366463919307689,
+        "pair_lift_vs_baseline": 0.07541211358254907,
+        "synergy_delta_logit": 0.06303515496957057,
+        "synergy_delta_prob": 0.014452509168132233,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 856,
+        "quality_score": 0.2658564879808922,
+        "pick_score_raw": 4.430522191779886,
+        "pick_score": 5.908950576429979
+      },
+      {
+        "from": "Temur Monument",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 150,
+        "pair_win_rate": 0.78,
+        "pair_expected_win_rate": 0.7678989758693562,
+        "pair_lift_vs_baseline": 0.20431321248364798,
+        "synergy_delta_logit": 0.0691809163977255,
+        "synergy_delta_prob": 0.012101024130643845,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 107,
+        "quality_score": 0.23455217069091386,
+        "pick_score_raw": 3.5190477584946045,
+        "pick_score": 3.6303627409931782
+      },
+      {
+        "from": "Sagu Wildling",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 111,
+        "pair_win_rate": 0.7927927927927928,
+        "pair_expected_win_rate": 0.7805971164663362,
+        "pair_lift_vs_baseline": 0.21710600527644075,
+        "synergy_delta_logit": 0.07269312837586384,
+        "synergy_delta_prob": 0.012195676326456573,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 87,
+        "quality_score": 0.22224478069157494,
+        "pick_score_raw": 3.169147954334483,
+        "pick_score": 2.630926003555401
+      },
+      {
+        "from": "Roar of Endless Song",
+        "to": "Spectral Denial",
+        "pair_games": 208,
+        "pair_win_rate": 0.7259615384615384,
+        "pair_expected_win_rate": 0.711792008041558,
+        "pair_lift_vs_baseline": 0.15027475094518639,
+        "synergy_delta_logit": 0.07012523756120559,
+        "synergy_delta_prob": 0.01416953041998048,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 243,
+        "quality_score": 0.21954230541218234,
+        "pick_score_raw": 3.265713472092304,
+        "pick_score": 2.914893962429172
+      },
+      {
+        "from": "Ainok Wayfarer",
+        "to": "Spectral Denial",
+        "pair_games": 786,
+        "pair_win_rate": 0.6272264631043257,
+        "pair_expected_win_rate": 0.6086467749183951,
+        "pair_lift_vs_baseline": 0.05153967558797368,
+        "synergy_delta_logit": 0.078709015060476,
+        "synergy_delta_prob": 0.018579688185930587,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1047,
+        "quality_score": 0.21275816656811597,
+        "pick_score_raw": 2.8425845215456413,
+        "pick_score": 1.6193743895788006
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Karakyk Guardian",
+        "pair_games": 845,
+        "pair_win_rate": 0.6686390532544378,
+        "pair_expected_win_rate": 0.6580620274093408,
+        "pair_lift_vs_baseline": 0.0929522657380858,
+        "synergy_delta_logit": 0.04736628843484203,
+        "synergy_delta_prob": 0.01057702584509701,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1004,
+        "quality_score": 0.2092765765622269,
+        "pick_score_raw": 4.645232719777713,
+        "pick_score": 6.3898349431224135
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 220,
+        "pair_win_rate": 0.7909090909090909,
+        "pair_expected_win_rate": 0.7831613714833802,
+        "pair_lift_vs_baseline": 0.21522230339273885,
+        "synergy_delta_logit": 0.04622856362927785,
+        "synergy_delta_prob": 0.007747719425710731,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 167,
+        "quality_score": 0.20260884692477607,
+        "pick_score_raw": 4.561533709801159,
+        "pick_score": 6.204586605466806
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Temur Monument",
+        "pair_games": 856,
+        "pair_win_rate": 0.6577102803738317,
+        "pair_expected_win_rate": 0.6465590629983269,
+        "pair_lift_vs_baseline": 0.08202349285747967,
+        "synergy_delta_logit": 0.04915885776370521,
+        "synergy_delta_prob": 0.01115121737550484,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 872,
+        "quality_score": 0.19642132154608244,
+        "pick_score_raw": 4.197783433334314,
+        "pick_score": 5.365724817830084
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Temur Devotee",
+        "pair_games": 598,
+        "pair_win_rate": 0.6254180602006689,
+        "pair_expected_win_rate": 0.6053447050993654,
+        "pair_lift_vs_baseline": 0.049731272684316874,
+        "synergy_delta_logit": 0.08482440205007225,
+        "synergy_delta_prob": 0.02007335510130348,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 852,
+        "quality_score": 0.193451740593614,
+        "pick_score_raw": 2.395694861832812,
+        "pick_score": 0.08608568750375802
+      },
+      {
+        "from": "Jeskai Revelation",
+        "to": "Temur Devotee",
+        "pair_games": 106,
+        "pair_win_rate": 0.7547169811320755,
+        "pair_expected_win_rate": 0.7403664334946726,
+        "pair_lift_vs_baseline": 0.17903019361572348,
+        "synergy_delta_logit": 0.07605612995661115,
+        "synergy_delta_prob": 0.014350547637402955,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 104,
+        "quality_score": 0.19211568278135174,
+        "pick_score_raw": 2.6213385910107845,
+        "pick_score": 0.8839439113914048
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Spectral Denial",
+        "pair_games": 384,
+        "pair_win_rate": 0.6484375,
+        "pair_expected_win_rate": 0.6342402015093183,
+        "pair_lift_vs_baseline": 0.07275071248364795,
+        "synergy_delta_logit": 0.061727198280108975,
+        "synergy_delta_prob": 0.014197298490681742,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 522,
+        "quality_score": 0.14730491442218657,
+        "pick_score_raw": 2.5001559864888923,
+        "pick_score": 0.46184201677506614
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Ureni, the Song Unending",
+        "pair_games": 168,
+        "pair_win_rate": 0.7797619047619048,
+        "pair_expected_win_rate": 0.7726943700080797,
+        "pair_lift_vs_baseline": 0.20407511724555272,
+        "synergy_delta_logit": 0.040691321316908446,
+        "synergy_delta_prob": 0.007067534753825044,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 131,
+        "quality_score": 0.14703453496223562,
+        "pick_score_raw": 3.755226080498583,
+        "pick_score": 4.262134589504908
+      },
+      {
+        "from": "Roar of Endless Song",
+        "to": "Temur Monument",
+        "pair_games": 280,
+        "pair_win_rate": 0.7214285714285714,
+        "pair_expected_win_rate": 0.7132106746801734,
+        "pair_lift_vs_baseline": 0.14574178391221937,
+        "synergy_delta_logit": 0.04052990562006331,
+        "synergy_delta_prob": 0.008217896748398013,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 231,
+        "quality_score": 0.14301735076550032,
+        "pick_score_raw": 3.6797462895999806,
+        "pick_score": 4.063705397186343
+      },
+      {
+        "from": "Sibsig Appraiser",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 193,
+        "pair_win_rate": 0.7875647668393783,
+        "pair_expected_win_rate": 0.7818929784872161,
+        "pair_lift_vs_baseline": 0.2118779793230262,
+        "synergy_delta_logit": 0.03357644581248409,
+        "synergy_delta_prob": 0.005671788352162199,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.2667896814995336,
+        "draft_pair_events": 143,
+        "quality_score": 0.14152352662103587,
+        "pick_score_raw": 4.293492260333527,
+        "pick_score": 5.5920026377740175
+      },
+      {
+        "from": "Sibsig Appraiser",
+        "to": "Temur Tawnyback",
+        "pair_games": 4177,
+        "pair_win_rate": 0.643045247785492,
+        "pair_expected_win_rate": 0.6391905873594145,
+        "pair_lift_vs_baseline": 0.06735846026913994,
+        "synergy_delta_logit": 0.016753269730926612,
+        "synergy_delta_prob": 0.0038546604260775164,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.315733304549615,
+        "draft_pair_events": 2865,
+        "quality_score": 0.13975274940669546,
+        "pick_score_raw": 8.606093456354747,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Ainok Wayfarer",
+        "to": "Iceridge Serpent",
+        "pair_games": 1157,
+        "pair_win_rate": 0.6205704407951599,
+        "pair_expected_win_rate": 0.6098153824068204,
+        "pair_lift_vs_baseline": 0.044883653278807834,
+        "synergy_delta_logit": 0.04543390196560343,
+        "synergy_delta_prob": 0.010755058388339456,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1796,
+        "quality_score": 0.13784402679464894,
+        "pick_score_raw": 3.199336136811398,
+        "pick_score": 2.7204003014644145
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Iceridge Serpent",
+        "pair_games": 800,
+        "pair_win_rate": 0.63125,
+        "pair_expected_win_rate": 0.6205284112166248,
+        "pair_lift_vs_baseline": 0.05556321248364793,
+        "synergy_delta_logit": 0.0457914108888825,
+        "synergy_delta_prob": 0.010721588783375147,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1532,
+        "quality_score": 0.13376060555041816,
+        "pick_score_raw": 3.077851974709136,
+        "pick_score": 2.3563392086916335
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Piercing Exhale",
+        "pair_games": 791,
+        "pair_win_rate": 0.6624525916561315,
+        "pair_expected_win_rate": 0.6559000925541836,
+        "pair_lift_vs_baseline": 0.08676580413977941,
+        "synergy_delta_logit": 0.029166590339636866,
+        "synergy_delta_prob": 0.006552499101947884,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 764,
+        "quality_score": 0.11665632198457815,
+        "pick_score_raw": 4.199035233566651,
+        "pick_score": 5.36871116850814
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Riverwalk Technique",
+        "pair_games": 1378,
+        "pair_win_rate": 0.6364296081277213,
+        "pair_expected_win_rate": 0.6300345481754602,
+        "pair_lift_vs_baseline": 0.060742820611369264,
+        "synergy_delta_logit": 0.027535862863070637,
+        "synergy_delta_prob": 0.006395059952261084,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1899,
+        "quality_score": 0.11368748574125198,
+        "pick_score_raw": 4.354989683825346,
+        "pick_score": 5.735247909059799
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Temur Devotee",
+        "pair_games": 1080,
+        "pair_win_rate": 0.6175925925925926,
+        "pair_expected_win_rate": 0.6081823277438068,
+        "pair_lift_vs_baseline": 0.04190580507624053,
+        "synergy_delta_logit": 0.039664344578556,
+        "synergy_delta_prob": 0.009410264848785821,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1125,
+        "quality_score": 0.10904409972561147,
+        "pick_score_raw": 2.892119754318071,
+        "pick_score": 1.7782227277495186
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Sibsig Appraiser",
+        "pair_games": 2076,
+        "pair_win_rate": 0.6758188824662813,
+        "pair_expected_win_rate": 0.6727065157877312,
+        "pair_lift_vs_baseline": 0.10013209494992925,
+        "synergy_delta_logit": 0.014170873066541412,
+        "synergy_delta_prob": 0.0031123666785500825,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1584,
+        "quality_score": 0.10614212767724499,
+        "pick_score_raw": 7.893474619943459,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Iceridge Serpent",
+        "to": "Unending Whisper",
+        "pair_games": 1035,
+        "pair_win_rate": 0.6231884057971014,
+        "pair_expected_win_rate": 0.6154706200298156,
+        "pair_lift_vs_baseline": 0.04750161828074939,
+        "synergy_delta_logit": 0.03273656356064225,
+        "synergy_delta_prob": 0.0077177857672858785,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1758,
+        "quality_score": 0.097653012695238,
+        "pick_score_raw": 3.145269739820615,
+        "pick_score": 2.5596936246144932
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Temur Monument",
+        "pair_games": 509,
+        "pair_win_rate": 0.6444007858546169,
+        "pair_expected_win_rate": 0.6358453083378257,
+        "pair_lift_vs_baseline": 0.06871399833826486,
+        "synergy_delta_logit": 0.037140023699767544,
+        "synergy_delta_prob": 0.008555477516791199,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 519,
+        "quality_score": 0.09757889021091853,
+        "pick_score_raw": 2.752493464981822,
+        "pick_score": 1.3251517710554521
+      },
+      {
+        "from": "Ainok Wayfarer",
+        "to": "Dirgur Island Dragon",
+        "pair_games": 1423,
+        "pair_win_rate": 0.623330990864371,
+        "pair_expected_win_rate": 0.6167215355871528,
+        "pair_lift_vs_baseline": 0.047644203348019,
+        "synergy_delta_logit": 0.028055005294781665,
+        "synergy_delta_prob": 0.006609455277218235,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1284,
+        "quality_score": 0.09721189278683326,
+        "pick_score_raw": 3.647711558915277,
+        "pick_score": 3.978519886082723
+      },
+      {
+        "from": "Dispelling Exhale",
+        "to": "Temur Monument",
+        "pair_games": 1312,
+        "pair_win_rate": 0.6272865853658537,
+        "pair_expected_win_rate": 0.6215799042576198,
+        "pair_lift_vs_baseline": 0.05159979784950164,
+        "synergy_delta_logit": 0.024334184638424294,
+        "synergy_delta_prob": 0.005706681108233913,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1289,
+        "quality_score": 0.08571041885198909,
+        "pick_score_raw": 3.7079763094399727,
+        "pick_score": 4.138291598357378
+      },
+      {
+        "from": "Ainok Wayfarer",
+        "to": "Unending Whisper",
+        "pair_games": 1602,
+        "pair_win_rate": 0.6067415730337079,
+        "pair_expected_win_rate": 0.5998136831642229,
+        "pair_lift_vs_baseline": 0.031054785517355854,
+        "synergy_delta_logit": 0.028947136892128578,
+        "synergy_delta_prob": 0.006927889869485004,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1935,
+        "quality_score": 0.08153696952927748,
+        "pick_score_raw": 2.9714115662334417,
+        "pick_score": 2.0283330897588283
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Iceridge Serpent",
+        "pair_games": 553,
+        "pair_win_rate": 0.6365280289330922,
+        "pair_expected_win_rate": 0.6293527752786084,
+        "pair_lift_vs_baseline": 0.06084124141674019,
+        "synergy_delta_logit": 0.030885050532934777,
+        "synergy_delta_prob": 0.007175253654483793,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 988,
+        "quality_score": 0.0789610232532794,
+        "pick_score_raw": 2.687720023964865,
+        "pick_score": 1.1092139136522188
+      },
+      {
+        "from": "Riverwalk Technique",
+        "to": "Roar of Endless Song",
+        "pair_games": 518,
+        "pair_win_rate": 0.7239382239382239,
+        "pair_expected_win_rate": 0.7210317913403627,
+        "pair_lift_vs_baseline": 0.14825143642187188,
+        "synergy_delta_logit": 0.014495993871442625,
+        "synergy_delta_prob": 0.002906432597861275,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 548,
+        "quality_score": 0.07301819950394998,
+        "pick_score_raw": 5.278687966734277,
+        "pick_score": 7.708735842285809
+      },
+      {
+        "from": "Riverwalk Technique",
+        "to": "Sagu Wildling",
+        "pair_games": 1937,
+        "pair_win_rate": 0.6463603510583377,
+        "pair_expected_win_rate": 0.6434946641724147,
+        "pair_lift_vs_baseline": 0.07067356354198562,
+        "synergy_delta_logit": 0.012514185281020773,
+        "synergy_delta_prob": 0.0028656868859229245,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1797,
+        "quality_score": 0.06865351909299781,
+        "pick_score_raw": 5.785133584694707,
+        "pick_score": 8.670761219652292
+      },
+      {
+        "from": "Dispelling Exhale",
+        "to": "Sibsig Appraiser",
+        "pair_games": 4107,
+        "pair_win_rate": 0.6337959581202824,
+        "pair_expected_win_rate": 0.6317197992954787,
+        "pair_lift_vs_baseline": 0.05810917060393039,
+        "synergy_delta_logit": 0.008934523591740517,
+        "synergy_delta_prob": 0.00207615882480372,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.1389422502455147,
+        "draft_pair_events": 3200,
+        "quality_score": 0.06434206311152081,
+        "pick_score_raw": 7.533049954372679,
+        "pick_score": 10.0
+      },
+      {
+        "from": "Piercing Exhale",
+        "to": "Roar of Endless Song",
+        "pair_games": 465,
+        "pair_win_rate": 0.7333333333333333,
+        "pair_expected_win_rate": 0.7308085814379999,
+        "pair_lift_vs_baseline": 0.15764654581698123,
+        "synergy_delta_logit": 0.012872064424324647,
+        "synergy_delta_prob": 0.0025247518953334103,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 428,
+        "quality_score": 0.06425399622647007,
+        "pick_score_raw": 5.223938752772381,
+        "pick_score": 7.600121883532323
+      },
+      {
+        "from": "Riverwalk Technique",
+        "to": "Unending Whisper",
+        "pair_games": 1706,
+        "pair_win_rate": 0.6283704572098476,
+        "pair_expected_win_rate": 0.6250268957211242,
+        "pair_lift_vs_baseline": 0.05268366969349558,
+        "synergy_delta_logit": 0.014292006704493487,
+        "synergy_delta_prob": 0.00334356148872339,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2208,
+        "quality_score": 0.059425654342404925,
+        "pick_score_raw": 4.389135551975061,
+        "pick_score": 5.8140748735830625
+      },
+      {
+        "from": "Dirgur Island Dragon",
+        "to": "Karakyk Guardian",
+        "pair_games": 966,
+        "pair_win_rate": 0.6718426501035196,
+        "pair_expected_win_rate": 0.6691209996149292,
+        "pair_lift_vs_baseline": 0.09615586258716757,
+        "synergy_delta_logit": 0.012318783458415972,
+        "synergy_delta_prob": 0.0027216504885904103,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 821,
+        "quality_score": 0.05939771090603597,
+        "pick_score_raw": 5.064025269146854,
+        "pick_score": 7.277320107120301
+      },
+      {
+        "from": "Kishla Skimmer",
+        "to": "Roar of Endless Song",
+        "pair_games": 270,
+        "pair_win_rate": 0.7185185185185186,
+        "pair_expected_win_rate": 0.7150133289398601,
+        "pair_lift_vs_baseline": 0.1428317310021665,
+        "synergy_delta_logit": 0.017266045347764658,
+        "synergy_delta_prob": 0.0035051895786584186,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 263,
+        "quality_score": 0.059076609479150256,
+        "pick_score_raw": 3.570738382454715,
+        "pick_score": 3.771411423639948
+      },
+      {
+        "from": "Riverwalk Technique",
+        "to": "Spectral Denial",
+        "pair_games": 872,
+        "pair_win_rate": 0.6376146788990825,
+        "pair_expected_win_rate": 0.6336433820428324,
+        "pair_lift_vs_baseline": 0.06192789138273047,
+        "synergy_delta_logit": 0.01714699839222744,
+        "synergy_delta_prob": 0.003971296856250084,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1236,
+        "quality_score": 0.05625290207561037,
+        "pick_score_raw": 3.452891804756818,
+        "pick_score": 3.4474698982444227
+      },
+      {
+        "from": "Temur Tawnyback",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 163,
+        "pair_win_rate": 0.7791411042944786,
+        "pair_expected_win_rate": 0.7765462631227747,
+        "pair_lift_vs_baseline": 0.20345431677812653,
+        "synergy_delta_logit": 0.015016326940323399,
+        "synergy_delta_prob": 0.002594841171703832,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.08266866015279825,
+        "draft_pair_events": 111,
+        "quality_score": 0.053734499907932866,
+        "pick_score_raw": 3.6908119103464663,
+        "pick_score": 4.0929952213680005
+      },
+      {
+        "from": "Sibsig Appraiser",
+        "to": "Temur Devotee",
+        "pair_games": 2310,
+        "pair_win_rate": 0.6151515151515151,
+        "pair_expected_win_rate": 0.6120453254655498,
+        "pair_lift_vs_baseline": 0.039464727635163066,
+        "synergy_delta_logit": 0.013101066184362797,
+        "synergy_delta_prob": 0.0031061896859653215,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2207,
+        "quality_score": 0.05185843032286275,
+        "pick_score_raw": 4.1783997589396815,
+        "pick_score": 5.319390238518778
+      },
+      {
+        "from": "Iceridge Serpent",
+        "to": "Marang River Regent",
+        "pair_games": 236,
+        "pair_win_rate": 0.7669491525423728,
+        "pair_expected_win_rate": 0.764739657386729,
+        "pair_lift_vs_baseline": 0.1912623650260208,
+        "synergy_delta_logit": 0.012321129118172403,
+        "synergy_delta_prob": 0.002209495155643837,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 324,
+        "quality_score": 0.051552057103609016,
+        "pick_score_raw": 4.371749300259522,
+        "pick_score": 5.774000697655396
+      },
+      {
+        "from": "Dispelling Exhale",
+        "to": "Sagu Wildling",
+        "pair_games": 2677,
+        "pair_win_rate": 0.6320508031378409,
+        "pair_expected_win_rate": 0.6299539673934503,
+        "pair_lift_vs_baseline": 0.05636401562148885,
+        "synergy_delta_logit": 0.009005560257331902,
+        "synergy_delta_prob": 0.0020968357443905683,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1962,
+        "quality_score": 0.04907078969677154,
+        "pick_score_raw": 5.748521529002211,
+        "pick_score": 8.603662178731875
+      },
+      {
+        "from": "Dispelling Exhale",
+        "to": "Piercing Exhale",
+        "pair_games": 2084,
+        "pair_win_rate": 0.6439539347408829,
+        "pair_expected_win_rate": 0.641977956459347,
+        "pair_lift_vs_baseline": 0.06826714722453087,
+        "synergy_delta_logit": 0.008607665637867745,
+        "synergy_delta_prob": 0.0019759782815359506,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2014,
+        "quality_score": 0.04787890150857486,
+        "pick_score_raw": 5.868933286585472,
+        "pick_score": 8.822988379569907
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Riverwalk Technique",
+        "pair_games": 885,
+        "pair_win_rate": 0.6418079096045197,
+        "pair_expected_win_rate": 0.6387665401817082,
+        "pair_lift_vs_baseline": 0.06612112208816767,
+        "synergy_delta_logit": 0.013205061460193845,
+        "synergy_delta_prob": 0.003041369422811524,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1195,
+        "quality_score": 0.04581930023098267,
+        "pick_score_raw": 3.6513917648879715,
+        "pick_score": 3.988335948674633
+      },
+      {
+        "from": "Fresh Start",
+        "to": "Riverwalk Technique",
+        "pair_games": 1001,
+        "pair_win_rate": 0.6473526473526473,
+        "pair_expected_win_rate": 0.6447252882316242,
+        "pair_lift_vs_baseline": 0.07166585983629525,
+        "synergy_delta_logit": 0.011489649252915846,
+        "synergy_delta_prob": 0.0026273591210230762,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1132,
+        "quality_score": 0.045039093269331684,
+        "pick_score_raw": 4.123929743991837,
+        "pick_score": 5.188251093147348
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Kishla Skimmer",
+        "pair_games": 451,
+        "pair_win_rate": 0.6363636363636364,
+        "pair_expected_win_rate": 0.631879400859115,
+        "pair_lift_vs_baseline": 0.060676848847284304,
+        "synergy_delta_logit": 0.019327832961574476,
+        "synergy_delta_prob": 0.004484235504521372,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 573,
+        "quality_score": 0.043632924256511274,
+        "pick_score_raw": 2.3663582083180006,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Karakyk Guardian",
+        "to": "Roar of Endless Song",
+        "pair_games": 316,
+        "pair_win_rate": 0.7468354430379747,
+        "pair_expected_win_rate": 0.7449562158393712,
+        "pair_lift_vs_baseline": 0.17114865552162262,
+        "synergy_delta_logit": 0.009914957394565604,
+        "synergy_delta_prob": 0.0018792271986034503,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 285,
+        "quality_score": 0.04321797898321737,
+        "pick_score_raw": 4.551053639945372,
+        "pick_score": 6.181195251426699
+      },
+      {
+        "from": "Dispelling Exhale",
+        "to": "Marang River Regent",
+        "pair_games": 489,
+        "pair_win_rate": 0.7627811860940695,
+        "pair_expected_win_rate": 0.7614909247885973,
+        "pair_lift_vs_baseline": 0.18709439857771748,
+        "synergy_delta_logit": 0.007117334624728855,
+        "synergy_delta_prob": 0.0012902613054722734,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 435,
+        "quality_score": 0.04249897875562122,
+        "pick_score_raw": 6.24952165979703,
+        "pick_score": 9.491763052143913
+      },
+      {
+        "from": "Riverwalk Technique",
+        "to": "Temur Monument",
+        "pair_games": 1055,
+        "pair_win_rate": 0.637914691943128,
+        "pair_expected_win_rate": 0.6352496017287548,
+        "pair_lift_vs_baseline": 0.06222790442677595,
+        "synergy_delta_logit": 0.011520005094329044,
+        "synergy_delta_prob": 0.0026650902143732225,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1242,
+        "quality_score": 0.04172942563332339,
+        "pick_score_raw": 3.8126482239278414,
+        "pick_score": 4.4109936920847455
+      },
+      {
+        "from": "Focus the Mind",
+        "to": "Spectral Denial",
+        "pair_games": 600,
+        "pair_win_rate": 0.6233333333333333,
+        "pair_expected_win_rate": 0.6193718624940543,
+        "pair_lift_vs_baseline": 0.047646545816981245,
+        "synergy_delta_logit": 0.016837840137890914,
+        "synergy_delta_prob": 0.003961470839279002,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 927,
+        "quality_score": 0.037432374841061454,
+        "pick_score_raw": 2.3363332485594954,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Temur Devotee",
+        "to": "Temur Monument",
+        "pair_games": 689,
+        "pair_win_rate": 0.6066763425253991,
+        "pair_expected_win_rate": 0.6017052686175223,
+        "pair_lift_vs_baseline": 0.0309895550090471,
+        "synergy_delta_logit": 0.02078713557548839,
+        "synergy_delta_prob": 0.004971073907876877,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 863,
+        "quality_score": 0.037227778297874256,
+        "pick_score_raw": 1.8814025877643803,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Sibsig Appraiser",
+        "to": "Temur Monument",
+        "pair_games": 1567,
+        "pair_win_rate": 0.6381620931716656,
+        "pair_expected_win_rate": 0.6363578145628734,
+        "pair_lift_vs_baseline": 0.06247530565531356,
+        "synergy_delta_logit": 0.007805345728806534,
+        "synergy_delta_prob": 0.0018042786087921758,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1402,
+        "quality_score": 0.034715961658404834,
+        "pick_score_raw": 4.684296506613695,
+        "pick_score": 6.475355484630239
+      },
+      {
+        "from": "Bewildering Blizzard",
+        "to": "Piercing Exhale",
+        "pair_games": 710,
+        "pair_win_rate": 0.652112676056338,
+        "pair_expected_win_rate": 0.6500270311574947,
+        "pair_lift_vs_baseline": 0.076425888539986,
+        "synergy_delta_logit": 0.009180688659486513,
+        "synergy_delta_prob": 0.0020856448988433307,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 859,
+        "quality_score": 0.03155763211309916,
+        "pick_score_raw": 3.6110017574290674,
+        "pick_score": 3.8801776863179946
+      },
+      {
+        "from": "Kishla Skimmer",
+        "to": "Temur Devotee",
+        "pair_games": 637,
+        "pair_win_rate": 0.6075353218210361,
+        "pair_expected_win_rate": 0.6038194731307032,
+        "pair_lift_vs_baseline": 0.03184853430468404,
+        "synergy_delta_logit": 0.015558490760285149,
+        "synergy_delta_prob": 0.0037158486903329235,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 831,
+        "quality_score": 0.027204604139059042,
+        "pick_score_raw": 1.8365254006582412,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Spectral Denial",
+        "to": "Unending Whisper",
+        "pair_games": 731,
+        "pair_win_rate": 0.6169630642954856,
+        "pair_expected_win_rate": 0.6143082375310174,
+        "pair_lift_vs_baseline": 0.04127627677913359,
+        "synergy_delta_logit": 0.01121942626429312,
+        "synergy_delta_prob": 0.0026548267644682655,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1059,
+        "quality_score": 0.02506159055338603,
+        "pick_score_raw": 2.3491756030267488,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Dispelling Exhale",
+        "to": "Jeskai Revelation",
+        "pair_games": 181,
+        "pair_win_rate": 0.7569060773480663,
+        "pair_expected_win_rate": 0.7561263110273234,
+        "pair_lift_vs_baseline": 0.1812192898317142,
+        "synergy_delta_logit": 0.004233274719868341,
+        "synergy_delta_prob": 0.0007797663207428362,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.2837439958738577,
+        "draft_pair_events": 139,
+        "quality_score": 0.015021512561270963,
+        "pick_score_raw": 3.6093765293403797,
+        "pick_score": 3.8758057701216924
+      },
+      {
+        "from": "Ainok Wayfarer",
+        "to": "Bewildering Blizzard",
+        "pair_games": 844,
+        "pair_win_rate": 0.6149289099526066,
+        "pair_expected_win_rate": 0.6139064959155734,
+        "pair_lift_vs_baseline": 0.03924212243625458,
+        "synergy_delta_logit": 0.004315649758770301,
+        "synergy_delta_prob": 0.0010224140370331813,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1012,
+        "quality_score": 0.00999778786261321,
+        "pick_score_raw": 2.4357461043102098,
+        "pick_score": 0.2315025912769764
+      },
+      {
+        "from": "Temur Monument",
+        "to": "Unending Whisper",
+        "pair_games": 788,
+        "pair_win_rate": 0.616751269035533,
+        "pair_expected_win_rate": 0.6159478484721095,
+        "pair_lift_vs_baseline": 0.04106448151918096,
+        "synergy_delta_logit": 0.003397662784107469,
+        "synergy_delta_prob": 0.0008034205634235292,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 1034,
+        "quality_score": 0.00784574914406564,
+        "pick_score_raw": 2.4281604227926974,
+        "pick_score": 0.20409128924424214
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Dispelling Exhale",
+          "Fresh Start",
+          "Spectral Denial"
+        ],
+        "games": 117,
+        "win_rate": 0.7008547008547008,
+        "expected_win_rate": 0.6538578358541599,
+        "synergy_delta_logit": 0.2153308040213623,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 384,
+        "quality": 3.1611216988838393
+      },
+      {
+        "cards": [
+          "Sibsig Appraiser",
+          "Temur Tawnyback",
+          "Ugin, Eye of the Storms"
+        ],
+        "games": 64,
+        "win_rate": 0.84375,
+        "expected_win_rate": 0.8013211953747094,
+        "synergy_delta_logit": 0.29182656753895797,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 94,
+        "quality": 2.972504826201631
+      },
+      {
+        "cards": [
+          "Bewildering Blizzard",
+          "Fresh Start",
+          "Spectral Denial"
+        ],
+        "games": 39,
+        "win_rate": 0.717948717948718,
+        "expected_win_rate": 0.6617805369002162,
+        "synergy_delta_logit": 0.26307023555096487,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 181,
+        "quality": 2.1558444486273913
+      },
+      {
+        "cards": [
+          "Fresh Start",
+          "Sibsig Appraiser",
+          "Spectral Denial"
+        ],
+        "games": 141,
+        "win_rate": 0.6950354609929078,
+        "expected_win_rate": 0.6680484075110296,
+        "synergy_delta_logit": 0.1243958782617276,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 426,
+        "quality": 2.0139147346831408
+      },
+      {
+        "cards": [
+          "Dispelling Exhale",
+          "Fresh Start",
+          "Sibsig Appraiser"
+        ],
+        "games": 445,
+        "win_rate": 0.6786516853932584,
+        "expected_win_rate": 0.6651452018037953,
+        "synergy_delta_logit": 0.06127402135983795,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 953,
+        "quality": 1.8246530180400895
+      },
+      {
+        "cards": [
+          "Fresh Start",
+          "Jeskai Revelation",
+          "Sibsig Appraiser"
+        ],
+        "games": 35,
+        "win_rate": 0.8285714285714286,
+        "expected_win_rate": 0.7927522162997404,
+        "synergy_delta_logit": 0.23394075174453466,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 48,
+        "quality": 1.7071917469604874
+      },
+      {
+        "cards": [
+          "Sibsig Appraiser",
+          "Spectral Denial",
+          "Temur Tawnyback"
+        ],
+        "games": 384,
+        "win_rate": 0.6666666666666666,
+        "expected_win_rate": 0.6616163115587556,
+        "synergy_delta_logit": 0.022641807004961878,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 957,
+        "quality": 0.6264376118577187
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 10,
+        "top_cards": [
+          "Temur Tawnyback",
+          "Sibsig Appraiser",
+          "Dispelling Exhale",
+          "Temur Devotee",
+          "Temur Monument"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 6,
+        "top_cards": [
+          "Ainok Wayfarer",
+          "Unending Whisper",
+          "Kishla Skimmer",
+          "Iceridge Serpent",
+          "Spectral Denial"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Riverwalk Technique",
+          "Karakyk Guardian",
+          "Piercing Exhale",
+          "Ugin, Eye of the Storms"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 3,
+        "top_cards": [
+          "Sagu Wildling",
+          "Bewildering Blizzard",
+          "Roar of Endless Song"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Devoted Duelist"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Inevitable Defeat"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Abzan Monument"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Sibsig Appraiser",
+          "pick_priority_score": 8.781732343928597,
+          "pick_priority_score_raw": 166.59239929959332,
+          "draft_drafts": 4309,
+          "draft_win_rate": 0.5803213689560831,
+          "draft_win_lift": 0.0024475190503077116,
+          "draw_win_rate": 0.6115927969441581
+        },
+        {
+          "card": "Piercing Exhale",
+          "pick_priority_score": 8.558350883649217,
+          "pick_priority_score_raw": 146.98608667030516,
+          "draft_drafts": 2757,
+          "draft_win_rate": 0.5778614369010224,
+          "draft_win_lift": -1.2413004752964696e-05,
+          "draw_win_rate": 0.6220761862330141
+        },
+        {
+          "card": "Riverwalk Technique",
+          "pick_priority_score": 8.524523365174142,
+          "pick_priority_score_raw": 144.22399985692434,
+          "draft_drafts": 3694,
+          "draft_win_rate": 0.5793395412676177,
+          "draft_win_lift": 0.0014656913618422696,
+          "draw_win_rate": 0.6104553119730185
+        },
+        {
+          "card": "Temur Tawnyback",
+          "pick_priority_score": 8.483167240917505,
+          "pick_priority_score_raw": 140.91712957089524,
+          "draft_drafts": 3483,
+          "draft_win_rate": 0.5815753741358691,
+          "draft_win_lift": 0.0037015242300937334,
+          "draw_win_rate": 0.6041846928341068
+        },
+        {
+          "card": "Sagu Wildling",
+          "pick_priority_score": 8.312961710954072,
+          "pick_priority_score_raw": 128.08151030121817,
+          "draft_drafts": 2597,
+          "draft_win_rate": 0.5820851958885946,
+          "draft_win_lift": 0.004211345982819248,
+          "draw_win_rate": 0.6097900706397373
+        },
+        {
+          "card": "Dirgur Island Dragon",
+          "pick_priority_score": 7.65216277576858,
+          "pick_priority_score_raw": 88.33554625545663,
+          "draft_drafts": 2176,
+          "draft_win_rate": 0.5723025703243609,
+          "draft_win_lift": -0.005571279581414457,
+          "draw_win_rate": 0.607728181212525
+        },
+        {
+          "card": "Iceridge Serpent",
+          "pick_priority_score": 7.610535660961103,
+          "pick_priority_score_raw": 86.2881264803261,
+          "draft_drafts": 2970,
+          "draft_win_rate": 0.573805169458459,
+          "draft_win_lift": -0.004068680447316342,
+          "draw_win_rate": 0.6007648819421351
+        },
+        {
+          "card": "Dispelling Exhale",
+          "pick_priority_score": 7.525957463218992,
+          "pick_priority_score_raw": 82.2715538605538,
+          "draft_drafts": 3958,
+          "draft_win_rate": 0.5751741942589867,
+          "draft_win_lift": -0.0026996556467886457,
+          "draw_win_rate": 0.5964467005076142
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Karakyk Guardian",
+          "pick_priority_score": 9.64578935234236,
+          "pick_priority_score_raw": 270.18138450156255,
+          "draft_drafts": 1985,
+          "draft_win_rate": 0.5936732995487057,
+          "draft_win_lift": 0.01579944964293034,
+          "draw_win_rate": 0.6391164423639555
+        },
+        {
+          "card": "Fresh Start",
+          "pick_priority_score": 8.226478072801632,
+          "pick_priority_score_raw": 122.01119301736055,
+          "draft_drafts": 1620,
+          "draft_win_rate": 0.5855260950576411,
+          "draft_win_lift": 0.007652245151865689,
+          "draw_win_rate": 0.6110667199360768
+        },
+        {
+          "card": "Bewildering Blizzard",
+          "pick_priority_score": 7.4292655257985345,
+          "pick_priority_score_raw": 77.90562963493042,
+          "draft_drafts": 1712,
+          "draft_win_rate": 0.5785224741901587,
+          "draft_win_lift": 0.0006486242843832812,
+          "draw_win_rate": 0.6048894062863795
+        },
+        {
+          "card": "Kishla Skimmer",
+          "pick_priority_score": 7.359351427524651,
+          "pick_priority_score_raw": 74.89209909232787,
+          "draft_drafts": 1746,
+          "draft_win_rate": 0.574419575387005,
+          "draft_win_lift": -0.0034542745187703394,
+          "draw_win_rate": 0.6033635676492819
+        },
+        {
+          "card": "Temur Monument",
+          "pick_priority_score": 7.224210065713106,
+          "pick_priority_score_raw": 69.3894234432708,
+          "draft_drafts": 1732,
+          "draft_win_rate": 0.5745631435437638,
+          "draft_win_lift": -0.003310706362011584,
+          "draw_win_rate": 0.6012485368708544
+        },
+        {
+          "card": "Spectral Denial",
+          "pick_priority_score": 7.098059903344638,
+          "pick_priority_score_raw": 64.61348712101005,
+          "draft_drafts": 1770,
+          "draft_win_rate": 0.5770754560604623,
+          "draft_win_lift": -0.0007983938453131056,
+          "draw_win_rate": 0.5995869664983937
+        },
+        {
+          "card": "Abzan Monument",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.0,
+          "draft_drafts": 253,
+          "draft_win_rate": 0.5733616530304534,
+          "draft_win_lift": -0.004512196875322005,
+          "draw_win_rate": 0.5706214689265536
+        }
+      ],
+      "rare": [
+        {
+          "card": "Marang River Regent",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 388.48979125860893,
+          "draft_drafts": 563,
+          "draft_win_rate": 0.638186163502093,
+          "draft_win_lift": 0.06031231359631761,
+          "draw_win_rate": 0.7456
+        },
+        {
+          "card": "Roar of Endless Song",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 341.80512253556253,
+          "draft_drafts": 784,
+          "draft_win_rate": 0.6193063984304482,
+          "draft_win_lift": 0.04143254852467282,
+          "draw_win_rate": 0.6911392405063291
+        },
+        {
+          "card": "Inevitable Defeat",
+          "pick_priority_score": 5.658739709911142,
+          "pick_priority_score_raw": 28.433231607680863,
+          "draft_drafts": 80,
+          "draft_win_rate": 0.594308920405172,
+          "draft_win_lift": 0.01643507049939663,
+          "draw_win_rate": 0.6036036036036037
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Ureni, the Song Unending",
+          "pick_priority_score": 9.800223272960588,
+          "pick_priority_score_raw": 294.53960002098546,
+          "draft_drafts": 309,
+          "draft_win_rate": 0.6328379752636198,
+          "draft_win_lift": 0.05496412535784445,
+          "draw_win_rate": 0.7485525227460711
+        },
+        {
+          "card": "Jeskai Revelation",
+          "pick_priority_score": 9.094491760587687,
+          "pick_priority_score_raw": 198.4836295029279,
+          "draft_drafts": 194,
+          "draft_win_rate": 0.6290261910006315,
+          "draft_win_lift": 0.05115234109485611,
+          "draw_win_rate": 0.74
+        },
+        {
+          "card": "Ugin, Eye of the Storms",
+          "pick_priority_score": 8.815796769076542,
+          "pick_priority_score_raw": 169.8024575707394,
+          "draft_drafts": 171,
+          "draft_win_rate": 0.6066559933318916,
+          "draft_win_lift": 0.02878214342611618,
+          "draw_win_rate": 0.7554347826086957
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Ugin, Eye of the Storms",
+        "standalone_delta": 0.17974799509234363,
+        "win_rate": 0.7554347826086957,
+        "draw_games": 552
+      },
+      {
+        "card": "Ureni, the Song Unending",
+        "standalone_delta": 0.17286573522971904,
+        "win_rate": 0.7485525227460711,
+        "draw_games": 1209
+      },
+      {
+        "card": "Marang River Regent",
+        "standalone_delta": 0.169913212483648,
+        "win_rate": 0.7456,
+        "draw_games": 1875
+      },
+      {
+        "card": "Jeskai Revelation",
+        "standalone_delta": 0.16431321248364794,
+        "win_rate": 0.74,
+        "draw_games": 650
+      },
+      {
+        "card": "Roar of Endless Song",
+        "standalone_delta": 0.11545245298997708,
+        "win_rate": 0.6911392405063291,
+        "draw_games": 2765
+      },
+      {
+        "card": "Karakyk Guardian",
+        "standalone_delta": 0.06342965484760343,
+        "win_rate": 0.6391164423639555,
+        "draw_games": 6836
+      },
+      {
+        "card": "Piercing Exhale",
+        "standalone_delta": 0.046389398716662034,
+        "win_rate": 0.6220761862330141,
+        "draw_games": 8978
+      },
+      {
+        "card": "Sibsig Appraiser",
+        "standalone_delta": 0.035906009427806085,
+        "win_rate": 0.6115927969441581,
+        "draw_games": 16493
+      },
+      {
+        "card": "Fresh Start",
+        "standalone_delta": 0.0353799324197247,
+        "win_rate": 0.6110667199360768,
+        "draw_games": 5006
+      },
+      {
+        "card": "Riverwalk Technique",
+        "standalone_delta": 0.03476852445666645,
+        "win_rate": 0.6104553119730185,
+        "draw_games": 10081
+      },
+      {
+        "card": "Sagu Wildling",
+        "standalone_delta": 0.034103283123385286,
+        "win_rate": 0.6097900706397373,
+        "draw_games": 10051
+      },
+      {
+        "card": "Dirgur Island Dragon",
+        "standalone_delta": 0.03204139369617298,
+        "win_rate": 0.607728181212525,
+        "draw_games": 7505
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Temur Tawnyback",
+        "dependency_score": 0.293754434581728,
+        "standalone_delta": 0.028497905317754757,
+        "draw_games": 12713
+      },
+      {
+        "card": "Jeskai Revelation",
+        "dependency_score": 0.23938726790652626,
+        "standalone_delta": 0.16431321248364794,
+        "draw_games": 650
+      },
+      {
+        "card": "Ureni, the Song Unending",
+        "dependency_score": 0.15398906875966256,
+        "standalone_delta": 0.17286573522971904,
+        "draw_games": 1209
+      },
+      {
+        "card": "Ugin, Eye of the Storms",
+        "dependency_score": 0.15393995009201944,
+        "standalone_delta": 0.17974799509234363,
+        "draw_games": 552
+      },
+      {
+        "card": "Sibsig Appraiser",
+        "dependency_score": 0.13649953310953208,
+        "standalone_delta": 0.035906009427806085,
+        "draw_games": 16493
+      },
+      {
+        "card": "Fresh Start",
+        "dependency_score": 0.09001478757922338,
+        "standalone_delta": 0.0353799324197247,
+        "draw_games": 5006
+      },
+      {
+        "card": "Focus the Mind",
+        "dependency_score": 0.08153933456535051,
+        "standalone_delta": 0.020169838593480205,
+        "draw_games": 6082
+      },
+      {
+        "card": "Kishla Skimmer",
+        "dependency_score": 0.07816136721958673,
+        "standalone_delta": 0.027676780132929846,
+        "draw_games": 5292
+      },
+      {
+        "card": "Dirgur Island Dragon",
+        "dependency_score": 0.07089481265446068,
+        "standalone_delta": 0.03204139369617298,
+        "draw_games": 7505
+      },
+      {
+        "card": "Dispelling Exhale",
+        "dependency_score": 0.06807889576061768,
+        "standalone_delta": 0.02075991299126212,
+        "draw_games": 13396
+      },
+      {
+        "card": "Iceridge Serpent",
+        "dependency_score": 0.06717481664375258,
+        "standalone_delta": 0.025078094425783015,
+        "draw_games": 6014
+      },
+      {
+        "card": "Ainok Wayfarer",
+        "dependency_score": 0.062499089439683526,
+        "standalone_delta": 0.009226209470135749,
+        "draw_games": 10287
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Iceridge Serpent",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 1.7295929030702781,
+        "pair_win_rate": 0.8359375,
+        "pair_games": 128,
+        "synergy_delta_logit": 0.4338378694350111
+      },
+      {
+        "cards": [
+          "Dirgur Island Dragon",
+          "Jeskai Revelation"
+        ],
+        "quality_score": 1.0856518885845385,
+        "pair_win_rate": 0.8210526315789474,
+        "pair_games": 95,
+        "synergy_delta_logit": 0.3448460805043734
+      },
+      {
+        "cards": [
+          "Ainok Wayfarer",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 1.0444465536025198,
+        "pair_win_rate": 0.7955555555555556,
+        "pair_games": 225,
+        "synergy_delta_logit": 0.22995404797689356
+      },
+      {
+        "cards": [
+          "Focus the Mind",
+          "Fresh Start"
+        ],
+        "quality_score": 0.704240731978437,
+        "pair_win_rate": 0.6699576868829337,
+        "pair_games": 709,
+        "synergy_delta_logit": 0.1730568227779652
+      },
+      {
+        "cards": [
+          "Bewildering Blizzard",
+          "Sagu Wildling"
+        ],
+        "quality_score": 0.6848943616931211,
+        "pair_win_rate": 0.6721311475409836,
+        "pair_games": 854,
+        "synergy_delta_logit": 0.15062183434117737
+      },
+      {
+        "cards": [
+          "Fresh Start",
+          "Unending Whisper"
+        ],
+        "quality_score": 0.5525239391408692,
+        "pair_win_rate": 0.6577992744860943,
+        "pair_games": 827,
+        "synergy_delta_logit": 0.1399901312489502
+      },
+      {
+        "cards": [
+          "Kishla Skimmer",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 0.5235354041279496,
+        "pair_win_rate": 0.7981651376146789,
+        "pair_games": 109,
+        "synergy_delta_logit": 0.1695504000250343
+      },
+      {
+        "cards": [
+          "Unending Whisper",
+          "Ureni, the Song Unending"
+        ],
+        "quality_score": 0.5222671914653664,
+        "pair_win_rate": 0.7840909090909091,
+        "pair_games": 176,
+        "synergy_delta_logit": 0.13704640395206336
+      },
+      {
+        "cards": [
+          "Bewildering Blizzard",
+          "Roar of Endless Song"
+        ],
+        "quality_score": 0.48033253695369527,
+        "pair_win_rate": 0.7418032786885246,
+        "pair_games": 244,
+        "synergy_delta_logit": 0.12912347234289057
+      },
+      {
+        "cards": [
+          "Ainok Wayfarer",
+          "Kishla Skimmer"
+        ],
+        "quality_score": 0.4693258977602856,
+        "pair_win_rate": 0.6401326699834162,
+        "pair_games": 1206,
+        "synergy_delta_logit": 0.11855702394916035
+      },
+      {
+        "cards": [
+          "Kishla Skimmer",
+          "Riverwalk Technique"
+        ],
+        "quality_score": 0.46113908862058267,
+        "pair_win_rate": 0.660075329566855,
+        "pair_games": 1062,
+        "synergy_delta_logit": 0.0999954044202025
+      },
+      {
+        "cards": [
+          "Focus the Mind",
+          "Temur Devotee"
+        ],
+        "quality_score": 0.4440336404673055,
+        "pair_win_rate": 0.6297435897435898,
+        "pair_games": 975,
+        "synergy_delta_logit": 0.14098118126427095
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Marang River Regent",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 388.48979125860893,
+        "draft_drafts": 563,
+        "draft_win_lift": 0.06031231359631761,
+        "rarity": "rare"
+      },
+      {
+        "card": "Roar of Endless Song",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 341.80512253556253,
+        "draft_drafts": 784,
+        "draft_win_lift": 0.04143254852467282,
+        "rarity": "rare"
+      },
+      {
+        "card": "Ureni, the Song Unending",
+        "pick_priority_score": 9.800223272960588,
+        "pick_priority_score_raw": 294.53960002098546,
+        "draft_drafts": 309,
+        "draft_win_lift": 0.05496412535784445,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Karakyk Guardian",
+        "pick_priority_score": 9.64578935234236,
+        "pick_priority_score_raw": 270.18138450156255,
+        "draft_drafts": 1985,
+        "draft_win_lift": 0.01579944964293034,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Jeskai Revelation",
+        "pick_priority_score": 9.094491760587687,
+        "pick_priority_score_raw": 198.4836295029279,
+        "draft_drafts": 194,
+        "draft_win_lift": 0.05115234109485611,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Ugin, Eye of the Storms",
+        "pick_priority_score": 8.815796769076542,
+        "pick_priority_score_raw": 169.8024575707394,
+        "draft_drafts": 171,
+        "draft_win_lift": 0.02878214342611618,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Sibsig Appraiser",
+        "pick_priority_score": 8.781732343928597,
+        "pick_priority_score_raw": 166.59239929959332,
+        "draft_drafts": 4309,
+        "draft_win_lift": 0.0024475190503077116,
+        "rarity": "common"
+      },
+      {
+        "card": "Piercing Exhale",
+        "pick_priority_score": 8.558350883649217,
+        "pick_priority_score_raw": 146.98608667030516,
+        "draft_drafts": 2757,
+        "draft_win_lift": -1.2413004752964696e-05,
+        "rarity": "common"
+      },
+      {
+        "card": "Riverwalk Technique",
+        "pick_priority_score": 8.524523365174142,
+        "pick_priority_score_raw": 144.22399985692434,
+        "draft_drafts": 3694,
+        "draft_win_lift": 0.0014656913618422696,
+        "rarity": "common"
+      },
+      {
+        "card": "Temur Tawnyback",
+        "pick_priority_score": 8.483167240917505,
+        "pick_priority_score_raw": 140.91712957089524,
+        "draft_drafts": 3483,
+        "draft_win_lift": 0.0037015242300937334,
+        "rarity": "common"
+      },
+      {
+        "card": "Sagu Wildling",
+        "pick_priority_score": 8.312961710954072,
+        "pick_priority_score_raw": 128.08151030121817,
+        "draft_drafts": 2597,
+        "draft_win_lift": 0.004211345982819248,
+        "rarity": "common"
+      },
+      {
+        "card": "Fresh Start",
+        "pick_priority_score": 8.226478072801632,
+        "pick_priority_score_raw": 122.01119301736055,
+        "draft_drafts": 1620,
+        "draft_win_lift": 0.007652245151865689,
+        "rarity": "uncommon"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Sibsig Appraiser",
+          "Temur Tawnyback"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 8.606093456354747,
+        "pair_win_rate": 0.643045247785492,
+        "pair_games": 4177,
+        "draft_pair_events": 2865
+      },
+      {
+        "cards": [
+          "Karakyk Guardian",
+          "Sibsig Appraiser"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 7.893474619943459,
+        "pair_win_rate": 0.6758188824662813,
+        "pair_games": 2076,
+        "draft_pair_events": 1584
+      },
+      {
+        "cards": [
+          "Dispelling Exhale",
+          "Sibsig Appraiser"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 7.533049954372679,
+        "pair_win_rate": 0.6337959581202824,
+        "pair_games": 4107,
+        "draft_pair_events": 3200
+      },
+      {
+        "cards": [
+          "Karakyk Guardian",
+          "Piercing Exhale"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 6.709902858674543,
+        "pair_win_rate": 0.6949006050129646,
+        "pair_games": 1157,
+        "draft_pair_events": 1042
+      },
+      {
+        "cards": [
+          "Piercing Exhale",
+          "Riverwalk Technique"
+        ],
+        "pick_score": 10.0,
+        "pick_score_raw": 6.630570519188729,
+        "pair_win_rate": 0.6670637284097677,
+        "pair_games": 1679,
+        "draft_pair_events": 1896
+      },
+      {
+        "cards": [
+          "Dispelling Exhale",
+          "Marang River Regent"
+        ],
+        "pick_score": 9.491763052143913,
+        "pick_score_raw": 6.24952165979703,
+        "pair_win_rate": 0.7627811860940695,
+        "pair_games": 489,
+        "draft_pair_events": 435
+      },
+      {
+        "cards": [
+          "Fresh Start",
+          "Sibsig Appraiser"
+        ],
+        "pick_score": 9.315796775587643,
+        "pick_score_raw": 6.147384193755275,
+        "pair_win_rate": 0.6586510263929619,
+        "pair_games": 1705,
+        "draft_pair_events": 1322
+      },
+      {
+        "cards": [
+          "Dispelling Exhale",
+          "Piercing Exhale"
+        ],
+        "pick_score": 8.822988379569907,
+        "pick_score_raw": 5.868933286585472,
+        "pair_win_rate": 0.6439539347408829,
+        "pair_games": 2084,
+        "draft_pair_events": 2014
+      },
+      {
+        "cards": [
+          "Riverwalk Technique",
+          "Sagu Wildling"
+        ],
+        "pick_score": 8.670761219652292,
+        "pick_score_raw": 5.785133584694707,
+        "pair_win_rate": 0.6463603510583377,
+        "pair_games": 1937,
+        "draft_pair_events": 1797
+      },
+      {
+        "cards": [
+          "Dispelling Exhale",
+          "Sagu Wildling"
+        ],
+        "pick_score": 8.603662178731875,
+        "pick_score_raw": 5.748521529002211,
+        "pair_win_rate": 0.6320508031378409,
+        "pair_games": 2677,
+        "draft_pair_events": 1962
+      },
+      {
+        "cards": [
+          "Riverwalk Technique",
+          "Roar of Endless Song"
+        ],
+        "pick_score": 7.708735842285809,
+        "pick_score_raw": 5.278687966734277,
+        "pair_win_rate": 0.7239382239382239,
+        "pair_games": 518,
+        "draft_pair_events": 548
+      },
+      {
+        "cards": [
+          "Piercing Exhale",
+          "Roar of Endless Song"
+        ],
+        "pick_score": 7.600121883532323,
+        "pick_score_raw": 5.223938752772381,
+        "pair_win_rate": 0.7333333333333333,
+        "pair_games": 465,
+        "draft_pair_events": 428
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 6,
+      "title": "Boros Go-Wide | Shock Brigade / Mardu Devotee",
+      "color_name": "Boros Go-Wide",
+      "deck_count": 16554,
+      "games": 74760,
+      "win_rate": 0.5793472445157838,
+      "signposts": [
+        "Shock Brigade",
+        "Mardu Devotee",
+        "Fortress Kin-Guard",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sage of the Skies",
+        "Elspeth, Storm Slayer",
+        "Rally the Monastery",
+        "Shocking Sharpshooter"
+      ]
+    },
+    {
+      "cluster_id": 7,
+      "title": "Temur | Temur Tawnyback / Sibsig Appraiser",
+      "color_name": "Temur",
+      "deck_count": 11891,
+      "games": 53510,
+      "win_rate": 0.575686787516352,
+      "signposts": [
+        "Temur Tawnyback",
+        "Sibsig Appraiser",
+        "Dispelling Exhale",
+        "Riverwalk Technique"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Karakyk Guardian"
+      ]
+    },
+    {
+      "cluster_id": 8,
+      "title": "Sultai | Gurmag Nightwatch / Lie in Wait",
+      "color_name": "Sultai",
+      "deck_count": 16514,
+      "games": 71231,
+      "win_rate": 0.5484550266035855,
+      "signposts": [
+        "Gurmag Nightwatch",
+        "Lie in Wait",
+        "Sultai Devotee",
+        "Sultai Monument"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Fangkeeper's Familiar",
+        "Awaken the Honored Dead",
+        "Sibsig Appraiser"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "Mardu Humans | Reigning Victor / Nightblade Brigade",
+      "color_name": "Mardu Humans",
+      "deck_count": 15854,
+      "games": 70132,
+      "win_rate": 0.548351679689728,
+      "signposts": [
+        "Reigning Victor",
+        "Nightblade Brigade",
+        "Mardu Devotee",
+        "Bearer of Glory"
+      ],
+      "pick_cards": [
+        "Sonic Shrieker",
+        "Mardu Monument",
+        "Inevitable Defeat",
+        "Elspeth, Storm Slayer"
+      ]
+    },
+    {
+      "cluster_id": 1,
+      "title": "Jeskai | Monastery Messenger / Jeskai Devotee",
+      "color_name": "Jeskai",
+      "deck_count": 18554,
+      "games": 78954,
+      "win_rate": 0.5454568482914102,
+      "signposts": [
+        "Monastery Messenger",
+        "Jeskai Devotee",
+        "Narset's Rebuke",
+        "Jeskai Monument"
+      ],
+      "pick_cards": [
+        "Jeskai Revelation",
+        "Marang River Regent",
+        "Jeskai Shrinekeeper",
+        "Sage of the Skies"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Golgari Counters | Champion of Dusan / Trade Route Envoy",
+      "color_name": "Golgari Counters",
+      "deck_count": 7372,
+      "games": 31688,
+      "win_rate": 0.5407409745013886,
+      "signposts": [
+        "Champion of Dusan",
+        "Trade Route Envoy",
+        "Snakeskin Veil",
+        "Formation Breaker"
+      ],
+      "pick_cards": [
+        "Synchronized Charge",
+        "Qarsi Revenant",
+        "Knockout Maneuver",
+        "Marang River Regent"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Five-Color Dragons | Dragonstorm Globe / Boulderborn Dragon",
+      "color_name": "Five-Color Dragons",
+      "deck_count": 14930,
+      "games": 63631,
+      "win_rate": 0.5379296254970062,
+      "signposts": [
+        "Dragonstorm Globe",
+        "Boulderborn Dragon",
+        "Dragonstorm Forecaster",
+        "Dragonbroods' Relic"
+      ],
+      "pick_cards": [
+        "Marang River Regent",
+        "Sonic Shrieker",
+        "Roar of Endless Song",
+        "Jeskai Revelation"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Temur | Temur Tawnyback / Mammoth Bellow",
+      "color_name": "Temur",
+      "deck_count": 12416,
+      "games": 52886,
+      "win_rate": 0.5349809023181938,
+      "signposts": [
+        "Temur Tawnyback",
+        "Mammoth Bellow",
+        "Temur Devotee",
+        "Dragonclaw Strike"
+      ],
+      "pick_cards": [
+        "Roar of Endless Song",
+        "Ureni, the Song Unending",
+        "Marang River Regent",
+        "Dragonback Assault"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Abzan Counters | Abzan Devotee / Reputable Merchant",
+      "color_name": "Abzan Counters",
+      "deck_count": 12817,
+      "games": 55636,
+      "win_rate": 0.531382558055935,
+      "signposts": [
+        "Abzan Devotee",
+        "Reputable Merchant",
+        "Skirmish Rhino",
+        "Armament Dragon"
+      ],
+      "pick_cards": [
+        "Revival of the Ancestors",
+        "Betor, Kin to All",
+        "Yathan Roadwatcher",
+        "Qarsi Revenant"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>

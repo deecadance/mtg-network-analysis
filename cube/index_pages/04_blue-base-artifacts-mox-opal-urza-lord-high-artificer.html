@@ -1,0 +1,4590 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer | Powered Cube Analysis</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --bg-2: #10203a;
+      --panel: rgba(11, 18, 32, 0.92);
+      --panel-2: rgba(18, 30, 52, 0.96);
+      --text: #ecf2fb;
+      --muted: #9dafc8;
+      --line: rgba(126, 157, 197, 0.18);
+      --accent: #5cc8ff;
+      --good: #43d17a;
+      --warn: #f4c95d;
+      --engine: #c084fc;
+      --danger: #ee6c4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+    }
+    .toolbar {
+      position: fixed;
+      inset: 16px 16px auto 16px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .toolbar .group, .panel, .selection, .hover-card, .mini-nav, .legend-panel {
+      pointer-events: auto;
+    }
+    .group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .title-wrap strong { display: block; font-size: 16px; }
+    .title-wrap span { color: var(--muted); font-size: 12px; }
+    .canvas-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; display: block; }
+    .mini-nav {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 8;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      max-width: min(360px, calc(100vw - 32px));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .mini-nav strong { display: block; margin: 0; }
+    .mini-nav-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .chip small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .chip-button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .chip-button.active {
+      background: rgba(92, 200, 255, 0.18);
+      border-color: rgba(92, 200, 255, 0.45);
+      color: var(--text);
+    }
+    .chip-button.is-clickable { cursor: pointer; }
+    .quick-note {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-panel {
+      position: fixed;
+      right: 16px;
+      top: 86px;
+      z-index: 8;
+      width: min(340px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .legend-panel strong { display: block; margin-bottom: 8px; }
+    .legend-grid { display: grid; gap: 8px; }
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .legend-samples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+    .legend-node {
+      display: inline-block;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 242, 251, 0.9);
+      background: rgba(92, 200, 255, 0.35);
+    }
+    .legend-node.sm { width: 10px; height: 10px; }
+    .legend-node.md { width: 16px; height: 16px; }
+    .legend-node.lg { width: 24px; height: 24px; }
+    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+    .legend-edge {
+      display: inline-block;
+      width: 40px;
+      border-top: 2px solid rgba(92, 200, 255, 0.9);
+      border-radius: 999px;
+    }
+    .legend-edge.strong { border-top-width: 6px; }
+    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+    .legend-edge.none {
+      border-top-width: 0;
+      height: 10px;
+      border: 1px dashed rgba(157, 175, 200, 0.45);
+      width: 40px;
+    }
+    .legend-area {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(92, 200, 255, 0.14);
+      border: 1px solid rgba(92, 200, 255, 0.25);
+    }
+    .selection {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 8;
+      width: min(420px, calc(100vw - 32px));
+      max-height: 40vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+    .selection.hidden { display: none; }
+    .selection strong { display: block; margin-bottom: 6px; }
+    .hover-card {
+      position: fixed;
+      z-index: 20;
+      width: 280px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .hover-card img {
+      display: block;
+      width: 100%;
+      background: #0f172a;
+      min-height: 210px;
+      object-fit: cover;
+    }
+    .hover-body { padding: 12px; }
+    .hover-body strong { display: block; margin-bottom: 4px; }
+    .hover-body .muted { color: var(--muted); font-size: 12px; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 92vw);
+      height: 100vh;
+      z-index: 15;
+      background: linear-gradient(180deg, rgba(13,20,34,0.98), rgba(10,17,31,0.98));
+      border-left: 1px solid var(--line);
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+      overflow: auto;
+      padding: 20px 18px 24px;
+      box-shadow: -16px 0 48px rgba(0,0,0,0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .drawer-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .drawer-card strong { display: block; margin-bottom: 4px; }
+    .tableish .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .tableish .row:last-child { border-bottom: 0; }
+    .tableish .sub { color: var(--muted); font-size: 12px; }
+    .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .muted { color: var(--muted); }
+    .overlay-link {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .hidden { display: none !important; }
+    .overlay-link.open { display: block; }
+    @media (max-width: 900px) {
+      .toolbar { inset: 10px 10px auto 10px; }
+      .group { width: 100%; }
+      .toolbar { flex-direction: column; }
+      .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
+      .selection { left: 10px; right: 10px; width: auto; }
+      .mini-nav { left: 10px; bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="group">
+      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <div class="title-wrap">
+        <strong id="pageTitle"></strong>
+        <span id="pageSubtitle"></span>
+      </div>
+    </div>
+    <div class="group">
+      <button id="analysisBtn" class="active">Analysis View</button>
+      <button id="pickBtn">Pick-Focused View</button>
+      <button id="labelsBtn" class="active">Labels On</button>
+      <button id="drawerBtn">Open Menu</button>
+    </div>
+  </div>
+  <div class="canvas-wrap">
+    <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="hoverCard" class="hover-card"></div>
+  <div id="selectionBox" class="selection hidden"></div>
+  <div id="drawerOverlay" class="overlay-link"></div>
+  <aside id="drawer" class="drawer"></aside>
+  <div id="legendBox" class="legend-panel"></div>
+  <div class="mini-nav">
+    <div class="mini-nav-head">
+      <strong>Quick Read</strong>
+    </div>
+    <div class="chip-row">
+      <button id="quickAnalysisBtn" type="button" class="chip chip-button active">Signposts</button>
+      <button id="quickBoostersBtn" type="button" class="chip chip-button">Win Boosters</button>
+    </div>
+    <div id="quickRarityRow" class="chip-row hidden">
+      <button data-rarity="all" type="button" class="chip chip-button active">All</button>
+      <button data-rarity="common" type="button" class="chip chip-button">Common</button>
+      <button data-rarity="uncommon" type="button" class="chip chip-button">Uncommon</button>
+      <button data-rarity="rare" type="button" class="chip chip-button">Rare</button>
+      <button data-rarity="mythic" type="button" class="chip chip-button">Mythic</button>
+    </div>
+    <div id="quickHint" class="quick-note"></div>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "Cube - Powered",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 7,
+    "fit_summary": {
+      "deck_count": 57913,
+      "cluster_feature_count": 539,
+      "svd_components": 48,
+      "svd_explained_variance": 0.23329785466194153,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.11178616434335709,
+          "dominant_main_color_share": 0.3637786402379163,
+          "objective": 0.13361288275763206
+        },
+        {
+          "k": 8,
+          "silhouette": 0.08127741515636444,
+          "dominant_main_color_share": 0.4612962424071051,
+          "objective": 0.10895518970079074
+        },
+        {
+          "k": 9,
+          "silhouette": 0.0866159126162529,
+          "dominant_main_color_share": 0.4338965083091679,
+          "objective": 0.11264970311480298
+        },
+        {
+          "k": 10,
+          "silhouette": 0.08284851163625717,
+          "dominant_main_color_share": 0.48828557861292066,
+          "objective": 0.11214564635303241
+        },
+        {
+          "k": 11,
+          "silhouette": 0.08475761115550995,
+          "dominant_main_color_share": 0.5052627611749999,
+          "objective": 0.11507337682600995
+        }
+      ],
+      "chosen_k": 7,
+      "label_counts": {
+        "1": 12970,
+        "0": 9261,
+        "5": 5538,
+        "6": 9349,
+        "2": 7492,
+        "3": 5654,
+        "4": 7649
+      }
+    },
+    "deck_count": 57913,
+    "game_count": 266117
+  },
+  "segment": {
+    "cluster_id": 4,
+    "title": "Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer",
+    "color_signature": "U",
+    "color_name": "Blue Base Artifacts",
+    "deck_count": 7649,
+    "draft_count": 5964,
+    "games": 32421,
+    "wins": 16393,
+    "win_rate": 0.5056290675796552,
+    "draft_match_win_rate": 0.5078444297956493,
+    "top_deck_colors": [
+      {
+        "colors": "WUBRG",
+        "count": 1400
+      },
+      {
+        "colors": "WUR",
+        "count": 1174
+      },
+      {
+        "colors": "WUBR",
+        "count": 847
+      },
+      {
+        "colors": "UBR",
+        "count": 831
+      },
+      {
+        "colors": "UR",
+        "count": 726
+      },
+      {
+        "colors": "UBRG",
+        "count": 431
+      },
+      {
+        "colors": "URG",
+        "count": 411
+      },
+      {
+        "colors": "WURG",
+        "count": 397
+      }
+    ],
+    "top_main_colors": [
+      {
+        "colors": "UR",
+        "count": 2171
+      },
+      {
+        "colors": "U",
+        "count": 1476
+      },
+      {
+        "colors": "WU",
+        "count": 1340
+      },
+      {
+        "colors": "UB",
+        "count": 777
+      },
+      {
+        "colors": "WUR",
+        "count": 514
+      },
+      {
+        "colors": "UG",
+        "count": 355
+      },
+      {
+        "colors": "UBR",
+        "count": 317
+      },
+      {
+        "colors": "URG",
+        "count": 135
+      }
+    ],
+    "signposts": [
+      {
+        "card": "Mox Opal",
+        "score": 4462.323296021506,
+        "z_score": 83.74875036150604,
+        "log_odds": 3.643310808270244,
+        "cluster_prevalence": 0.3700264001471305,
+        "global_prevalence": 0.062134904279075975,
+        "lift": 5.95520994906783,
+        "support_decks": 2839
+      },
+      {
+        "card": "Urza, Lord High Artificer",
+        "score": 4363.871136134051,
+        "z_score": 82.7209120883248,
+        "log_odds": 2.9462662377393976,
+        "cluster_prevalence": 0.362766584428967,
+        "global_prevalence": 0.07323608329628743,
+        "lift": 4.95338592809969,
+        "support_decks": 2783
+      },
+      {
+        "card": "Retrofitter Foundry",
+        "score": 4139.235507307596,
+        "z_score": 79.91159526706659,
+        "log_odds": 2.7752134975898715,
+        "cluster_prevalence": 0.34975733131527004,
+        "global_prevalence": 0.07446387455332766,
+        "lift": 4.697006883046217,
+        "support_decks": 2683
+      },
+      {
+        "card": "Kappa Cannoneer",
+        "score": 3948.2676778508126,
+        "z_score": 77.06229429669887,
+        "log_odds": 3.983925012105084,
+        "cluster_prevalence": 0.34213881325253237,
+        "global_prevalence": 0.053624918628867556,
+        "lift": 6.380220651157333,
+        "support_decks": 2625
+      },
+      {
+        "card": "Tinker",
+        "score": 3693.6802986441817,
+        "z_score": 75.88864047331597,
+        "log_odds": 2.8935122964911617,
+        "cluster_prevalence": 0.308846936464776,
+        "global_prevalence": 0.0618470119520174,
+        "lift": 4.993724461650433,
+        "support_decks": 2369
+      },
+      {
+        "card": "Tezzeret, Cruel Captain",
+        "score": 3627.878832814687,
+        "z_score": 75.4336213232123,
+        "log_odds": 3.3556924748243246,
+        "cluster_prevalence": 0.3014961504501259,
+        "global_prevalence": 0.052794746837633896,
+        "lift": 5.7107225341444225,
+        "support_decks": 2313
+      },
+      {
+        "card": "The Mightstone and Weakstone",
+        "score": 3485.927905793753,
+        "z_score": 73.21374814667583,
+        "log_odds": 3.6413221155634274,
+        "cluster_prevalence": 0.2955005650568436,
+        "global_prevalence": 0.04856626305882646,
+        "lift": 6.084482240252148,
+        "support_decks": 2267
+      },
+      {
+        "card": "Saheeli, Sublime Artificer",
+        "score": 3449.2340896552646,
+        "z_score": 73.02522176926895,
+        "log_odds": 2.7944891301973804,
+        "cluster_prevalence": 0.2908682766167252,
+        "global_prevalence": 0.05974054801515143,
+        "lift": 4.868858527092102,
+        "support_decks": 2231
+      },
+      {
+        "card": "Nettlecyst",
+        "score": 3385.5736122783924,
+        "z_score": 71.32662343060574,
+        "log_odds": 3.8478417268534857,
+        "cluster_prevalence": 0.2936710115515903,
+        "global_prevalence": 0.04651172531975465,
+        "lift": 6.31391352465829,
+        "support_decks": 2253
+      },
+      {
+        "card": "Pinnacle Emissary",
+        "score": 3138.0677633416776,
+        "z_score": 66.84309066166357,
+        "log_odds": 4.187494292447309,
+        "cluster_prevalence": 0.2872799123914213,
+        "global_prevalence": 0.043317697843987014,
+        "lift": 6.631929365823835,
+        "support_decks": 2204
+      },
+      {
+        "card": "Karn, Scion of Urza",
+        "score": 3072.535443813659,
+        "z_score": 68.87638790470648,
+        "log_odds": 2.7951170294762147,
+        "cluster_prevalence": 0.25943036622607196,
+        "global_prevalence": 0.052535777928899303,
+        "lift": 4.938165502701397,
+        "support_decks": 1990
+      },
+      {
+        "card": "Upheaval",
+        "score": 2986.876066868212,
+        "z_score": 67.91863798048483,
+        "log_odds": 2.804353973319675,
+        "cluster_prevalence": 0.2521404826132768,
+        "global_prevalence": 0.05074165693740519,
+        "lift": 4.969102268858047,
+        "support_decks": 1934
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Mox Opal",
+        "label": "Mox Opal",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 0.0,
+        "types": "Legendary Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 2625,
+        "win_rate": 0.5565714285714286,
+        "standalone_delta": 0.050942360991773405,
+        "dependency_score": 0.33575088372894907,
+        "degree": 10,
+        "signpost_score": 4462.323296021506,
+        "signpost_lift": 5.95520994906783,
+        "deck_prevalence": 0.3700264001471305,
+        "draft_weight": 2205.0,
+        "draft_drafts": 2205,
+        "draft_presence": 0.36971830985915494,
+        "draft_win_rate": 0.5199710928048624,
+        "draft_win_lift": 0.012126663009213168,
+        "analysis_score_raw": 4475.4987424674755,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 281.9212793230317,
+        "pick_priority_score": 9.274619482039538,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Mox%20Opal%22",
+        "community": 0,
+        "x": 1163.8397864453864,
+        "y": 529.0483576744568,
+        "analysis_radius": 25.888861668789705,
+        "pick_radius": 30.0,
+        "radius": 25.888861668789705
+      },
+      {
+        "id": "Urza, Lord High Artificer",
+        "label": "Urza, Lord High Artificer",
+        "color_identity": "U",
+        "rarity": "mythic",
+        "mana_value": 4.0,
+        "types": "Legendary Creature - Human Artificer",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 3020,
+        "win_rate": 0.5950331125827815,
+        "standalone_delta": 0.08940404500312626,
+        "dependency_score": 0.3150528166315063,
+        "degree": 7,
+        "signpost_score": 4363.871136134051,
+        "signpost_lift": 4.95338592809969,
+        "deck_prevalence": 0.362766584428967,
+        "draft_weight": 1993.0,
+        "draft_drafts": 1993,
+        "draft_presence": 0.33417169684775316,
+        "draft_win_rate": 0.521110126017919,
+        "draft_win_lift": 0.013265696222269696,
+        "analysis_score_raw": 4382.058653133856,
+        "analysis_score": 10.0,
+        "pick_priority_score_raw": 388.93917561526956,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Urza%2C%20Lord%20High%20Artificer%22",
+        "community": 0,
+        "x": 1178.227803757148,
+        "y": 638.1696147996884,
+        "analysis_radius": 27.25912387390617,
+        "pick_radius": 30.0,
+        "radius": 27.25912387390617
+      },
+      {
+        "id": "Retrofitter Foundry",
+        "label": "Retrofitter Foundry",
+        "color_identity": "",
+        "rarity": "rare",
+        "mana_value": 1.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 2685,
+        "win_rate": 0.576536312849162,
+        "standalone_delta": 0.07090724526950676,
+        "dependency_score": 0.13245419513985124,
+        "degree": 10,
+        "signpost_score": 4139.235507307596,
+        "signpost_lift": 4.697006883046217,
+        "deck_prevalence": 0.34975733131527004,
+        "draft_weight": 2182.0,
+        "draft_drafts": 2182,
+        "draft_presence": 0.3658618376928236,
+        "draft_win_rate": 0.5269703975855339,
+        "draft_win_lift": 0.019125967789884624,
+        "analysis_score_raw": 4151.546697157844,
+        "analysis_score": 9.973826429036052,
+        "pick_priority_score_raw": 371.8909925019243,
+        "pick_priority_score": 9.899277481791964,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Retrofitter%20Foundry%22",
+        "community": 0,
+        "x": 1134.7918769528096,
+        "y": 543.2276692522443,
+        "analysis_radius": 19.668249514857514,
+        "pick_radius": 30.0,
+        "radius": 19.668249514857514
+      },
+      {
+        "id": "Kappa Cannoneer",
+        "label": "Kappa Cannoneer",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Artifact Creature - Turtle Warrior",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2791,
+        "win_rate": 0.5661053385883196,
+        "standalone_delta": 0.06047627100866437,
+        "dependency_score": 0.7709208259696976,
+        "degree": 7,
+        "signpost_score": 3948.2676778508126,
+        "signpost_lift": 6.380220651157333,
+        "deck_prevalence": 0.34213881325253237,
+        "draft_weight": 2180.0,
+        "draft_drafts": 2180,
+        "draft_presence": 0.3655264922870557,
+        "draft_win_rate": 0.5101812047630042,
+        "draft_win_lift": 0.00233677496735496,
+        "analysis_score_raw": 3970.6109306594803,
+        "analysis_score": 9.940621482579074,
+        "pick_priority_score_raw": 255.6379019367634,
+        "pick_priority_score": 9.054040351156338,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Kappa%20Cannoneer%22",
+        "community": 2,
+        "x": 960.8071304584146,
+        "y": 869.4028413828848,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Tinker",
+        "label": "Tinker",
+        "color_identity": "U",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2606,
+        "win_rate": 0.6009209516500383,
+        "standalone_delta": 0.09529188407038314,
+        "dependency_score": 0.0955128101834658,
+        "degree": 5,
+        "signpost_score": 3693.6802986441817,
+        "signpost_lift": 4.993724461650433,
+        "deck_prevalence": 0.308846936464776,
+        "draft_weight": 1769.0,
+        "draft_drafts": 1769,
+        "draft_presence": 0.2966130114017438,
+        "draft_win_rate": 0.515934301417198,
+        "draft_win_lift": 0.008089871621548728,
+        "analysis_score_raw": 3708.7403929973375,
+        "analysis_score": 9.889781870468715,
+        "pick_priority_score_raw": 356.08652318572416,
+        "pick_priority_score": 9.80130214302282,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Tinker%22",
+        "community": 1,
+        "x": 1210.4610422433745,
+        "y": 606.0649190216561,
+        "analysis_radius": 19.679514790475842,
+        "pick_radius": 30.0,
+        "radius": 19.679514790475842
+      },
+      {
+        "id": "Tezzeret, Cruel Captain",
+        "label": "Tezzeret, Cruel Captain",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 3.0,
+        "types": "Legendary Planeswalker - Tezzeret",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 2329,
+        "win_rate": 0.5530270502361528,
+        "standalone_delta": 0.04739798265649764,
+        "dependency_score": 0.34109830190522483,
+        "degree": 10,
+        "signpost_score": 3627.878832814687,
+        "signpost_lift": 5.7107225341444225,
+        "deck_prevalence": 0.3014961504501259,
+        "draft_weight": 1918.0,
+        "draft_drafts": 1918,
+        "draft_presence": 0.3215962441314554,
+        "draft_win_rate": 0.5126034006288196,
+        "draft_win_lift": 0.0047589708331703395,
+        "analysis_score_raw": 3640.6543198208906,
+        "analysis_score": 9.875975299039824,
+        "pick_priority_score_raw": 198.6102700027114,
+        "pick_priority_score": 8.485528124251612,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Tezzeret%2C%20Cruel%20Captain%22",
+        "community": 1,
+        "x": 1063.259768924443,
+        "y": 776.0649190216561,
+        "analysis_radius": 25.886427914695464,
+        "pick_radius": 30.0,
+        "radius": 25.886427914695464
+      },
+      {
+        "id": "The Mightstone and Weakstone",
+        "label": "The Mightstone and Weakstone",
+        "color_identity": "",
+        "rarity": "rare",
+        "mana_value": 5.0,
+        "types": "Legendary Artifact - Powerstone",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 2328,
+        "win_rate": 0.5618556701030928,
+        "standalone_delta": 0.056226602523437585,
+        "dependency_score": 0.130002126893517,
+        "degree": 9,
+        "signpost_score": 3485.927905793753,
+        "signpost_lift": 6.084482240252148,
+        "deck_prevalence": 0.2955005650568436,
+        "draft_weight": 2009.0,
+        "draft_drafts": 2009,
+        "draft_presence": 0.3368544600938967,
+        "draft_win_rate": 0.5166222869649445,
+        "draft_win_lift": 0.008777857169295245,
+        "analysis_score_raw": 3496.1396684311176,
+        "analysis_score": 9.845794464380779,
+        "pick_priority_score_raw": 268.4343601669141,
+        "pick_priority_score": 9.164120377282906,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22The%20Mightstone%20and%20Weakstone%22",
+        "community": 3,
+        "x": 853.4332937340557,
+        "y": 820.617503850206,
+        "analysis_radius": 18.77253970695568,
+        "pick_radius": 30.0,
+        "radius": 18.77253970695568
+      },
+      {
+        "id": "Saheeli, Sublime Artificer",
+        "label": "Saheeli, Sublime Artificer",
+        "color_identity": "UR",
+        "rarity": "uncommon",
+        "mana_value": 3.0,
+        "types": "Legendary Planeswalker - Saheeli",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 2209,
+        "win_rate": 0.5703938433680399,
+        "standalone_delta": 0.06476477578838469,
+        "dependency_score": 0.15372226043420775,
+        "degree": 10,
+        "signpost_score": 3449.2340896552646,
+        "signpost_lift": 4.868858527092102,
+        "deck_prevalence": 0.2908682766167252,
+        "draft_weight": 1856.0,
+        "draft_drafts": 1856,
+        "draft_presence": 0.31120053655264923,
+        "draft_win_rate": 0.5062352132929472,
+        "draft_win_lift": -0.001609216502702071,
+        "analysis_score_raw": 3461.0681589534543,
+        "analysis_score": 9.838281986452696,
+        "pick_priority_score_raw": 212.8292231656772,
+        "pick_priority_score": 8.641198311259632,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Saheeli%2C%20Sublime%20Artificer%22",
+        "community": 0,
+        "x": 1204.3538345308716,
+        "y": 586.4464068750362,
+        "analysis_radius": 20.096064043992637,
+        "pick_radius": 30.0,
+        "radius": 20.096064043992637
+      },
+      {
+        "id": "Nettlecyst",
+        "label": "Nettlecyst",
+        "color_identity": "",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Artifact - Equipment",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 2266,
+        "win_rate": 0.5644307149161518,
+        "standalone_delta": 0.05880164733649662,
+        "dependency_score": 0.3169458267851794,
+        "degree": 11,
+        "signpost_score": 3385.5736122783924,
+        "signpost_lift": 6.31391352465829,
+        "deck_prevalence": 0.2936710115515903,
+        "draft_weight": 1920.0,
+        "draft_drafts": 1920,
+        "draft_presence": 0.32193158953722334,
+        "draft_win_rate": 0.5114902297863815,
+        "draft_win_lift": 0.0036457999907322236,
+        "analysis_score_raw": 3399.510867787635,
+        "analysis_score": 9.824910223458485,
+        "pick_priority_score_raw": 241.4787398759058,
+        "pick_priority_score": 8.92565055415066,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Nettlecyst%22",
+        "community": 0,
+        "x": 1212.1902429776771,
+        "y": 536.4734844729822,
+        "analysis_radius": 25.644140367773772,
+        "pick_radius": 30.0,
+        "radius": 25.644140367773772
+      },
+      {
+        "id": "Pinnacle Emissary",
+        "label": "Pinnacle Emissary",
+        "color_identity": "UR",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Artifact Creature - Robot",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 2148,
+        "win_rate": 0.5437616387337058,
+        "standalone_delta": 0.038132571154050554,
+        "dependency_score": 0.5359545022439599,
+        "degree": 12,
+        "signpost_score": 3138.0677633416776,
+        "signpost_lift": 6.631929365823835,
+        "deck_prevalence": 0.2872799123914213,
+        "draft_weight": 2044.0,
+        "draft_drafts": 2044,
+        "draft_presence": 0.3427230046948357,
+        "draft_win_rate": 0.5046111207764783,
+        "draft_win_lift": -0.00323330901917096,
+        "analysis_score_raw": 3153.053504343636,
+        "analysis_score": 9.768832852681841,
+        "pick_priority_score_raw": 148.22170631564822,
+        "pick_priority_score": 7.827351532130096,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Pinnacle%20Emissary%22",
+        "community": 2,
+        "x": 1020.7095370840927,
+        "y": 806.6231775882414,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Karn, Scion of Urza",
+        "label": "Karn, Scion of Urza",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 4.0,
+        "types": "Legendary Planeswalker - Karn",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 2070,
+        "win_rate": 0.578743961352657,
+        "standalone_delta": 0.07311489377300184,
+        "dependency_score": 0.14438740322538696,
+        "degree": 8,
+        "signpost_score": 3072.535443813659,
+        "signpost_lift": 4.938165502701397,
+        "deck_prevalence": 0.25943036622607196,
+        "draft_weight": 1621.0,
+        "draft_drafts": 1621,
+        "draft_presence": 0.2717974513749162,
+        "draft_win_rate": 0.5153455612091918,
+        "draft_win_lift": 0.007501131413542583,
+        "analysis_score_raw": 3085.3705021999363,
+        "analysis_score": 9.752664438512502,
+        "pick_priority_score_raw": 267.76011788164857,
+        "pick_priority_score": 9.15845204314768,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Karn%2C%20Scion%20of%20Urza%22",
+        "community": 1,
+        "x": 1146.407653960646,
+        "y": 672.3429817447256,
+        "analysis_radius": 20.21926567362903,
+        "pick_radius": 30.0,
+        "radius": 20.21926567362903
+      },
+      {
+        "id": "Upheaval",
+        "label": "Upheaval",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 2229,
+        "win_rate": 0.598026020637057,
+        "standalone_delta": 0.09239695305740181,
+        "dependency_score": 0.10161083023682387,
+        "degree": 6,
+        "signpost_score": 2986.876066868212,
+        "signpost_lift": 4.969102268858047,
+        "deck_prevalence": 0.2521404826132768,
+        "draft_weight": 1862.0,
+        "draft_drafts": 1862,
+        "draft_presence": 0.31220657276995306,
+        "draft_win_rate": 0.5215167309777853,
+        "draft_win_lift": 0.013672301182136026,
+        "analysis_score_raw": 3001.640635240511,
+        "analysis_score": 9.732164814823097,
+        "pick_priority_score_raw": 388.73614493454755,
+        "pick_priority_score": 9.999234157053026,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Upheaval%22",
+        "community": 2,
+        "x": 1101.1749319309918,
+        "y": 782.5580676574937,
+        "analysis_radius": 19.739822306682758,
+        "pick_radius": 30.0,
+        "radius": 19.739822306682758
+      },
+      {
+        "id": "Talisman of Creativity",
+        "label": "Talisman of Creativity",
+        "color_identity": "UR",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 1869,
+        "win_rate": 0.5371856607811664,
+        "standalone_delta": 0.03155659320151116,
+        "dependency_score": 0.19744552762594797,
+        "degree": 9,
+        "signpost_score": 2774.70939155458,
+        "signpost_lift": 4.1160312666222385,
+        "deck_prevalence": 0.25037123464940214,
+        "draft_weight": 1589.0,
+        "draft_drafts": 1589,
+        "draft_presence": 0.2664319248826291,
+        "draft_win_rate": 0.5062877154947371,
+        "draft_win_lift": -0.0015567143009121986,
+        "analysis_score_raw": 2782.681334100059,
+        "analysis_score": 9.675729220256061,
+        "pick_priority_score_raw": 90.74384823367015,
+        "pick_priority_score": 6.7268991430346405,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Talisman%20of%20Creativity%22",
+        "community": 0,
+        "x": 1165.2047305532378,
+        "y": 591.7481600056483,
+        "analysis_radius": 19.84365162061724,
+        "pick_radius": 30.0,
+        "radius": 19.84365162061724
+      },
+      {
+        "id": "Aether Spellbomb",
+        "label": "Aether Spellbomb",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 1.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1851,
+        "win_rate": 0.57752566180443,
+        "standalone_delta": 0.07189659422477479,
+        "dependency_score": 0.11269489610619937,
+        "degree": 8,
+        "signpost_score": 2754.765487291143,
+        "signpost_lift": 4.224478996818854,
+        "deck_prevalence": 0.24581701485593455,
+        "draft_weight": 1615.0,
+        "draft_drafts": 1615,
+        "draft_presence": 0.27079141515761235,
+        "draft_win_rate": 0.5155292064009067,
+        "draft_win_lift": 0.0076847766052574595,
+        "analysis_score_raw": 2766.859518612523,
+        "analysis_score": 9.671480786688196,
+        "pick_priority_score_raw": 250.9940931883116,
+        "pick_priority_score": 9.012729781415567,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Aether%20Spellbomb%22",
+        "community": 2,
+        "x": 1047.308400526501,
+        "y": 699.402841382885,
+        "analysis_radius": 19.01132894218579,
+        "pick_radius": 30.0,
+        "radius": 19.01132894218579
+      },
+      {
+        "id": "Coveted Jewel",
+        "label": "Coveted Jewel",
+        "color_identity": "",
+        "rarity": "rare",
+        "mana_value": 6.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 1650,
+        "win_rate": 0.553939393939394,
+        "standalone_delta": 0.04831032635973875,
+        "dependency_score": 0.1849702889303166,
+        "degree": 8,
+        "signpost_score": 2536.6281005917763,
+        "signpost_lift": 4.981301794595253,
+        "deck_prevalence": 0.21526251273603647,
+        "draft_weight": 1664.0,
+        "draft_drafts": 1664,
+        "draft_presence": 0.2790073775989269,
+        "draft_win_rate": 0.5078447558611634,
+        "draft_win_lift": 3.260655141446023e-07,
+        "analysis_score_raw": 2546.7210114828854,
+        "analysis_score": 9.609710635138475,
+        "pick_priority_score_raw": 151.54173724893926,
+        "pick_priority_score": 7.877133435173274,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Coveted%20Jewel%22",
+        "community": 1,
+        "x": 1097.858462883042,
+        "y": 715.5271802119621,
+        "analysis_radius": 20.31599835127703,
+        "pick_radius": 30.0,
+        "radius": 20.31599835127703
+      },
+      {
+        "id": "Third Path Iconoclast",
+        "label": "Third Path Iconoclast",
+        "color_identity": "UR",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Creature - Human Monk",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(211, 32, 42)"
+          ],
+          "id": "UR"
+        },
+        "draw_games": 1839,
+        "win_rate": 0.5394235997824904,
+        "standalone_delta": 0.03379453220283524,
+        "dependency_score": 0.5363842041138988,
+        "degree": 5,
+        "signpost_score": 2476.954770694853,
+        "signpost_lift": 3.732278847138103,
+        "deck_prevalence": 0.2356634369842377,
+        "draft_weight": 1599.0,
+        "draft_drafts": 1599,
+        "draft_presence": 0.2681086519114688,
+        "draft_win_rate": 0.507967428049087,
+        "draft_win_lift": 0.00012299825343775606,
+        "analysis_score_raw": 2491.3409208773,
+        "analysis_score": 9.593330399373448,
+        "pick_priority_score_raw": 95.25854662053203,
+        "pick_priority_score": 6.835573562941899,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Third%20Path%20Iconoclast%22",
+        "community": 3,
+        "x": 873.8582500572426,
+        "y": 916.5643864768881,
+        "analysis_radius": 28.0,
+        "pick_radius": 30.0,
+        "radius": 28.0
+      },
+      {
+        "id": "Trinket Mage",
+        "label": "Trinket Mage",
+        "color_identity": "U",
+        "rarity": "common",
+        "mana_value": 3.0,
+        "types": "Creature - Human Wizard",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 1769,
+        "win_rate": 0.574335782928208,
+        "standalone_delta": 0.06870671534855277,
+        "dependency_score": 0.12051658893039731,
+        "degree": 10,
+        "signpost_score": 2471.981330984964,
+        "signpost_lift": 3.972281361152045,
+        "deck_prevalence": 0.2277125514893083,
+        "draft_weight": 1594.0,
+        "draft_drafts": 1594,
+        "draft_presence": 0.26727028839704897,
+        "draft_win_rate": 0.5123447542467641,
+        "draft_win_lift": 0.004500324451114812,
+        "analysis_score_raw": 2483.7695697345084,
+        "analysis_score": 9.591062721713868,
+        "pick_priority_score_raw": 219.02219020924431,
+        "pick_priority_score": 8.705788375920493,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Trinket%20Mage%22",
+        "community": 3,
+        "x": 913.5443536922995,
+        "y": 746.5643864768881,
+        "analysis_radius": 19.117466545664705,
+        "pick_radius": 30.0,
+        "radius": 19.117466545664705
+      },
+      {
+        "id": "Grim Monolith",
+        "label": "Grim Monolith",
+        "color_identity": "",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 1824,
+        "win_rate": 0.5740131578947368,
+        "standalone_delta": 0.06838409031508164,
+        "dependency_score": 0.20393042022458344,
+        "degree": 12,
+        "signpost_score": 2465.184645332806,
+        "signpost_lift": 3.821681785685413,
+        "deck_prevalence": 0.23159392434448323,
+        "draft_weight": 1361.0,
+        "draft_drafts": 1361,
+        "draft_presence": 0.22820254862508382,
+        "draft_win_rate": 0.5233879144212878,
+        "draft_win_lift": 0.015543484625638593,
+        "analysis_score_raw": 2478.42916554096,
+        "analysis_score": 9.589459070133657,
+        "pick_priority_score_raw": 251.42937069591787,
+        "pick_priority_score": 9.016634138416586,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Grim%20Monolith%22",
+        "community": 3,
+        "x": 959.1641025164023,
+        "y": 816.2537231960176,
+        "analysis_radius": 22.102620095414494,
+        "pick_radius": 30.0,
+        "radius": 22.102620095414494
+      },
+      {
+        "id": "Ugin, Eye of the Storms",
+        "label": "Ugin, Eye of the Storms",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 7.0,
+        "types": "Legendary Planeswalker - Ugin",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 1920,
+        "win_rate": 0.6223958333333334,
+        "standalone_delta": 0.11676676575367817,
+        "dependency_score": 0.13411939851483543,
+        "degree": 11,
+        "signpost_score": 2453.546533664562,
+        "signpost_lift": 3.95144398172431,
+        "deck_prevalence": 0.22662559638944693,
+        "draft_weight": 1367.0,
+        "draft_drafts": 1367,
+        "draft_presence": 0.22920858484238765,
+        "draft_win_rate": 0.5334877970796297,
+        "draft_win_lift": 0.025643367283980423,
+        "analysis_score_raw": 2472.308030043344,
+        "analysis_score": 9.58761672152476,
+        "pick_priority_score_raw": 430.3219059601655,
+        "pick_priority_score": 10.0,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Ugin%2C%20Eye%20of%20the%20Storms%22",
+        "community": 0,
+        "x": 1137.4781371223123,
+        "y": 586.7166921202553,
+        "analysis_radius": 22.250470462986375,
+        "pick_radius": 30.0,
+        "radius": 22.250470462986375
+      },
+      {
+        "id": "Teferi, Time Raveler",
+        "label": "Teferi, Time Raveler",
+        "color_identity": "WU",
+        "rarity": "rare",
+        "mana_value": 3.0,
+        "types": "Legendary Planeswalker - Teferi",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(14, 104, 171)"
+          ],
+          "id": "WU"
+        },
+        "draw_games": 941,
+        "win_rate": 0.6248671625929861,
+        "standalone_delta": 0.11923809501333094,
+        "dependency_score": 0.13902801949316712,
+        "degree": 2,
+        "signpost_score": 422.02658569002756,
+        "signpost_lift": 1.5508051438974604,
+        "deck_prevalence": 0.11298890001491238,
+        "draft_weight": 774.0,
+        "draft_drafts": 774,
+        "draft_presence": 0.12977867203219315,
+        "draft_win_rate": 0.5251750054282887,
+        "draft_win_lift": 0.0173305756326394,
+        "analysis_score_raw": 441.2224233427709,
+        "analysis_score": 8.30451342902683,
+        "pick_priority_score_raw": 243.37221856462867,
+        "pick_priority_score": 8.94324781408936,
+        "role": "engine",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Teferi%2C%20Time%20Raveler%22",
+        "community": 0,
+        "x": 1123.9135876605574,
+        "y": 468.1696147996884,
+        "analysis_radius": 22.56310392748722,
+        "pick_radius": 30.0,
+        "radius": 22.56310392748722
+      },
+      {
+        "id": "Regrowth",
+        "label": "Regrowth",
+        "color_identity": "G",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Sorcery",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(0, 115, 62)"
+          ]
+        },
+        "draw_games": 136,
+        "win_rate": 0.5294117647058824,
+        "standalone_delta": 0.02378269712622716,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -76.48803093767555,
+        "signpost_lift": 0.5888319208982525,
+        "deck_prevalence": 0.017404403613914782,
+        "draft_weight": 351.0,
+        "draft_drafts": 351,
+        "draft_presence": 0.05885311871227364,
+        "draft_win_rate": 0.515461948304257,
+        "draft_win_lift": 0.007617518508607701,
+        "analysis_score_raw": -73.15845334000375,
+        "analysis_score": 0.5544472767625649,
+        "pick_priority_score_raw": 38.777694183423,
+        "pick_priority_score": 4.836315821438014,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Regrowth%22",
+        "community": 4,
+        "x": 767.5,
+        "y": 789.4967320028762,
+        "analysis_radius": 12.308048341942493,
+        "pick_radius": 30.0,
+        "radius": 12.308048341942493
+      },
+      {
+        "id": "Wishclaw Talisman",
+        "label": "Wishclaw Talisman",
+        "color_identity": "B",
+        "rarity": "rare",
+        "mana_value": 2.0,
+        "types": "Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(21, 11, 0)"
+          ]
+        },
+        "draw_games": 212,
+        "win_rate": 0.5518867924528302,
+        "standalone_delta": 0.04625772487317503,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 44.20342222590346,
+        "signpost_lift": 1.2094856844566126,
+        "deck_prevalence": 0.028064914408828745,
+        "draft_weight": 544.0,
+        "draft_drafts": 544,
+        "draft_presence": 0.09121395036887994,
+        "draft_win_rate": 0.4980205001899152,
+        "draft_win_lift": -0.009823929605734028,
+        "analysis_score_raw": 50.67950370814796,
+        "analysis_score": 6.704451823746178,
+        "pick_priority_score_raw": 60.582929876109965,
+        "pick_priority_score": 5.82511438867509,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Wishclaw%20Talisman%22",
+        "community": 5,
+        "x": 670.5032679971238,
+        "y": 692.5,
+        "analysis_radius": 13.544174868024626,
+        "pick_radius": 30.0,
+        "radius": 13.544174868024626
+      },
+      {
+        "id": "Leovold, Emissary of Trest",
+        "label": "Leovold, Emissary of Trest",
+        "color_identity": "UBG",
+        "rarity": "mythic",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Elf Advisor",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(205, 174, 91)"
+          ]
+        },
+        "draw_games": 131,
+        "win_rate": 0.5877862595419847,
+        "standalone_delta": 0.08215719196232951,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -123.01286373664928,
+        "signpost_lift": 0.47835635627933776,
+        "deck_prevalence": 0.020035257205493342,
+        "draft_weight": 363.0,
+        "draft_drafts": 363,
+        "draft_presence": 0.06086519114688129,
+        "draft_win_rate": 0.526566835704535,
+        "draft_win_lift": 0.018722405908885742,
+        "analysis_score_raw": -111.51085686192314,
+        "analysis_score": 0.24375520873767367,
+        "pick_priority_score_raw": 121.76273466652584,
+        "pick_priority_score": 7.385798349304961,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Leovold%2C%20Emissary%20of%20Trest%22",
+        "community": 6,
+        "x": 635.0,
+        "y": 560.0,
+        "analysis_radius": 15.518645557928124,
+        "pick_radius": 30.0,
+        "radius": 15.518645557928124
+      },
+      {
+        "id": "Torsten, Founder of Benalia",
+        "label": "Torsten, Founder of Benalia",
+        "color_identity": "WG",
+        "rarity": "mythic",
+        "mana_value": 7.0,
+        "types": "Legendary Creature - Human Soldier",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(248, 231, 185)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "WG"
+        },
+        "draw_games": 116,
+        "win_rate": 0.46551724137931033,
+        "standalone_delta": -0.04011182620034487,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -160.21107715311175,
+        "signpost_lift": 0.33425616858185037,
+        "deck_prevalence": 0.0175892618283785,
+        "draft_weight": 336.0,
+        "draft_drafts": 336,
+        "draft_presence": 0.056338028169014086,
+        "draft_win_rate": 0.49626959837544604,
+        "draft_win_lift": -0.011574831420203213,
+        "analysis_score_raw": -160.21107715311175,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 0.0,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Torsten%2C%20Founder%20of%20Benalia%22",
+        "community": 7,
+        "x": 670.5032679971237,
+        "y": 427.50000000000006,
+        "analysis_radius": 11.0,
+        "pick_radius": 30.0,
+        "radius": 11.0
+      },
+      {
+        "id": "Uro, Titan of Nature's Wrath",
+        "label": "Uro, Titan of Nature's Wrath",
+        "color_identity": "UG",
+        "rarity": "mythic",
+        "mana_value": 3.0,
+        "types": "Legendary Creature - Elder Giant",
+        "fill": {
+          "mode": "split",
+          "colors": [
+            "rgb(14, 104, 171)",
+            "rgb(0, 115, 62)"
+          ],
+          "id": "UG"
+        },
+        "draw_games": 122,
+        "win_rate": 0.5491803278688525,
+        "standalone_delta": 0.04355126028919731,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -151.95967691363063,
+        "signpost_lift": 0.3334281183419348,
+        "deck_prevalence": 0.0166707002444502,
+        "draft_weight": 190.0,
+        "draft_drafts": 190,
+        "draft_presence": 0.031857813547954396,
+        "draft_win_rate": 0.49109460724282067,
+        "draft_win_lift": -0.016749822552828586,
+        "analysis_score_raw": -145.862500473143,
+        "analysis_score": 0.0451613518990912,
+        "pick_priority_score_raw": 33.01719822726967,
+        "pick_priority_score": 4.482402831863092,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Uro%2C%20Titan%20of%20Nature%27s%20Wrath%22",
+        "community": 8,
+        "x": 767.4999999999999,
+        "y": 330.5032679971238,
+        "analysis_radius": 13.395319315905851,
+        "pick_radius": 30.0,
+        "radius": 13.395319315905851
+      },
+      {
+        "id": "Agatha's Soul Cauldron",
+        "label": "Agatha's Soul Cauldron",
+        "color_identity": "",
+        "rarity": "mythic",
+        "mana_value": 2.0,
+        "types": "Legendary Artifact",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(148, 163, 184)"
+          ]
+        },
+        "draw_games": 162,
+        "win_rate": 0.5061728395061729,
+        "standalone_delta": 0.0005437719265176666,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": 129.49850938153546,
+        "signpost_lift": 2.0665297647897907,
+        "deck_prevalence": 0.021905874240540996,
+        "draft_weight": 539.0,
+        "draft_drafts": 539,
+        "draft_presence": 0.0903755868544601,
+        "draft_win_rate": 0.5026430565119476,
+        "draft_win_lift": -0.005201373283701627,
+        "analysis_score_raw": 129.57463745124792,
+        "analysis_score": 7.395296076429831,
+        "pick_priority_score_raw": 0.7683963812769348,
+        "pick_priority_score": 0.0,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Agatha%27s%20Soul%20Cauldron%22",
+        "community": 9,
+        "x": 900.0,
+        "y": 295.0,
+        "analysis_radius": 11.029907455958472,
+        "pick_radius": 30.0,
+        "radius": 11.029907455958472
+      },
+      {
+        "id": "Splitskin Doll",
+        "label": "Splitskin Doll",
+        "color_identity": "W",
+        "rarity": "uncommon",
+        "mana_value": 2.0,
+        "types": "Artifact Creature - Toy",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(248, 231, 185)"
+          ]
+        },
+        "draw_games": 113,
+        "win_rate": 0.5309734513274337,
+        "standalone_delta": 0.025344383747778476,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -164.59089854369026,
+        "signpost_lift": 0.3594012612581952,
+        "deck_prevalence": 0.019323740735385148,
+        "draft_weight": 395.0,
+        "draft_drafts": 395,
+        "draft_presence": 0.06623071763916834,
+        "draft_win_rate": 0.4985314136265951,
+        "draft_win_lift": -0.009313016169054167,
+        "analysis_score_raw": -161.04268481900127,
+        "analysis_score": 0.0,
+        "pick_priority_score_raw": 27.704031546047084,
+        "pick_priority_score": 4.098201019905363,
+        "role": "balanced",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Splitskin%20Doll%22",
+        "community": 10,
+        "x": 1032.5,
+        "y": 330.50326799712377,
+        "analysis_radius": 12.393941106127816,
+        "pick_radius": 30.0,
+        "radius": 12.393941106127816
+      },
+      {
+        "id": "Enduring Curiosity",
+        "label": "Enduring Curiosity",
+        "color_identity": "U",
+        "rarity": "rare",
+        "mana_value": 4.0,
+        "types": "Enchantment Creature - Cat Glimmer",
+        "fill": {
+          "mode": "solid",
+          "colors": [
+            "rgb(14, 104, 171)"
+          ]
+        },
+        "draw_games": 213,
+        "win_rate": 0.539906103286385,
+        "standalone_delta": 0.0342770357067298,
+        "dependency_score": 0.0,
+        "degree": 0,
+        "signpost_score": -48.84321928284327,
+        "signpost_lift": 0.8243573344735466,
+        "deck_prevalence": 0.030187042059107043,
+        "draft_weight": 432.0,
+        "draft_drafts": 432,
+        "draft_presence": 0.07243460764587525,
+        "draft_win_rate": 0.5154622946587213,
+        "draft_win_lift": 0.0076178648630720325,
+        "analysis_score_raw": -44.0444342839011,
+        "analysis_score": 0.9260403776753539,
+        "pick_priority_score_raw": 55.01734925440106,
+        "pick_priority_score": 5.610822788074862,
+        "role": "good_alone",
+        "scryfall_search": "https://scryfall.com/search?q=%21%22Enduring%20Curiosity%22",
+        "community": 11,
+        "x": 1129.4967320028761,
+        "y": 427.4999999999999,
+        "analysis_radius": 12.885236963870138,
+        "pick_radius": 30.0,
+        "radius": 12.885236963870138
+      }
+    ],
+    "edges": [
+      {
+        "from": "Talisman of Creativity",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 151,
+        "pair_win_rate": 0.7350993377483444,
+        "pair_expected_win_rate": 0.6516342219631537,
+        "pair_lift_vs_baseline": 0.22947027016868915,
+        "synergy_delta_logit": 0.3944203660380877,
+        "synergy_delta_prob": 0.08346511578519067,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 372,
+        "quality_score": 1.5671048339873195,
+        "pick_score_raw": 4.1547128447809945,
+        "pick_score": 9.419526083805083
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Karn, Scion of Urza",
+        "pair_games": 145,
+        "pair_win_rate": 0.7034482758620689,
+        "pair_expected_win_rate": 0.625205515439879,
+        "pair_lift_vs_baseline": 0.19781920828241373,
+        "synergy_delta_logit": 0.3520701117694407,
+        "synergy_delta_prob": 0.07824276042218992,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 457,
+        "quality_score": 1.2063316143776597,
+        "pick_score_raw": 3.587097052158442,
+        "pick_score": 6.963872688654412
+      },
+      {
+        "from": "Saheeli, Sublime Artificer",
+        "to": "Talisman of Creativity",
+        "pair_games": 143,
+        "pair_win_rate": 0.6853146853146853,
+        "pair_expected_win_rate": 0.6010779933423565,
+        "pair_lift_vs_baseline": 0.1796856177350301,
+        "synergy_delta_logit": 0.3683462159152824,
+        "synergy_delta_prob": 0.08423669197232886,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 495,
+        "quality_score": 1.1525275163226951,
+        "pick_score_raw": 3.2771309182320603,
+        "pick_score": 5.491185539384276
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Saheeli, Sublime Artificer",
+        "pair_games": 140,
+        "pair_win_rate": 0.6928571428571428,
+        "pair_expected_win_rate": 0.6171671520083863,
+        "pair_lift_vs_baseline": 0.18722807527748764,
+        "synergy_delta_logit": 0.3359694304193719,
+        "synergy_delta_prob": 0.0756899908487565,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 510,
+        "quality_score": 1.0806526399122958,
+        "pick_score_raw": 3.3694337536380297,
+        "pick_score": 5.940600995514722
+      },
+      {
+        "from": "Kappa Cannoneer",
+        "to": "Pinnacle Emissary",
+        "pair_games": 243,
+        "pair_win_rate": 0.6584362139917695,
+        "pair_expected_win_rate": 0.6032335829748059,
+        "pair_lift_vs_baseline": 0.15280714641211435,
+        "synergy_delta_logit": 0.23737645491617554,
+        "synergy_delta_prob": 0.055202631016963655,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.408778161195931,
+        "draft_pair_events": 788,
+        "quality_score": 1.068956548848481,
+        "pick_score_raw": 4.303366208577595,
+        "pick_score": 9.999999999999998
+      },
+      {
+        "from": "Pinnacle Emissary",
+        "to": "Upheaval",
+        "pair_games": 196,
+        "pair_win_rate": 0.6887755102040817,
+        "pair_expected_win_rate": 0.6341878554767159,
+        "pair_lift_vs_baseline": 0.18314644262442648,
+        "synergy_delta_logit": 0.24417563700820666,
+        "synergy_delta_prob": 0.05458765472736582,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 605,
+        "quality_score": 0.9169099439327257,
+        "pick_score_raw": 3.9373394938349278,
+        "pick_score": 8.512637282161496
+      },
+      {
+        "from": "Pinnacle Emissary",
+        "to": "The Mightstone and Weakstone",
+        "pair_games": 201,
+        "pair_win_rate": 0.6616915422885572,
+        "pair_expected_win_rate": 0.5990900292442811,
+        "pair_lift_vs_baseline": 0.156062474708902,
+        "synergy_delta_logit": 0.2691664272536862,
+        "synergy_delta_prob": 0.06260151304427608,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 636,
+        "quality_score": 0.8887764553695697,
+        "pick_score_raw": 3.463127293457141,
+        "pick_score": 6.387181076792522
+      },
+      {
+        "from": "Retrofitter Foundry",
+        "to": "Third Path Iconoclast",
+        "pair_games": 188,
+        "pair_win_rate": 0.6702127659574468,
+        "pair_expected_win_rate": 0.6092297710384073,
+        "pair_lift_vs_baseline": 0.16458369837779163,
+        "synergy_delta_logit": 0.26507177054485365,
+        "synergy_delta_prob": 0.06098299491903958,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 595,
+        "quality_score": 0.8852156882960921,
+        "pick_score_raw": 3.501261695580228,
+        "pick_score": 6.5662659594556665
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Pinnacle Emissary",
+        "pair_games": 232,
+        "pair_win_rate": 0.646551724137931,
+        "pair_expected_win_rate": 0.5939303002040753,
+        "pair_lift_vs_baseline": 0.14092265655827585,
+        "synergy_delta_logit": 0.22367889331955282,
+        "synergy_delta_prob": 0.052621423933855715,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.1671688583898145,
+        "draft_pair_events": 779,
+        "quality_score": 0.8843468881068124,
+        "pick_score_raw": 3.830849203366616,
+        "pick_score": 8.053678974349866
+      },
+      {
+        "from": "Retrofitter Foundry",
+        "to": "Talisman of Creativity",
+        "pair_games": 190,
+        "pair_win_rate": 0.6684210526315789,
+        "pair_expected_win_rate": 0.607083955543749,
+        "pair_lift_vs_baseline": 0.16279198505192372,
+        "synergy_delta_logit": 0.2659812280185484,
+        "synergy_delta_prob": 0.06133709708782986,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 547,
+        "quality_score": 0.8814837312190509,
+        "pick_score_raw": 3.472976264802934,
+        "pick_score": 6.433579467250911
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Trinket Mage",
+        "pair_games": 105,
+        "pair_win_rate": 0.7047619047619048,
+        "pair_expected_win_rate": 0.6399829258620852,
+        "pair_lift_vs_baseline": 0.1991328371822496,
+        "synergy_delta_logit": 0.2947878495480222,
+        "synergy_delta_prob": 0.06477897889981965,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 337,
+        "quality_score": 0.8546517016754303,
+        "pick_score_raw": 3.0299625900839815,
+        "pick_score": 4.238240594965
+      },
+      {
+        "from": "Saheeli, Sublime Artificer",
+        "to": "Urza, Lord High Artificer",
+        "pair_games": 260,
+        "pair_win_rate": 0.6961538461538461,
+        "pair_expected_win_rate": 0.6560527130066294,
+        "pair_lift_vs_baseline": 0.19052477857419092,
+        "synergy_delta_logit": 0.18329644803724277,
+        "synergy_delta_prob": 0.04010113314721675,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 616,
+        "quality_score": 0.8221040545777827,
+        "pick_score_raw": 4.703205553795249,
+        "pick_score": 9.999999999999998
+      },
+      {
+        "from": "Pinnacle Emissary",
+        "to": "Urza, Lord High Artificer",
+        "pair_games": 215,
+        "pair_win_rate": 0.6744186046511628,
+        "pair_expected_win_rate": 0.631298194014648,
+        "pair_lift_vs_baseline": 0.16878953707150757,
+        "synergy_delta_logit": 0.19044837922169522,
+        "synergy_delta_prob": 0.04312041063651473,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7558053815295368,
+        "draft_pair_events": 672,
+        "quality_score": 0.7939228082441199,
+        "pick_score_raw": 4.140711909290562,
+        "pick_score": 9.362276397402164
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 198,
+        "pair_win_rate": 0.7070707070707071,
+        "pair_expected_win_rate": 0.6691783861247625,
+        "pair_lift_vs_baseline": 0.20144163949105187,
+        "synergy_delta_logit": 0.17672804076305337,
+        "synergy_delta_prob": 0.037892320945944524,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 507,
+        "quality_score": 0.7222268206876382,
+        "pick_score_raw": 4.280795950673659,
+        "pick_score": 9.928182424351139
+      },
+      {
+        "from": "Tezzeret, Cruel Captain",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 151,
+        "pair_win_rate": 0.7086092715231788,
+        "pair_expected_win_rate": 0.6659939380012407,
+        "pair_lift_vs_baseline": 0.20298020394352356,
+        "synergy_delta_logit": 0.19851777465379972,
+        "synergy_delta_prob": 0.042615333521938026,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 440,
+        "quality_score": 0.7095489542462609,
+        "pick_score_raw": 3.7410753218612407,
+        "pick_score": 7.658836803970544
+      },
+      {
+        "from": "Retrofitter Foundry",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 197,
+        "pair_win_rate": 0.7208121827411168,
+        "pair_expected_win_rate": 0.6869251743553488,
+        "pair_lift_vs_baseline": 0.2151831151614616,
+        "synergy_delta_logit": 0.16271072412913878,
+        "synergy_delta_prob": 0.03388700838576797,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 514,
+        "quality_score": 0.7047875519215894,
+        "pick_score_raw": 4.537654157098358,
+        "pick_score": 9.999999999999998
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Tezzeret, Cruel Captain",
+        "pair_games": 160,
+        "pair_win_rate": 0.65625,
+        "pair_expected_win_rate": 0.6003664146177666,
+        "pair_lift_vs_baseline": 0.1506209324203448,
+        "synergy_delta_logit": 0.23963509582086995,
+        "synergy_delta_prob": 0.05588358538223337,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 571,
+        "quality_score": 0.6813639596958485,
+        "pick_score_raw": 2.980366920649647,
+        "pick_score": 3.9775898423062226
+      },
+      {
+        "from": "Nettlecyst",
+        "to": "Saheeli, Sublime Artificer",
+        "pair_games": 169,
+        "pair_win_rate": 0.6745562130177515,
+        "pair_expected_win_rate": 0.6271722581254466,
+        "pair_lift_vs_baseline": 0.16892714543809628,
+        "synergy_delta_logit": 0.2087605213514887,
+        "synergy_delta_prob": 0.04738395489230485,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 591,
+        "quality_score": 0.6763766545620291,
+        "pick_score_raw": 3.3967466860980022,
+        "pick_score": 6.07176642600251
+      },
+      {
+        "from": "The Mightstone and Weakstone",
+        "to": "Trinket Mage",
+        "pair_games": 137,
+        "pair_win_rate": 0.6788321167883211,
+        "pair_expected_win_rate": 0.62848964254916,
+        "pair_lift_vs_baseline": 0.17320304920866592,
+        "synergy_delta_logit": 0.22266705482805516,
+        "synergy_delta_prob": 0.05034247423916116,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 507,
+        "quality_score": 0.6603991278111415,
+        "pick_score_raw": 3.106754268939583,
+        "pick_score": 4.635558294263128
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Saheeli, Sublime Artificer",
+        "pair_games": 202,
+        "pair_win_rate": 0.6633663366336634,
+        "pair_expected_win_rate": 0.6196822509384797,
+        "pair_lift_vs_baseline": 0.1577372690540082,
+        "synergy_delta_logit": 0.19013233165031362,
+        "synergy_delta_prob": 0.04368408569518367,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 632,
+        "quality_score": 0.6352045005154777,
+        "pick_score_raw": 3.5038014375852073,
+        "pick_score": 6.578139026222781
+      },
+      {
+        "from": "Ugin, Eye of the Storms",
+        "to": "Urza, Lord High Artificer",
+        "pair_games": 208,
+        "pair_win_rate": 0.7307692307692307,
+        "pair_expected_win_rate": 0.7030834231776287,
+        "pair_lift_vs_baseline": 0.22514016318957553,
+        "synergy_delta_logit": 0.13650449117422514,
+        "synergy_delta_prob": 0.027685807591601996,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 451,
+        "quality_score": 0.6301315101102983,
+        "pick_score_raw": 4.832343068272127,
+        "pick_score": 9.999999999999998
+      },
+      {
+        "from": "Talisman of Creativity",
+        "to": "Urza, Lord High Artificer",
+        "pair_games": 207,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6251140631318307,
+        "pair_lift_vs_baseline": 0.16103759908701143,
+        "synergy_delta_logit": 0.18183485781418463,
+        "synergy_delta_prob": 0.04155260353483592,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 547,
+        "quality_score": 0.622960428339941,
+        "pick_score_raw": 3.590226264835922,
+        "pick_score": 6.978226892992797
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "Karn, Scion of Urza",
+        "pair_games": 139,
+        "pair_win_rate": 0.6906474820143885,
+        "pair_expected_win_rate": 0.6474219668896326,
+        "pair_lift_vs_baseline": 0.18501841443473332,
+        "synergy_delta_logit": 0.19542177219854617,
+        "synergy_delta_prob": 0.04322551512475592,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 424,
+        "quality_score": 0.6152983894205242,
+        "pick_score_raw": 3.2948531651551805,
+        "pick_score": 5.578221375284643
+      },
+      {
+        "from": "Karn, Scion of Urza",
+        "to": "Tinker",
+        "pair_games": 169,
+        "pair_win_rate": 0.7041420118343196,
+        "pair_expected_win_rate": 0.6691639180297829,
+        "pair_lift_vs_baseline": 0.19851294425466437,
+        "synergy_delta_logit": 0.16269447017205962,
+        "synergy_delta_prob": 0.03497809380453665,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 448,
+        "quality_score": 0.6032824163301569,
+        "pick_score_raw": 3.8815498457389586,
+        "pick_score": 8.273440138803016
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Teferi, Time Raveler",
+        "pair_games": 111,
+        "pair_win_rate": 0.7117117117117117,
+        "pair_expected_win_rate": 0.671505134096652,
+        "pair_lift_vs_baseline": 0.20608264413205646,
+        "synergy_delta_logit": 0.18871149691306954,
+        "synergy_delta_prob": 0.040206577615059635,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 282,
+        "quality_score": 0.5763779374868696,
+        "pick_score_raw": 3.188751495557714,
+        "pick_score": 5.051689703693826
+      },
+      {
+        "from": "The Mightstone and Weakstone",
+        "to": "Third Path Iconoclast",
+        "pair_games": 166,
+        "pair_win_rate": 0.6445783132530121,
+        "pair_expected_win_rate": 0.594886128964715,
+        "pair_lift_vs_baseline": 0.13894924567335687,
+        "synergy_delta_logit": 0.21108957385496263,
+        "synergy_delta_prob": 0.049692184288297025,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 523,
+        "quality_score": 0.5676343826961384,
+        "pick_score_raw": 2.817298980441086,
+        "pick_score": 3.0970939334705103
+      },
+      {
+        "from": "The Mightstone and Weakstone",
+        "to": "Urza, Lord High Artificer",
+        "pair_games": 283,
+        "pair_win_rate": 0.6749116607773852,
+        "pair_expected_win_rate": 0.6481668648066432,
+        "pair_lift_vs_baseline": 0.16928259319772998,
+        "synergy_delta_logit": 0.11949369583279679,
+        "synergy_delta_prob": 0.026744795970741975,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 679,
+        "quality_score": 0.5045761088384192,
+        "pick_score_raw": 4.430295158228608,
+        "pick_score": 9.999999999999998
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "Urza, Lord High Artificer",
+        "pair_games": 225,
+        "pair_win_rate": 0.6888888888888889,
+        "pair_expected_win_rate": 0.6626036619572881,
+        "pair_lift_vs_baseline": 0.18325982130923368,
+        "synergy_delta_logit": 0.12001117496418823,
+        "synergy_delta_prob": 0.026285226931600736,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 545,
+        "quality_score": 0.4812087152129711,
+        "pick_score_raw": 4.201859605749591,
+        "pick_score": 9.61117169260364
+      },
+      {
+        "from": "Kappa Cannoneer",
+        "to": "Nettlecyst",
+        "pair_games": 238,
+        "pair_win_rate": 0.6512605042016807,
+        "pair_expected_win_rate": 0.6230759992579183,
+        "pair_lift_vs_baseline": 0.1456314366220255,
+        "synergy_delta_logit": 0.12195958617978864,
+        "synergy_delta_prob": 0.028184504943762345,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.7283760872741295,
+        "draft_pair_events": 776,
+        "quality_score": 0.469793509519399,
+        "pick_score_raw": 3.8360501039317536,
+        "pick_score": 8.076328100790661
+      },
+      {
+        "from": "Karn, Scion of Urza",
+        "to": "Pinnacle Emissary",
+        "pair_games": 153,
+        "pair_win_rate": 0.6535947712418301,
+        "pair_expected_win_rate": 0.6155252200790969,
+        "pair_lift_vs_baseline": 0.14796570366217487,
+        "synergy_delta_logit": 0.16428054761642086,
+        "synergy_delta_prob": 0.03806955116273314,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 527,
+        "quality_score": 0.44829883228686035,
+        "pick_score_raw": 2.8591093833493586,
+        "pick_score": 3.326386848672367
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "Pinnacle Emissary",
+        "pair_games": 169,
+        "pair_win_rate": 0.650887573964497,
+        "pair_expected_win_rate": 0.6143424100144373,
+        "pair_lift_vs_baseline": 0.14525850638484183,
+        "synergy_delta_logit": 0.15734038135382944,
+        "synergy_delta_prob": 0.03654516395005969,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 568,
+        "quality_score": 0.44524302525653847,
+        "pick_score_raw": 2.9660971430805803,
+        "pick_score": 3.901992973898271
+      },
+      {
+        "from": "Nettlecyst",
+        "to": "Retrofitter Foundry",
+        "pair_games": 193,
+        "pair_win_rate": 0.6632124352331606,
+        "pair_expected_win_rate": 0.6330252116018964,
+        "pair_lift_vs_baseline": 0.15758336765350545,
+        "synergy_delta_logit": 0.13242589314990405,
+        "synergy_delta_prob": 0.03018722363126425,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 725,
+        "quality_score": 0.43431234801644475,
+        "pick_score_raw": 3.4421826192174914,
+        "pick_score": 6.288169624333642
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Kappa Cannoneer",
+        "pair_games": 166,
+        "pair_win_rate": 0.6626506024096386,
+        "pair_expected_win_rate": 0.6322089599295097,
+        "pair_lift_vs_baseline": 0.15702153482998338,
+        "synergy_delta_logit": 0.1334236537568788,
+        "synergy_delta_prob": 0.030441642480128928,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.44261996280798094,
+        "draft_pair_events": 474,
+        "quality_score": 0.4298009999184796,
+        "pick_score_raw": 3.262469260399887,
+        "pick_score": 5.418907555881675
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Tinker",
+        "pair_games": 187,
+        "pair_win_rate": 0.6898395721925134,
+        "pair_expected_win_rate": 0.6648605316609507,
+        "pair_lift_vs_baseline": 0.18421050461285815,
+        "synergy_delta_logit": 0.11433887056745473,
+        "synergy_delta_prob": 0.024979040531562635,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 424,
+        "quality_score": 0.41591572450596975,
+        "pick_score_raw": 3.8065774999516324,
+        "pick_score": 7.9476559605211605
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Retrofitter Foundry",
+        "pair_games": 256,
+        "pair_win_rate": 0.65234375,
+        "pair_expected_win_rate": 0.6255825916908363,
+        "pair_lift_vs_baseline": 0.1467146824203448,
+        "synergy_delta_logit": 0.11604532049658389,
+        "synergy_delta_prob": 0.026761158309163702,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 819,
+        "quality_score": 0.4133843637911457,
+        "pick_score_raw": 3.7412328793792153,
+        "pick_score": 7.659536299788505
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 129,
+        "pair_win_rate": 0.7131782945736435,
+        "pair_expected_win_rate": 0.6877962783540473,
+        "pair_lift_vs_baseline": 0.20754922699398826,
+        "synergy_delta_logit": 0.12103390608456699,
+        "synergy_delta_prob": 0.025382016219596126,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 378,
+        "quality_score": 0.40567289713275684,
+        "pick_score_raw": 3.505182755786392,
+        "pick_score": 6.584593754601873
+      },
+      {
+        "from": "Tezzeret, Cruel Captain",
+        "to": "Upheaval",
+        "pair_games": 196,
+        "pair_win_rate": 0.6683673469387755,
+        "pair_expected_win_rate": 0.6428231300997669,
+        "pair_lift_vs_baseline": 0.16273827935912033,
+        "synergy_delta_logit": 0.11317152972282762,
+        "synergy_delta_prob": 0.02554421683900865,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 605,
+        "quality_score": 0.3822802393361267,
+        "pick_score_raw": 3.541792979788025,
+        "pick_score": 6.754951306256924
+      },
+      {
+        "from": "Kappa Cannoneer",
+        "to": "Trinket Mage",
+        "pair_games": 191,
+        "pair_win_rate": 0.6596858638743456,
+        "pair_expected_win_rate": 0.6325157268142115,
+        "pair_lift_vs_baseline": 0.15405679629469038,
+        "synergy_delta_logit": 0.1188700759198087,
+        "synergy_delta_prob": 0.027170137060134048,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 591,
+        "quality_score": 0.3772095946097724,
+        "pick_score_raw": 3.3268491925174004,
+        "pick_score": 5.734451610275344
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Talisman of Creativity",
+        "pair_games": 168,
+        "pair_win_rate": 0.625,
+        "pair_expected_win_rate": 0.5875289149099345,
+        "pair_lift_vs_baseline": 0.1193709324203448,
+        "synergy_delta_logit": 0.1570662686573004,
+        "synergy_delta_prob": 0.03747108509006547,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 572,
+        "quality_score": 0.37383072654442606,
+        "pick_score_raw": 2.494808626120515,
+        "pick_score": 1.239220870903104
+      },
+      {
+        "from": "Tezzeret, Cruel Captain",
+        "to": "The Mightstone and Weakstone",
+        "pair_games": 215,
+        "pair_win_rate": 0.6372093023255814,
+        "pair_expected_win_rate": 0.6080417556631935,
+        "pair_lift_vs_baseline": 0.13158023474592617,
+        "synergy_delta_logit": 0.12418385702079704,
+        "synergy_delta_prob": 0.029167546662387855,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 646,
+        "quality_score": 0.36533340902216394,
+        "pick_score_raw": 3.0857297312755714,
+        "pick_score": 4.52752145636705
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "Talisman of Creativity",
+        "pair_games": 123,
+        "pair_win_rate": 0.6422764227642277,
+        "pair_expected_win_rate": 0.6080504545663331,
+        "pair_lift_vs_baseline": 0.1366473551845725,
+        "synergy_delta_logit": 0.1461334764196528,
+        "synergy_delta_prob": 0.034225968197894585,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 412,
+        "quality_score": 0.33033924680767485,
+        "pick_score_raw": 2.365176502090415,
+        "pick_score": 0.4436090562973128
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Tinker",
+        "pair_games": 197,
+        "pair_win_rate": 0.6700507614213198,
+        "pair_expected_win_rate": 0.6488630698279048,
+        "pair_lift_vs_baseline": 0.1644216938416646,
+        "synergy_delta_logit": 0.09436920648650848,
+        "synergy_delta_prob": 0.021187691593415048,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 612,
+        "quality_score": 0.32266463073367135,
+        "pick_score_raw": 3.585311081311724,
+        "pick_score": 6.955675761817524
+      },
+      {
+        "from": "Kappa Cannoneer",
+        "to": "Third Path Iconoclast",
+        "pair_games": 196,
+        "pair_win_rate": 0.6224489795918368,
+        "pair_expected_win_rate": 0.5990440523262911,
+        "pair_lift_vs_baseline": 0.11681991201218156,
+        "synergy_delta_logit": 0.09847237809876996,
+        "synergy_delta_prob": 0.02340492726554566,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 1.408778161195931,
+        "draft_pair_events": 626,
+        "quality_score": 0.3126013503218471,
+        "pick_score_raw": 3.0298617870763698,
+        "pick_score": 4.2377140833332705
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "Upheaval",
+        "pair_games": 156,
+        "pair_win_rate": 0.6858974358974359,
+        "pair_expected_win_rate": 0.6653780205584802,
+        "pair_lift_vs_baseline": 0.1802683683177807,
+        "synergy_delta_logit": 0.09365468033818858,
+        "synergy_delta_prob": 0.020519415338955738,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 503,
+        "quality_score": 0.30714928312957807,
+        "pick_score_raw": 3.4352420050872876,
+        "pick_score": 6.255256352729493
+      },
+      {
+        "from": "Kappa Cannoneer",
+        "to": "Tinker",
+        "pair_games": 225,
+        "pair_win_rate": 0.6755555555555556,
+        "pair_expected_win_rate": 0.6576332885019438,
+        "pair_lift_vs_baseline": 0.16992648797590038,
+        "synergy_delta_logit": 0.08065603448505665,
+        "synergy_delta_prob": 0.017922267053611773,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 635,
+        "quality_score": 0.30394478219645815,
+        "pick_score_raw": 3.9523091927285456,
+        "pick_score": 8.576359750600394
+      },
+      {
+        "from": "Retrofitter Foundry",
+        "to": "Teferi, Time Raveler",
+        "pair_games": 127,
+        "pair_win_rate": 0.7086614173228346,
+        "pair_expected_win_rate": 0.6891850791542504,
+        "pair_lift_vs_baseline": 0.2030323497431794,
+        "synergy_delta_logit": 0.09257952799199565,
+        "synergy_delta_prob": 0.019476338168584184,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 307,
+        "quality_score": 0.29936164552501904,
+        "pick_score_raw": 3.3775850370665634,
+        "pick_score": 5.979831701087938
+      },
+      {
+        "from": "Saheeli, Sublime Artificer",
+        "to": "Trinket Mage",
+        "pair_games": 136,
+        "pair_win_rate": 0.6617647058823529,
+        "pair_expected_win_rate": 0.6365692360480988,
+        "pair_lift_vs_baseline": 0.15613563830269772,
+        "synergy_delta_logit": 0.11066389383746178,
+        "synergy_delta_prob": 0.025195469834254136,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 485,
+        "quality_score": 0.2976221618455555,
+        "pick_score_raw": 2.816493749854229,
+        "pick_score": 3.092653350802317
+      },
+      {
+        "from": "Pinnacle Emissary",
+        "to": "Retrofitter Foundry",
+        "pair_games": 201,
+        "pair_win_rate": 0.6368159203980099,
+        "pair_expected_win_rate": 0.6133815611120763,
+        "pair_lift_vs_baseline": 0.13118685281835474,
+        "synergy_delta_logit": 0.10002189231895642,
+        "synergy_delta_prob": 0.023434359285933626,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 715,
+        "quality_score": 0.28485826846776635,
+        "pick_score_raw": 2.988862325519164,
+        "pick_score": 4.0224672729165
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Pinnacle Emissary",
+        "pair_games": 148,
+        "pair_win_rate": 0.6216216216216216,
+        "pair_expected_win_rate": 0.5913572032484088,
+        "pair_lift_vs_baseline": 0.1159925540419664,
+        "synergy_delta_logit": 0.1268580635354839,
+        "synergy_delta_prob": 0.03026441837321281,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 554,
+        "quality_score": 0.27618680616115077,
+        "pick_score_raw": 2.2816747703620686,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Talisman of Creativity",
+        "pair_games": 147,
+        "pair_win_rate": 0.6326530612244898,
+        "pair_expected_win_rate": 0.6046179915565657,
+        "pair_lift_vs_baseline": 0.12702399364483463,
+        "synergy_delta_logit": 0.11887101443671855,
+        "synergy_delta_prob": 0.02803506966792413,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 348,
+        "quality_score": 0.27392937479488566,
+        "pick_score_raw": 2.408796139368642,
+        "pick_score": 0.7146935479110198
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Karn, Scion of Urza",
+        "pair_games": 135,
+        "pair_win_rate": 0.6666666666666666,
+        "pair_expected_win_rate": 0.6441325031807636,
+        "pair_lift_vs_baseline": 0.16103759908701143,
+        "synergy_delta_logit": 0.09980118696106177,
+        "synergy_delta_prob": 0.02253416348590298,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 372,
+        "quality_score": 0.2720838846589979,
+        "pick_score_raw": 2.8508174421796757,
+        "pick_score": 3.281111043544348
+      },
+      {
+        "from": "Nettlecyst",
+        "to": "Trinket Mage",
+        "pair_games": 139,
+        "pair_win_rate": 0.6546762589928058,
+        "pair_expected_win_rate": 0.6309303137510316,
+        "pair_lift_vs_baseline": 0.1490471914131506,
+        "synergy_delta_logit": 0.10344855479548598,
+        "synergy_delta_prob": 0.023745945241774202,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 514,
+        "quality_score": 0.27054691306042095,
+        "pick_score_raw": 2.7397283307760163,
+        "pick_score": 2.6649566382881877
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Grim Monolith",
+        "pair_games": 141,
+        "pair_win_rate": 0.6453900709219859,
+        "pair_expected_win_rate": 0.6206544822185274,
+        "pair_lift_vs_baseline": 0.13976100334233066,
+        "synergy_delta_logit": 0.10650940953096222,
+        "synergy_delta_prob": 0.02473558870345849,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 391,
+        "quality_score": 0.26238038672358105,
+        "pick_score_raw": 2.5767261806183335,
+        "pick_score": 1.7269096702991953
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Trinket Mage",
+        "pair_games": 172,
+        "pair_win_rate": 0.6453488372093024,
+        "pair_expected_win_rate": 0.6234704786615486,
+        "pair_lift_vs_baseline": 0.13971976962964716,
+        "synergy_delta_logit": 0.0943513750115943,
+        "synergy_delta_prob": 0.021878358547753773,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 632,
+        "quality_score": 0.2613813140304781,
+        "pick_score_raw": 2.9054151542028634,
+        "pick_score": 3.577451435552802
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Retrofitter Foundry",
+        "pair_games": 180,
+        "pair_win_rate": 0.6611111111111111,
+        "pair_expected_win_rate": 0.6420555912684229,
+        "pair_lift_vs_baseline": 0.1554820435314559,
+        "synergy_delta_logit": 0.08395242970661398,
+        "synergy_delta_prob": 0.019055519842688162,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 501,
+        "quality_score": 0.2591085295784015,
+        "pick_score_raw": 3.2327801127323226,
+        "pick_score": 5.271783589524491
+      },
+      {
+        "from": "Retrofitter Foundry",
+        "to": "The Mightstone and Weakstone",
+        "pair_games": 225,
+        "pair_win_rate": 0.6488888888888888,
+        "pair_expected_win_rate": 0.6305902827314737,
+        "pair_lift_vs_baseline": 0.14325982130923365,
+        "synergy_delta_logit": 0.07940880477377255,
+        "synergy_delta_prob": 0.018298606157415187,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 731,
+        "quality_score": 0.25859610528244603,
+        "pick_score_raw": 3.4180406729323285,
+        "pick_score": 6.173462934896939
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Trinket Mage",
+        "pair_games": 119,
+        "pair_win_rate": 0.6470588235294118,
+        "pair_expected_win_rate": 0.6209651084715192,
+        "pair_lift_vs_baseline": 0.1414297559497566,
+        "synergy_delta_logit": 0.11248917217692977,
+        "synergy_delta_prob": 0.026093715057892597,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 448,
+        "quality_score": 0.25858012788033596,
+        "pick_score_raw": 2.4062553775937605,
+        "pick_score": 0.6989987805551129
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Third Path Iconoclast",
+        "pair_games": 120,
+        "pair_win_rate": 0.6333333333333333,
+        "pair_expected_win_rate": 0.6067685510539884,
+        "pair_lift_vs_baseline": 0.1277042657536781,
+        "synergy_delta_logit": 0.11279465490278356,
+        "synergy_delta_prob": 0.02656478227934489,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.3294532623378103,
+        "draft_pair_events": 317,
+        "quality_score": 0.24902459955604675,
+        "pick_score_raw": 2.2491410798547027,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Tezzeret, Cruel Captain",
+        "to": "Urza, Lord High Artificer",
+        "pair_games": 240,
+        "pair_win_rate": 0.6541666666666667,
+        "pair_expected_win_rate": 0.6399629560467908,
+        "pair_lift_vs_baseline": 0.14853759908701147,
+        "synergy_delta_logit": 0.062201830076414666,
+        "synergy_delta_prob": 0.014203710619875909,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.4837102578884706,
+        "draft_pair_events": 618,
+        "quality_score": 0.233291152659628,
+        "pick_score_raw": 3.7929957993733203,
+        "pick_score": 7.888094879558848
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Third Path Iconoclast",
+        "pair_games": 125,
+        "pair_win_rate": 0.616,
+        "pair_expected_win_rate": 0.5871280987262675,
+        "pair_lift_vs_baseline": 0.11037093242034479,
+        "synergy_delta_logit": 0.12049876725812214,
+        "synergy_delta_prob": 0.028871901273732514,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 412,
+        "quality_score": 0.2285352612549206,
+        "pick_score_raw": 1.9843748373379466,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Nettlecyst",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 149,
+        "pair_win_rate": 0.6912751677852349,
+        "pair_expected_win_rate": 0.6762029560752655,
+        "pair_lift_vs_baseline": 0.1856461002055797,
+        "synergy_delta_logit": 0.06971124175466459,
+        "synergy_delta_prob": 0.015072211709969419,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 418,
+        "quality_score": 0.22782003025010736,
+        "pick_score_raw": 3.4196174451025727,
+        "pick_score": 6.180973831999825
+      },
+      {
+        "from": "Mox Opal",
+        "to": "Nettlecyst",
+        "pair_games": 235,
+        "pair_win_rate": 0.6297872340425532,
+        "pair_expected_win_rate": 0.6139402176370613,
+        "pair_lift_vs_baseline": 0.12415816646289801,
+        "synergy_delta_logit": 0.06739883117527501,
+        "synergy_delta_prob": 0.01584701640549191,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.6511314835869005,
+        "draft_pair_events": 725,
+        "quality_score": 0.22121074729836482,
+        "pick_score_raw": 3.2841417375318223,
+        "pick_score": 5.525659453926886
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "The Mightstone and Weakstone",
+        "pair_games": 178,
+        "pair_win_rate": 0.6460674157303371,
+        "pair_expected_win_rate": 0.6281814904479911,
+        "pair_lift_vs_baseline": 0.1404383481506819,
+        "synergy_delta_logit": 0.0773741374004221,
+        "synergy_delta_prob": 0.017885925282346005,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 474,
+        "quality_score": 0.216659020069584,
+        "pick_score_raw": 2.93207444267794,
+        "pick_score": 3.7206482346743996
+      },
+      {
+        "from": "Trinket Mage",
+        "to": "Upheaval",
+        "pair_games": 164,
+        "pair_win_rate": 0.676829268292683,
+        "pair_expected_win_rate": 0.6624637854284847,
+        "pair_lift_vs_baseline": 0.17120020071302777,
+        "synergy_delta_logit": 0.06494520188832209,
+        "synergy_delta_prob": 0.014365482864198253,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 499,
+        "quality_score": 0.20843503180033415,
+        "pick_score_raw": 3.3615667124228548,
+        "pick_score": 5.902668834083491
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Nettlecyst",
+        "pair_games": 142,
+        "pair_win_rate": 0.647887323943662,
+        "pair_expected_win_rate": 0.630622996279796,
+        "pair_lift_vs_baseline": 0.1422582563640068,
+        "synergy_delta_logit": 0.07487517064306515,
+        "synergy_delta_prob": 0.017264327663865986,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.44261996280798094,
+        "draft_pair_events": 431,
+        "quality_score": 0.20373483130066283,
+        "pick_score_raw": 2.7542821096876096,
+        "pick_score": 2.746713099315164
+      },
+      {
+        "from": "Coveted Jewel",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 132,
+        "pair_win_rate": 0.6818181818181818,
+        "pair_expected_win_rate": 0.6668146191321161,
+        "pair_lift_vs_baseline": 0.17618911423852657,
+        "synergy_delta_logit": 0.06832701148110754,
+        "synergy_delta_prob": 0.015003562686065619,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 401,
+        "quality_score": 0.20018815778832597,
+        "pick_score_raw": 3.0650163595586983,
+        "pick_score": 4.420538541110411
+      },
+      {
+        "from": "Trinket Mage",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 139,
+        "pair_win_rate": 0.697841726618705,
+        "pair_expected_win_rate": 0.6849848499691248,
+        "pair_lift_vs_baseline": 0.19221265903904983,
+        "synergy_delta_logit": 0.060265372040965826,
+        "synergy_delta_prob": 0.01285687664958024,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 392,
+        "quality_score": 0.19581780875151072,
+        "pick_score_raw": 3.398720854414916,
+        "pick_score": 6.081215414349826
+      },
+      {
+        "from": "Pinnacle Emissary",
+        "to": "Saheeli, Sublime Artificer",
+        "pair_games": 197,
+        "pair_win_rate": 0.6243654822335025,
+        "pair_expected_win_rate": 0.6074096102552901,
+        "pair_lift_vs_baseline": 0.11873641465384732,
+        "synergy_delta_logit": 0.07168269077951828,
+        "synergy_delta_prob": 0.016955871978212467,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 735,
+        "quality_score": 0.18565626266680876,
+        "pick_score_raw": 2.718516410509084,
+        "pick_score": 2.54522619649849
+      },
+      {
+        "from": "Karn, Scion of Urza",
+        "to": "Talisman of Creativity",
+        "pair_games": 150,
+        "pair_win_rate": 0.6266666666666667,
+        "pair_expected_win_rate": 0.6092402876923402,
+        "pair_lift_vs_baseline": 0.1210375990870115,
+        "synergy_delta_logit": 0.07382316511906584,
+        "synergy_delta_prob": 0.01742637897432653,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 401,
+        "quality_score": 0.16575142941821858,
+        "pick_score_raw": 2.348829326465174,
+        "pick_score": 0.34110951276264245
+      },
+      {
+        "from": "Karn, Scion of Urza",
+        "to": "Tezzeret, Cruel Captain",
+        "pair_games": 188,
+        "pair_win_rate": 0.6382978723404256,
+        "pair_expected_win_rate": 0.6243400840484302,
+        "pair_lift_vs_baseline": 0.13266880476077036,
+        "synergy_delta_logit": 0.05997306646061551,
+        "synergy_delta_prob": 0.013957788291995343,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 577,
+        "quality_score": 0.165460325664735,
+        "pick_score_raw": 2.892034820334491,
+        "pick_score": 3.5052119178412635
+      },
+      {
+        "from": "Ugin, Eye of the Storms",
+        "to": "Upheaval",
+        "pair_games": 175,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_expected_win_rate": 0.7056727781370757,
+        "pair_lift_vs_baseline": 0.2086566467060591,
+        "synergy_delta_logit": 0.04183123682986167,
+        "synergy_delta_prob": 0.008612936148638561,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 444,
+        "quality_score": 0.1651132885865816,
+        "pick_score_raw": 4.131586194106528,
+        "pick_score": 9.324877442270372
+      },
+      {
+        "from": "Kappa Cannoneer",
+        "to": "Tezzeret, Cruel Captain",
+        "pair_games": 218,
+        "pair_win_rate": 0.6238532110091743,
+        "pair_expected_win_rate": 0.6121526864934207,
+        "pair_lift_vs_baseline": 0.11822414342951915,
+        "synergy_delta_logit": 0.04956563962497018,
+        "synergy_delta_prob": 0.011700524515753652,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.49778302604636204,
+        "draft_pair_events": 706,
+        "quality_score": 0.14637781757808246,
+        "pick_score_raw": 2.9858442855096943,
+        "pick_score": 4.006535270713268
+      },
+      {
+        "from": "Pinnacle Emissary",
+        "to": "Talisman of Creativity",
+        "pair_games": 177,
+        "pair_win_rate": 0.5932203389830508,
+        "pair_expected_win_rate": 0.5749304228750913,
+        "pair_lift_vs_baseline": 0.08759127140339562,
+        "synergy_delta_logit": 0.07529806776853953,
+        "synergy_delta_prob": 0.018289916107959492,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 609,
+        "quality_score": 0.14234518679190733,
+        "pick_score_raw": 1.9822256494454966,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Nettlecyst",
+        "to": "The Mightstone and Weakstone",
+        "pair_games": 214,
+        "pair_win_rate": 0.6308411214953271,
+        "pair_expected_win_rate": 0.6190087893635506,
+        "pair_lift_vs_baseline": 0.12521205391567192,
+        "synergy_delta_logit": 0.050483759757640634,
+        "synergy_delta_prob": 0.01183233213177648,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 676,
+        "quality_score": 0.14218920733600374,
+        "pick_score_raw": 2.9549865184042874,
+        "pick_score": 3.842943746420862
+      },
+      {
+        "from": "Nettlecyst",
+        "to": "Tezzeret, Cruel Captain",
+        "pair_games": 230,
+        "pair_win_rate": 0.6217391304347826,
+        "pair_expected_win_rate": 0.6105335160108017,
+        "pair_lift_vs_baseline": 0.11611006285512737,
+        "synergy_delta_logit": 0.04738113308105352,
+        "synergy_delta_prob": 0.011205614423980825,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5106532707013299,
+        "draft_pair_events": 653,
+        "quality_score": 0.14141269593863634,
+        "pick_score_raw": 3.0135740570413585,
+        "pick_score": 4.152466983590929
+      },
+      {
+        "from": "Nettlecyst",
+        "to": "Upheaval",
+        "pair_games": 187,
+        "pair_win_rate": 0.6631016042780749,
+        "pair_expected_win_rate": 0.6533717646869255,
+        "pair_lift_vs_baseline": 0.15747253669841965,
+        "synergy_delta_logit": 0.04325339153478591,
+        "synergy_delta_prob": 0.00972983959114937,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 574,
+        "quality_score": 0.1383231181987731,
+        "pick_score_raw": 3.352185845195331,
+        "pick_score": 5.857347989736513
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Ugin, Eye of the Storms",
+        "pair_games": 166,
+        "pair_win_rate": 0.6927710843373494,
+        "pair_expected_win_rate": 0.6847000493876567,
+        "pair_lift_vs_baseline": 0.18714201675769415,
+        "synergy_delta_logit": 0.03765004729551957,
+        "synergy_delta_prob": 0.008071034949692635,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 350,
+        "quality_score": 0.12992702638529333,
+        "pick_score_raw": 3.6073276016886346,
+        "pick_score": 7.056501028652214
+      },
+      {
+        "from": "Grim Monolith",
+        "to": "Mox Opal",
+        "pair_games": 164,
+        "pair_win_rate": 0.6341463414634146,
+        "pair_expected_win_rate": 0.6231606596013912,
+        "pair_lift_vs_baseline": 0.12851727388375944,
+        "synergy_delta_logit": 0.047060914627487294,
+        "synergy_delta_prob": 0.010985681862023422,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 480,
+        "quality_score": 0.11714677590582083,
+        "pick_score_raw": 2.6067202284387365,
+        "pick_score": 1.9026877865176226
+      },
+      {
+        "from": "Karn, Scion of Urza",
+        "to": "Trinket Mage",
+        "pair_games": 116,
+        "pair_win_rate": 0.6551724137931034,
+        "pair_expected_win_rate": 0.6444349182238591,
+        "pair_lift_vs_baseline": 0.14954334621344822,
+        "synergy_delta_logit": 0.047188352737867256,
+        "synergy_delta_prob": 0.010737495569244304,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 426,
+        "quality_score": 0.11226267324362327,
+        "pick_score_raw": 2.489632687781802,
+        "pick_score": 1.2080235313789438
+      },
+      {
+        "from": "Saheeli, Sublime Artificer",
+        "to": "Tezzeret, Cruel Captain",
+        "pair_games": 153,
+        "pair_win_rate": 0.6274509803921569,
+        "pair_expected_win_rate": 0.6162945509076859,
+        "pair_lift_vs_baseline": 0.12182191281250165,
+        "synergy_delta_logit": 0.04744710591878143,
+        "synergy_delta_prob": 0.011156429484470931,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 587,
+        "quality_score": 0.10977152286859243,
+        "pick_score_raw": 2.425418817262428,
+        "pick_score": 0.8170872557759656
+      },
+      {
+        "from": "Saheeli, Sublime Artificer",
+        "to": "Tinker",
+        "pair_games": 190,
+        "pair_win_rate": 0.6684210526315789,
+        "pair_expected_win_rate": 0.6615579861985675,
+        "pair_lift_vs_baseline": 0.16279198505192372,
+        "synergy_delta_logit": 0.030807495986553746,
+        "synergy_delta_prob": 0.006863066433011378,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 525,
+        "quality_score": 0.10193955659815829,
+        "pick_score_raw": 3.4667819346430444,
+        "pick_score": 6.4044099860126655
+      },
+      {
+        "from": "Retrofitter Foundry",
+        "to": "Saheeli, Sublime Artificer",
+        "pair_games": 206,
+        "pair_win_rate": 0.6456310679611651,
+        "pair_expected_win_rate": 0.638650457930085,
+        "pair_lift_vs_baseline": 0.1400020003815099,
+        "synergy_delta_logit": 0.03037814700905206,
+        "synergy_delta_prob": 0.006980610031080081,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 701,
+        "quality_score": 0.0926230692370238,
+        "pick_score_raw": 3.1995117657634946,
+        "pick_score": 5.105691899836087
+      },
+      {
+        "from": "Pinnacle Emissary",
+        "to": "Tezzeret, Cruel Captain",
+        "pair_games": 170,
+        "pair_win_rate": 0.6,
+        "pair_expected_win_rate": 0.5904648103560808,
+        "pair_lift_vs_baseline": 0.09437093242034478,
+        "synergy_delta_logit": 0.03957790000570088,
+        "synergy_delta_prob": 0.009535189643919195,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.867977141110744,
+        "draft_pair_events": 649,
+        "quality_score": 0.09033949114607018,
+        "pick_score_raw": 2.250462269645597,
+        "pick_score": 0.0
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "Nettlecyst",
+        "pair_games": 137,
+        "pair_win_rate": 0.6423357664233577,
+        "pair_expected_win_rate": 0.633966373832229,
+        "pair_lift_vs_baseline": 0.13670669884370246,
+        "synergy_delta_logit": 0.036245805412905896,
+        "synergy_delta_prob": 0.008369392591128677,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 494,
+        "quality_score": 0.08710687614991808,
+        "pick_score_raw": 2.517030693021857,
+        "pick_score": 1.372638742452984
+      },
+      {
+        "from": "Aether Spellbomb",
+        "to": "The Mightstone and Weakstone",
+        "pair_games": 158,
+        "pair_win_rate": 0.6392405063291139,
+        "pair_expected_win_rate": 0.631534054817599,
+        "pair_lift_vs_baseline": 0.1336114387494587,
+        "synergy_delta_logit": 0.033265674458569094,
+        "synergy_delta_prob": 0.0077064515115148335,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 523,
+        "quality_score": 0.08434082186572131,
+        "pick_score_raw": 2.656271870468596,
+        "pick_score": 2.1899042139486347
+      }
+    ],
+    "triplets": [
+      {
+        "cards": [
+          "Kappa Cannoneer",
+          "Nettlecyst",
+          "Urza, Lord High Artificer"
+        ],
+        "games": 31,
+        "win_rate": 0.8064516129032258,
+        "expected_win_rate": 0.7036874431739284,
+        "synergy_delta_logit": 0.5621969032713199,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 257,
+        "quality": 4.1730856259333
+      },
+      {
+        "cards": [
+          "Kappa Cannoneer",
+          "Pinnacle Emissary",
+          "Urza, Lord High Artificer"
+        ],
+        "games": 31,
+        "win_rate": 0.7419354838709677,
+        "expected_win_rate": 0.6859497311687432,
+        "synergy_delta_logit": 0.2748013923022947,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 257,
+        "quality": 2.0398008838723993
+      },
+      {
+        "cards": [
+          "Mox Opal",
+          "Pinnacle Emissary",
+          "Urza, Lord High Artificer"
+        ],
+        "games": 31,
+        "win_rate": 0.7096774193548387,
+        "expected_win_rate": 0.6775492173367864,
+        "synergy_delta_logit": 0.1512861930836813,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 240,
+        "quality": 1.1195250568270927
+      },
+      {
+        "cards": [
+          "Kappa Cannoneer",
+          "Mox Opal",
+          "Nettlecyst"
+        ],
+        "games": 32,
+        "win_rate": 0.6875,
+        "expected_win_rate": 0.6698189882880679,
+        "synergy_delta_logit": 0.08109087563251494,
+        "deck_log_lift": 0.2896235620864938,
+        "draft_triplet_events": 285,
+        "quality": 0.6499783731573296
+      },
+      {
+        "cards": [
+          "Mox Opal",
+          "Nettlecyst",
+          "Urza, Lord High Artificer"
+        ],
+        "games": 38,
+        "win_rate": 0.7105263157894737,
+        "expected_win_rate": 0.6955508097511672,
+        "synergy_delta_logit": 0.07174173984573662,
+        "deck_log_lift": 0.0,
+        "draft_triplet_events": 233,
+        "quality": 0.587001352077637
+      }
+    ],
+    "communities": [
+      {
+        "community_id": 0,
+        "size": 8,
+        "top_cards": [
+          "Mox Opal",
+          "Urza, Lord High Artificer",
+          "Retrofitter Foundry",
+          "Saheeli, Sublime Artificer",
+          "Nettlecyst"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 4,
+        "top_cards": [
+          "Tinker",
+          "Tezzeret, Cruel Captain",
+          "Karn, Scion of Urza",
+          "Coveted Jewel"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Kappa Cannoneer",
+          "Pinnacle Emissary",
+          "Upheaval",
+          "Aether Spellbomb"
+        ]
+      },
+      {
+        "community_id": 3,
+        "size": 4,
+        "top_cards": [
+          "The Mightstone and Weakstone",
+          "Third Path Iconoclast",
+          "Trinket Mage",
+          "Grim Monolith"
+        ]
+      },
+      {
+        "community_id": 4,
+        "size": 1,
+        "top_cards": [
+          "Regrowth"
+        ]
+      },
+      {
+        "community_id": 5,
+        "size": 1,
+        "top_cards": [
+          "Wishclaw Talisman"
+        ]
+      },
+      {
+        "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Leovold, Emissary of Trest"
+        ]
+      },
+      {
+        "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Torsten, Founder of Benalia"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Uro, Titan of Nature's Wrath"
+        ]
+      },
+      {
+        "community_id": 9,
+        "size": 1,
+        "top_cards": [
+          "Agatha's Soul Cauldron"
+        ]
+      },
+      {
+        "community_id": 10,
+        "size": 1,
+        "top_cards": [
+          "Splitskin Doll"
+        ]
+      },
+      {
+        "community_id": 11,
+        "size": 1,
+        "top_cards": [
+          "Enduring Curiosity"
+        ]
+      }
+    ],
+    "pick_by_rarity": {
+      "common": [
+        {
+          "card": "Aether Spellbomb",
+          "pick_priority_score": 9.012729781415567,
+          "pick_priority_score_raw": 250.9940931883116,
+          "draft_drafts": 1615,
+          "draft_win_rate": 0.5155292064009067,
+          "draft_win_lift": 0.0076847766052574595,
+          "draw_win_rate": 0.57752566180443
+        },
+        {
+          "card": "Trinket Mage",
+          "pick_priority_score": 8.705788375920493,
+          "pick_priority_score_raw": 219.02219020924431,
+          "draft_drafts": 1594,
+          "draft_win_rate": 0.5123447542467641,
+          "draft_win_lift": 0.004500324451114812,
+          "draw_win_rate": 0.574335782928208
+        }
+      ],
+      "uncommon": [
+        {
+          "card": "Tinker",
+          "pick_priority_score": 9.80130214302282,
+          "pick_priority_score_raw": 356.08652318572416,
+          "draft_drafts": 1769,
+          "draft_win_rate": 0.515934301417198,
+          "draft_win_lift": 0.008089871621548728,
+          "draw_win_rate": 0.6009209516500383
+        },
+        {
+          "card": "Saheeli, Sublime Artificer",
+          "pick_priority_score": 8.641198311259632,
+          "pick_priority_score_raw": 212.8292231656772,
+          "draft_drafts": 1856,
+          "draft_win_rate": 0.5062352132929472,
+          "draft_win_lift": -0.001609216502702071,
+          "draw_win_rate": 0.5703938433680399
+        },
+        {
+          "card": "Third Path Iconoclast",
+          "pick_priority_score": 6.835573562941899,
+          "pick_priority_score_raw": 95.25854662053203,
+          "draft_drafts": 1599,
+          "draft_win_rate": 0.507967428049087,
+          "draft_win_lift": 0.00012299825343775606,
+          "draw_win_rate": 0.5394235997824904
+        },
+        {
+          "card": "Talisman of Creativity",
+          "pick_priority_score": 6.7268991430346405,
+          "pick_priority_score_raw": 90.74384823367015,
+          "draft_drafts": 1589,
+          "draft_win_rate": 0.5062877154947371,
+          "draft_win_lift": -0.0015567143009121986,
+          "draw_win_rate": 0.5371856607811664
+        },
+        {
+          "card": "Splitskin Doll",
+          "pick_priority_score": 4.098201019905363,
+          "pick_priority_score_raw": 27.704031546047084,
+          "draft_drafts": 395,
+          "draft_win_rate": 0.4985314136265951,
+          "draft_win_lift": -0.009313016169054167,
+          "draw_win_rate": 0.5309734513274337
+        }
+      ],
+      "rare": [
+        {
+          "card": "Upheaval",
+          "pick_priority_score": 9.999234157053026,
+          "pick_priority_score_raw": 388.73614493454755,
+          "draft_drafts": 1862,
+          "draft_win_rate": 0.5215167309777853,
+          "draft_win_lift": 0.013672301182136026,
+          "draw_win_rate": 0.598026020637057
+        },
+        {
+          "card": "Retrofitter Foundry",
+          "pick_priority_score": 9.899277481791964,
+          "pick_priority_score_raw": 371.8909925019243,
+          "draft_drafts": 2182,
+          "draft_win_rate": 0.5269703975855339,
+          "draft_win_lift": 0.019125967789884624,
+          "draw_win_rate": 0.576536312849162
+        },
+        {
+          "card": "The Mightstone and Weakstone",
+          "pick_priority_score": 9.164120377282906,
+          "pick_priority_score_raw": 268.4343601669141,
+          "draft_drafts": 2009,
+          "draft_win_rate": 0.5166222869649445,
+          "draft_win_lift": 0.008777857169295245,
+          "draw_win_rate": 0.5618556701030928
+        },
+        {
+          "card": "Kappa Cannoneer",
+          "pick_priority_score": 9.054040351156338,
+          "pick_priority_score_raw": 255.6379019367634,
+          "draft_drafts": 2180,
+          "draft_win_rate": 0.5101812047630042,
+          "draft_win_lift": 0.00233677496735496,
+          "draw_win_rate": 0.5661053385883196
+        },
+        {
+          "card": "Grim Monolith",
+          "pick_priority_score": 9.016634138416586,
+          "pick_priority_score_raw": 251.42937069591787,
+          "draft_drafts": 1361,
+          "draft_win_rate": 0.5233879144212878,
+          "draft_win_lift": 0.015543484625638593,
+          "draw_win_rate": 0.5740131578947368
+        },
+        {
+          "card": "Teferi, Time Raveler",
+          "pick_priority_score": 8.94324781408936,
+          "pick_priority_score_raw": 243.37221856462867,
+          "draft_drafts": 774,
+          "draft_win_rate": 0.5251750054282887,
+          "draft_win_lift": 0.0173305756326394,
+          "draw_win_rate": 0.6248671625929861
+        },
+        {
+          "card": "Nettlecyst",
+          "pick_priority_score": 8.92565055415066,
+          "pick_priority_score_raw": 241.4787398759058,
+          "draft_drafts": 1920,
+          "draft_win_rate": 0.5114902297863815,
+          "draft_win_lift": 0.0036457999907322236,
+          "draw_win_rate": 0.5644307149161518
+        },
+        {
+          "card": "Coveted Jewel",
+          "pick_priority_score": 7.877133435173274,
+          "pick_priority_score_raw": 151.54173724893926,
+          "draft_drafts": 1664,
+          "draft_win_rate": 0.5078447558611634,
+          "draft_win_lift": 3.260655141446023e-07,
+          "draw_win_rate": 0.553939393939394
+        }
+      ],
+      "mythic": [
+        {
+          "card": "Ugin, Eye of the Storms",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 430.3219059601655,
+          "draft_drafts": 1367,
+          "draft_win_rate": 0.5334877970796297,
+          "draft_win_lift": 0.025643367283980423,
+          "draw_win_rate": 0.6223958333333334
+        },
+        {
+          "card": "Urza, Lord High Artificer",
+          "pick_priority_score": 10.0,
+          "pick_priority_score_raw": 388.93917561526956,
+          "draft_drafts": 1993,
+          "draft_win_rate": 0.521110126017919,
+          "draft_win_lift": 0.013265696222269696,
+          "draw_win_rate": 0.5950331125827815
+        },
+        {
+          "card": "Mox Opal",
+          "pick_priority_score": 9.274619482039538,
+          "pick_priority_score_raw": 281.9212793230317,
+          "draft_drafts": 2205,
+          "draft_win_rate": 0.5199710928048624,
+          "draft_win_lift": 0.012126663009213168,
+          "draw_win_rate": 0.5565714285714286
+        },
+        {
+          "card": "Karn, Scion of Urza",
+          "pick_priority_score": 9.15845204314768,
+          "pick_priority_score_raw": 267.76011788164857,
+          "draft_drafts": 1621,
+          "draft_win_rate": 0.5153455612091918,
+          "draft_win_lift": 0.007501131413542583,
+          "draw_win_rate": 0.578743961352657
+        },
+        {
+          "card": "Tezzeret, Cruel Captain",
+          "pick_priority_score": 8.485528124251612,
+          "pick_priority_score_raw": 198.6102700027114,
+          "draft_drafts": 1918,
+          "draft_win_rate": 0.5126034006288196,
+          "draft_win_lift": 0.0047589708331703395,
+          "draw_win_rate": 0.5530270502361528
+        },
+        {
+          "card": "Leovold, Emissary of Trest",
+          "pick_priority_score": 7.385798349304961,
+          "pick_priority_score_raw": 121.76273466652584,
+          "draft_drafts": 363,
+          "draft_win_rate": 0.526566835704535,
+          "draft_win_lift": 0.018722405908885742,
+          "draw_win_rate": 0.5877862595419847
+        },
+        {
+          "card": "Uro, Titan of Nature's Wrath",
+          "pick_priority_score": 4.482402831863092,
+          "pick_priority_score_raw": 33.01719822726967,
+          "draft_drafts": 190,
+          "draft_win_rate": 0.49109460724282067,
+          "draft_win_lift": -0.016749822552828586,
+          "draw_win_rate": 0.5491803278688525
+        },
+        {
+          "card": "Agatha's Soul Cauldron",
+          "pick_priority_score": 0.0,
+          "pick_priority_score_raw": 0.7683963812769348,
+          "draft_drafts": 539,
+          "draft_win_rate": 0.5026430565119476,
+          "draft_win_lift": -0.005201373283701627,
+          "draw_win_rate": 0.5061728395061729
+        }
+      ]
+    },
+    "top_bombs": [
+      {
+        "card": "Teferi, Time Raveler",
+        "standalone_delta": 0.11923809501333094,
+        "win_rate": 0.6248671625929861,
+        "draw_games": 941
+      },
+      {
+        "card": "Ugin, Eye of the Storms",
+        "standalone_delta": 0.11676676575367817,
+        "win_rate": 0.6223958333333334,
+        "draw_games": 1920
+      },
+      {
+        "card": "Tinker",
+        "standalone_delta": 0.09529188407038314,
+        "win_rate": 0.6009209516500383,
+        "draw_games": 2606
+      },
+      {
+        "card": "Upheaval",
+        "standalone_delta": 0.09239695305740181,
+        "win_rate": 0.598026020637057,
+        "draw_games": 2229
+      },
+      {
+        "card": "Urza, Lord High Artificer",
+        "standalone_delta": 0.08940404500312626,
+        "win_rate": 0.5950331125827815,
+        "draw_games": 3020
+      },
+      {
+        "card": "Leovold, Emissary of Trest",
+        "standalone_delta": 0.08215719196232951,
+        "win_rate": 0.5877862595419847,
+        "draw_games": 131
+      },
+      {
+        "card": "Karn, Scion of Urza",
+        "standalone_delta": 0.07311489377300184,
+        "win_rate": 0.578743961352657,
+        "draw_games": 2070
+      },
+      {
+        "card": "Aether Spellbomb",
+        "standalone_delta": 0.07189659422477479,
+        "win_rate": 0.57752566180443,
+        "draw_games": 1851
+      },
+      {
+        "card": "Retrofitter Foundry",
+        "standalone_delta": 0.07090724526950676,
+        "win_rate": 0.576536312849162,
+        "draw_games": 2685
+      },
+      {
+        "card": "Trinket Mage",
+        "standalone_delta": 0.06870671534855277,
+        "win_rate": 0.574335782928208,
+        "draw_games": 1769
+      },
+      {
+        "card": "Grim Monolith",
+        "standalone_delta": 0.06838409031508164,
+        "win_rate": 0.5740131578947368,
+        "draw_games": 1824
+      },
+      {
+        "card": "Saheeli, Sublime Artificer",
+        "standalone_delta": 0.06476477578838469,
+        "win_rate": 0.5703938433680399,
+        "draw_games": 2209
+      }
+    ],
+    "top_dependency": [
+      {
+        "card": "Kappa Cannoneer",
+        "dependency_score": 0.7709208259696976,
+        "standalone_delta": 0.06047627100866437,
+        "draw_games": 2791
+      },
+      {
+        "card": "Third Path Iconoclast",
+        "dependency_score": 0.5363842041138988,
+        "standalone_delta": 0.03379453220283524,
+        "draw_games": 1839
+      },
+      {
+        "card": "Pinnacle Emissary",
+        "dependency_score": 0.5359545022439599,
+        "standalone_delta": 0.038132571154050554,
+        "draw_games": 2148
+      },
+      {
+        "card": "Tezzeret, Cruel Captain",
+        "dependency_score": 0.34109830190522483,
+        "standalone_delta": 0.04739798265649764,
+        "draw_games": 2329
+      },
+      {
+        "card": "Mox Opal",
+        "dependency_score": 0.33575088372894907,
+        "standalone_delta": 0.050942360991773405,
+        "draw_games": 2625
+      },
+      {
+        "card": "Nettlecyst",
+        "dependency_score": 0.3169458267851794,
+        "standalone_delta": 0.05880164733649662,
+        "draw_games": 2266
+      },
+      {
+        "card": "Urza, Lord High Artificer",
+        "dependency_score": 0.3150528166315063,
+        "standalone_delta": 0.08940404500312626,
+        "draw_games": 3020
+      },
+      {
+        "card": "Grim Monolith",
+        "dependency_score": 0.20393042022458344,
+        "standalone_delta": 0.06838409031508164,
+        "draw_games": 1824
+      },
+      {
+        "card": "Talisman of Creativity",
+        "dependency_score": 0.19744552762594797,
+        "standalone_delta": 0.03155659320151116,
+        "draw_games": 1869
+      },
+      {
+        "card": "Coveted Jewel",
+        "dependency_score": 0.1849702889303166,
+        "standalone_delta": 0.04831032635973875,
+        "draw_games": 1650
+      },
+      {
+        "card": "Saheeli, Sublime Artificer",
+        "dependency_score": 0.15372226043420775,
+        "standalone_delta": 0.06476477578838469,
+        "draw_games": 2209
+      },
+      {
+        "card": "Karn, Scion of Urza",
+        "dependency_score": 0.14438740322538696,
+        "standalone_delta": 0.07311489377300184,
+        "draw_games": 2070
+      }
+    ],
+    "top_pairs": [
+      {
+        "cards": [
+          "Talisman of Creativity",
+          "Ugin, Eye of the Storms"
+        ],
+        "quality_score": 1.5671048339873195,
+        "pair_win_rate": 0.7350993377483444,
+        "pair_games": 151,
+        "synergy_delta_logit": 0.3944203660380877
+      },
+      {
+        "cards": [
+          "Coveted Jewel",
+          "Karn, Scion of Urza"
+        ],
+        "quality_score": 1.2063316143776597,
+        "pair_win_rate": 0.7034482758620689,
+        "pair_games": 145,
+        "synergy_delta_logit": 0.3520701117694407
+      },
+      {
+        "cards": [
+          "Saheeli, Sublime Artificer",
+          "Talisman of Creativity"
+        ],
+        "quality_score": 1.1525275163226951,
+        "pair_win_rate": 0.6853146853146853,
+        "pair_games": 143,
+        "synergy_delta_logit": 0.3683462159152824
+      },
+      {
+        "cards": [
+          "Coveted Jewel",
+          "Saheeli, Sublime Artificer"
+        ],
+        "quality_score": 1.0806526399122958,
+        "pair_win_rate": 0.6928571428571428,
+        "pair_games": 140,
+        "synergy_delta_logit": 0.3359694304193719
+      },
+      {
+        "cards": [
+          "Kappa Cannoneer",
+          "Pinnacle Emissary"
+        ],
+        "quality_score": 1.068956548848481,
+        "pair_win_rate": 0.6584362139917695,
+        "pair_games": 243,
+        "synergy_delta_logit": 0.23737645491617554
+      },
+      {
+        "cards": [
+          "Pinnacle Emissary",
+          "Upheaval"
+        ],
+        "quality_score": 0.9169099439327257,
+        "pair_win_rate": 0.6887755102040817,
+        "pair_games": 196,
+        "synergy_delta_logit": 0.24417563700820666
+      },
+      {
+        "cards": [
+          "Pinnacle Emissary",
+          "The Mightstone and Weakstone"
+        ],
+        "quality_score": 0.8887764553695697,
+        "pair_win_rate": 0.6616915422885572,
+        "pair_games": 201,
+        "synergy_delta_logit": 0.2691664272536862
+      },
+      {
+        "cards": [
+          "Retrofitter Foundry",
+          "Third Path Iconoclast"
+        ],
+        "quality_score": 0.8852156882960921,
+        "pair_win_rate": 0.6702127659574468,
+        "pair_games": 188,
+        "synergy_delta_logit": 0.26507177054485365
+      },
+      {
+        "cards": [
+          "Mox Opal",
+          "Pinnacle Emissary"
+        ],
+        "quality_score": 0.8843468881068124,
+        "pair_win_rate": 0.646551724137931,
+        "pair_games": 232,
+        "synergy_delta_logit": 0.22367889331955282
+      },
+      {
+        "cards": [
+          "Retrofitter Foundry",
+          "Talisman of Creativity"
+        ],
+        "quality_score": 0.8814837312190509,
+        "pair_win_rate": 0.6684210526315789,
+        "pair_games": 190,
+        "synergy_delta_logit": 0.2659812280185484
+      },
+      {
+        "cards": [
+          "Grim Monolith",
+          "Trinket Mage"
+        ],
+        "quality_score": 0.8546517016754303,
+        "pair_win_rate": 0.7047619047619048,
+        "pair_games": 105,
+        "synergy_delta_logit": 0.2947878495480222
+      },
+      {
+        "cards": [
+          "Saheeli, Sublime Artificer",
+          "Urza, Lord High Artificer"
+        ],
+        "quality_score": 0.8221040545777827,
+        "pair_win_rate": 0.6961538461538461,
+        "pair_games": 260,
+        "synergy_delta_logit": 0.18329644803724277
+      }
+    ],
+    "top_pick_cards": [
+      {
+        "card": "Ugin, Eye of the Storms",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 430.3219059601655,
+        "draft_drafts": 1367,
+        "draft_win_lift": 0.025643367283980423,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Urza, Lord High Artificer",
+        "pick_priority_score": 10.0,
+        "pick_priority_score_raw": 388.93917561526956,
+        "draft_drafts": 1993,
+        "draft_win_lift": 0.013265696222269696,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Upheaval",
+        "pick_priority_score": 9.999234157053026,
+        "pick_priority_score_raw": 388.73614493454755,
+        "draft_drafts": 1862,
+        "draft_win_lift": 0.013672301182136026,
+        "rarity": "rare"
+      },
+      {
+        "card": "Retrofitter Foundry",
+        "pick_priority_score": 9.899277481791964,
+        "pick_priority_score_raw": 371.8909925019243,
+        "draft_drafts": 2182,
+        "draft_win_lift": 0.019125967789884624,
+        "rarity": "rare"
+      },
+      {
+        "card": "Tinker",
+        "pick_priority_score": 9.80130214302282,
+        "pick_priority_score_raw": 356.08652318572416,
+        "draft_drafts": 1769,
+        "draft_win_lift": 0.008089871621548728,
+        "rarity": "uncommon"
+      },
+      {
+        "card": "Mox Opal",
+        "pick_priority_score": 9.274619482039538,
+        "pick_priority_score_raw": 281.9212793230317,
+        "draft_drafts": 2205,
+        "draft_win_lift": 0.012126663009213168,
+        "rarity": "mythic"
+      },
+      {
+        "card": "The Mightstone and Weakstone",
+        "pick_priority_score": 9.164120377282906,
+        "pick_priority_score_raw": 268.4343601669141,
+        "draft_drafts": 2009,
+        "draft_win_lift": 0.008777857169295245,
+        "rarity": "rare"
+      },
+      {
+        "card": "Karn, Scion of Urza",
+        "pick_priority_score": 9.15845204314768,
+        "pick_priority_score_raw": 267.76011788164857,
+        "draft_drafts": 1621,
+        "draft_win_lift": 0.007501131413542583,
+        "rarity": "mythic"
+      },
+      {
+        "card": "Kappa Cannoneer",
+        "pick_priority_score": 9.054040351156338,
+        "pick_priority_score_raw": 255.6379019367634,
+        "draft_drafts": 2180,
+        "draft_win_lift": 0.00233677496735496,
+        "rarity": "rare"
+      },
+      {
+        "card": "Grim Monolith",
+        "pick_priority_score": 9.016634138416586,
+        "pick_priority_score_raw": 251.42937069591787,
+        "draft_drafts": 1361,
+        "draft_win_lift": 0.015543484625638593,
+        "rarity": "rare"
+      },
+      {
+        "card": "Aether Spellbomb",
+        "pick_priority_score": 9.012729781415567,
+        "pick_priority_score_raw": 250.9940931883116,
+        "draft_drafts": 1615,
+        "draft_win_lift": 0.0076847766052574595,
+        "rarity": "common"
+      },
+      {
+        "card": "Teferi, Time Raveler",
+        "pick_priority_score": 8.94324781408936,
+        "pick_priority_score_raw": 243.37221856462867,
+        "draft_drafts": 774,
+        "draft_win_lift": 0.0173305756326394,
+        "rarity": "rare"
+      }
+    ],
+    "top_pick_pairs": [
+      {
+        "cards": [
+          "Ugin, Eye of the Storms",
+          "Urza, Lord High Artificer"
+        ],
+        "pick_score": 9.999999999999998,
+        "pick_score_raw": 4.832343068272127,
+        "pair_win_rate": 0.7307692307692307,
+        "pair_games": 208,
+        "draft_pair_events": 451
+      },
+      {
+        "cards": [
+          "Saheeli, Sublime Artificer",
+          "Urza, Lord High Artificer"
+        ],
+        "pick_score": 9.999999999999998,
+        "pick_score_raw": 4.703205553795249,
+        "pair_win_rate": 0.6961538461538461,
+        "pair_games": 260,
+        "draft_pair_events": 616
+      },
+      {
+        "cards": [
+          "Retrofitter Foundry",
+          "Ugin, Eye of the Storms"
+        ],
+        "pick_score": 9.999999999999998,
+        "pick_score_raw": 4.537654157098358,
+        "pair_win_rate": 0.7208121827411168,
+        "pair_games": 197,
+        "draft_pair_events": 514
+      },
+      {
+        "cards": [
+          "The Mightstone and Weakstone",
+          "Urza, Lord High Artificer"
+        ],
+        "pick_score": 9.999999999999998,
+        "pick_score_raw": 4.430295158228608,
+        "pair_win_rate": 0.6749116607773852,
+        "pair_games": 283,
+        "draft_pair_events": 679
+      },
+      {
+        "cards": [
+          "Kappa Cannoneer",
+          "Pinnacle Emissary"
+        ],
+        "pick_score": 9.999999999999998,
+        "pick_score_raw": 4.303366208577595,
+        "pair_win_rate": 0.6584362139917695,
+        "pair_games": 243,
+        "draft_pair_events": 788
+      },
+      {
+        "cards": [
+          "Mox Opal",
+          "Ugin, Eye of the Storms"
+        ],
+        "pick_score": 9.928182424351139,
+        "pick_score_raw": 4.280795950673659,
+        "pair_win_rate": 0.7070707070707071,
+        "pair_games": 198,
+        "draft_pair_events": 507
+      },
+      {
+        "cards": [
+          "Aether Spellbomb",
+          "Urza, Lord High Artificer"
+        ],
+        "pick_score": 9.61117169260364,
+        "pick_score_raw": 4.201859605749591,
+        "pair_win_rate": 0.6888888888888889,
+        "pair_games": 225,
+        "draft_pair_events": 545
+      },
+      {
+        "cards": [
+          "Talisman of Creativity",
+          "Ugin, Eye of the Storms"
+        ],
+        "pick_score": 9.419526083805083,
+        "pick_score_raw": 4.1547128447809945,
+        "pair_win_rate": 0.7350993377483444,
+        "pair_games": 151,
+        "draft_pair_events": 372
+      },
+      {
+        "cards": [
+          "Pinnacle Emissary",
+          "Urza, Lord High Artificer"
+        ],
+        "pick_score": 9.362276397402164,
+        "pick_score_raw": 4.140711909290562,
+        "pair_win_rate": 0.6744186046511628,
+        "pair_games": 215,
+        "draft_pair_events": 672
+      },
+      {
+        "cards": [
+          "Ugin, Eye of the Storms",
+          "Upheaval"
+        ],
+        "pick_score": 9.324877442270372,
+        "pick_score_raw": 4.131586194106528,
+        "pair_win_rate": 0.7142857142857143,
+        "pair_games": 175,
+        "draft_pair_events": 444
+      },
+      {
+        "cards": [
+          "Kappa Cannoneer",
+          "Tinker"
+        ],
+        "pick_score": 8.576359750600394,
+        "pick_score_raw": 3.9523091927285456,
+        "pair_win_rate": 0.6755555555555556,
+        "pair_games": 225,
+        "draft_pair_events": 635
+      },
+      {
+        "cards": [
+          "Pinnacle Emissary",
+          "Upheaval"
+        ],
+        "pick_score": 8.512637282161496,
+        "pick_score_raw": 3.9373394938349278,
+        "pair_win_rate": 0.6887755102040817,
+        "pair_games": 196,
+        "draft_pair_events": 605
+      }
+    ]
+  },
+  "overview": [
+    {
+      "cluster_id": 1,
+      "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
+      "color_name": "Boros Tokens",
+      "deck_count": 12970,
+      "games": 68705,
+      "win_rate": 0.6112510006549742,
+      "signposts": [
+        "Guide of Souls",
+        "Sanguine Evangelist",
+        "Luminarch Aspirant",
+        "Death-Greeter's Champion"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Ajani, Nacatl Pariah",
+        "Phlage, Titan of Fire's Fury",
+        "Broadside Bombardiers"
+      ]
+    },
+    {
+      "cluster_id": 5,
+      "title": "Red Base Midrange | Fire Covenant / Fury",
+      "color_name": "Red Base Midrange",
+      "deck_count": 5538,
+      "games": 26131,
+      "win_rate": 0.5561593509624584,
+      "signposts": [
+        "Fire Covenant",
+        "Fury",
+        "Pyrogoyf",
+        "Fiery Confluence"
+      ],
+      "pick_cards": [
+        "Pyrogoyf",
+        "Broadside Bombardiers",
+        "Laelia, the Blade Reforged",
+        "Fury"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "title": "White Base Control | No More Lies / The Wandering Emperor",
+      "color_name": "White Base Control",
+      "deck_count": 5654,
+      "games": 26028,
+      "win_rate": 0.5472568003688336,
+      "signposts": [
+        "No More Lies",
+        "The Wandering Emperor",
+        "Solitude",
+        "Teferi, Time Raveler"
+      ],
+      "pick_cards": [
+        "Parallax Wave",
+        "Sanguine Evangelist",
+        "Phelia, Exuberant Shepherd",
+        "Solitude"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "title": "Black Base Reanimator | Animate Dead / Necromancy",
+      "color_name": "Black Base Reanimator",
+      "deck_count": 7492,
+      "games": 33181,
+      "win_rate": 0.5180072933305204,
+      "signposts": [
+        "Animate Dead",
+        "Necromancy",
+        "Archon of Cruelty",
+        "Entomb"
+      ],
+      "pick_cards": [
+        "Archon of Cruelty",
+        "Animate Dead",
+        "Necromancy",
+        "Barrowgoyf"
+      ]
+    },
+    {
+      "cluster_id": 0,
+      "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
+      "color_name": "Green Base Ramp",
+      "deck_count": 9261,
+      "games": 39563,
+      "win_rate": 0.5142683820741601,
+      "signposts": [
+        "Birds of Paradise",
+        "Titania, Protector of Argoth",
+        "Noble Hierarch",
+        "Nadu, Winged Wisdom"
+      ],
+      "pick_cards": [
+        "Malevolent Rumble",
+        "Pest Infestation",
+        "Oko, Thief of Crowns",
+        "Nadu, Winged Wisdom"
+      ]
+    },
+    {
+      "cluster_id": 6,
+      "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
+      "color_name": "Blue Base Storm",
+      "deck_count": 9349,
+      "games": 40088,
+      "win_rate": 0.508955298343644,
+      "signposts": [
+        "Brain Freeze",
+        "Snapcaster Mage",
+        "Underworld Breach",
+        "Narset, Parter of Veils"
+      ],
+      "pick_cards": [
+        "Mystic Confluence",
+        "Time Walk",
+        "Cryptic Command",
+        "Remand"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "title": "Blue Base Artifacts | Mox Opal / Urza, Lord High Artificer",
+      "color_name": "Blue Base Artifacts",
+      "deck_count": 7649,
+      "games": 32421,
+      "win_rate": 0.5056290675796552,
+      "signposts": [
+        "Mox Opal",
+        "Urza, Lord High Artificer",
+        "Retrofitter Foundry",
+        "Kappa Cannoneer"
+      ],
+      "pick_cards": [
+        "Ugin, Eye of the Storms",
+        "Urza, Lord High Artificer",
+        "Upheaval",
+        "Retrofitter Foundry"
+      ]
+    }
+  ],
+  "index_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payloadText = document.getElementById('payloadData').textContent;
+  var payload;
+  try {
+    payload = JSON.parse(payloadText);
+  } catch (err) {
+    document.body.innerHTML = '<pre style="color:#fff;background:#111;padding:16px">Failed to parse data: ' + String(err) + '</pre>';
+    throw err;
+  }
+  var segment = payload.segment;
+  var mode = 'analysis';
+  var quickMode = 'analysis';
+  var quickRarity = 'all';
+  var showLabels = true;
+  var svg = document.getElementById('network');
+  var hoverCard = document.getElementById('hoverCard');
+  var selectionBox = document.getElementById('selectionBox');
+  var drawer = document.getElementById('drawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
+  var legendBox = document.getElementById('legendBox');
+  var quickChips = document.getElementById('quickChips');
+  var quickHint = document.getElementById('quickHint');
+  var quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+  var quickBoostersBtn = document.getElementById('quickBoostersBtn');
+  var quickRarityRow = document.getElementById('quickRarityRow');
+  var quickRarityButtons = Array.prototype.slice.call(quickRarityRow.querySelectorAll('button[data-rarity]'));
+  var analysisBtn = document.getElementById('analysisBtn');
+  var pickBtn = document.getElementById('pickBtn');
+  var labelsBtn = document.getElementById('labelsBtn');
+  var drawerBtn = document.getElementById('drawerBtn');
+  var pageTitle = document.getElementById('pageTitle');
+  var pageSubtitle = document.getElementById('pageSubtitle');
+  var imageCache = Object.create(null);
+  var communityPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+  var visibleNodes = [];
+  var visibleNodeMap = Object.create(null);
+  var radiusById = Object.create(null);
+  pageTitle.textContent = segment.title;
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
+  function svgEl(name, attrs) {
+    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
+    return node;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function polarArc(cx, cy, r, startDeg, endDeg) {
+    var start = (Math.PI / 180) * startDeg;
+    var end = (Math.PI / 180) * endDeg;
+    var x1 = cx + r * Math.cos(start);
+    var y1 = cy + r * Math.sin(start);
+    var x2 = cx + r * Math.cos(end);
+    var y2 = cy + r * Math.sin(end);
+    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
+    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
+  }
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    drawerBtn.textContent = 'Close Menu';
+    renderDrawer();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    drawerBtn.textContent = 'Open Menu';
+  }
+  function toggleDrawer() {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+  function roleText(role) {
+    if (role === 'good_alone') return 'Good Alone';
+    if (role === 'needs_support') return 'Needs Support';
+    if (role === 'engine') return 'Engine';
+    return 'Balanced';
+  }
+  function findNodeById(cardName) {
+    for (var i = 0; i < segment.nodes.length; i += 1) {
+      if (segment.nodes[i].id === cardName) return segment.nodes[i];
+    }
+    return null;
+  }
+  function quantile(values, q) {
+    if (!values.length) return 0;
+    if (values.length === 1) return values[0];
+    var pos = (values.length - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    var lower = values[base];
+    var upper = values[Math.min(values.length - 1, base + 1)];
+    return lower + rest * (upper - lower);
+  }
+  function isVisibleNode(node) {
+    if (mode === 'analysis') return true;
+    return node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0;
+  }
+  function prepareViewState() {
+    visibleNodes = segment.nodes.filter(isVisibleNode);
+    visibleNodeMap = Object.create(null);
+    radiusById = Object.create(null);
+    visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    if (!visibleNodes.length) return;
+    var positiveScores = visibleNodes
+      .map(function(node) { return Math.max(0.0, currentNodeScore(node)); })
+      .filter(function(score) { return score > 0; })
+      .sort(function(a, b) { return a - b; });
+    var low = quantile(positiveScores, 0.15);
+    var high = quantile(positiveScores, 0.95);
+    var lowRoot = Math.sqrt(Math.max(0.0, low));
+    var highRoot = Math.sqrt(Math.max(low, high));
+    var spanRoot = Math.max(0.001, highRoot - lowRoot);
+    visibleNodes.forEach(function(node) {
+      var score = Math.max(0.0, currentNodeScore(node));
+      var clipped = Math.min(Math.max(score, low), high);
+      var normalized = positiveScores.length <= 1 ? 0.62 : (Math.sqrt(clipped) - lowRoot) / spanRoot;
+      normalized = Math.max(0.0, Math.min(1.0, normalized));
+      var minRadius = mode === 'analysis' ? 9.0 : 8.0;
+      var maxRadius = mode === 'analysis' ? 26.0 : 30.0;
+      radiusById[node.id] = minRadius + (maxRadius - minRadius) * Math.pow(normalized, 0.85);
+    });
+  }
+  function currentNodeRadius(node) {
+    return radiusById[node.id] || (mode === 'analysis' ? 9.0 : 8.0);
+  }
+  function currentNodeScore(node) {
+    return mode === 'analysis' ? node.analysis_score : node.pick_priority_score;
+  }
+  function currentEdgeScore(edge) {
+    return mode === 'analysis' ? edge.quality_score : edge.pick_score;
+  }
+  function shouldLabel(node) {
+    if (!showLabels) return false;
+    if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028;
+    return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
+  }
+  function positionHover(evt) {
+    var x = evt.clientX + 22;
+    var y = evt.clientY - 24;
+    var maxX = window.innerWidth - 292;
+    var maxY = window.innerHeight - 360;
+    hoverCard.style.left = Math.max(12, Math.min(maxX, x)) + 'px';
+    hoverCard.style.top = Math.max(12, Math.min(maxY, y)) + 'px';
+  }
+  function hideHover() {
+    hoverCard.style.display = 'none';
+  }
+  function renderHover(node, evt) {
+    positionHover(evt);
+    hoverCard.style.display = 'block';
+    var summary = mode === 'analysis'
+      ? 'Standalone ' + pp(node.standalone_delta) + ' | Dependency ' + node.dependency_score.toFixed(3)
+      : 'Draft lift ' + pp(node.draft_win_lift) + ' | Drafts ' + node.draft_drafts + ' | Pick score ' + node.pick_priority_score.toFixed(1) + ' / 10';
+    hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div><div class="muted" style="margin-top:4px">Loading image...</div></div>';
+    if (imageCache[node.id]) {
+      fillHoverImage(node, imageCache[node.id], summary);
+      return;
+    }
+    var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(node.id);
+    fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
+        imageCache[node.id] = data;
+        fillHoverImage(node, data, summary);
+      })
+      .catch(function() {
+        hoverCard.innerHTML = '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">Image unavailable</div><div style="margin-top:6px">' + summary + '</div></div>';
+      });
+  }
+  function fillHoverImage(node, data, summary) {
+    var imgUrl = null;
+    if (data && data.image_uris && data.image_uris.normal) imgUrl = data.image_uris.normal;
+    if (!imgUrl && data && data.card_faces && data.card_faces[0] && data.card_faces[0].image_uris) imgUrl = data.card_faces[0].image_uris.normal;
+    var extra = '';
+    if (data && data.prices && data.prices.usd) extra = '<div class="muted" style="margin-top:4px">Scryfall price: $' + data.prices.usd + '</div>';
+    hoverCard.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + node.id + '" />' : '') +
+      '<div class="hover-body"><strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:6px">' + summary + '</div>' + extra + '</div>';
+  }
+  function setSelection(html) {
+    selectionBox.classList.remove('hidden');
+    selectionBox.innerHTML = html;
+  }
+  function nodeDetail(node) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + node.analysis_score.toFixed(1) + ' / 10</div><div>Standalone lift: ' + pp(node.standalone_delta) + '</div><div>Dependency score: ' + node.dependency_score.toFixed(3) + '</div><div>Drawn-game WR: ' + pct(node.win_rate) + ' over ' + node.draw_games + ' games</div>'
+      : '<div>Pick score: ' + node.pick_priority_score.toFixed(1) + ' / 10</div><div>Draft win lift: ' + pp(node.draft_win_lift) + '</div><div>Draft win rate: ' + pct(node.draft_win_rate) + '</div><div>Drafted in ' + node.draft_drafts + ' projected cluster drafts</div>';
+    setSelection('<strong>' + node.id + '</strong><div class="muted">' + (node.color_identity || 'C') + ' | ' + node.rarity + ' | ' + roleText(node.role) + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function edgeDetail(edge) {
+    var body = mode === 'analysis'
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+  }
+  function isSignificantBooster(row, rarity) {
+    if (!row || typeof row.draft_win_lift !== 'number') return false;
+    if (row.draft_win_lift <= 0) return false;
+    var raw = row.pick_priority_score_raw || 0;
+    if (rarity === 'mythic') return row.draft_win_lift >= 0.010 || raw >= 120;
+    if (rarity === 'rare') return row.draft_win_lift >= 0.006 || raw >= 120;
+    if (rarity === 'uncommon') return row.draft_win_lift >= 0.0025 || raw >= 90;
+    return row.draft_win_lift >= 0.0030 || raw >= 45;
+  }
+  function quickBoosterRows() {
+    var rows = [];
+    Object.keys(segment.pick_by_rarity || {}).forEach(function(rarity) {
+      (segment.pick_by_rarity[rarity] || []).forEach(function(row) {
+        rows.push({
+          card: row.card,
+          rarity: rarity,
+          pick_priority_score: row.pick_priority_score,
+          pick_priority_score_raw: row.pick_priority_score_raw || 0,
+          draft_win_lift: row.draft_win_lift,
+          draft_drafts: row.draft_drafts
+        });
+      });
+    });
+    if (quickRarity !== 'all') {
+      rows = rows.filter(function(row) { return row.rarity === quickRarity; });
+    }
+    rows = rows.filter(function(row) { return isSignificantBooster(row, row.rarity); });
+    rows.sort(function(a, b) {
+      if (b.pick_priority_score_raw !== a.pick_priority_score_raw) return b.pick_priority_score_raw - a.pick_priority_score_raw;
+      if (b.draft_win_lift !== a.draft_win_lift) return b.draft_win_lift - a.draft_win_lift;
+      return b.draft_drafts - a.draft_drafts;
+    });
+    return rows.slice(0, quickRarity === 'all' ? 6 : 5);
+  }
+  function addQuickChip(label, meta, title, onClick) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip chip-button is-clickable';
+    var labelNode = document.createElement('span');
+    labelNode.textContent = label;
+    chip.appendChild(labelNode);
+    if (meta) {
+      var metaNode = document.createElement('small');
+      metaNode.textContent = meta;
+      chip.appendChild(metaNode);
+    }
+    if (title) chip.title = title;
+    chip.addEventListener('click', onClick);
+    quickChips.appendChild(chip);
+  }
+  function renderQuickChips() {
+    quickChips.innerHTML = '';
+    quickAnalysisBtn.classList.toggle('active', quickMode === 'analysis');
+    quickBoostersBtn.classList.toggle('active', quickMode === 'boosters');
+    quickRarityRow.classList.toggle('hidden', quickMode !== 'boosters');
+    quickRarityButtons.forEach(function(button) {
+      button.classList.toggle('active', button.getAttribute('data-rarity') === quickRarity);
+    });
+    if (quickMode === 'analysis') {
+      quickHint.textContent = 'Cards that most cleanly define this archetype.';
+      segment.signposts.slice(0, 5).forEach(function(row) {
+        addQuickChip(
+          row.card,
+          row.lift.toFixed(2) + 'x',
+          'Seen in ' + pct(row.cluster_prevalence) + ' of decks',
+          function() {
+            var node = findNodeById(row.card);
+            if (node) nodeDetail(node);
+          }
+        );
+      });
+      return;
+    }
+    var rows = quickBoosterRows();
+    if (quickRarity === 'all') {
+      quickHint.textContent = 'Best win boosters overall. Commons and uncommons appear only when their lift is meaningful.';
+    } else {
+      quickHint.textContent = 'Significant ' + quickRarity + ' cards that materially raise wins in this archetype.';
+    }
+    if (!rows.length) {
+      quickHint.textContent = 'No ' + (quickRarity === 'all' ? '' : quickRarity + ' ') + 'win boosters cleared the significance bar in this archetype.';
+      return;
+    }
+    rows.forEach(function(row) {
+      addQuickChip(
+        row.card,
+        '+' + pp(row.draft_win_lift),
+        row.rarity + ' | Drafted in ' + row.draft_drafts + ' projected cluster drafts',
+        function() {
+          var node = findNodeById(row.card);
+          if (node) nodeDetail(node);
+        }
+      );
+    });
+  }
+  function renderLegend() {
+    var shown = visibleNodes.length;
+    var total = segment.nodes.length;
+    var sizeText = mode === 'analysis'
+      ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
+      : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
+    var visibilityText = mode === 'analysis'
+      ? 'Showing all supported cards in the archetype.'
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
+    var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
+    var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    legendBox.innerHTML =
+      '<strong>View Legend</strong>' +
+      '<div class="legend-grid">' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
+      '</div>';
+  }
+  function renderDrawer() {
+    var html = '';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
+    if (mode === 'analysis') {
+      html += '<div class="tableish">';
+      segment.signposts.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Best Pair Synergies</h2><div class="tableish">';
+      segment.top_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+      });
+      html += '</div><h2>Triplet Motifs</h2><div class="tableish">';
+      (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+      });
+      if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
+      html += '</div>';
+    } else {
+      Object.keys(segment.pick_by_rarity).forEach(function(rarity) {
+        var rarityRows = (segment.pick_by_rarity[rarity] || []).filter(function(row) {
+          return row.draft_win_lift > 0 || row.pick_priority_score > 0;
+        });
+        if (!rarityRows.length) return;
+        html += '<div class="rarity-title">' + rarity + '</div><div class="tableish">';
+        rarityRows.forEach(function(row) {
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Draft lift ' + pp(row.draft_win_lift) + ' | Drafts ' + row.draft_drafts + '</div></div><div>' + row.pick_priority_score.toFixed(1) + ' / 10</div></div>';
+        });
+        html += '</div>';
+      });
+      html += '<h2>Draft-Supported Pairs</h2><div class="tableish">';
+      segment.top_pick_pairs.slice(0, 10).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">' + row.draft_pair_events + ' draft co-picks | ' + row.pair_games + ' games</div></div><div>' + row.pick_score.toFixed(1) + ' / 10</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '<h2>Communities</h2><div class="tableish">';
+    segment.communities.forEach(function(row) {
+      html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
+    });
+    html += '</div>';
+    drawer.innerHTML = html;
+  }
+  function drawNode(group, node) {
+    var g = svgEl('g');
+    var border = communityPalette[node.community % communityPalette.length];
+    var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
+    var r = currentNodeRadius(node);
+    if (fill.mode === 'split' && fill.colors.length === 2) {
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
+      g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
+    }
+    if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    g.style.cursor = 'pointer';
+    g.addEventListener('mouseenter', function(evt) { renderHover(node, evt); });
+    g.addEventListener('mousemove', function(evt) { positionHover(evt); });
+    g.addEventListener('mouseleave', hideHover);
+    g.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      nodeDetail(node);
+    });
+    group.appendChild(g);
+  }
+  function draw() {
+    prepareViewState();
+    clear(svg);
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
+    var bg = svgEl('g');
+    var edges = svgEl('g');
+    var nodes = svgEl('g');
+    var labels = svgEl('g');
+    svg.appendChild(bg);
+    svg.appendChild(edges);
+    svg.appendChild(nodes);
+    svg.appendChild(labels);
+    segment.communities.forEach(function(community) {
+      var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
+      if (members.length < 2) return;
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
+    });
+    var nodeMap = visibleNodeMap;
+    var sortedEdges = segment.edges
+      .filter(function(edge) { return nodeMap[edge.from] && nodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); })
+      .slice(0, 72);
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
+    sortedEdges.forEach(function(edge) {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('mouseenter', function() { edgeDetail(edge); });
+      line.addEventListener('click', function(evt) {
+        evt.stopPropagation();
+        edgeDetail(edge);
+      });
+      edges.appendChild(line);
+    });
+    var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
+    sortedNodes.forEach(function(node) {
+      drawNode(nodes, node);
+      if (!shouldLabel(node)) return;
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      text.textContent = node.label;
+      labels.appendChild(text);
+    });
+  }
+  analysisBtn.addEventListener('click', function() {
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
+  });
+  pickBtn.addEventListener('click', function() {
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
+  });
+  labelsBtn.addEventListener('click', function() {
+    showLabels = !showLabels;
+    labelsBtn.classList.toggle('active', showLabels);
+    labelsBtn.textContent = showLabels ? 'Labels On' : 'Labels Off';
+    draw();
+  });
+  quickAnalysisBtn.addEventListener('click', function() {
+    quickMode = 'analysis';
+    renderQuickChips();
+  });
+  quickBoostersBtn.addEventListener('click', function() {
+    quickMode = 'boosters';
+    renderQuickChips();
+  });
+  quickRarityButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      quickRarity = button.getAttribute('data-rarity') || 'all';
+      renderQuickChips();
+    });
+  });
+  drawerBtn.addEventListener('click', toggleDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  svg.addEventListener('click', function() {
+    selectionBox.classList.add('hidden');
+  });
+  renderQuickChips();
+  draw();
+})();
+</script>
+</body>
+</html>
