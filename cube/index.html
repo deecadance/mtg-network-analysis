@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Powered Cube Analysis</title>
+  <title>Cube - Powered Learned Archetype Synergy Map</title>
   <style>
     :root {
       --bg: #08101d;
@@ -99,8 +99,9 @@
 <div class="wrap">
   <div class="hero">
     <div>
-      <h1>Powered Cube Analysis</h1>
-      <div class="muted">This landing page keeps the network pages clean. Open any archetype below, then switch between the analysis-focused view and the draft pick-focused view on that archetype page.</div>
+      <div class="section-title" style="margin:0 0 8px">Interactive Limited Map</div>
+      <h1>Learn the archetypes and pick priorities fast.</h1>
+      <div class="muted">Interactive archetype maps built from game and draft data. Use the analysis view to see what defines a deck. Use the pick-focused view to see which cards actually push wins.</div>
     </div>
     <div class="stats" id="heroStats"></div>
   </div>
@@ -184,7 +185,18 @@
         "Oko, Thief of Crowns",
         "Nadu, Winged Wisdom"
       ],
-      "href": "index_pages/00_green-base-ramp-birds-of-paradise-titania-protector-of-argoth.html"
+      "build_arounds": [
+        "Fastbond",
+        "Lotus Cobra",
+        "Llanowar Elves"
+      ],
+      "core_cards": [
+        "Birds of Paradise",
+        "Titania, Protector of Argoth",
+        "Noble Hierarch",
+        "Nadu, Winged Wisdom"
+      ],
+      "href": "cube_powered_learned_synergy_pages/00_green-base-ramp-birds-of-paradise-titania-protector-of-argoth.html"
     },
     {
       "cluster_id": 1,
@@ -205,7 +217,18 @@
         "Phlage, Titan of Fire's Fury",
         "Broadside Bombardiers"
       ],
-      "href": "index_pages/01_boros-tokens-guide-of-souls-sanguine-evangelist.html"
+      "build_arounds": [
+        "Guide of Souls",
+        "Adeline, Resplendent Cathar",
+        "Luminarch Aspirant"
+      ],
+      "core_cards": [
+        "Guide of Souls",
+        "Sanguine Evangelist",
+        "Luminarch Aspirant",
+        "Death-Greeter's Champion"
+      ],
+      "href": "cube_powered_learned_synergy_pages/01_boros-tokens-guide-of-souls-sanguine-evangelist.html"
     },
     {
       "cluster_id": 2,
@@ -226,7 +249,16 @@
         "Necromancy",
         "Barrowgoyf"
       ],
-      "href": "index_pages/02_black-base-reanimator-animate-dead-necromancy.html"
+      "build_arounds": [
+        "Griselbrand"
+      ],
+      "core_cards": [
+        "Animate Dead",
+        "Necromancy",
+        "Archon of Cruelty",
+        "Entomb"
+      ],
+      "href": "cube_powered_learned_synergy_pages/02_black-base-reanimator-animate-dead-necromancy.html"
     },
     {
       "cluster_id": 3,
@@ -247,7 +279,16 @@
         "Phelia, Exuberant Shepherd",
         "Solitude"
       ],
-      "href": "index_pages/03_white-base-control-no-more-lies-the-wandering-emperor.html"
+      "build_arounds": [
+        "Path to Exile"
+      ],
+      "core_cards": [
+        "No More Lies",
+        "The Wandering Emperor",
+        "Solitude",
+        "Teferi, Time Raveler"
+      ],
+      "href": "cube_powered_learned_synergy_pages/03_white-base-control-no-more-lies-the-wandering-emperor.html"
     },
     {
       "cluster_id": 4,
@@ -268,7 +309,14 @@
         "Upheaval",
         "Retrofitter Foundry"
       ],
-      "href": "index_pages/04_blue-base-artifacts-mox-opal-urza-lord-high-artificer.html"
+      "build_arounds": [],
+      "core_cards": [
+        "Mox Opal",
+        "Urza, Lord High Artificer",
+        "Retrofitter Foundry",
+        "Kappa Cannoneer"
+      ],
+      "href": "cube_powered_learned_synergy_pages/04_blue-base-artifacts-mox-opal-urza-lord-high-artificer.html"
     },
     {
       "cluster_id": 5,
@@ -289,7 +337,16 @@
         "Laelia, the Blade Reforged",
         "Fury"
       ],
-      "href": "index_pages/05_red-base-midrange-fire-covenant-fury.html"
+      "build_arounds": [
+        "Kolaghan's Command"
+      ],
+      "core_cards": [
+        "Fire Covenant",
+        "Kolaghan's Command",
+        "Fury",
+        "Pyrogoyf"
+      ],
+      "href": "cube_powered_learned_synergy_pages/05_red-base-midrange-fire-covenant-fury.html"
     },
     {
       "cluster_id": 6,
@@ -310,7 +367,14 @@
         "Cryptic Command",
         "Remand"
       ],
-      "href": "index_pages/06_blue-base-storm-brain-freeze-snapcaster-mage.html"
+      "build_arounds": [],
+      "core_cards": [
+        "Brain Freeze",
+        "Underworld Breach",
+        "Snapcaster Mage",
+        "Narset, Parter of Veils"
+      ],
+      "href": "cube_powered_learned_synergy_pages/06_blue-base-storm-brain-freeze-snapcaster-mage.html"
     }
   ]
 }</script>
@@ -323,7 +387,7 @@
     'Deck builds: ' + payload.meta.deck_count,
     'Game rows: ' + payload.meta.game_count,
     'Archetypes: ' + payload.meta.n_clusters,
-    'Views per page: analysis + pick'
+    'Views: analysis + pick + build-around detector'
   ].forEach(function(text) {
     var span = document.createElement('span');
     span.className = 'pill';
@@ -339,9 +403,10 @@
       '<div class="row"><span>Game WR</span><strong>' + pct(row.win_rate) + '</strong></div>' +
       '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
       '<div class="row"><span>Games</span><strong>' + row.games + '</strong></div>' +
-      '<div><div class="muted">Archetype-defining cards</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
-      '<div><div class="muted">Draft priority candidates</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
-      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Archetype Page</a><span class="link-btn secondary">Mode switch inside page</span></div>';
+      '<div><div class="muted">What defines the deck</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">What wins drafts</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Build-around candidates</div><div class="chips">' + row.build_arounds.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Map</a><span class="link-btn secondary">Card spotlight inside</span></div>';
     grid.appendChild(div);
   });
 })();

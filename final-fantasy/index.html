@@ -1,0 +1,545 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FIN Learned Archetype Synergy Map</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #97aac6;
+      --line: rgba(126, 157, 197, 0.18);
+      --panel: rgba(13, 20, 34, 0.9);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .muted { color: var(--muted); }
+    .hero {
+      display: grid;
+      gap: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+    }
+    .hero .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(92, 200, 255, 0.16);
+      border: 1px solid rgba(92, 200, 255, 0.34);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-btn.secondary {
+      background: rgba(244, 201, 93, 0.14);
+      border-color: rgba(244, 201, 93, 0.28);
+    }
+    .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="section-title" style="margin:0 0 8px">Interactive Limited Map</div>
+      <h1>Learn the archetypes and pick priorities fast.</h1>
+      <div class="muted">Interactive archetype maps built from game and draft data. Use the analysis view to see what defines a deck. Use the pick-focused view to see which cards actually push wins.</div>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div>
+  <div class="section-title">Archetypes</div>
+  <div id="archetypeGrid" class="grid"></div>
+</div>
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "FIN",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 11,
+    "fit_summary": {
+      "deck_count": 173242,
+      "cluster_feature_count": 342,
+      "svd_components": 48,
+      "svd_explained_variance": 0.3918549716472626,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.12171167135238647,
+          "dominant_main_color_share": 0.6281360308520404,
+          "objective": 0.1593998332035089
+        },
+        {
+          "k": 8,
+          "silhouette": 0.12834256887435913,
+          "dominant_main_color_share": 0.7148773477363088,
+          "objective": 0.17123520973853767
+        },
+        {
+          "k": 9,
+          "silhouette": 0.11121132224798203,
+          "dominant_main_color_share": 0.741586075348276,
+          "objective": 0.15570648676887858
+        },
+        {
+          "k": 10,
+          "silhouette": 0.12206333875656128,
+          "dominant_main_color_share": 0.7649638668085128,
+          "objective": 0.16796117076507205
+        },
+        {
+          "k": 11,
+          "silhouette": 0.1360187977552414,
+          "dominant_main_color_share": 0.7741838468577033,
+          "objective": 0.18246982856670357
+        }
+      ],
+      "chosen_k": 11,
+      "label_counts": {
+        "4": 11140,
+        "7": 11995,
+        "3": 15263,
+        "6": 8915,
+        "9": 16722,
+        "10": 19770,
+        "2": 21300,
+        "1": 23536,
+        "8": 13842,
+        "0": 15671,
+        "5": 15088
+      }
+    },
+    "deck_count": 173242,
+    "game_count": 769659
+  },
+  "overview": [
+    {
+      "cluster_id": 0,
+      "title": "Dimir Humans | Locke Cole / Cornered by Black Mages",
+      "color_name": "Dimir Humans",
+      "deck_count": 15671,
+      "games": 70726,
+      "win_rate": 0.5576449961824506,
+      "signposts": [
+        "Locke Cole",
+        "Cornered by Black Mages",
+        "Hecteyes",
+        "Ultimecia, Time Sorceress"
+      ],
+      "pick_cards": [
+        "Ardyn, the Usurper",
+        "Sidequest: Hunt the Mark",
+        "Sephiroth's Intervention",
+        "Combat Tutorial"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Locke Cole",
+        "Cornered by Black Mages",
+        "Hecteyes",
+        "Ultimecia, Time Sorceress"
+      ],
+      "href": "fin_learned_synergy_pages/00_dimir-humans-locke-cole-cornered-by-black-mages.html"
+    },
+    {
+      "cluster_id": 1,
+      "title": "Izzet | Sahagin / Blazing Bomb",
+      "color_name": "Izzet",
+      "deck_count": 23536,
+      "games": 109292,
+      "win_rate": 0.5714233429711232,
+      "signposts": [
+        "Sahagin",
+        "Blazing Bomb",
+        "Shantotto, Tactician Magician",
+        "Call the Mountain Chocobo"
+      ],
+      "pick_cards": [
+        "Choco-Comet",
+        "Ice Magic",
+        "Thunder Magic",
+        "Ultros, Obnoxious Octopus"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Sahagin",
+        "Blazing Bomb",
+        "Shantotto, Tactician Magician",
+        "Call the Mountain Chocobo"
+      ],
+      "href": "fin_learned_synergy_pages/01_izzet-sahagin-blazing-bomb.html"
+    },
+    {
+      "cluster_id": 2,
+      "title": "Golgari Humans | Shinra Reinforcements / Town Greeter",
+      "color_name": "Golgari Humans",
+      "deck_count": 21300,
+      "games": 96603,
+      "win_rate": 0.5652930033228781,
+      "signposts": [
+        "Shinra Reinforcements",
+        "Town Greeter",
+        "Cloud of Darkness",
+        "Fight On!"
+      ],
+      "pick_cards": [
+        "Cloud of Darkness",
+        "Ardyn, the Usurper",
+        "Town Greeter",
+        "Summon: Primal Odin"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Shinra Reinforcements",
+        "Town Greeter",
+        "Cloud of Darkness",
+        "Fight On!"
+      ],
+      "href": "fin_learned_synergy_pages/02_golgari-humans-shinra-reinforcements-town-greeter.html"
+    },
+    {
+      "cluster_id": 3,
+      "title": "Orzhov Humans | Rufus Shinra / Judge Magister Gabranth",
+      "color_name": "Orzhov Humans",
+      "deck_count": 15263,
+      "games": 68185,
+      "win_rate": 0.5618684461391802,
+      "signposts": [
+        "Rufus Shinra",
+        "Judge Magister Gabranth",
+        "White Mage's Staff",
+        "White Auracite"
+      ],
+      "pick_cards": [
+        "White Auracite",
+        "Dion, Bahamut's Dominant",
+        "Dragoon's Lance",
+        "Delivery Moogle"
+      ],
+      "build_arounds": [
+        "Rufus Shinra",
+        "Judge Magister Gabranth",
+        "Ahriman"
+      ],
+      "core_cards": [
+        "Rufus Shinra",
+        "Judge Magister Gabranth",
+        "White Mage's Staff",
+        "White Auracite"
+      ],
+      "href": "fin_learned_synergy_pages/03_orzhov-humans-rufus-shinra-judge-magister-gabranth.html"
+    },
+    {
+      "cluster_id": 4,
+      "title": "Selesnya Humans | Rinoa Heartilly / Garnet, Princess of Alexandria",
+      "color_name": "Selesnya Humans",
+      "deck_count": 11140,
+      "games": 48611,
+      "win_rate": 0.5564378432864989,
+      "signposts": [
+        "Rinoa Heartilly",
+        "Garnet, Princess of Alexandria",
+        "Summon: Choco/Mog",
+        "Summon: Fat Chocobo"
+      ],
+      "pick_cards": [
+        "Dion, Bahamut's Dominant",
+        "Rinoa Heartilly",
+        "Sazh Katzroy",
+        "Esper Origins"
+      ],
+      "build_arounds": [
+        "Garnet, Princess of Alexandria",
+        "Slash of Light",
+        "Goobbue Gardener"
+      ],
+      "core_cards": [
+        "Rinoa Heartilly",
+        "Garnet, Princess of Alexandria",
+        "Summon: Choco/Mog",
+        "Summon: Fat Chocobo"
+      ],
+      "href": "fin_learned_synergy_pages/04_selesnya-humans-rinoa-heartilly-garnet-princess-of-alexandria.html"
+    },
+    {
+      "cluster_id": 5,
+      "title": "Boros Humans | Weapons Vendor / Paladin's Arms",
+      "color_name": "Boros Humans",
+      "deck_count": 15088,
+      "games": 67889,
+      "win_rate": 0.5691791011798671,
+      "signposts": [
+        "Weapons Vendor",
+        "Paladin's Arms",
+        "White Mage's Staff",
+        "Zidane, Tantalus Thief"
+      ],
+      "pick_cards": [
+        "Samurai's Katana",
+        "Dragoon's Lance",
+        "Zidane, Tantalus Thief",
+        "Dion, Bahamut's Dominant"
+      ],
+      "build_arounds": [
+        "Freya Crescent",
+        "Paladin's Arms",
+        "Dwarven Castle Guard"
+      ],
+      "core_cards": [
+        "Weapons Vendor",
+        "Paladin's Arms",
+        "White Mage's Staff",
+        "Zidane, Tantalus Thief"
+      ],
+      "href": "fin_learned_synergy_pages/05_boros-humans-weapons-vendor-paladin-s-arms.html"
+    },
+    {
+      "cluster_id": 6,
+      "title": "Blue Base | Scorpion Sentinel / Retrieve the Esper",
+      "color_name": "Blue Base",
+      "deck_count": 8915,
+      "games": 37469,
+      "win_rate": 0.5343083615789053,
+      "signposts": [
+        "Scorpion Sentinel",
+        "Retrieve the Esper",
+        "Sahagin",
+        "Dragoon's Wyvern"
+      ],
+      "pick_cards": [
+        "Dragoon's Wyvern",
+        "Sleep Magic",
+        "Eject",
+        "Ice Magic"
+      ],
+      "build_arounds": [
+        "Rook Turret",
+        "Ice Flan",
+        "Sage's Nouliths"
+      ],
+      "core_cards": [
+        "Scorpion Sentinel",
+        "Retrieve the Esper",
+        "Sahagin",
+        "Dragoon's Wyvern"
+      ],
+      "href": "fin_learned_synergy_pages/06_blue-base-scorpion-sentinel-retrieve-the-esper.html"
+    },
+    {
+      "cluster_id": 7,
+      "title": "Gruul Humans | Gladiolus Amicitia / Gysahl Greens",
+      "color_name": "Gruul Humans",
+      "deck_count": 11995,
+      "games": 50986,
+      "win_rate": 0.5320087867257679,
+      "signposts": [
+        "Gladiolus Amicitia",
+        "Gysahl Greens",
+        "Summon: Fat Chocobo",
+        "Chocobo Kick"
+      ],
+      "pick_cards": [
+        "Gladiolus Amicitia",
+        "Esper Origins",
+        "Summon: Fenrir",
+        "Summon: Fat Chocobo"
+      ],
+      "build_arounds": [
+        "Rydia, Summoner of Mist",
+        "Gigantoad",
+        "Prishe's Wanderings"
+      ],
+      "core_cards": [
+        "Gladiolus Amicitia",
+        "Gysahl Greens",
+        "Summon: Fat Chocobo",
+        "Chocobo Kick"
+      ],
+      "href": "fin_learned_synergy_pages/07_gruul-humans-gladiolus-amicitia-gysahl-greens.html"
+    },
+    {
+      "cluster_id": 8,
+      "title": "Rakdos Humans | Mysidian Elder / Garland, Knight of Cornelia",
+      "color_name": "Rakdos Humans",
+      "deck_count": 13842,
+      "games": 60241,
+      "win_rate": 0.5451602729038363,
+      "signposts": [
+        "Mysidian Elder",
+        "Garland, Knight of Cornelia",
+        "Black Mage's Rod",
+        "Cornered by Black Mages"
+      ],
+      "pick_cards": [
+        "Kuja, Genome Sorcerer",
+        "Choco-Comet",
+        "Cornered by Black Mages",
+        "Sephiroth's Intervention"
+      ],
+      "build_arounds": [
+        "Black Waltz No. 3",
+        "Mysidian Elder",
+        "Laughing Mad"
+      ],
+      "core_cards": [
+        "Mysidian Elder",
+        "Garland, Knight of Cornelia",
+        "Black Mage's Rod",
+        "Cornered by Black Mages"
+      ],
+      "href": "fin_learned_synergy_pages/08_rakdos-humans-mysidian-elder-garland-knight-of-cornelia.html"
+    },
+    {
+      "cluster_id": 9,
+      "title": "Azorius | Gaelicat / White Auracite",
+      "color_name": "Azorius",
+      "deck_count": 16722,
+      "games": 74183,
+      "win_rate": 0.5587803135489263,
+      "signposts": [
+        "Gaelicat",
+        "White Auracite",
+        "White Mage's Staff",
+        "Cid, Timeless Artificer"
+      ],
+      "pick_cards": [
+        "White Auracite",
+        "Dragoon's Lance",
+        "Delivery Moogle",
+        "Dragoon's Wyvern"
+      ],
+      "build_arounds": [
+        "Cargo Ship",
+        "Rook Turret",
+        "Tidus, Blitzball Star"
+      ],
+      "core_cards": [
+        "Gaelicat",
+        "White Auracite",
+        "White Mage's Staff",
+        "Cid, Timeless Artificer"
+      ],
+      "href": "fin_learned_synergy_pages/09_azorius-gaelicat-white-auracite.html"
+    },
+    {
+      "cluster_id": 10,
+      "title": "Simic Humans | Ignis Scientia / Omega, Heartless Evolution",
+      "color_name": "Simic Humans",
+      "deck_count": 19770,
+      "games": 85474,
+      "win_rate": 0.5499333130542621,
+      "signposts": [
+        "Ignis Scientia",
+        "Omega, Heartless Evolution",
+        "Town Greeter",
+        "Travel the Overworld"
+      ],
+      "pick_cards": [
+        "Omega, Heartless Evolution",
+        "Ignis Scientia",
+        "Esper Origins",
+        "Chocobo Kick"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Ignis Scientia",
+        "Omega, Heartless Evolution",
+        "Town Greeter",
+        "Travel the Overworld"
+      ],
+      "href": "fin_learned_synergy_pages/10_simic-humans-ignis-scientia-omega-heartless-evolution.html"
+    }
+  ]
+}</script>
+<script>
+(function() {
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var heroStats = document.getElementById('heroStats');
+  [
+    'Deck builds: ' + payload.meta.deck_count,
+    'Game rows: ' + payload.meta.game_count,
+    'Archetypes: ' + payload.meta.n_clusters,
+    'Views: analysis + pick + build-around detector'
+  ].forEach(function(text) {
+    var span = document.createElement('span');
+    span.className = 'pill';
+    span.textContent = text;
+    heroStats.appendChild(span);
+  });
+  var grid = document.getElementById('archetypeGrid');
+  payload.overview.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '' +
+      '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
+      '<div class="row"><span>Game WR</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
+      '<div class="row"><span>Games</span><strong>' + row.games + '</strong></div>' +
+      '<div><div class="muted">What defines the deck</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">What wins drafts</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Build-around candidates</div><div class="chips">' + row.build_arounds.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Map</a><span class="link-btn secondary">Card spotlight inside</span></div>';
+    grid.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

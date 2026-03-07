@@ -1,0 +1,457 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLA Learned Archetype Synergy Map</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #97aac6;
+      --line: rgba(126, 157, 197, 0.18);
+      --panel: rgba(13, 20, 34, 0.9);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .muted { color: var(--muted); }
+    .hero {
+      display: grid;
+      gap: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+    }
+    .hero .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(92, 200, 255, 0.16);
+      border: 1px solid rgba(92, 200, 255, 0.34);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-btn.secondary {
+      background: rgba(244, 201, 93, 0.14);
+      border-color: rgba(244, 201, 93, 0.28);
+    }
+    .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="section-title" style="margin:0 0 8px">Interactive Limited Map</div>
+      <h1>Learn the archetypes and pick priorities fast.</h1>
+      <div class="muted">Interactive archetype maps built from game and draft data. Use the analysis view to see what defines a deck. Use the pick-focused view to see which cards actually push wins.</div>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div>
+  <div class="section-title">Archetypes</div>
+  <div id="archetypeGrid" class="grid"></div>
+</div>
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "TLA",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "n_clusters": 8,
+    "fit_summary": {
+      "deck_count": 127199,
+      "cluster_feature_count": 280,
+      "svd_components": 48,
+      "svd_explained_variance": 0.390891432762146,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.0985804945230484,
+          "dominant_main_color_share": 0.46206992645077793,
+          "objective": 0.12630469011009507
+        },
+        {
+          "k": 8,
+          "silhouette": 0.10776201635599136,
+          "dominant_main_color_share": 0.6270428406957541,
+          "objective": 0.1453845867977366
+        },
+        {
+          "k": 9,
+          "silhouette": 0.08834919333457947,
+          "dominant_main_color_share": 0.5064466728244753,
+          "objective": 0.11873599370404798
+        },
+        {
+          "k": 10,
+          "silhouette": 0.0959261804819107,
+          "dominant_main_color_share": 0.6432818132803341,
+          "objective": 0.13452308927873075
+        },
+        {
+          "k": 11,
+          "silhouette": 0.10152213275432587,
+          "dominant_main_color_share": 0.5970343350411471,
+          "objective": 0.1373441928567947
+        }
+      ],
+      "chosen_k": 8,
+      "label_counts": {
+        "2": 10619,
+        "6": 8790,
+        "7": 14648,
+        "1": 28158,
+        "5": 15171,
+        "3": 17235,
+        "0": 17697,
+        "4": 14881
+      }
+    },
+    "deck_count": 127199,
+    "game_count": 562924
+  },
+  "overview": [
+    {
+      "cluster_id": 0,
+      "title": "Azorius Humans | First-Time Flyer / Forecasting Fortune Teller",
+      "color_name": "Azorius Humans",
+      "deck_count": 17697,
+      "games": 80666,
+      "win_rate": 0.5640914387722212,
+      "signposts": [
+        "First-Time Flyer",
+        "Forecasting Fortune Teller",
+        "Watery Grasp",
+        "Lost Days"
+      ],
+      "pick_cards": [
+        "Aang, Swift Savior",
+        "Invasion Submersible",
+        "Katara, Water Tribe's Hope",
+        "Aang, the Last Airbender"
+      ],
+      "build_arounds": [
+        "Waterbending Lesson",
+        "First-Time Flyer",
+        "Forecasting Fortune Teller"
+      ],
+      "core_cards": [
+        "First-Time Flyer",
+        "Forecasting Fortune Teller",
+        "Watery Grasp",
+        "Lost Days"
+      ],
+      "href": "tla_learned_synergy_pages/00_azorius-humans-first-time-flyer-forecasting-fortune-teller.html"
+    },
+    {
+      "cluster_id": 1,
+      "title": "Green Base Humans | Raucous Audience / Ostrich-Horse",
+      "color_name": "Green Base Humans",
+      "deck_count": 28158,
+      "games": 120066,
+      "win_rate": 0.5497809538087385,
+      "signposts": [
+        "Raucous Audience",
+        "Ostrich-Horse",
+        "Rocky Rebuke",
+        "Badgermole"
+      ],
+      "pick_cards": [
+        "The Earth King",
+        "Allies at Last",
+        "Badgermole",
+        "Rocky Rebuke"
+      ],
+      "build_arounds": [
+        "Raucous Audience",
+        "Saber-Tooth Moose-Lion",
+        "Cycle of Renewal"
+      ],
+      "core_cards": [
+        "Raucous Audience",
+        "Ostrich-Horse",
+        "Rocky Rebuke",
+        "Badgermole"
+      ],
+      "href": "tla_learned_synergy_pages/01_green-base-humans-raucous-audience-ostrich-horse.html"
+    },
+    {
+      "cluster_id": 2,
+      "title": "Boros Humans | Treetop Freedom Fighters / Deserter's Disciple",
+      "color_name": "Boros Humans",
+      "deck_count": 10619,
+      "games": 47879,
+      "win_rate": 0.566386098289438,
+      "signposts": [
+        "Treetop Freedom Fighters",
+        "Deserter's Disciple",
+        "Sun Warriors",
+        "Yuyan Archers"
+      ],
+      "pick_cards": [
+        "Earth Kingdom Jailer",
+        "The Legend of Yangchen",
+        "The Cave of Two Lovers",
+        "Suki, Courageous Rescuer"
+      ],
+      "build_arounds": [
+        "Deserter's Disciple",
+        "Fire Nation Cadets"
+      ],
+      "core_cards": [
+        "Treetop Freedom Fighters",
+        "Deserter's Disciple",
+        "Sun Warriors",
+        "Yuyan Archers"
+      ],
+      "href": "tla_learned_synergy_pages/02_boros-humans-treetop-freedom-fighters-deserter-s-disciple.html"
+    },
+    {
+      "cluster_id": 3,
+      "title": "White Base Humans | Kyoshi Warriors / Avatar Enthusiasts",
+      "color_name": "White Base Humans",
+      "deck_count": 17235,
+      "games": 79848,
+      "win_rate": 0.5775849113315299,
+      "signposts": [
+        "Kyoshi Warriors",
+        "Avatar Enthusiasts",
+        "Jeong Jeong's Deserters",
+        "Water Tribe Captain"
+      ],
+      "pick_cards": [
+        "Aang, the Last Airbender",
+        "Water Tribe Rallier",
+        "Earth Kingdom Jailer",
+        "Gather the White Lotus"
+      ],
+      "build_arounds": [
+        "Avatar Enthusiasts"
+      ],
+      "core_cards": [
+        "Kyoshi Warriors",
+        "Avatar Enthusiasts",
+        "Jeong Jeong's Deserters",
+        "Water Tribe Captain"
+      ],
+      "href": "tla_learned_synergy_pages/03_white-base-humans-kyoshi-warriors-avatar-enthusiasts.html"
+    },
+    {
+      "cluster_id": 4,
+      "title": "Black Base Humans | Deadly Precision / Corrupt Court Official",
+      "color_name": "Black Base Humans",
+      "deck_count": 14881,
+      "games": 65444,
+      "win_rate": 0.5471242589083797,
+      "signposts": [
+        "Deadly Precision",
+        "Corrupt Court Official",
+        "Callous Inspector",
+        "Merchant of Many Hats"
+      ],
+      "pick_cards": [
+        "The Fire Nation Drill",
+        "Raven Eagle",
+        "Tolls of War",
+        "Epic Downfall"
+      ],
+      "build_arounds": [
+        "Pirate Peddlers",
+        "Merchant of Many Hats",
+        "Joo Dee, One of Many"
+      ],
+      "core_cards": [
+        "Deadly Precision",
+        "Corrupt Court Official",
+        "Callous Inspector",
+        "Merchant of Many Hats"
+      ],
+      "href": "tla_learned_synergy_pages/04_black-base-humans-deadly-precision-corrupt-court-official.html"
+    },
+    {
+      "cluster_id": 5,
+      "title": "Izzet | Dragonfly Swarm / Firebending Lesson",
+      "color_name": "Izzet",
+      "deck_count": 15171,
+      "games": 66095,
+      "win_rate": 0.5664725017020955,
+      "signposts": [
+        "Dragonfly Swarm",
+        "Firebending Lesson",
+        "Abandon Attachments",
+        "Lost Days"
+      ],
+      "pick_cards": [
+        "Invasion Submersible",
+        "Lost Days",
+        "Combustion Technique",
+        "Dragonfly Swarm"
+      ],
+      "build_arounds": [
+        "Professor Zei, Anthropologist",
+        "Abandon Attachments",
+        "Yuyan Archers"
+      ],
+      "core_cards": [
+        "Dragonfly Swarm",
+        "Firebending Lesson",
+        "Abandon Attachments",
+        "Lost Days"
+      ],
+      "href": "tla_learned_synergy_pages/05_izzet-dragonfly-swarm-firebending-lesson.html"
+    },
+    {
+      "cluster_id": 6,
+      "title": "Rakdos Humans | Vindictive Warden / Yuyan Archers",
+      "color_name": "Rakdos Humans",
+      "deck_count": 8790,
+      "games": 37234,
+      "win_rate": 0.5399097598968684,
+      "signposts": [
+        "Vindictive Warden",
+        "Yuyan Archers",
+        "Fire Nation Cadets",
+        "Lightning Strike"
+      ],
+      "pick_cards": [
+        "Firebending Lesson",
+        "The Cave of Two Lovers",
+        "Lightning Strike",
+        "The Fire Nation Drill"
+      ],
+      "build_arounds": [
+        "Zuko, Exiled Prince",
+        "Cruel Administrator",
+        "Cunning Maneuver"
+      ],
+      "core_cards": [
+        "Vindictive Warden",
+        "Yuyan Archers",
+        "Fire Nation Cadets",
+        "Lightning Strike"
+      ],
+      "href": "tla_learned_synergy_pages/06_rakdos-humans-vindictive-warden-yuyan-archers.html"
+    },
+    {
+      "cluster_id": 7,
+      "title": "Dimir Humans | Foggy Swamp Spirit Keeper / Messenger Hawk",
+      "color_name": "Dimir Humans",
+      "deck_count": 14648,
+      "games": 65692,
+      "win_rate": 0.5660658832125678,
+      "signposts": [
+        "Foggy Swamp Spirit Keeper",
+        "Messenger Hawk",
+        "Sold Out",
+        "Forecasting Fortune Teller"
+      ],
+      "pick_cards": [
+        "Azula, Cunning Usurper",
+        "Invasion Submersible",
+        "Foggy Swamp Spirit Keeper",
+        "The Fire Nation Drill"
+      ],
+      "build_arounds": [
+        "Azula Always Lies"
+      ],
+      "core_cards": [
+        "Foggy Swamp Spirit Keeper",
+        "Messenger Hawk",
+        "Sold Out",
+        "Forecasting Fortune Teller"
+      ],
+      "href": "tla_learned_synergy_pages/07_dimir-humans-foggy-swamp-spirit-keeper-messenger-hawk.html"
+    }
+  ]
+}</script>
+<script>
+(function() {
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var heroStats = document.getElementById('heroStats');
+  [
+    'Deck builds: ' + payload.meta.deck_count,
+    'Game rows: ' + payload.meta.game_count,
+    'Archetypes: ' + payload.meta.n_clusters,
+    'Views: analysis + pick + build-around detector'
+  ].forEach(function(text) {
+    var span = document.createElement('span');
+    span.className = 'pill';
+    span.textContent = text;
+    heroStats.appendChild(span);
+  });
+  var grid = document.getElementById('archetypeGrid');
+  payload.overview.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '' +
+      '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
+      '<div class="row"><span>Game WR</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
+      '<div class="row"><span>Games</span><strong>' + row.games + '</strong></div>' +
+      '<div><div class="muted">What defines the deck</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">What wins drafts</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Build-around candidates</div><div class="chips">' + row.build_arounds.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Map</a><span class="link-btn secondary">Card spotlight inside</span></div>';
+    grid.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

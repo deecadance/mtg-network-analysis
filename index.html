@@ -8,110 +8,400 @@
     :root {
       --bg: #08101d;
       --text: #ecf2fb;
-      --muted: #97aac6;
+      --muted: #9bb0cd;
       --line: rgba(126,157,197,0.18);
       --panel: rgba(13,20,34,0.92);
+      --panel-2: rgba(20,31,51,0.92);
       --accent: #5cc8ff;
       --gold: #f4c95d;
+      --good: #43d17a;
+      --warn: #f59e0b;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       color: var(--text);
-      font: 16px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(37,99,235,0.22), transparent 34%),
+        radial-gradient(circle at 80% 18%, rgba(244,201,93,0.10), transparent 24%),
+        linear-gradient(180deg, #0a1220, #08101d 62%);
       min-height: 100vh;
     }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 32px 20px 48px; }
-    h1 { margin: 0 0 10px; font-size: 36px; }
-    p { margin: 0; }
-    .muted { color: var(--muted); }
-    .hero, .card {
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+    .panel {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+      border-radius: 28px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.28);
     }
-    .hero { padding: 24px; display: grid; gap: 12px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; margin-top: 26px; }
-    .card { padding: 20px; display: grid; gap: 14px; }
-    .card h2 { margin: 0; font-size: 22px; }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hero-copy {
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+    }
+    .kicker {
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 0.98;
+      max-width: 10ch;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 34ch;
+    }
+    .bullet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .bullet, .step-card {
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: var(--muted);
+    }
+    .bullet strong, .step-card strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    .hero-side {
+      padding: 24px;
+      display: grid;
+      gap: 14px;
+    }
+    .hero-side strong {
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .mini-card {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .mini-card h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .mini-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
     .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(92,200,255,0.34);
+      background: rgba(92,200,255,0.16);
+      color: var(--text);
+      font-weight: 600;
+      min-height: 42px;
+    }
+    .btn.secondary {
+      border-color: rgba(244,201,93,0.28);
+      background: rgba(244,201,93,0.14);
+    }
+    .btn.locked {
+      border-color: rgba(244,201,93,0.38);
+      background: rgba(244,201,93,0.12);
+      color: var(--gold);
+    }
+    .section-title {
+      margin: 34px 0 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+    }
+    .grid, .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 18px;
+    }
+    .format-card {
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+    }
+    .format-card h3 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .format-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       border-radius: 999px;
-      padding: 10px 14px;
-      text-decoration: none;
-      font-weight: 600;
-      color: var(--text);
-      border: 1px solid rgba(92,200,255,0.34);
-      background: rgba(92,200,255,0.16);
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 12px;
     }
-    .btn.secondary {
-      background: rgba(244,201,93,0.14);
-      border-color: rgba(244,201,93,0.28);
+    .tag.premium {
+      color: var(--gold);
+      border-color: rgba(244,201,93,0.22);
     }
-    ul { margin: 0; padding-left: 18px; color: var(--muted); }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--good);
+      box-shadow: 0 0 0 5px rgba(67,209,122,0.12);
+    }
+    .dot.premium { background: var(--warn); box-shadow: 0 0 0 5px rgba(245,158,11,0.12); }
+    .footer-note {
+      margin-top: 30px;
+      padding: 18px 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 880px) {
+      .hero { grid-template-columns: 1fr; }
+      .lead { max-width: none; }
+      .wrap { padding-left: 14px; padding-right: 14px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <div>
-        <h1>MTG Network Analysis</h1>
-        <p class="muted">Interactive archetype maps built from 17Lands-style game and draft data. Each page includes an analysis view and a pick-focused view, with learned archetypes, synergy knots, and card-level role signals.</p>
-      </div>
-      <div class="actions">
-        <a class="btn secondary" href="reports/synergy_method_report.pdf">Method Report PDF</a>
-        <a class="btn secondary" href="reports/tarkir_tdm_synergy_report.pdf">Tarkir Report PDF</a>
-      </div>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <h2>Tarkir Dragonstorm</h2>
-        <p class="muted">Learned wedge archetypes, dragons, counters, and aggressive token shells.</p>
-        <ul>
-          <li>Interactive network map</li>
-          <li>Pick-focused drafting view</li>
-          <li>Findings JSON download</li>
-        </ul>
-        <div class="actions">
-          <a class="btn" href="tarkir/">Open Analysis</a>
-          <a class="btn secondary" href="tarkir/index.json">Payload JSON</a>
-          <a class="btn secondary" href="tarkir/index_findings.json">Findings JSON</a>
+    <section class="hero">
+      <div class="panel hero-copy">
+        <div class="kicker">Interactive Limited Analysis</div>
+        <h1>Learn limited archetypes and pick priorities fast.</h1>
+        <div class="lead">Interactive archetype maps built from 17Lands game and draft data. See what people are playing, what cards need support, and which picks actually move win rate inside each lane.</div>
+        <div class="bullet-grid">
+          <div class="bullet">
+            <strong>Data-driven archetypes</strong>
+            Archetypes are learned from full deck builds, not hard-coded by color pair.
+          </div>
+          <div class="bullet">
+            <strong>Card synergy networks</strong>
+            Links show which cards repeatedly outperform together inside the same shell.
+          </div>
+          <div class="bullet">
+            <strong>Build-arounds, glue, traps</strong>
+            Separate cards that are strong alone from cards that only shine with support.
+          </div>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="tarkir/index.html">Try Tarkir</a>
+          <a class="btn" href="lorwyn/index.html">Try Lorwyn Eclipsed</a>
+          <a class="btn" href="final-fantasy/index.html">Try Final Fantasy</a>
+          <a class="btn" href="avatar/index.html">Try Avatar</a>
+          <a class="btn" href="cube/index.html">Try Powered Cube</a>
         </div>
       </div>
-      <div class="card">
-        <h2>Lorwyn Eclipsed</h2>
-        <p class="muted">Learned tribal and color-base shells including Merfolk, Kithkin, Elves, Goblins, and Elementals.</p>
-        <ul>
-          <li>Interactive network map</li>
-          <li>Color-base naming</li>
-          <li>Findings JSON download</li>
-        </ul>
-        <div class="actions">
-          <a class="btn" href="lorwyn/">Open Analysis</a>
-          <a class="btn secondary" href="lorwyn/index.json">Payload JSON</a>
-          <a class="btn secondary" href="lorwyn/index_findings.json">Findings JSON</a>
+      <div class="panel hero-side">
+        <strong>What You Get</strong>
+        <div class="mini-card">
+          <h2>Analysis View</h2>
+          <p>See what defines each archetype: signposts, core cards, synergy knots, and the shells people actually draft.</p>
+        </div>
+        <div class="mini-card">
+          <h2>Pick-Focused View</h2>
+          <p>See which cards increase wins once you are in an archetype, split by rarity with urgency and wheel context.</p>
+        </div>
+        <div class="mini-card">
+          <h2>Card Spotlight</h2>
+          <p>Click a card to open its card page: win rate alone, win rate when supported, top synergies, anti-synergies, ALSA, and wheel likelihood.</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn secondary" href="about/index.html">About the method</a>
         </div>
       </div>
-      <div class="card">
-        <h2>Powered Cube</h2>
-        <p class="muted">Strategy-first cube clusters such as storm, reanimator, artifacts, control, ramp, and tokens.</p>
-        <ul>
-          <li>Interactive network map</li>
-          <li>Expressive base-color labels</li>
-          <li>Findings JSON download</li>
-        </ul>
-        <div class="actions">
-          <a class="btn" href="cube/">Open Analysis</a>
-          <a class="btn secondary" href="cube/index.json">Payload JSON</a>
-          <a class="btn secondary" href="cube/index_findings.json">Findings JSON</a>
+    </section>
+
+    <div class="section-title">How Do I Use This Website?</div>
+    <section class="step-grid">
+      <article class="panel step-card">
+        <strong>1. Start in Analysis View</strong>
+        Use this to answer “what are people playing?” The network shows the learned archetypes, the cards that define them, and which groups of cards naturally cluster together.
+      </article>
+      <article class="panel step-card">
+        <strong>2. Switch to Pick-Focused View</strong>
+        Use this to answer “what wins when I am in this lane?” Node size shifts toward cards that raise projected wins inside the archetype, not just cards that are common there.
+      </article>
+      <article class="panel step-card">
+        <strong>3. Click cards, do not hover hunt</strong>
+        Every node opens a persistent card spotlight with support-vs-alone win rates, shell dependence, ALSA, urgency, and the best positive or negative partners.
+      </article>
+      <article class="panel step-card">
+        <strong>4. Read isolated nodes carefully</strong>
+        In pick view, a card with few or no links is often a splashable bomb: it wins because it is strong on its own, not because it needs a dedicated synergy shell.
+      </article>
+    </section>
+
+    <div class="section-title">Try The Latest Formats</div>
+    <section class="grid">
+      <article class="panel format-card" data-format-card data-format="TDM">
+        <div>
+          <h3>Tarkir Dragonstorm</h3>
+          <p>Dragons, counters, Mardu go-wide, Jeskai spells, and the multicolor support web around them.</p>
         </div>
-      </div>
+        <div class="tags">
+          <span class="tag">Archetype map</span>
+          <span class="tag premium">Build-around detector</span>
+          <span class="tag">Pick priorities</span>
+        </div>
+        <div class="status"><span class="dot"></span><span>Latest set exploration is free.</span></div>
+        <div class="btn-row">
+          <a class="btn" href="tarkir/index.html">Open interactive map</a>
+          <a class="btn secondary" data-report-link href="reports/tarkir_tdm_synergy_report.pdf">Read report</a>
+        </div>
+      </article>
+
+      <article class="panel format-card" data-format-card data-format="ECL">
+        <div>
+          <h3>Lorwyn Eclipsed</h3>
+          <p>Merfolk, Kithkin, Elves, Goblins, Elementals, and the shells that actually survive the clustering pass.</p>
+        </div>
+        <div class="tags">
+          <span class="tag">Tribal splits</span>
+          <span class="tag">Card spotlight</span>
+          <span class="tag">Anti-synergies</span>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="lorwyn/index.html">Open interactive map</a>
+          <a class="btn secondary" data-report-link href="reports/ecl_synergy_report.pdf">Read report</a>
+        </div>
+      </article>
+
+      <article class="panel format-card" data-format-card data-format="Cube - Powered">
+        <div>
+          <h3>Powered Cube</h3>
+          <p>Storm, artifacts, reanimator, white control, Boros tokens, and other strategy-first clusters.</p>
+        </div>
+        <div class="tags">
+          <span class="tag">Base-color labels</span>
+          <span class="tag">Combo shells</span>
+          <span class="tag">Draft priority view</span>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="cube/index.html">Open interactive map</a>
+          <a class="btn secondary" data-report-link href="reports/cube_powered_synergy_report.pdf">Read report</a>
+        </div>
+      </article>
+
+      <article class="panel format-card" data-format-card data-format="FIN">
+        <div>
+          <h3>Final Fantasy</h3>
+          <p>Large multi-archetype limited map with equipment shells, multicolor value decks, and several human-centered clusters.</p>
+        </div>
+        <div class="tags">
+          <span class="tag">11 archetypes</span>
+          <span class="tag">Card spotlight</span>
+          <span class="tag">Pick priorities</span>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="final-fantasy/index.html">Open interactive map</a>
+          <a class="btn secondary" data-report-link href="reports/fin_synergy_report.pdf">Read report</a>
+        </div>
+      </article>
+
+      <article class="panel format-card" data-format-card data-format="TLA">
+        <div>
+          <h3>Avatar</h3>
+          <p>White-based aggressive shells, blue tempo clusters, and Fire Nation archetypes recovered directly from the deck data.</p>
+        </div>
+        <div class="tags">
+          <span class="tag">8 archetypes</span>
+          <span class="tag premium">Build-around detector</span>
+          <span class="tag">Synergy map</span>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="avatar/index.html">Open interactive map</a>
+          <a class="btn secondary" data-report-link href="reports/tla_synergy_report.pdf">Read report</a>
+        </div>
+      </article>
+    </section>
+
+    <div class="panel footer-note">
+      Analysis view, pick-focused view, and archetype exploration stay available. Build-around filters, pair/triplet deep dives, and detailed reports are the natural premium layer when the paywall is switched on.
     </div>
   </div>
+  <script>
+  (function() {
+    function mergeConfig(base, extra) {
+      var out = {};
+      Object.keys(base || {}).forEach(function(key) {
+        if (base[key] && typeof base[key] === 'object' && !Array.isArray(base[key])) out[key] = Object.assign({}, base[key]);
+        else out[key] = base[key];
+      });
+      Object.keys(extra || {}).forEach(function(key) {
+        if (extra[key] && typeof extra[key] === 'object' && !Array.isArray(extra[key])) out[key] = Object.assign({}, out[key] || {}, extra[key]);
+        else out[key] = extra[key];
+      });
+      return out;
+    }
+    function lockReportButton(button) {
+      button.classList.add('locked');
+      button.textContent = 'Premium report';
+      button.addEventListener('click', function(evt) {
+        evt.preventDefault();
+        window.alert('Detailed format reports are part of the premium version.');
+      });
+    }
+    fetch('site-config.json')
+      .then(function(resp) { return resp.ok ? resp.json() : null; })
+      .then(function(config) {
+        if (!config) return;
+        var defaultConfig = config.default || {};
+        Array.prototype.slice.call(document.querySelectorAll('[data-format-card]')).forEach(function(card) {
+          var format = card.getAttribute('data-format');
+          var formatConfig = mergeConfig(defaultConfig, (config.formats && config.formats[format]) || {});
+          var reportButton = card.querySelector('[data-report-link]');
+          if (reportButton && formatConfig.premiumReport) lockReportButton(reportButton);
+        });
+      })
+      .catch(function() {});
+  })();
+  </script>
 </body>
 </html>
