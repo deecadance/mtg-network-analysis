@@ -8200,6 +8200,10 @@
   function clamp(value, lo, hi) {
     return Math.max(lo, Math.min(hi, value));
   }
+  function blocksPan(target) {
+    if (!target || !target.closest) return false;
+    return !!(target.closest('.node-hit') || target.closest('.edge-hit'));
+  }
   function applyViewportTransform() {
     if (!viewportGroup) return;
     viewportGroup.setAttribute(
@@ -8763,6 +8767,7 @@
   }
   function drawNode(group, node) {
     var g = svgEl('g');
+    g.setAttribute('class', 'node-hit');
     var border = communityPalette[node.community % communityPalette.length];
     var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
     var r = currentNodeRadius(node);
@@ -8846,6 +8851,7 @@
         ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
         : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
       var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.setAttribute('class', 'edge-hit');
       line.style.cursor = 'pointer';
       line.addEventListener('click', function(evt) {
         if (shouldSuppressClick()) return;
@@ -8858,7 +8864,7 @@
     sortedNodes.forEach(function(node) {
       drawNode(nodes, node);
       if (!shouldLabel(node)) return;
-      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13, 'pointer-events': 'none' });
       text.textContent = node.label;
       labels.appendChild(text);
     });
@@ -8944,6 +8950,7 @@
   }, { passive: false });
   svg.addEventListener('pointerdown', function(evt) {
     if (evt.button !== undefined && evt.button !== 0) return;
+    if (blocksPan(evt.target)) return;
     dragState = {
       pointerId: evt.pointerId,
       startPoint: svgPointFromClient(evt.clientX, evt.clientY),
