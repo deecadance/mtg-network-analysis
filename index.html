@@ -254,6 +254,7 @@
         </div>
         <div class="btn-row">
           <a class="btn secondary" href="about/index.html">About the method</a>
+          <a class="btn secondary" data-trivia-link href="trivia/index.html">Set trivia</a>
         </div>
       </div>
     </section>
@@ -388,11 +389,21 @@
         window.alert('Detailed format reports are part of the premium version.');
       });
     }
+    function lockTriviaButton(button) {
+      button.classList.add('locked');
+      button.textContent = 'Set trivia (Premium)';
+      button.addEventListener('click', function(evt) {
+        evt.preventDefault();
+        window.alert('Cross-set trivia is part of the premium version.');
+      });
+    }
     fetch('site-config.json')
       .then(function(resp) { return resp.ok ? resp.json() : null; })
       .then(function(config) {
         if (!config) return;
         var defaultConfig = config.default || {};
+        var triviaButton = document.querySelector('[data-trivia-link]');
+        if (triviaButton && defaultConfig.premiumTrivia) lockTriviaButton(triviaButton);
         Array.prototype.slice.call(document.querySelectorAll('[data-format-card]')).forEach(function(card) {
           var format = card.getAttribute('data-format');
           var formatConfig = mergeConfig(defaultConfig, (config.formats && config.formats[format]) || {});

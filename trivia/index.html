@@ -1,0 +1,418 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Set Trivia | MTG Network Analysis</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #9bb0cd;
+      --line: rgba(126,157,197,0.18);
+      --panel: rgba(13,20,34,0.92);
+      --panel-2: rgba(20,31,51,0.92);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+      --good: #43d17a;
+      --warn: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(37,99,235,0.22), transparent 34%),
+        radial-gradient(circle at 80% 18%, rgba(244,201,93,0.10), transparent 24%),
+        linear-gradient(180deg, #0a1220, #08101d 62%);
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
+    .hero, .panel, .set-card, .stat, .table-card, .lock-banner {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+    }
+    .hero {
+      padding: 26px;
+      display: grid;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 52px);
+      line-height: 0.98;
+      max-width: 12ch;
+    }
+    .lead { color: var(--muted); max-width: 60ch; }
+    .topbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(92,200,255,0.34);
+      background: rgba(92,200,255,0.16);
+      color: var(--text);
+      font-weight: 600;
+      min-height: 42px;
+    }
+    .btn.locked {
+      border-color: rgba(244,201,93,0.38);
+      background: rgba(244,201,93,0.12);
+      color: var(--gold);
+    }
+    .stat-grid, .set-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .stat {
+      padding: 16px 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .stat strong { font-size: 28px; }
+    .muted { color: var(--muted); }
+    .section-title {
+      margin: 28px 0 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+    }
+    .table-card {
+      padding: 18px;
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(148,163,184,0.14);
+    }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .set-card {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .set-card h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .pair-list {
+      display: grid;
+      gap: 10px;
+    }
+    .pair {
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      display: grid;
+      gap: 4px;
+    }
+    .pair strong { font-size: 15px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 12px;
+      width: fit-content;
+    }
+    .lock-banner {
+      display: none;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      border-color: rgba(244,201,93,0.32);
+      background: linear-gradient(180deg, rgba(50,38,12,0.92), rgba(20,16,10,0.92));
+    }
+    body.locked .lock-banner { display: block; }
+    body.locked .protected {
+      filter: blur(8px);
+      pointer-events: none;
+      user-select: none;
+    }
+    @media (max-width: 880px) {
+      .wrap { padding-left: 14px; padding-right: 14px; }
+      table { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="topbar">
+        <a class="btn" href="../index.html">Back to Home</a>
+        <span class="pill">Premium</span>
+      </div>
+      <h1>Set Trivia</h1>
+      <div class="lead">Cross-set format trivia from the raw 17Lands game exports: total games, average user win rate, and the best-performing main-color pairs in each environment.</div>
+    </section>
+
+    <div class="lock-banner">
+      <strong>Premium feature</strong>
+      <div class="muted">Set trivia is part of the premium layer. Toggle <code>premiumTrivia</code> in <code>site-config.json</code> to unlock it on the public site.</div>
+    </div>
+
+    <div class="protected">
+      <div class="section-title">Cross-Set Snapshot</div>
+      <section class="table-card">
+        <table id="summaryTable">
+          <thead>
+            <tr>
+              <th>Set</th>
+              <th>Games</th>
+              <th>Unique decks</th>
+              <th>17Lands user WR</th>
+              <th>Best pair</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <div class="section-title">Set Cards</div>
+      <section id="setGrid" class="set-grid"></section>
+    </div>
+  </div>
+  <script type="application/json" id="payloadData">{
+  "sets": [
+    {
+      "code": "TDM",
+      "title": "Tarkir Dragonstorm",
+      "summary": "Multicolor wedges, dragons, counters, and Mardu go-wide.",
+      "games": 552428,
+      "wins": 303928,
+      "win_rate": 0.5501676236541233,
+      "decks": 126902,
+      "pair_threshold": 2762,
+      "top_pairs": [
+        {
+          "colors": "WR",
+          "label": "Boros",
+          "games": 50443,
+          "win_rate": 0.5842436016890351
+        },
+        {
+          "colors": "BG",
+          "label": "Golgari",
+          "games": 14196,
+          "win_rate": 0.5512116089039166
+        },
+        {
+          "colors": "WB",
+          "label": "Orzhov",
+          "games": 12252,
+          "win_rate": 0.5503591250408096
+        }
+      ],
+      "href": "../tarkir/index.html"
+    },
+    {
+      "code": "ECL",
+      "title": "Lorwyn Eclipsed",
+      "summary": "Tribal splits across Merfolk, Kithkin, Elves, Goblins, and Elementals.",
+      "games": 362682,
+      "wins": 199120,
+      "win_rate": 0.5490209053661335,
+      "decks": 82906,
+      "pair_threshold": 1813,
+      "top_pairs": [
+        {
+          "colors": "BG",
+          "label": "Golgari",
+          "games": 74605,
+          "win_rate": 0.5719589839823068
+        },
+        {
+          "colors": "WG",
+          "label": "Selesnya",
+          "games": 49736,
+          "win_rate": 0.5663302235805051
+        },
+        {
+          "colors": "WU",
+          "label": "Azorius",
+          "games": 63201,
+          "win_rate": 0.5611936519991773
+        }
+      ],
+      "href": "../lorwyn/index.html"
+    },
+    {
+      "code": "Cube - Powered",
+      "title": "Powered Cube",
+      "summary": "Strategy-first macro shells from a high-power cube environment.",
+      "games": 266117,
+      "wins": 145103,
+      "win_rate": 0.5452601675203013,
+      "decks": 57913,
+      "pair_threshold": 1330,
+      "top_pairs": [
+        {
+          "colors": "WR",
+          "label": "Boros",
+          "games": 65786,
+          "win_rate": 0.6097801963943696
+        },
+        {
+          "colors": "BR",
+          "label": "Rakdos",
+          "games": 12170,
+          "win_rate": 0.5587510271158587
+        },
+        {
+          "colors": "RG",
+          "label": "Gruul",
+          "games": 7856,
+          "win_rate": 0.5509164969450102
+        }
+      ],
+      "href": "../cube/index.html"
+    },
+    {
+      "code": "FIN",
+      "title": "Final Fantasy",
+      "summary": "A broad multicolor format with equipment, Humans, and value decks.",
+      "games": 769659,
+      "wins": 428945,
+      "win_rate": 0.5573182409352714,
+      "decks": 173242,
+      "pair_threshold": 3848,
+      "top_pairs": [
+        {
+          "colors": "UR",
+          "label": "Izzet",
+          "games": 104526,
+          "win_rate": 0.5734267072307369
+        },
+        {
+          "colors": "WR",
+          "label": "Boros",
+          "games": 61693,
+          "win_rate": 0.5689948616536722
+        },
+        {
+          "colors": "BG",
+          "label": "Golgari",
+          "games": 87880,
+          "win_rate": 0.5673987255348202
+        }
+      ],
+      "href": "../final-fantasy/index.html"
+    },
+    {
+      "code": "TLA",
+      "title": "Avatar",
+      "summary": "Aggressive white shells, blue tempo, and Fire Nation archetypes.",
+      "games": 562924,
+      "wins": 315286,
+      "win_rate": 0.5600862638651043,
+      "decks": 127199,
+      "pair_threshold": 2814,
+      "top_pairs": [
+        {
+          "colors": "WG",
+          "label": "Selesnya",
+          "games": 48826,
+          "win_rate": 0.5733830336296235
+        },
+        {
+          "colors": "WR",
+          "label": "Boros",
+          "games": 47614,
+          "win_rate": 0.5733817784685177
+        },
+        {
+          "colors": "WU",
+          "label": "Azorius",
+          "games": 77050,
+          "win_rate": 0.571174561972745
+        }
+      ],
+      "href": "../avatar/index.html"
+    }
+  ]
+}</script>
+  <script>
+  (function() {
+    var payload = JSON.parse(document.getElementById('payloadData').textContent);
+    var tbody = document.querySelector('#summaryTable tbody');
+    var grid = document.getElementById('setGrid');
+
+    function esc(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    function fmtInt(value) {
+      return Number(value || 0).toLocaleString();
+    }
+    function pct(value) {
+      return (100 * Number(value || 0)).toFixed(2) + '%';
+    }
+
+    (payload.sets || []).forEach(function(setRow) {
+      var bestPair = (setRow.top_pairs && setRow.top_pairs[0]) || null;
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><strong>' + esc(setRow.title) + '</strong></td>' +
+        '<td>' + fmtInt(setRow.games) + '</td>' +
+        '<td>' + fmtInt(setRow.decks) + '</td>' +
+        '<td>' + pct(setRow.win_rate) + '</td>' +
+        '<td>' + (bestPair ? esc(bestPair.label) + ' (' + pct(bestPair.win_rate) + ')' : '<span class="muted">Not found</span>') + '</td>';
+      tbody.appendChild(tr);
+
+      var pairHtml = (setRow.top_pairs || []).map(function(pair) {
+        return '<div class="pair">' +
+          '<strong>' + esc(pair.label) + '</strong>' +
+          '<div class="muted">' + esc(pair.colors) + ' | ' + fmtInt(pair.games) + ' games</div>' +
+          '<div>' + pct(pair.win_rate) + ' win rate</div>' +
+        '</div>';
+      }).join('');
+
+      var article = document.createElement('article');
+      article.className = 'set-card';
+      article.innerHTML =
+        '<div><h2>' + esc(setRow.title) + '</h2><div class="muted">' + esc(setRow.summary) + '</div></div>' +
+        '<div class="stat-grid">' +
+          '<div class="stat"><div class="muted">Games</div><strong>' + fmtInt(setRow.games) + '</strong></div>' +
+          '<div class="stat"><div class="muted">Unique decks</div><strong>' + fmtInt(setRow.decks) + '</strong></div>' +
+          '<div class="stat"><div class="muted">17Lands user WR</div><strong>' + pct(setRow.win_rate) + '</strong></div>' +
+        '</div>' +
+        '<div class="pair-list">' + (pairHtml || '<div class="muted">Not enough two-color main-color decks in the dataset.</div>') + '</div>' +
+        '<div><a class="btn" href="' + esc(setRow.href) + '">Open ' + esc(setRow.title) + '</a></div>';
+      grid.appendChild(article);
+    });
+
+    fetch('../site-config.json')
+      .then(function(resp) { return resp.ok ? resp.json() : null; })
+      .then(function(config) {
+        if (!config) return;
+        var defaultConfig = config.default || {};
+        if (defaultConfig.premiumTrivia) document.body.classList.add('locked');
+      })
+      .catch(function() {});
+  })();
+  </script>
+</body>
+</html>
