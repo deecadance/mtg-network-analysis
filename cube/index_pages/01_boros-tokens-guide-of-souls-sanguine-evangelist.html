@@ -7795,13 +7795,28 @@
       return;
     }
     var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(cardName);
+    var settled = false;
+    var timeoutId = setTimeout(function() {
+      if (settled) return;
+      settled = true;
+      if (onFailure) onFailure(new Error('Card lookup timed out'));
+    }, 2200);
     fetch(url)
-      .then(function(resp) { return resp.json(); })
+      .then(function(resp) {
+        if (!resp.ok) throw new Error('Card lookup failed with status ' + resp.status);
+        return resp.json();
+      })
       .then(function(data) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
         imageCache[cardName] = data;
         onSuccess(data);
       })
       .catch(function(err) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
         if (onFailure) onFailure(err);
       });
   }
@@ -7822,7 +7837,7 @@
     if (!rows || !rows.length) return '<div class="muted">' + emptyText + '</div>';
     return '<div class="tableish">' + rows.map(function(row) { return formatter(row); }).join('') + '</div>';
   }
-  function renderCardModal(node, cardData) {
+  function renderCardModal(node, cardData, loading) {
     var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
     var imgUrl = null;
     if (cardData && cardData.image_uris && cardData.image_uris.normal) imgUrl = cardData.image_uris.normal;
@@ -7851,9 +7866,11 @@
       },
       'No supported anti-synergies were detected.'
     );
-    var imageHtml = imgUrl
-      ? '<img src="' + imgUrl + '" alt="' + esc(node.id) + '" />'
-      : '<div class="muted">Card image unavailable.</div>';
+    var imageHtml = loading
+      ? '<div class="muted" style="padding:24px">Loading card image…</div>'
+      : imgUrl
+        ? '<img src="' + imgUrl + '" alt="' + esc(node.id) + '" />'
+        : '<div class="muted" style="padding:24px">Card image unavailable.</div>';
     cardModal.innerHTML = '' +
       '<button type="button" class="card-modal-close" id="cardModalClose">Close</button>' +
       '<div class="card-modal-grid">' +
@@ -7881,10 +7898,11 @@
     openModal();
   }
   function nodeDetail(node) {
+    renderCardModal(node, null, true);
     getCardData(
       node.id,
-      function(cardData) { renderCardModal(node, cardData); },
-      function() { renderCardModal(node, null); }
+      function(cardData) { renderCardModal(node, cardData, false); },
+      function() { renderCardModal(node, null, false); }
     );
   }
   function edgeDetail(edge) {
