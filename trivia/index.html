@@ -160,6 +160,7 @@
     <section class="hero">
       <div class="topbar">
         <a class="btn" href="../index.html">Back to Home</a>
+        <a class="btn" href="../privacy/index.html">Privacy</a>
       </div>
       <h1>Set Trivia</h1>
       <div class="lead">Cross-set format trivia from the raw 17Lands game exports: total games, average user win rate, and the best-performing main-color pairs in each environment.</div>
@@ -355,6 +356,36 @@
     var payload = JSON.parse(document.getElementById('payloadData').textContent);
     var tbody = document.querySelector('#summaryTable tbody');
     var grid = document.getElementById('setGrid');
+    function bootAnalytics(config) {
+      var analytics = config || {};
+      var gaId = String(analytics.ga4MeasurementId || '').trim();
+      var clarityId = String(analytics.clarityProjectId || '').trim();
+      if (gaId) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', gaId, { page_title: document.title, page_path: window.location.pathname });
+        var gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+        document.head.appendChild(gaScript);
+      }
+      if (clarityId && !window.clarity) {
+        (function(c,l,a,r,i,m,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
+          t=l.createElement(r); t.async=1; t.src='https://www.clarity.ms/tag/' + i;
+          y=l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t,y);
+        })(window, document, 'clarity', 'script', clarityId);
+      }
+      trackEvent('page_view_custom', { page_kind: 'trivia' });
+    }
+    function trackEvent(name, params) {
+      var data = Object.assign({ page_kind: 'trivia' }, params || {});
+      if (window.gtag) window.gtag('event', name, data);
+      if (window.clarity) {
+        try { window.clarity('event', name); } catch (err) {}
+      }
+    }
 
     function esc(value) {
       return String(value)
@@ -399,18 +430,24 @@
           '<div class="stat"><div class="muted">17Lands user WR</div><strong>' + pct(setRow.win_rate) + '</strong></div>' +
         '</div>' +
         '<div class="pair-list">' + (pairHtml || '<div class="muted">Not enough two-color main-color decks in the dataset.</div>') + '</div>' +
-        '<div><a class="btn" href="' + esc(setRow.href) + '">Open ' + esc(setRow.title) + '</a></div>';
+        '<div><a class="btn" data-open-set href="' + esc(setRow.href) + '">Open ' + esc(setRow.title) + '</a></div>';
       grid.appendChild(article);
+    });
+    Array.prototype.slice.call(document.querySelectorAll('[data-open-set]')).forEach(function(link) {
+      link.addEventListener('click', function() {
+        trackEvent('trivia_set_open', { target_href: link.getAttribute('href') || '' });
+      });
     });
 
     fetch('../site-config.json')
       .then(function(resp) { return resp.ok ? resp.json() : null; })
       .then(function(config) {
+        bootAnalytics(config && config.analytics ? config.analytics : {});
         if (!config) return;
         var defaultConfig = config.default || {};
         if (defaultConfig.premiumTrivia) document.body.classList.add('locked');
       })
-      .catch(function() {});
+      .catch(function() { bootAnalytics({}); });
   })();
   </script>
 </body>

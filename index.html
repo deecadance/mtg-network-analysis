@@ -250,6 +250,7 @@
         </div>
         <div class="btn-row">
           <a class="btn secondary" href="about/index.html">About the method</a>
+          <a class="btn secondary" href="privacy/index.html">Privacy</a>
           <a class="btn secondary" data-trivia-link href="trivia/index.html">Set trivia</a>
         </div>
       </div>
@@ -363,9 +364,42 @@
       </article>
     </section>
 
+    <div class="footer-note">
+      <a class="btn secondary" href="privacy/index.html">Privacy policy</a>
+    </div>
   </div>
   <script>
   (function() {
+    function bootAnalytics(config) {
+      var analytics = config || {};
+      var gaId = String(analytics.ga4MeasurementId || '').trim();
+      var clarityId = String(analytics.clarityProjectId || '').trim();
+      if (gaId) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', gaId, { page_title: document.title, page_path: window.location.pathname });
+        var gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+        document.head.appendChild(gaScript);
+      }
+      if (clarityId && !window.clarity) {
+        (function(c,l,a,r,i,m,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
+          t=l.createElement(r); t.async=1; t.src='https://www.clarity.ms/tag/' + i;
+          y=l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t,y);
+        })(window, document, 'clarity', 'script', clarityId);
+      }
+      trackEvent('page_view_custom', { page_kind: 'homepage' });
+    }
+    function trackEvent(name, params) {
+      var data = Object.assign({ page_kind: 'homepage' }, params || {});
+      if (window.gtag) window.gtag('event', name, data);
+      if (window.clarity) {
+        try { window.clarity('event', name); } catch (err) {}
+      }
+    }
     function mergeConfig(base, extra) {
       var out = {};
       Object.keys(base || {}).forEach(function(key) {
@@ -394,9 +428,27 @@
         window.alert('Cross-set trivia is part of the premium version.');
       });
     }
+    Array.prototype.slice.call(document.querySelectorAll('a.btn[href$="index.html"]')).forEach(function(link) {
+      var href = link.getAttribute('href') || '';
+      if (!/^(lorwyn|tarkir|cube|final-fantasy|avatar)\/index\.html$/.test(href)) return;
+      link.addEventListener('click', function() {
+        trackEvent('homepage_format_open', { target_href: href });
+      });
+    });
+    Array.prototype.slice.call(document.querySelectorAll('[data-report-link]')).forEach(function(link) {
+      link.addEventListener('click', function() {
+        trackEvent('homepage_report_open', { target_href: link.getAttribute('href') || '' });
+      });
+    });
+    Array.prototype.slice.call(document.querySelectorAll('a[href="about/index.html"], a[href="privacy/index.html"], [data-trivia-link]')).forEach(function(link) {
+      link.addEventListener('click', function() {
+        trackEvent('homepage_nav_click', { target_href: link.getAttribute('href') || '' });
+      });
+    });
     fetch('site-config.json')
       .then(function(resp) { return resp.ok ? resp.json() : null; })
       .then(function(config) {
+        bootAnalytics(config && config.analytics ? config.analytics : {});
         if (!config) return;
         var defaultConfig = config.default || {};
         var triviaButton = document.querySelector('[data-trivia-link]');
@@ -408,7 +460,7 @@
           if (reportButton && formatConfig.premiumReport) lockReportButton(reportButton);
         });
       })
-      .catch(function() {});
+      .catch(function() { bootAnalytics({}); });
   })();
   </script>
 </body>

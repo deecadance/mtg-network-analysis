@@ -93,6 +93,7 @@
       border-color: rgba(244, 201, 93, 0.28);
     }
     .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .footer-links { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -107,6 +108,7 @@
   </div>
   <div class="section-title">Archetypes</div>
   <div id="archetypeGrid" class="grid"></div>
+  <div class="footer-links"><a class="link-btn secondary" href="../index.html">Home</a><a class="link-btn secondary" href="../privacy/index.html">Privacy</a></div>
 </div>
 <script id="payloadData" type="application/json">{
   "meta": {
@@ -389,11 +391,49 @@
       ],
       "href": "index_pages/06_rakdos-goblins-gristle-glutton-elder-auntie.html"
     }
-  ]
+  ],
+  "config_href": "../site-config.json",
+  "privacy_href": "../privacy/index.html",
+  "home_href": "../index.html"
 }</script>
 <script>
 (function() {
   var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  var siteConfigHref = '../site-config.json';
+  function bootAnalytics(config) {
+    var analytics = config || {};
+    var gaId = String(analytics.ga4MeasurementId || '').trim();
+    var clarityId = String(analytics.clarityProjectId || '').trim();
+    if (gaId) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', gaId, { page_title: document.title, page_path: window.location.pathname });
+      var gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+      document.head.appendChild(gaScript);
+    }
+    if (clarityId && !window.clarity) {
+      (function(c,l,a,r,i,m,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
+        t=l.createElement(r); t.async=1; t.src='https://www.clarity.ms/tag/' + i;
+        y=l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t,y);
+      })(window, document, 'clarity', 'script', clarityId);
+    }
+    trackEvent('page_view_custom', { page_kind: 'format_landing', format_name: payload.meta.format || '', format_code: payload.meta.expansion || payload.meta.slug || '' });
+  }
+  function trackEvent(name, params) {
+    var data = Object.assign({
+      page_kind: 'format_landing',
+      format_name: payload.meta.format || '',
+      format_code: payload.meta.expansion || payload.meta.slug || ''
+    }, params || {});
+    if (window.gtag) window.gtag('event', name, data);
+    if (window.clarity) {
+      try { window.clarity('event', name); } catch (err) {}
+    }
+  }
   function pct(x) { return (100 * x).toFixed(2) + '%'; }
   var heroStats = document.getElementById('heroStats');
   [
@@ -419,9 +459,22 @@
       '<div><div class="muted">What defines the deck</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
       '<div><div class="muted">What wins drafts</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
       '<div><div class="muted">Build-around candidates</div><div class="chips">' + row.build_arounds.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
-      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Map</a><span class="link-btn secondary">Card spotlight inside</span></div>';
+      '<div class="actions"><a class="link-btn" data-open-map href="' + row.href + '">Open Map</a><span class="link-btn secondary">Card spotlight inside</span></div>';
     grid.appendChild(div);
   });
+  Array.prototype.slice.call(document.querySelectorAll('[data-open-map]')).forEach(function(link) {
+    link.addEventListener('click', function() {
+      trackEvent('archetype_open_from_format', { target_href: link.getAttribute('href') || '' });
+    });
+  });
+  if (siteConfigHref && siteConfigHref !== '../site-config.json') {
+    fetch(siteConfigHref)
+      .then(function(resp) { return resp.ok ? resp.json() : null; })
+      .then(function(config) { bootAnalytics(config && config.analytics ? config.analytics : {}); })
+      .catch(function() { bootAnalytics({}); });
+  } else {
+    bootAnalytics({});
+  }
 })();
 </script>
 </body>

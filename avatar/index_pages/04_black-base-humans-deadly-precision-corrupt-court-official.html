@@ -460,6 +460,7 @@
   <div class="toolbar">
     <div class="group">
       <a href="../index.html" class="chip">Back to Archetypes</a>
+      <a href="../../privacy/index.html" class="chip">Privacy</a>
       <div class="title-wrap">
         <strong id="pageTitle"></strong>
         <span id="pageSubtitle"></span>
@@ -7327,7 +7328,8 @@
     }
   ],
   "index_href": "../index.html",
-  "config_href": "../site-config.json"
+  "config_href": "../site-config.json",
+  "privacy_href": "../../privacy/index.html"
 }</script>
 <script>
 (function() {
@@ -7393,6 +7395,7 @@
   var dragState = null;
   var suppressClickUntil = 0;
   var siteConfigHref = '../site-config.json';
+  var analyticsBooted = false;
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
 
@@ -7407,6 +7410,43 @@
   }
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
+  }
+  function bootAnalytics(config) {
+    if (analyticsBooted) return;
+    analyticsBooted = true;
+    var analytics = config || {};
+    var gaId = String(analytics.ga4MeasurementId || '').trim();
+    var clarityId = String(analytics.clarityProjectId || '').trim();
+    if (gaId) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', gaId, { page_title: document.title, page_path: window.location.pathname });
+      var gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+      document.head.appendChild(gaScript);
+    }
+    if (clarityId && !window.clarity) {
+      (function(c,l,a,r,i,m,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
+        t=l.createElement(r); t.async=1; t.src='https://www.clarity.ms/tag/' + i;
+        y=l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t,y);
+      })(window, document, 'clarity', 'script', clarityId);
+    }
+    trackEvent('page_view_custom', { page_kind: 'archetype_page', view_mode: mode });
+  }
+  function trackEvent(name, params) {
+    var data = Object.assign({
+      page_kind: 'archetype_page',
+      format_name: payload.meta.format || '',
+      format_code: payload.meta.expansion || payload.meta.slug || '',
+      archetype: segment.title || ''
+    }, params || {});
+    if (window.gtag) window.gtag('event', name, data);
+    if (window.clarity) {
+      try { window.clarity('event', name); } catch (err) {}
+    }
   }
   function svgEl(name, attrs) {
     var node = document.createElementNS('http://www.w3.org/2000/svg', name);
@@ -7503,6 +7543,7 @@
     drawer.classList.add('open');
     drawerOverlay.classList.add('open');
     drawerBtn.textContent = 'Close Menu';
+    trackEvent('drawer_open', { view_mode: mode });
     renderDrawer();
     syncFloatingLayout();
   }
@@ -7520,12 +7561,14 @@
     var willShow = quickReadBox.classList.contains('hidden');
     quickReadBox.classList.toggle('hidden', !willShow);
     quickToggleBtn.classList.toggle('active', willShow);
+    if (willShow) trackEvent('quick_read_open', { view_mode: mode, quick_mode: quickMode });
     syncFloatingLayout();
   }
   function toggleLegend() {
     var willShow = legendBox.classList.contains('hidden');
     legendBox.classList.toggle('hidden', !willShow);
     legendToggleBtn.classList.toggle('active', willShow);
+    if (willShow) trackEvent('legend_open', { view_mode: mode });
     syncFloatingLayout();
   }
   function openModal() {
@@ -7593,15 +7636,22 @@
     draw();
   }
   function loadAccessConfig() {
-    if (!siteConfigHref || siteConfigHref === '../site-config.json') return;
+    if (!siteConfigHref || siteConfigHref === '../site-config.json') {
+      bootAnalytics({});
+      return;
+    }
     fetch(siteConfigHref)
       .then(function(resp) { return resp.ok ? resp.json() : null; })
       .then(function(config) {
-        if (!config) return;
+        if (!config) {
+          bootAnalytics({});
+          return;
+        }
         var formatConfig = (config.formats && (config.formats[payload.meta.format] || config.formats[payload.meta.slug])) || {};
         applyAccessConfig(Object.assign({}, config.default || {}, formatConfig));
+        bootAnalytics(config.analytics || {});
       })
-      .catch(function() {});
+      .catch(function() { bootAnalytics({}); });
   }
   function roleText(role) {
     if (role === 'good_alone') return 'Good Alone';
@@ -7775,6 +7825,7 @@
     );
   }
   function communityDetail(community) {
+    trackEvent('knot_click', { community_id: community.community_id, knot_size: community.size, view_mode: mode });
     var pairHtml = (community.top_pairs || []).length
       ? '<div class="chips" style="margin-top:8px">' + community.top_pairs.map(function(pair) { return '<span class="chip">' + esc(pair[0]) + ' + ' + esc(pair[1]) + '</span>'; }).join('') + '</div>'
       : '<div class="muted" style="margin-top:8px">No internal pair cleared the current edge threshold.</div>';
@@ -7862,6 +7913,7 @@
     openModal();
   }
   function nodeDetail(node) {
+    trackEvent('card_spotlight_open', { card_name: node.id, rarity: node.rarity || '', view_mode: mode });
     renderCardModal(node, null, true);
     getCardData(
       node.id,
@@ -7870,6 +7922,7 @@
     );
   }
   function edgeDetail(edge) {
+    trackEvent('pair_click', { card_a: edge.from, card_b: edge.to, pair_games: edge.pair_games || 0, view_mode: mode });
     var body = mode === 'analysis'
       ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
       : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
@@ -8215,12 +8268,14 @@
     mode = 'analysis';
     analysisBtn.classList.add('active');
     pickBtn.classList.remove('active');
+    trackEvent('view_mode_selected', { view_mode: 'analysis' });
     draw();
   });
   pickBtn.addEventListener('click', function() {
     mode = 'pick';
     pickBtn.classList.add('active');
     analysisBtn.classList.remove('active');
+    trackEvent('view_mode_selected', { view_mode: 'pick' });
     draw();
   });
   buildAroundBtn.addEventListener('click', function() {
@@ -8258,10 +8313,12 @@
   });
   quickAnalysisBtn.addEventListener('click', function() {
     quickMode = 'analysis';
+    trackEvent('quick_mode_selected', { quick_mode: 'analysis', view_mode: mode });
     renderQuickChips();
   });
   quickBoostersBtn.addEventListener('click', function() {
     quickMode = 'boosters';
+    trackEvent('quick_mode_selected', { quick_mode: 'boosters', view_mode: mode });
     renderQuickChips();
   });
   quickBuildBtn.addEventListener('click', function() {
@@ -8270,6 +8327,7 @@
       return;
     }
     quickMode = 'builds';
+    trackEvent('quick_mode_selected', { quick_mode: 'builds', view_mode: mode });
     renderQuickChips();
   });
   quickRarityButtons.forEach(function(button) {
