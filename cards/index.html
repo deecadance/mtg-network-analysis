@@ -179,6 +179,10 @@
   <script>
   (function() {
     var data = window.__MTG_CARD_EXPLORER_DATA || { cards: {}, search: [], popular: [] };
+    var cardLookup = Object.create(null);
+    Object.keys(data.cards || {}).forEach(function(name) {
+      cardLookup[String(name).trim().toLowerCase()] = name;
+    });
     var searchInput = document.getElementById('cardSearchInput');
     var searchBtn = document.getElementById('cardSearchBtn');
     var suggestionsEl = document.getElementById('suggestions');
@@ -241,6 +245,10 @@
       params.set('card', cardName);
       history.replaceState(null, '', '?' + params.toString());
     }
+    function resolveCardName(rawName) {
+      var key = String(rawName || '').trim().toLowerCase();
+      return cardLookup[key] || '';
+    }
     function findSuggestions(query) {
       var q = String(query || '').trim().toLowerCase();
       if (!q) return data.popular.slice(0, 8);
@@ -288,12 +296,13 @@
     }
     function searchInputChanged() { renderSuggestions(findSuggestions(searchInput.value)); }
     function chooseCard(cardName) {
-      if (!cardName || !data.cards[cardName]) return;
-      searchInput.value = cardName;
-      setCardName(cardName);
+      var resolved = resolveCardName(cardName);
+      if (!resolved || !data.cards[resolved]) return;
+      searchInput.value = resolved;
+      setCardName(resolved);
       suggestionsEl.style.display = 'none';
-      renderCard(cardName);
-      trackEvent('card_search_open', { card_name: cardName });
+      renderCard(resolved);
+      trackEvent('card_search_open', { card_name: resolved });
     }
     function currentRoleSummary(card) {
       var roles = Object.keys(card.roles || {});
@@ -351,12 +360,12 @@
           '<section class="table-card"><div class="section-title" style="margin-top:0">Top Synergies</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Quality</th><th>Pair WR</th><th>Games</th><th>Confidence</th></tr></thead><tbody>' +
           ((card.synergies || []).slice(0, 12).map(function(row) {
             return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td class="good">' + row.quality_score.toFixed(2) + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td><td>' + confidence(row.confidence_probability) + '</td></tr>';
-          }).join('')) || '<tr><td colspan="6" class="muted">No supported positive pair rows were exported for this card.</td></tr>') +
+          }).join('') || '<tr><td colspan="6" class="muted">No supported positive pair rows were exported for this card.</td></tr>') +
           '</tbody></table></section>' +
           '<section class="table-card"><div class="section-title" style="margin-top:0">Top Anti-Synergies</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Delta</th><th>Pair WR</th><th>Games</th><th>Confidence</th></tr></thead><tbody>' +
           ((card.anti_synergies || []).slice(0, 10).map(function(row) {
             return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td class="bad">' + row.synergy_delta_logit.toFixed(3) + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td><td>' + confidence(row.confidence_probability) + '</td></tr>';
-          }).join('')) || '<tr><td colspan="6" class="muted">No supported anti-synergy rows were exported for this card.</td></tr>') +
+          }).join('') || '<tr><td colspan="6" class="muted">No supported anti-synergy rows were exported for this card.</td></tr>') +
           '</tbody></table></section>' +
         '</div>' +
         '<div class="section-title">Synergy Knots</div>' +
@@ -374,12 +383,13 @@
     searchInput.addEventListener('input', searchInputChanged);
     searchInput.addEventListener('focus', searchInputChanged);
     searchInput.addEventListener('keydown', function(evt) {
-      if (!currentSuggestions.length) return;
       if (evt.key === 'ArrowDown') {
+        if (!currentSuggestions.length) return;
         evt.preventDefault();
         activeSuggestion = Math.min(currentSuggestions.length - 1, activeSuggestion + 1);
         updateSuggestionHighlight();
       } else if (evt.key === 'ArrowUp') {
+        if (!currentSuggestions.length) return;
         evt.preventDefault();
         activeSuggestion = Math.max(0, activeSuggestion - 1);
         updateSuggestionHighlight();
@@ -397,9 +407,10 @@
     searchBtn.addEventListener('click', function() { chooseCard(searchInput.value.trim()); });
 
     var initialCard = qsCardName();
-    if (initialCard && data.cards[initialCard]) {
-      searchInput.value = initialCard;
-      renderCard(initialCard);
+    var initialResolved = resolveCardName(initialCard);
+    if (initialResolved && data.cards[initialResolved]) {
+      searchInput.value = initialResolved;
+      renderCard(initialResolved);
     } else {
       renderIntro();
     }
