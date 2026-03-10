@@ -1,0 +1,414 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MTG Card Explorer</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #9bb0cd;
+      --line: rgba(126,157,197,0.18);
+      --panel: rgba(13,20,34,0.92);
+      --panel-2: rgba(20,31,51,0.92);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+      --good: #43d17a;
+      --bad: #fb7185;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(37,99,235,0.22), transparent 34%),
+        radial-gradient(circle at 80% 18%, rgba(244,201,93,0.10), transparent 24%),
+        linear-gradient(180deg, #0a1220, #08101d 62%);
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+    }
+    .hero {
+      padding: 26px;
+      display: grid;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .topbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(92,200,255,0.34);
+      background: rgba(92,200,255,0.16);
+      color: var(--text);
+      font-weight: 600;
+      min-height: 42px;
+    }
+    h1 { margin: 0; font-size: clamp(32px, 6vw, 54px); line-height: 0.98; }
+    .lead { color: var(--muted); max-width: 62ch; }
+    .search-wrap { position: relative; max-width: 760px; }
+    .search-row { display: flex; gap: 10px; }
+    .search-input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(126,157,197,0.28);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font: inherit;
+    }
+    .search-input::placeholder { color: rgba(155,176,205,0.75); }
+    .suggestions {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      display: none;
+      z-index: 12;
+      background: rgba(7, 14, 26, 0.98);
+      border: 1px solid rgba(126,157,197,0.25);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.35);
+    }
+    .suggestion {
+      padding: 12px 14px;
+      display: grid;
+      gap: 3px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(126,157,197,0.10);
+    }
+    .suggestion:last-child { border-bottom: 0; }
+    .suggestion:hover, .suggestion.active { background: rgba(92,200,255,0.08); }
+    .suggestion small { color: var(--muted); }
+    .hero-grid, .table-grid, .meta-grid { display: grid; gap: 18px; }
+    .hero-grid { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); }
+    .table-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+    .meta-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .card-shot, .summary, .table-card, .empty-state {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+    }
+    .card-shot {
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(20,31,51,0.95), rgba(10,16,29,0.95));
+    }
+    .card-shot img { width: 100%; max-width: 300px; border-radius: 18px; box-shadow: 0 20px 44px rgba(0,0,0,0.35); }
+    .summary { padding: 22px; display: grid; gap: 14px; }
+    .summary h2 { margin: 0; font-size: clamp(28px, 4vw, 42px); }
+    .muted { color: var(--muted); }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .metric {
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      display: grid;
+      gap: 4px;
+    }
+    .metric strong { font-size: 26px; }
+    .section-title { margin: 28px 0 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 12px; }
+    .table-card { padding: 18px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid rgba(148,163,184,0.14); vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .linkish { color: var(--accent); }
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+    .empty-state { padding: 24px; display: grid; gap: 10px; }
+    .empty-state strong { font-size: 28px; }
+    @media (max-width: 880px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .search-row { flex-direction: column; }
+      table { min-width: 0; }
+      .wrap { padding-left: 14px; padding-right: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="panel hero">
+      <div class="topbar">
+        <a class="btn" href="../index.html">Back to Home</a>
+        <a class="btn" href="../about/index.html">About the method</a>
+      </div>
+      <h1>Search for a card, then read the format around it.</h1>
+      <div class="lead">Find where a card fits best, what supports it, what drags it down, which synergy knots it belongs to, and which archetypes use it most effectively.</div>
+      <div class="search-wrap">
+        <div class="search-row">
+          <input id="cardSearchInput" class="search-input" type="search" placeholder="Search a card name" autocomplete="off" spellcheck="false" />
+          <button id="cardSearchBtn" class="btn" type="button">Open card page</button>
+        </div>
+        <div id="suggestions" class="suggestions"></div>
+      </div>
+    </section>
+
+    <div id="content"></div>
+  </div>
+  <script src="./card_index.js"></script>
+  <script>
+  (function() {
+    var data = window.__MTG_CARD_EXPLORER_DATA || { cards: {}, search: [], popular: [] };
+    var searchInput = document.getElementById('cardSearchInput');
+    var searchBtn = document.getElementById('cardSearchBtn');
+    var suggestionsEl = document.getElementById('suggestions');
+    var content = document.getElementById('content');
+    var activeSuggestion = -1;
+    var currentSuggestions = [];
+    var imageCache = Object.create(null);
+
+    function bootAnalytics(config) {
+      var analytics = config || {};
+      var gaId = String(analytics.ga4MeasurementId || '').trim();
+      var clarityId = String(analytics.clarityProjectId || '').trim();
+      if (gaId) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', gaId, { page_title: document.title, page_path: window.location.pathname });
+        var gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+        document.head.appendChild(gaScript);
+      }
+      if (clarityId && !window.clarity) {
+        (function(c,l,a,r,i,m,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
+          t=l.createElement(r); t.async=1; t.src='https://www.clarity.ms/tag/' + i;
+          y=l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t,y);
+        })(window, document, 'clarity', 'script', clarityId);
+      }
+      trackEvent('page_view_custom', { page_kind: 'card_explorer' });
+    }
+    function trackEvent(name, params) {
+      var dataObj = Object.assign({ page_kind: 'card_explorer' }, params || {});
+      if (window.gtag) window.gtag('event', name, dataObj);
+      if (window.clarity) {
+        try { window.clarity('event', name); } catch (err) {}
+      }
+    }
+    function esc(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function pct(value) { return (100 * Number(value || 0)).toFixed(2) + '%'; }
+    function pp(value) { return (100 * Number(value || 0)).toFixed(2) + ' pp'; }
+    function confidence(value) { return (100 * Number(value || 0)).toFixed(1) + '%'; }
+    function roleChip(role) {
+      var label = role === 'good_alone' ? 'Good Alone' : role === 'needs_support' ? 'Needs Support' : role === 'engine' ? 'Engine' : 'Balanced';
+      return '<span class="chip">' + esc(label) + '</span>';
+    }
+    function qsCardName() {
+      var params = new URLSearchParams(window.location.search);
+      return params.get('card') || '';
+    }
+    function setCardName(cardName) {
+      var params = new URLSearchParams(window.location.search);
+      params.set('card', cardName);
+      history.replaceState(null, '', '?' + params.toString());
+    }
+    function findSuggestions(query) {
+      var q = String(query || '').trim().toLowerCase();
+      if (!q) return data.popular.slice(0, 8);
+      var starts = [];
+      var includes = [];
+      data.search.forEach(function(row) {
+        var name = String(row.name || '');
+        var lower = name.toLowerCase();
+        if (lower.indexOf(q) === -1) return;
+        if (lower.indexOf(q) === 0) starts.push(row);
+        else includes.push(row);
+      });
+      var ordered = starts.concat(includes);
+      ordered.sort(function(a, b) {
+        if (b.archetype_count !== a.archetype_count) return b.archetype_count - a.archetype_count;
+        if (b.format_count !== a.format_count) return b.format_count - a.format_count;
+        return String(a.name).localeCompare(String(b.name));
+      });
+      return ordered.slice(0, 10);
+    }
+    function renderSuggestions(rows) {
+      currentSuggestions = rows || [];
+      activeSuggestion = -1;
+      if (!currentSuggestions.length) {
+        suggestionsEl.style.display = 'none';
+        suggestionsEl.innerHTML = '';
+        return;
+      }
+      suggestionsEl.innerHTML = currentSuggestions.map(function(row, idx) {
+        return '<div class="suggestion" data-idx="' + idx + '"><strong>' + esc(row.name) + '</strong><small>' + esc(row.best_format || '') + (row.best_archetype ? ' | ' + esc(row.best_archetype) : '') + ' | ' + row.archetype_count + ' archetypes</small></div>';
+      }).join('');
+      suggestionsEl.style.display = 'block';
+      Array.prototype.slice.call(suggestionsEl.querySelectorAll('.suggestion')).forEach(function(node) {
+        node.addEventListener('mousedown', function(evt) {
+          evt.preventDefault();
+          var idx = Number(node.getAttribute('data-idx') || 0);
+          chooseCard(currentSuggestions[idx].name);
+        });
+      });
+    }
+    function updateSuggestionHighlight() {
+      Array.prototype.slice.call(suggestionsEl.querySelectorAll('.suggestion')).forEach(function(node, idx) {
+        node.classList.toggle('active', idx === activeSuggestion);
+      });
+    }
+    function searchInputChanged() { renderSuggestions(findSuggestions(searchInput.value)); }
+    function chooseCard(cardName) {
+      if (!cardName || !data.cards[cardName]) return;
+      searchInput.value = cardName;
+      setCardName(cardName);
+      suggestionsEl.style.display = 'none';
+      renderCard(cardName);
+      trackEvent('card_search_open', { card_name: cardName });
+    }
+    function currentRoleSummary(card) {
+      var roles = Object.keys(card.roles || {});
+      roles.sort(function(a, b) { return (card.roles[b] || 0) - (card.roles[a] || 0); });
+      return roles.map(function(role) { return roleChip(role) + '<span class="chip">' + (card.roles[role] || 0) + '</span>'; }).join('');
+    }
+    function renderIntro() {
+      content.innerHTML = '<section class="empty-state"><strong>Start from any card.</strong><div class="muted">Search above to open a card-centric page. You can look up a single card and see where it fits best, which partners support it, which archetypes want it, and which knots it belongs to.</div><div class="chips">' + (data.popular || []).slice(0, 12).map(function(row) { return '<button type="button" class="btn" data-card="' + esc(row.name) + '">' + esc(row.name) + '</button>'; }).join('') + '</div></section>';
+      Array.prototype.slice.call(content.querySelectorAll('[data-card]')).forEach(function(btn) {
+        btn.addEventListener('click', function() { chooseCard(btn.getAttribute('data-card')); });
+      });
+    }
+    function fetchCardImage(cardName, onReady) {
+      if (imageCache[cardName]) { onReady(imageCache[cardName]); return; }
+      var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(cardName);
+      fetch(url).then(function(resp) { return resp.ok ? resp.json() : null; }).then(function(dataObj) {
+        imageCache[cardName] = dataObj || null;
+        onReady(dataObj || null);
+      }).catch(function() { onReady(null); });
+    }
+    function renderCard(cardName) {
+      var card = data.cards[cardName];
+      if (!card) { renderIntro(); return; }
+      var best = (card.archetypes || [])[0] || null;
+      var knotRows = (card.knots || []).slice(0, 10).map(function(row) {
+        return '<tr><td>' + esc(row.format) + '</td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td>Knot ' + row.community_id + '</td><td>' + row.size + '</td><td>' + confidence(row.confidence_probability) + '</td><td>' + esc((row.top_cards || []).slice(0, 4).join(', ')) + '</td></tr>';
+      }).join('') || '<tr><td colspan="6" class="muted">This card does not currently sit inside a retained knot.</td></tr>';
+      content.innerHTML = '' +
+        '<section class="hero-grid">' +
+          '<div class="card-shot" id="cardShot"><div class="muted">Loading card image…</div></div>' +
+          '<div class="summary">' +
+            '<div><h2>' + esc(card.name) + '</h2><div class="muted">Card-centric view across all published formats and archetypes.</div></div>' +
+            '<div class="chips">' +
+              '<span class="chip">' + esc(card.color_identity || 'C') + '</span>' +
+              '<span class="chip">' + esc(card.rarity || 'unknown') + '</span>' +
+              (card.types ? '<span class="chip">' + esc(card.types) + '</span>' : '') +
+              '<span class="chip">' + card.format_count + ' formats</span>' +
+              '<span class="chip">' + card.archetypes.length + ' archetype fits</span>' +
+            '</div>' +
+            '<div class="meta-grid">' +
+              '<div class="metric"><div class="muted">Best Archetype</div><strong>' + (best ? esc(best.archetype) : 'None') + '</strong><div class="muted">' + (best ? esc(best.format) : '') + '</div></div>' +
+              '<div class="metric"><div class="muted">Best Core Score</div><strong>' + (best ? best.core_score.toFixed(1) + ' / 10' : '0.0 / 10') + '</strong><div class="muted">How central the card is in that shell.</div></div>' +
+              '<div class="metric"><div class="muted">Best Pick Urgency</div><strong>' + (best ? best.pick_urgency_score.toFixed(1) + ' / 10' : '0.0 / 10') + '</strong><div class="muted">Highest recommendation score across archetypes.</div></div>' +
+              '<div class="metric"><div class="muted">Role Summary</div><strong>' + Object.keys(card.roles || {}).length + '</strong><div class="muted">Distinct role labels across archetypes.</div></div>' +
+            '</div>' +
+            '<div><strong>Roles across archetypes</strong><div class="chips" style="margin-top:8px">' + currentRoleSummary(card) + '</div></div>' +
+          '</div>' +
+        '</section>' +
+        '<div class="section-title">Best Archetypes</div>' +
+        '<section class="table-card"><table><thead><tr><th>Format</th><th>Archetype</th><th>Role</th><th>Analysis</th><th>Pick</th><th>Urgency</th><th>Core</th><th>Shell</th><th>Knot</th></tr></thead><tbody>' +
+        card.archetypes.slice(0, 14).map(function(row) {
+          return '<tr><td>' + esc(row.format) + '</td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td>' + esc(row.role.replace('_', ' ')) + (row.is_build_around ? ' | build-around' : '') + '</td><td>' + row.analysis_score.toFixed(1) + '</td><td>' + row.pick_priority_score.toFixed(1) + '</td><td>' + row.pick_urgency_score.toFixed(1) + '</td><td>' + row.core_score.toFixed(1) + '</td><td>' + row.shell_dependence_score.toFixed(1) + '</td><td>' + (row.knot ? 'Knot ' + row.knot.community_id : 'None') + '</td></tr>';
+        }).join('') + '</tbody></table></section>' +
+        '<div class="table-grid">' +
+          '<section class="table-card"><div class="section-title" style="margin-top:0">Top Synergies</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Quality</th><th>Pair WR</th><th>Games</th><th>Confidence</th></tr></thead><tbody>' +
+          ((card.synergies || []).slice(0, 12).map(function(row) {
+            return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td class="good">' + row.quality_score.toFixed(2) + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td><td>' + confidence(row.confidence_probability) + '</td></tr>';
+          }).join('')) || '<tr><td colspan="6" class="muted">No supported positive pair rows were exported for this card.</td></tr>') +
+          '</tbody></table></section>' +
+          '<section class="table-card"><div class="section-title" style="margin-top:0">Top Anti-Synergies</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Delta</th><th>Pair WR</th><th>Games</th><th>Confidence</th></tr></thead><tbody>' +
+          ((card.anti_synergies || []).slice(0, 10).map(function(row) {
+            return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td class="bad">' + row.synergy_delta_logit.toFixed(3) + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td><td>' + confidence(row.confidence_probability) + '</td></tr>';
+          }).join('')) || '<tr><td colspan="6" class="muted">No supported anti-synergy rows were exported for this card.</td></tr>') +
+          '</tbody></table></section>' +
+        '</div>' +
+        '<div class="section-title">Synergy Knots</div>' +
+        '<section class="table-card"><table><thead><tr><th>Format</th><th>Archetype</th><th>Knot</th><th>Size</th><th>Confidence</th><th>Top Cards</th></tr></thead><tbody>' + knotRows + '</tbody></table></section>';
+      fetchCardImage(card.name, function(cardData) {
+        var shot = document.getElementById('cardShot');
+        if (!shot) return;
+        var img = null;
+        if (cardData && cardData.image_uris && cardData.image_uris.normal) img = cardData.image_uris.normal;
+        if (!img && cardData && cardData.card_faces && cardData.card_faces[0] && cardData.card_faces[0].image_uris) img = cardData.card_faces[0].image_uris.normal;
+        shot.innerHTML = img ? '<img src="' + img + '" alt="' + esc(card.name) + '" />' : '<div class="muted">Card image unavailable.</div>';
+      });
+    }
+
+    searchInput.addEventListener('input', searchInputChanged);
+    searchInput.addEventListener('focus', searchInputChanged);
+    searchInput.addEventListener('keydown', function(evt) {
+      if (!currentSuggestions.length) return;
+      if (evt.key === 'ArrowDown') {
+        evt.preventDefault();
+        activeSuggestion = Math.min(currentSuggestions.length - 1, activeSuggestion + 1);
+        updateSuggestionHighlight();
+      } else if (evt.key === 'ArrowUp') {
+        evt.preventDefault();
+        activeSuggestion = Math.max(0, activeSuggestion - 1);
+        updateSuggestionHighlight();
+      } else if (evt.key === 'Enter') {
+        evt.preventDefault();
+        if (activeSuggestion >= 0 && currentSuggestions[activeSuggestion]) chooseCard(currentSuggestions[activeSuggestion].name);
+        else chooseCard(searchInput.value.trim());
+      } else if (evt.key === 'Escape') {
+        suggestionsEl.style.display = 'none';
+      }
+    });
+    document.addEventListener('click', function(evt) {
+      if (!suggestionsEl.contains(evt.target) && evt.target !== searchInput) suggestionsEl.style.display = 'none';
+    });
+    searchBtn.addEventListener('click', function() { chooseCard(searchInput.value.trim()); });
+
+    var initialCard = qsCardName();
+    if (initialCard && data.cards[initialCard]) {
+      searchInput.value = initialCard;
+      renderCard(initialCard);
+    } else {
+      renderIntro();
+    }
+
+    fetch('../site-config.json')
+      .then(function(resp) { return resp.ok ? resp.json() : null; })
+      .then(function(config) { bootAnalytics(config && config.analytics ? config.analytics : {}); })
+      .catch(function() { bootAnalytics({}); });
+  })();
+  </script>
+</body>
+</html>

@@ -69,6 +69,49 @@
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 10px;
     }
+    .search-wrap {
+      position: relative;
+      max-width: 760px;
+    }
+    .search-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(126,157,197,0.28);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font: inherit;
+    }
+    .search-input::placeholder { color: rgba(155,176,205,0.75); }
+    .suggestions {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      display: none;
+      z-index: 12;
+      background: rgba(7, 14, 26, 0.98);
+      border: 1px solid rgba(126,157,197,0.25);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.35);
+    }
+    .suggestion {
+      padding: 12px 14px;
+      display: grid;
+      gap: 3px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(126,157,197,0.10);
+    }
+    .suggestion:last-child { border-bottom: 0; }
+    .suggestion:hover, .suggestion.active { background: rgba(92,200,255,0.08); }
+    .suggestion small { color: var(--muted); }
     .bullet, .step-card {
       padding: 14px 16px;
       background: rgba(255,255,255,0.04);
@@ -216,6 +259,13 @@
         <div class="kicker">Interactive Limited Analysis</div>
         <h1>Learn limited archetypes and pick priorities fast.</h1>
         <div class="lead">Interactive archetype maps built from 17Lands game and draft data. See what people are playing, what cards need support, and which picks actually move win rate inside each lane.</div>
+        <div class="search-wrap">
+          <div class="search-row">
+            <input id="cardSearchInput" class="search-input" type="search" placeholder="Search a card name" autocomplete="off" spellcheck="false" />
+            <a id="cardSearchBtn" class="btn secondary" href="cards/index.html">Search card</a>
+          </div>
+          <div id="cardSuggestions" class="suggestions"></div>
+        </div>
         <div class="bullet-grid">
           <div class="bullet">
             <strong>Data-driven archetypes</strong>
@@ -250,6 +300,7 @@
         </div>
         <div class="btn-row">
           <a class="btn secondary" href="about/index.html">About the method</a>
+          <a class="btn secondary" href="cards/index.html">Card explorer</a>
           <a class="btn secondary" href="privacy/index.html">Privacy</a>
           <a class="btn secondary" data-trivia-link href="trivia/index.html">Set trivia</a>
         </div>
@@ -368,8 +419,15 @@
       <a class="btn secondary" href="privacy/index.html">Privacy policy</a>
     </div>
   </div>
+  <script src="cards/card_search_index.js"></script>
   <script>
   (function() {
+    var cardSearchIndex = window.__MTG_CARD_SEARCH_INDEX || [];
+    var cardSearchInput = document.getElementById('cardSearchInput');
+    var cardSearchBtn = document.getElementById('cardSearchBtn');
+    var cardSuggestions = document.getElementById('cardSuggestions');
+    var currentSuggestions = [];
+    var activeSuggestion = -1;
     function bootAnalytics(config) {
       var analytics = config || {};
       var gaId = String(analytics.ga4MeasurementId || '').trim();
@@ -399,6 +457,102 @@
       if (window.clarity) {
         try { window.clarity('event', name); } catch (err) {}
       }
+    }
+    function esc(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function searchCardRows(query) {
+      var q = String(query || '').trim().toLowerCase();
+      if (!q) return cardSearchIndex.slice(0, 8);
+      var starts = [];
+      var includes = [];
+      cardSearchIndex.forEach(function(row) {
+        var name = String(row.name || '');
+        var lower = name.toLowerCase();
+        if (lower.indexOf(q) === -1) return;
+        if (lower.indexOf(q) === 0) starts.push(row);
+        else includes.push(row);
+      });
+      var rows = starts.concat(includes);
+      rows.sort(function(a, b) {
+        if (b.archetype_count !== a.archetype_count) return b.archetype_count - a.archetype_count;
+        if (b.format_count !== a.format_count) return b.format_count - a.format_count;
+        return String(a.name).localeCompare(String(b.name));
+      });
+      return rows.slice(0, 10);
+    }
+    function updateSuggestionHighlight() {
+      Array.prototype.slice.call(cardSuggestions.querySelectorAll('.suggestion')).forEach(function(node, idx) {
+        node.classList.toggle('active', idx === activeSuggestion);
+      });
+    }
+    function renderSuggestions(rows) {
+      currentSuggestions = rows || [];
+      activeSuggestion = -1;
+      if (!currentSuggestions.length) {
+        cardSuggestions.style.display = 'none';
+        cardSuggestions.innerHTML = '';
+        return;
+      }
+      cardSuggestions.innerHTML = currentSuggestions.map(function(row, idx) {
+        return '<div class="suggestion" data-idx="' + idx + '"><strong>' + esc(row.name) + '</strong><small>' + esc(row.best_format || '') + (row.best_archetype ? ' | ' + esc(row.best_archetype) : '') + ' | ' + row.archetype_count + ' archetypes</small></div>';
+      }).join('');
+      cardSuggestions.style.display = 'block';
+      Array.prototype.slice.call(cardSuggestions.querySelectorAll('.suggestion')).forEach(function(node) {
+        node.addEventListener('mousedown', function(evt) {
+          evt.preventDefault();
+          var idx = Number(node.getAttribute('data-idx') || 0);
+          openCardExplorer(currentSuggestions[idx] && currentSuggestions[idx].name ? currentSuggestions[idx].name : '');
+        });
+      });
+    }
+    function openCardExplorer(cardName) {
+      var href = 'cards/index.html';
+      if (cardName) href += '?card=' + encodeURIComponent(cardName);
+      trackEvent('homepage_card_search_open', { card_name: cardName || '' });
+      window.location.href = href;
+    }
+    if (cardSearchInput) {
+      cardSearchInput.addEventListener('input', function() { renderSuggestions(searchCardRows(cardSearchInput.value)); });
+      cardSearchInput.addEventListener('focus', function() { renderSuggestions(searchCardRows(cardSearchInput.value)); });
+      cardSearchInput.addEventListener('keydown', function(evt) {
+        if (!currentSuggestions.length) {
+          if (evt.key === 'Enter') {
+            evt.preventDefault();
+            openCardExplorer(cardSearchInput.value.trim());
+          }
+          return;
+        }
+        if (evt.key === 'ArrowDown') {
+          evt.preventDefault();
+          activeSuggestion = Math.min(currentSuggestions.length - 1, activeSuggestion + 1);
+          updateSuggestionHighlight();
+        } else if (evt.key === 'ArrowUp') {
+          evt.preventDefault();
+          activeSuggestion = Math.max(0, activeSuggestion - 1);
+          updateSuggestionHighlight();
+        } else if (evt.key === 'Enter') {
+          evt.preventDefault();
+          if (activeSuggestion >= 0 && currentSuggestions[activeSuggestion]) openCardExplorer(currentSuggestions[activeSuggestion].name);
+          else openCardExplorer(cardSearchInput.value.trim());
+        } else if (evt.key === 'Escape') {
+          cardSuggestions.style.display = 'none';
+        }
+      });
+      document.addEventListener('click', function(evt) {
+        if (!cardSuggestions.contains(evt.target) && evt.target !== cardSearchInput) cardSuggestions.style.display = 'none';
+      });
+    }
+    if (cardSearchBtn) {
+      cardSearchBtn.addEventListener('click', function(evt) {
+        evt.preventDefault();
+        openCardExplorer(cardSearchInput ? cardSearchInput.value.trim() : '');
+      });
     }
     function mergeConfig(base, extra) {
       var out = {};
