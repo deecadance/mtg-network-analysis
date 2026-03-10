@@ -147,6 +147,47 @@
     .bad { color: var(--bad); }
     .empty-state { padding: 24px; display: grid; gap: 10px; }
     .empty-state strong { font-size: 28px; }
+    .help-inline {
+      position: relative;
+      display: inline-block;
+      margin-left: 8px;
+    }
+    .help-inline summary {
+      list-style: none;
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(126,157,197,0.32);
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+    .help-inline summary::-webkit-details-marker { display: none; }
+    .help-inline[open] summary {
+      background: rgba(92,200,255,0.14);
+      border-color: rgba(92,200,255,0.4);
+    }
+    .help-pop {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: min(320px, calc(100vw - 48px));
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(126,157,197,0.25);
+      background: rgba(7, 14, 26, 0.98);
+      color: var(--muted);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.35);
+      z-index: 20;
+    }
+    .help-pop strong { color: var(--text); }
+    .help-pop p { margin: 0 0 8px; }
+    .help-pop p:last-child { margin-bottom: 0; }
     @media (max-width: 880px) {
       .hero-grid { grid-template-columns: 1fr; }
       .search-row { flex-direction: column; }
@@ -327,6 +368,7 @@
       var card = data.cards[cardName];
       if (!card) { renderIntro(); return; }
       var best = (card.archetypes || [])[0] || null;
+      var roleHelp = '<details class="help-inline"><summary aria-label="Explain role labels">?</summary><div class="help-pop"><p><strong>Role labels</strong></p><p><strong>Good Alone</strong>: the card keeps a strong win rate even without specific partners.</p><p><strong>Balanced</strong>: the card is solid in the shell, but neither highly self-sufficient nor highly dependent.</p><p><strong>Needs Support</strong>: the card improves meaningfully when the shell gives it the right partners or structure.</p><p><strong>Engine</strong>: the card does not just benefit from support; it tends to organize the shell around itself and create repeated synergy with multiple partners.</p></div></details>';
       var knotRows = (card.knots || []).slice(0, 10).map(function(row) {
         return '<tr><td>' + esc(row.format) + '</td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td>Knot ' + row.community_id + '</td><td>' + row.size + '</td><td>' + confidence(row.confidence_probability) + '</td><td>' + esc((row.top_cards || []).slice(0, 4).join(', ')) + '</td></tr>';
       }).join('') || '<tr><td colspan="6" class="muted">This card does not currently sit inside a retained knot.</td></tr>';
@@ -334,7 +376,7 @@
         '<section class="hero-grid">' +
           '<div class="card-shot" id="cardShot"><div class="muted">Loading card image…</div></div>' +
           '<div class="summary">' +
-            '<div><h2>' + esc(card.name) + '</h2><div class="muted">Card-centric view across all published formats and archetypes.</div></div>' +
+            '<div><h2>' + esc(card.name) + '</h2></div>' +
             '<div class="chips">' +
               '<span class="chip">' + esc(card.color_identity || 'C') + '</span>' +
               '<span class="chip">' + esc(card.rarity || 'unknown') + '</span>' +
@@ -348,7 +390,7 @@
               '<div class="metric"><div class="muted">Best Pick Urgency</div><strong>' + (best ? best.pick_urgency_score.toFixed(1) + ' / 10' : '0.0 / 10') + '</strong><div class="muted">Highest recommendation score across archetypes.</div></div>' +
               '<div class="metric"><div class="muted">Role Summary</div><strong>' + Object.keys(card.roles || {}).length + '</strong><div class="muted">Distinct role labels across archetypes.</div></div>' +
             '</div>' +
-            '<div><strong>Roles across archetypes</strong><div class="chips" style="margin-top:8px">' + currentRoleSummary(card) + '</div></div>' +
+            '<div><strong>Roles across archetypes</strong>' + roleHelp + '<div class="chips" style="margin-top:8px">' + currentRoleSummary(card) + '</div></div>' +
           '</div>' +
         '</section>' +
         '<div class="section-title">Best Archetypes</div>' +
