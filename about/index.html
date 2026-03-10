@@ -12,13 +12,13 @@
       --line: rgba(126,157,197,0.18);
       --panel: rgba(13,20,34,0.92);
       --accent: #5cc8ff;
-      --code: rgba(255,255,255,0.05);
+      --math: rgba(255,255,255,0.04);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       color: var(--text);
-      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, rgba(37,99,235,0.22), transparent 34%), linear-gradient(180deg, #0a1220, #08101d 62%);
       min-height: 100vh;
     }
@@ -49,11 +49,8 @@
       padding: 12px 14px;
       border: 1px solid var(--line);
       border-radius: 16px;
-      background: var(--code);
-      color: var(--text);
+      background: var(--math);
       overflow-x: auto;
-      font: 15px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      white-space: pre-wrap;
     }
     .grid {
       display: grid;
@@ -94,136 +91,183 @@
       text-decoration: none;
       font-weight: 600;
     }
-    .muted { color: var(--muted); }
+    .term {
+      border-bottom: 1px dotted rgba(92,200,255,0.7);
+      cursor: help;
+      color: var(--text);
+    }
+    .mjx-container { color: var(--text) !important; }
+    code {
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 0 6px;
+      color: var(--text);
+    }
     @media (max-width: 640px) {
       .panel { padding: 22px 18px; border-radius: 22px; }
       h2 { font-size: 22px; }
-      .eq { font-size: 14px; }
     }
   </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
   <div class="wrap">
     <section class="panel">
       <div class="kicker">About the Method</div>
-      <h1>Archetypes first. Then win-rate deltas, uncertainty, and draft pressure.</h1>
-      <p>The site does not start from a global pair table. It learns archetypes from full decklists, then measures single-card strength, pair synergy, triplet motifs, and draft urgency inside each learned shell.</p>
-      <p>This page is intentionally mathematical. The formulas below are the ones the current implementation is built around.</p>
+      <h1>Archetypes first. Then synergy, uncertainty, and draft pressure.</h1>
+      <p>The method presented in this website aims at constructing directional graph networks for MTG limited data. It tries to learn archetypes from decklists, then measures single-card strength, pair synergy, triplet motifs, and draft urgency inside each learned shell.</p>
+      <p>The formulas below are the ones the current implementation is built around. They are meant to explain what the website is doing, not to hide it behind generic language.</p>
 
       <h2>1. Archetypes from full decklists</h2>
-      <p>Let <strong>X</strong> be the deck-by-card matrix built from the <code>deck_*</code> columns. Cards that appear in more than 55% of decks are filtered before clustering so they do not swamp the geometry.</p>
-      <div class="eq">w(d,c) = (1 + log x(d,c)) * log((1 + D) / (1 + df(c)))</div>
-      <p>The weighted deck matrix is reduced with truncated SVD and clustered with MiniBatch K-means. The automatic search currently scans <code>k = 7..11</code> and keeps the best fit subject to a minimum large-cluster size.</p>
+      <p>Let \(X\) be the deck-by-card matrix built from the <code>deck_*</code> columns of the game export. Cards that appear in more than 55% of decks are filtered before clustering because they are too common to help separate one archetype from another. If a card shows up in almost every deck, it carries little information about which shell a deck actually belongs to.</p>
+      <div class="eq">\[
+      w(d,c) = (1 + \log x(d,c)) \cdot \log\!\left(\frac{1 + D}{1 + df(c)}\right)
+      \]</div>
+      <p>This TF-IDF weighting downweights nearly universal cards and upweights cards that are concentrated in specific shells. The weighted matrix is reduced with truncated SVD and clustered with MiniBatch K-means.</p>
 
       <h2>2. Signposts</h2>
-      <p>For archetype <code>k</code>, a card is a signpost when it appears much more often inside that archetype than outside it. The method uses smoothed log-odds with a prevalence-centered prior and mild rarity damping.</p>
-      <div class="eq">ell(c) = log((a_c + alpha_c) / (N_k - a_c + beta_c)) - log((b_c + alpha_c) / (N_not_k - b_c + beta_c))</div>
-      <div class="eq">z(c) = ell(c) / sqrt(Var(ell(c)))</div>
-      <div class="eq">signpost_score(c) = z(c) * sqrt(a_c)</div>
-      <p>Here <code>a_c</code> is the number of decks in the archetype containing the card and <code>b_c</code> is the number of decks outside the archetype containing it.</p>
+      <p>For archetype \(k\), let \(a_c\) be the number of decks in that archetype containing card \(c\), and let \(b_c\) be the number of decks outside the archetype containing the same card. The signpost statistic starts from the smoothed log-odds contrast</p>
+      <div class="eq">\[
+      \ell(c) = \log\!\left(\frac{a_c + \alpha_c}{N_k - a_c + \beta_c}\right)
+      - \log\!\left(\frac{b_c + \alpha_c}{N_{\neg k} - b_c + \beta_c}\right).
+      \]</div>
+      <p>Here \(\ell(c)\) measures how much more concentrated the card is inside the archetype than outside it. A larger positive value means the card is much more typical of that archetype than of the rest of the format.</p>
+      <p>The prior is centered on the card's global deck prevalence. In plain terms: before looking at a specific archetype, the method assumes the card should appear roughly as often as it does in the whole format. That prevents the statistic from overreacting when support is still limited.</p>
+      <div class="eq">\[
+      p_{0,c} = \frac{a_c + b_c}{D}, \qquad
+      \alpha_c = 1 + 28\,p_{0,c}\,w_c, \qquad
+      \beta_c = 1 + 28\,(1 - p_{0,c}).
+      \]</div>
+      <p>The factor \(w_c\) slightly decreases the weight of rare and mythic cards. The reason is practical: a rare card can look archetype-defining simply because it appears infrequently and is strong on rate. Reducing its prior weight slightly makes the signpost ranking less eager to promote rarity alone as archetype structure.</p>
+      <div class="eq">\[
+      z(c) = \frac{\ell(c)}{\sqrt{\mathrm{Var}(\ell(c))}}, \qquad
+      signpost\_score(c) = z(c)\sqrt{a_c}.
+      \]</div>
 
-      <h2>3. Deck-level motif lift</h2>
-      <p>Deck-level pair and triplet lift ask whether cards co-occur in completed decks more often than independence would predict.</p>
-      <div class="eq">E_deck(a,b) = N_k * pi(a) * pi(b)</div>
-      <div class="eq">deck_pair_log_lift(a,b) = log2((O_deck(a,b) + 1) / (E_deck(a,b) + 1))</div>
-      <div class="eq">deck_pair_quality(a,b) = deck_pair_log_lift(a,b) * sqrt(O_deck(a,b))</div>
-      <div class="eq">E_deck(a,b,c) = N_k * pi(a) * pi(b) * pi(c)</div>
-      <div class="eq">deck_triplet_log_lift(a,b,c) = log2((O_deck(a,b,c) + 1) / (E_deck(a,b,c) + 1))</div>
-      <p>Strong deck triplets feed a pair bonus back into the graph, so higher-order motifs can reinforce a pair without redefining the game-level synergy statistic itself.</p>
+      <h2>3. Deck-level pairs and triplets</h2>
+      <p>After archetypes are learned, the method asks which cards co-occur in completed decklists more often than independence would predict.</p>
+      <div class="eq">\[
+      E_{\mathrm{deck}}(a,b) = N_k\,\pi(a)\,\pi(b), \qquad
+      L^{\mathrm{deck}}_{ab} = \log_2\!\left(\frac{O_{\mathrm{deck}}(a,b)+1}{E_{\mathrm{deck}}(a,b)+1}\right).
+      \]</div>
+      <div class="eq">\[
+      E_{\mathrm{deck}}(a,b,c) = N_k\,\pi(a)\,\pi(b)\,\pi(c), \qquad
+      L^{\mathrm{deck}}_{abc} = \log_2\!\left(\frac{O_{\mathrm{deck}}(a,b,c)+1}{E_{\mathrm{deck}}(a,b,c)+1}\right).
+      \]</div>
+      <p>Once a strong deck triplet is found, the code feeds part of that information back into the pair graph. Concretely, if cards \(a,b,c\) form a strong triplet motif, then each of the three pairs \((a,b)\), \((a,c)\), and \((b,c)\) gets an additional bonus. This lets the network remember that a pair may matter because it sits inside a larger package rather than because the two cards are special in isolation.</p>
 
       <h2>4. Game-level pair synergy</h2>
-      <p>Inside each archetype, the baseline is the archetype win rate <code>p_k</code>. For a card <code>a</code>, let <code>p_a</code> be its in-zone win rate. For a pair <code>(a,b)</code>, let <code>p_ab</code> be the win rate when both are present in the chosen zone.</p>
-      <div class="eq">standalone_delta(a) = p_a - p_k</div>
-      <div class="eq">logit(p_hat_ab) = logit(p_a) + logit(p_b) - logit(p_k)</div>
-      <div class="eq">synergy_delta_logit(a,b) = logit(p_ab) - logit(p_hat_ab)</div>
-      <p>This is the core edge statistic. Positive values mean the pair wins more than its two single-card rates would predict inside the same archetype.</p>
+      <p>Inside each archetype, the baseline is the archetype win rate \(p_k\). For a card \(a\), let \(p_a\) be its in-zone win rate. For a pair \((a,b)\), let \(p_{ab}\) be the win rate when both cards are present in the chosen game zone.</p>
+      <div class="eq">\[
+      standalone\_delta(a) = p_a - p_k.
+      \]</div>
+      <p>The expected pair win rate is computed in <span class="term" title="logit(p) = log(p / (1 - p)). It turns a probability into log-odds, where independent effects combine more naturally by addition.">logit</span> space rather than raw probability space. The reason is that additive changes in log-odds behave much more cleanly than additive changes in bounded probabilities. If two cards each move win probability a little, the combined effect is closer to additive in log-odds than in raw percentage points.</p>
+      <div class="eq">\[
+      \operatorname{logit}(\hat p_{ab}) = \operatorname{logit}(p_a) + \operatorname{logit}(p_b) - \operatorname{logit}(p_k).
+      \]</div>
+      <div class="eq">\[
+      synergy\_delta\_logit(a,b) = \operatorname{logit}(p_{ab}) - \operatorname{logit}(\hat p_{ab}).
+      \]</div>
+      <p>A positive value means the pair wins more often together than its two single-card rates would predict inside the same archetype.</p>
 
       <h2>5. Standard deviation and confidence</h2>
-      <p>Sampling noise is estimated with binomial variance in probability space and with the corresponding delta-method approximation in logit space.</p>
-      <div class="eq">Var(p) = p * (1 - p) / n</div>
-      <div class="eq">Var(logit(p)) = 1 / (n * p * (1 - p))</div>
-      <div class="eq">SE_delta_logit(a,b) = sqrt(Var(logit(p_ab)) + Var(logit(p_hat_ab)))</div>
-      <div class="eq">sigma(a,b) = abs(synergy_delta_logit(a,b)) / SE_delta_logit(a,b)</div>
-      <div class="eq">confidence_probability(a,b) = erf(sigma(a,b) / sqrt(2))</div>
-      <p>The site shows confidence as a percentage. That percentage is just the error-function mapping of the sigma statistic above.</p>
+      <p>The method estimates sampling noise with binomial variance and then propagates that uncertainty to the synergy statistic.</p>
+      <div class="eq">\[
+      \mathrm{Var}(p) = \frac{p(1-p)}{n}, \qquad
+      \mathrm{Var}(\operatorname{logit}(p)) = \frac{1}{n\,p(1-p)}.
+      \]</div>
+      <div class="eq">\[
+      SE_{ab} = \sqrt{\mathrm{Var}(\operatorname{logit}(p_{ab})) + \mathrm{Var}(\operatorname{logit}(\hat p_{ab}))}.
+      \]</div>
+      <div class="eq">\[
+      \sigma_{ab} = \frac{|synergy\_delta\_logit(a,b)|}{SE_{ab}}.
+      \]</div>
+      <p>The site shows confidence as a percentage because \(\sigma\) is easier to compare visually once it is mapped onto a 0-100 scale. The mapping used is</p>
+      <div class="eq">\[
+      confidence(a,b) = \operatorname{erf}\!\left(\frac{\sigma_{ab}}{\sqrt{2}}\right).
+      \]</div>
+      <p>Here <span class="term" title="erf(x) is the Gaussian error function. In this context it converts a sigma-like signal-to-noise ratio into the central probability mass of a standard normal distribution.">erf</span> converts the signal-to-noise ratio into the corresponding Gaussian central probability. So a high confidence percentage means the estimated effect is large relative to its estimated sampling noise.</p>
 
-      <h2>6. Pair, triplet, and draft corroboration scores</h2>
-      <p>The graph does not rank pairs by one number alone. It multiplies game lift, support, deck-level corroboration, triplet structure, draft corroboration, and confidence.</p>
-      <div class="eq">pair_quality_raw(a,b) = max(0, synergy_delta_logit(a,b))
-* sqrt(n_ab)
-* (0.02 + max(0, p_ab - p_k))
-* (1 + 0.25 * max(0, deck_pair_log_lift(a,b)))
-* (1 + 0.18 * max(0, triplet_bonus(a,b)))
-* (1 + 0.05 * log(1 + draft_pair_events(a,b)))</div>
-      <div class="eq">pair_quality(a,b) = pair_quality_raw(a,b) * min(1, sigma(a,b))</div>
-      <div class="eq">pair_pick_score_raw(a,b) = sqrt(n_ab)
-* (0.02 + max(0, p_ab - p_k))
-* (1 + 0.55 * max(0, deck_pair_log_lift(a,b)))
-* (1 + 0.10 * max(0, triplet_bonus(a,b)))
-* (1 + 0.06 * log(1 + draft_pair_events(a,b)))</div>
-      <div class="eq">triplet_quality_raw(a,b,c) = synergy_delta_logit(a,b,c)
-* sqrt(n_abc)
-* (1 + 0.20 * max(0, deck_triplet_log_lift(a,b,c)))
-* (1 + 0.06 * log(1 + draft_triplet_events(a,b,c)))</div>
+      <h2>6. Pair quality, triplet quality, and draft corroboration</h2>
+      <p>The graph needs one ranking number in order to decide which pairs should be emphasized. That number is built as a product. The product is used because the code wants a pair to stand out only when several conditions are true at the same time: the pair wins more than expected, it has enough support, it also co-occurs unusually often in decks, it may be part of a strong triplet, it shows up in projected drafts, and the estimated effect is not mostly noise.</p>
+      <div class="eq">\[
+      pair\_quality_{raw}(a,b) = \max(0, synergy\_delta\_logit(a,b))
+      \sqrt{n_{ab}}
+      (0.02 + \max(0, p_{ab} - p_k))
+      (1 + 0.25\max(0, L^{\mathrm{deck}}_{ab}))
+      (1 + 0.18\max(0, triplet\_bonus(a,b)))
+      (1 + 0.05\log(1 + draft\_pair\_events(a,b))).
+      \]</div>
+      <div class="eq">\[
+      pair\_quality(a,b) = pair\_quality_{raw}(a,b) \cdot \min(1, \sigma_{ab}).
+      \]</div>
+      <p>This means that a pair with weak game lift, little support, no deck corroboration, or low confidence will be pushed down even if one ingredient is large. The product is there to make the score selective.</p>
+      <div class="eq">\[
+      triplet\_quality_{raw}(a,b,c) = synergy\_delta\_logit(a,b,c)
+      \sqrt{n_{abc}}
+      (1 + 0.20\max(0, L^{\mathrm{deck}}_{abc}))
+      (1 + 0.06\log(1 + draft\_triplet\_events(a,b,c))).
+      \]</div>
 
       <h2>7. Draft pressure, ALSA, and wheeling</h2>
-      <p>ALSA is global, not archetype-specific. It measures what the whole table is doing, not just what one lane wants.</p>
-      <div class="eq">ALSA(c) = (1 / N_c) * sum_i last_seen_i(c)</div>
-      <div class="eq">ALSA_sd(c) = max(0.65, sqrt((1 / N_c) * sum_i last_seen_i(c)^2 - ALSA(c)^2))</div>
-      <div class="eq">tau(c) = max(1.1, 0.60 * ALSA(c) + 0.80 * ALSA_sd(c))</div>
-      <div class="eq">wheel_model(c) = (1 / 4) * sum_(s=1..4) exp(-max(0, (s + 8) - ALSA(c)) / tau(c))</div>
-      <div class="eq">wheel_probability(c) = max(0.12 * wheel_model(c), (empirical_wheels(c) + 320 * wheel_model(c)) / (wheel_opportunities(c) + 320))</div>
-      <p>The site only reports the probability that the card comes back when first seen on picks 1 through 4.</p>
+      <p>ALSA is global, not archetype-specific. It measures what the whole draft table is doing.</p>
+      <div class="eq">\[
+      ALSA(c) = \frac{1}{N_c}\sum_i last\_seen_i(c)
+      \]</div>
+      <div class="eq">\[
+      ALSA_{sd}(c) = \max\!\left(0.65, \sqrt{\frac{1}{N_c}\sum_i last\_seen_i(c)^2 - ALSA(c)^2}\right)
+      \]</div>
+      <div class="eq">\[
+      \tau(c) = \max\!\left(1.1, 0.60\,ALSA(c) + 0.80\,ALSA_{sd}(c)\right)
+      \]</div>
+      <div class="eq">\[
+      wheel\_model(c) = \frac{1}{4}\sum_{s=1}^{4} \exp\!\left(-\frac{\max(0, (s+8)-ALSA(c))}{\tau(c)}\right)
+      \]</div>
+      <p>This is then combined with actual observed wheels through a smoothed posterior, so the website reports the probability that the card comes back when passed on picks 1-4.</p>
 
-      <h2>8. All node scores</h2>
+      <h2>8. Exported scores</h2>
       <div class="grid">
         <div class="card">
           <strong>Dependency score</strong>
-          Weighted mean of positive incident pair synergy and triplet bonus. High means the card mostly looks good when its neighbors are present.
+          Weighted mean of positive incident synergy and triplet bonus. High means the card tends to need help from its neighbors.
         </div>
         <div class="card">
           <strong>Analysis score</strong>
-          <div class="eq">analysis_raw(c) = signpost_score(c) + 18 * dependency(c) + 140 * max(0, standalone_delta(c))</div>
-          Then transformed with <code>sign(x) * log(1 + |x|)</code>, clipped at the 5th and 95th percentiles, and rescaled to 0-10 inside the archetype.
+          \[
+          analysis_{raw}(c) = signpost\_score(c) + 18\,dependency(c) + 140\max(0, standalone\_delta(c))
+          \]
+          Then transformed, clipped, and rescaled to 0-10 inside the archetype.
         </div>
         <div class="card">
           <strong>Pick priority score</strong>
-          <div class="eq">pick_priority_raw(c) = 100
-* (max(0, draft_win_lift(c)) + 0.55 * max(0, standalone_delta(c)))
-* sqrt(max(1, draft_drafts(c)))
-* (1 + 0.10 * max(0, signpost_lift(c) - 1))</div>
-          Then transformed with <code>log(1 + x)</code>, clipped, and rescaled to 0-10.
-        </div>
-        <div class="card">
-          <strong>Pick market score</strong>
-          Built from ALSA, average taken-at, and wheel probability. This is global table pressure, not archetype power.
+          \[
+          pick\_priority_{raw}(c) = 100(\max(0,draft\_win\_lift(c)) + 0.55\max(0,standalone\_delta(c)))
+          \sqrt{\max(1,draft\_drafts(c))}
+          (1 + 0.10\max(0, signpost\_lift(c)-1))
+          \]
         </div>
         <div class="card">
           <strong>Pick urgency</strong>
-          <div class="eq">pick_urgency(c) = 10 * clamp((0.90 * market(c) + 0.10 * pick_priority(c) - 0.58) / 0.42, 0, 1)^1.15</div>
-          Plus a saturation rule for true slam-first-pick cards.
+          Combines global market pressure with a smaller archetype win term. It is designed as a recommendation scale: 0 means easy pass, 10 means slam it.
         </div>
         <div class="card">
           <strong>Shell dependence</strong>
-          <div class="eq">shell_dependence_raw(c) = max(0, support_delta(c))
-* sqrt(max(1, supported_games(c)))
-* (1 + 4 * dependency(c))
-* (1 + 0.18 * max(0, signpost_lift(c) - 1))
-/ (1 + 16 * max(0, standalone_delta(c)))</div>
-          Then normalized to 0-10 with the nonnegative log-rescale.
+          \[
+          shell\_dependence_{raw}(c) = \frac{\max(0,support\_delta(c))\sqrt{\max(1,supported\_games(c))}(1 + 4\,dependency(c))(1 + 0.18\max(0,signpost\_lift(c)-1))}{1 + 16\max(0,standalone\_delta(c))}
+          \]
         </div>
         <div class="card">
-          <strong>Build-around flag</strong>
-          <div class="eq">supported_games >= 80
-support_delta >= 0.018
-dependency >= 0.075
-standalone_delta <= 0.014</div>
-          A high shell-dependence score alone is not enough.
-        </div>
-        <div class="card">
-          <strong>Core score</strong>
-          <div class="eq">core_raw(c) = signpost_score(c) + 52 * deck_prevalence(c) + 85 * max(0, standalone_delta(c)) + 14 * dependency(c)</div>
-          Then normalized to 0-10.
+          <strong>Build-around detector</strong>
+          A true build-around must clear all of these: supported games at least 80, support delta at least 1.8 points, dependency at least 0.075, and standalone delta at most 1.4 points.
         </div>
       </div>
 
@@ -233,29 +277,18 @@ standalone_delta <= 0.014</div>
           <tr><th>Object</th><th>Current rule</th></tr>
         </thead>
         <tbody>
-          <tr><td>Candidate card pool</td><td>Top 18 signposts + top standalone cards + top volume cards + anchor neighbors, lands removed, truncated to 28 cards.</td></tr>
+          <tr><td>Candidate card pool</td><td>Top 18 signposts, top standalone cards, high-volume cards, and anchor neighbors; lands removed; final list truncated to 28 cards.</td></tr>
           <tr><td>Node support floor</td><td>At least 110 zone appearances.</td></tr>
           <tr><td>Pair support floor</td><td>At least 90 games with both cards present.</td></tr>
           <tr><td>Triplet support floor</td><td>At least 30 games with all three cards present.</td></tr>
-          <tr><td>Displayed solo/supported stats</td><td>Need at least 30 games in the relevant bucket or the UI shows “Not enough data”.</td></tr>
-          <tr><td>Base edge threshold</td><td><code>synergy_delta_logit &gt;= 0.05</code> and seed confidence around 90%.</td></tr>
-          <tr><td>Knot threshold</td><td>Weighted internal-edge confidence around 80%.</td></tr>
-          <tr><td>Knot promotion</td><td>Once a knot exists, nearby edges can enter around 81% confidence if they reinforce that knot and do not bridge two separate certified knots.</td></tr>
-          <tr><td>UI edge filter</td><td>The current front-end asks for about 85% confidence or explicit knot promotion.</td></tr>
-          <tr><td>Arrow direction</td><td>Higher-win-rate card points to lower-win-rate card. The pair statistic itself remains symmetric.</td></tr>
+          <tr><td>Edge threshold</td><td><code>synergy_delta_logit &gt;= 0.05</code>.</td></tr>
+          <tr><td>Base confidence threshold</td><td>About 90% for seed edges.</td></tr>
+          <tr><td>Knot threshold</td><td>About 80% for retained knots.</td></tr>
+          <tr><td>Knot promotion</td><td>Once a knot is established, nearby edges can enter at a lower threshold if they reinforce that knot and do not bridge two different established knots.</td></tr>
+          <tr><td>Displayed solo/support stats</td><td>Need at least 30 supporting games or the site shows “Not enough data”.</td></tr>
+          <tr><td>Arrow direction</td><td>The directed graph points from the higher-win-rate card to the lower-win-rate card. The underlying pair statistic is still symmetric.</td></tr>
         </tbody>
       </table>
-
-      <h2>10. What the graph means</h2>
-      <ul>
-        <li><strong>Big node:</strong> high score in the active view.</li>
-        <li><strong>Bright thick arrow:</strong> strong positive pair evidence with good confidence.</li>
-        <li><strong>Knot:</strong> a community of positive edges whose internal support is strong enough to survive the knot-confidence filter.</li>
-        <li><strong>Isolated node:</strong> either the card is good on rate by itself or the pair evidence around it did not survive the current thresholds.</li>
-      </ul>
-
-      <h2>11. Limits</h2>
-      <p>The method is descriptive, not causal. Archetypes are hard clusters. Solo and supported win rates are conditional slices, not interventions. Confidence tracks sampling uncertainty under the modeled estimators, not every possible source of bias in 17Lands data. The point of the site is still practical: learn what the decks are, what holds them together, and which cards improve when they are paired with the right support.</p>
 
       <div class="actions">
         <a class="btn" href="../index.html">Back to formats</a>
