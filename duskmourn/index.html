@@ -1,0 +1,609 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Duskmourn Learned Archetype Synergy Map</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #97aac6;
+      --line: rgba(126, 157, 197, 0.18);
+      --panel: rgba(13, 20, 34, 0.9);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .muted { color: var(--muted); }
+    .hero {
+      display: grid;
+      gap: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+    }
+    .hero .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(92, 200, 255, 0.16);
+      border: 1px solid rgba(92, 200, 255, 0.34);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-btn.secondary {
+      background: rgba(244, 201, 93, 0.14);
+      border-color: rgba(244, 201, 93, 0.28);
+    }
+    .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .footer-links { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="section-title" style="margin:0 0 8px">Interactive Limited Map</div>
+      <h1>Learn the archetypes and pick priorities fast.</h1>
+      <div class="muted">Interactive archetype maps built from the available draft and game data. Use the analysis view to see what defines a deck. Use the pick-focused view to see which cards actually push wins.</div>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div>
+  <div class="section-title">Archetypes</div>
+  <div id="archetypeGrid" class="grid"></div>
+  <div class="footer-links"><a class="link-btn secondary" href="../index.html">Home</a><a class="link-btn secondary" href="../privacy/index.html">Privacy</a></div>
+</div>
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "DSK",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "has_game_data": true,
+    "has_draft_data": true,
+    "performance_basis": "game",
+    "n_clusters": 11,
+    "fit_summary": {
+      "deck_count": 216329,
+      "cluster_feature_count": 272,
+      "svd_components": 48,
+      "svd_explained_variance": 0.4048077464103699,
+      "k_search": [
+        {
+          "k": 7,
+          "silhouette": 0.1358194649219513,
+          "dominant_main_color_share": 0.6906838982991564,
+          "objective": 0.1772604988199007
+        },
+        {
+          "k": 8,
+          "silhouette": 0.14872083067893982,
+          "dominant_main_color_share": 0.7556804421408638,
+          "objective": 0.19406165720739166
+        },
+        {
+          "k": 9,
+          "silhouette": 0.13153371214866638,
+          "dominant_main_color_share": 0.7609683776531257,
+          "objective": 0.17719181480785393
+        },
+        {
+          "k": 10,
+          "silhouette": 0.14083708822727203,
+          "dominant_main_color_share": 0.7698204540443988,
+          "objective": 0.18702631546993598
+        },
+        {
+          "k": 11,
+          "silhouette": 0.14937277138233185,
+          "dominant_main_color_share": 0.839907319199474,
+          "objective": 0.1997672105343003
+        }
+      ],
+      "chosen_k": 11,
+      "label_counts": {
+        "2": 19408,
+        "5": 33023,
+        "1": 11341,
+        "0": 12771,
+        "3": 29232,
+        "8": 28470,
+        "9": 19799,
+        "4": 14343,
+        "6": 15210,
+        "10": 11961,
+        "7": 20771
+      }
+    },
+    "deck_count": 216329,
+    "game_count": 1011949
+  },
+  "overview": [
+    {
+      "cluster_id": 0,
+      "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
+      "color_name": "Dimir",
+      "deck_count": 12771,
+      "games": 54605,
+      "win_rate": 0.5107224613130665,
+      "signposts": [
+        "Fear of Infinity",
+        "Skullsnap Nuisance",
+        "Balemurk Leech",
+        "Unable to Scream"
+      ],
+      "pick_cards": [
+        "Unholy Annex // Ritual Chamber",
+        "Fear of Isolation",
+        "Unnerving Grasp",
+        "Glimmerburst"
+      ],
+      "build_arounds": [
+        "Balemurk Leech",
+        "Appendage Amalgam",
+        "Stalked Researcher"
+      ],
+      "core_cards": [
+        "Fear of Infinity",
+        "Skullsnap Nuisance",
+        "Balemurk Leech",
+        "Unable to Scream"
+      ],
+      "href": "index_pages/00_dimir-fear-of-infinity-skullsnap-nuisance.html"
+    },
+    {
+      "cluster_id": 1,
+      "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
+      "color_name": "Gruul",
+      "deck_count": 11341,
+      "games": 50885,
+      "win_rate": 0.532435884838361,
+      "signposts": [
+        "Spineseeker Centipede",
+        "Moldering Gym // Weight Room",
+        "Say Its Name",
+        "Wary Watchdog"
+      ],
+      "pick_cards": [
+        "Valgavoth's Onslaught",
+        "The Swarmweaver",
+        "Beastie Beatdown",
+        "Under the Skin"
+      ],
+      "build_arounds": [
+        "Moldering Gym // Weight Room",
+        "Overgrown Zealot"
+      ],
+      "core_cards": [
+        "Spineseeker Centipede",
+        "Moldering Gym // Weight Room",
+        "Say Its Name",
+        "Wary Watchdog"
+      ],
+      "href": "index_pages/01_gruul-spineseeker-centipede-moldering-gym-weight-room.html"
+    },
+    {
+      "cluster_id": 2,
+      "title": "Rakdos | Disturbing Mirth / Final Vengeance",
+      "color_name": "Rakdos",
+      "deck_count": 19408,
+      "games": 89764,
+      "win_rate": 0.5462323425872287,
+      "signposts": [
+        "Disturbing Mirth",
+        "Final Vengeance",
+        "Sawblade Skinripper",
+        "Innocuous Rat"
+      ],
+      "pick_cards": [
+        "Disturbing Mirth",
+        "Final Vengeance",
+        "Unholy Annex // Ritual Chamber",
+        "Vengeful Possession"
+      ],
+      "build_arounds": [
+        "Diversion Specialist"
+      ],
+      "core_cards": [
+        "Disturbing Mirth",
+        "Final Vengeance",
+        "Sawblade Skinripper",
+        "Innocuous Rat"
+      ],
+      "href": "index_pages/02_rakdos-disturbing-mirth-final-vengeance.html"
+    },
+    {
+      "cluster_id": 3,
+      "title": "Boros Toy | Ragged Playmate / Vicious Clown",
+      "color_name": "Boros Toy",
+      "deck_count": 29232,
+      "games": 144562,
+      "win_rate": 0.5684619747928225,
+      "signposts": [
+        "Ragged Playmate",
+        "Vicious Clown",
+        "Midnight Mayhem",
+        "Arabella, Abandoned Doll"
+      ],
+      "pick_cards": [
+        "Midnight Mayhem",
+        "Sheltered by Ghosts",
+        "Arabella, Abandoned Doll",
+        "Overlord of the Mistmoors"
+      ],
+      "build_arounds": [
+        "Vicious Clown",
+        "Jump Scare",
+        "Norin, Swift Survivalist"
+      ],
+      "core_cards": [
+        "Ragged Playmate",
+        "Vicious Clown",
+        "Midnight Mayhem",
+        "Arabella, Abandoned Doll"
+      ],
+      "href": "index_pages/03_boros-toy-ragged-playmate-vicious-clown.html"
+    },
+    {
+      "cluster_id": 4,
+      "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
+      "color_name": "Izzet Spirit",
+      "deck_count": 14343,
+      "games": 63272,
+      "win_rate": 0.512928309520799,
+      "signposts": [
+        "Smoky Lounge // Misty Salon",
+        "Rampaging Soulrager",
+        "Intruding Soulrager",
+        "Glassworks // Shattered Yard"
+      ],
+      "pick_cards": [
+        "Roaring Furnace // Steaming Sauna",
+        "Fear of Isolation",
+        "Floodpits Drowner",
+        "Unnerving Grasp"
+      ],
+      "build_arounds": [
+        "Rampaging Soulrager",
+        "Creeping Peeper"
+      ],
+      "core_cards": [
+        "Smoky Lounge // Misty Salon",
+        "Rampaging Soulrager",
+        "Intruding Soulrager",
+        "Glassworks // Shattered Yard"
+      ],
+      "href": "index_pages/04_izzet-spirit-smoky-lounge-misty-salon-rampaging-soulrager.html"
+    },
+    {
+      "cluster_id": 5,
+      "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
+      "color_name": "Azorius Humans",
+      "deck_count": 33023,
+      "games": 160780,
+      "win_rate": 0.5622030103246672,
+      "signposts": [
+        "Tunnel Surveyor",
+        "Gremlin Tamer",
+        "Glimmerburst",
+        "Grand Entryway // Elegant Rotunda"
+      ],
+      "pick_cards": [
+        "Ghostly Dancers",
+        "Fear of Isolation",
+        "Sheltered by Ghosts",
+        "Overlord of the Mistmoors"
+      ],
+      "build_arounds": [
+        "Erratic Apparition",
+        "Stalked Researcher",
+        "Inquisitive Glimmer"
+      ],
+      "core_cards": [
+        "Tunnel Surveyor",
+        "Gremlin Tamer",
+        "Glimmerburst",
+        "Grand Entryway // Elegant Rotunda"
+      ],
+      "href": "index_pages/05_azorius-humans-tunnel-surveyor-gremlin-tamer.html"
+    },
+    {
+      "cluster_id": 6,
+      "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
+      "color_name": "Orzhov",
+      "deck_count": 15210,
+      "games": 66701,
+      "win_rate": 0.5148348600470758,
+      "signposts": [
+        "Emerge from the Cocoon",
+        "Shroudstomper",
+        "Rite of the Moth",
+        "Fanatic of the Harrowing"
+      ],
+      "pick_cards": [
+        "Rite of the Moth",
+        "Shroudstomper",
+        "Unholy Annex // Ritual Chamber",
+        "Emerge from the Cocoon"
+      ],
+      "build_arounds": [
+        "Balemurk Leech"
+      ],
+      "core_cards": [
+        "Emerge from the Cocoon",
+        "Shroudstomper",
+        "Rite of the Moth",
+        "Fanatic of the Harrowing"
+      ],
+      "href": "index_pages/06_orzhov-emerge-from-the-cocoon-shroudstomper.html"
+    },
+    {
+      "cluster_id": 7,
+      "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
+      "color_name": "Gruul",
+      "deck_count": 20771,
+      "games": 100770,
+      "win_rate": 0.554143098144289,
+      "signposts": [
+        "Wildfire Wickerfolk",
+        "Beastie Beatdown",
+        "Hand That Feeds",
+        "Most Valuable Slayer"
+      ],
+      "pick_cards": [
+        "Wildfire Wickerfolk",
+        "Valgavoth's Onslaught",
+        "Fear of Burning Alive",
+        "Overlord of the Boilerbilges"
+      ],
+      "build_arounds": [
+        "Patchwork Beastie",
+        "Ticket Booth // Tunnel of Hate"
+      ],
+      "core_cards": [
+        "Wildfire Wickerfolk",
+        "Beastie Beatdown",
+        "Hand That Feeds",
+        "Most Valuable Slayer"
+      ],
+      "href": "index_pages/07_gruul-wildfire-wickerfolk-beastie-beatdown.html"
+    },
+    {
+      "cluster_id": 8,
+      "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
+      "color_name": "Simic Humans",
+      "deck_count": 28470,
+      "games": 133292,
+      "win_rate": 0.5524487591153258,
+      "signposts": [
+        "Oblivious Bookworm",
+        "Growing Dread",
+        "Cryptid Inspector",
+        "Manifest Dread"
+      ],
+      "pick_cards": [
+        "Unnerving Grasp",
+        "Valgavoth's Onslaught",
+        "Oblivious Bookworm",
+        "Under the Skin"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Oblivious Bookworm",
+        "Growing Dread",
+        "Cryptid Inspector",
+        "Manifest Dread"
+      ],
+      "href": "index_pages/08_simic-humans-oblivious-bookworm-growing-dread.html"
+    },
+    {
+      "cluster_id": 9,
+      "title": "Golgari | Broodspinner / Drag to the Roots",
+      "color_name": "Golgari",
+      "deck_count": 19799,
+      "games": 91663,
+      "win_rate": 0.5394761244995254,
+      "signposts": [
+        "Broodspinner",
+        "Drag to the Roots",
+        "Murder",
+        "Say Its Name"
+      ],
+      "pick_cards": [
+        "The Swarmweaver",
+        "Broodspinner",
+        "Valgavoth's Onslaught",
+        "Unholy Annex // Ritual Chamber"
+      ],
+      "build_arounds": [
+        "Spectral Snatcher",
+        "Resurrected Cultist"
+      ],
+      "core_cards": [
+        "Broodspinner",
+        "Drag to the Roots",
+        "Murder",
+        "Say Its Name"
+      ],
+      "href": "index_pages/09_golgari-broodspinner-drag-to-the-roots.html"
+    },
+    {
+      "cluster_id": 10,
+      "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
+      "color_name": "Selesnya Humans",
+      "deck_count": 11961,
+      "games": 55655,
+      "win_rate": 0.5215164854909712,
+      "signposts": [
+        "Shrewd Storyteller",
+        "Baseball Bat",
+        "Acrobatic Cheerleader",
+        "Hardened Escort"
+      ],
+      "pick_cards": [
+        "Sheltered by Ghosts",
+        "Unidentified Hovership",
+        "Overlord of the Mistmoors",
+        "Ghostly Dancers"
+      ],
+      "build_arounds": [
+        "Baseball Bat",
+        "Shrewd Storyteller",
+        "Acrobatic Cheerleader"
+      ],
+      "core_cards": [
+        "Shrewd Storyteller",
+        "Baseball Bat",
+        "Acrobatic Cheerleader",
+        "Hardened Escort"
+      ],
+      "href": "index_pages/10_selesnya-humans-shrewd-storyteller-baseball-bat.html"
+    }
+  ],
+  "config_href": "../site-config.json",
+  "privacy_href": "../privacy/index.html",
+  "home_href": "../index.html"
+}</script>
+<script>
+(function() {
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  var siteConfigHref = '../site-config.json';
+  var hasGameData = !!(payload.meta && payload.meta.has_game_data);
+  var performanceLabel = hasGameData ? 'Game WR' : 'Draft Match WR';
+  var rowCountLabel = hasGameData ? 'Game rows' : 'Match rows';
+  var rowUnitLabel = hasGameData ? 'Games' : 'Matches';
+  function bootAnalytics(config) {
+    var analytics = config || {};
+    var gaId = String(analytics.ga4MeasurementId || '').trim();
+    var clarityId = String(analytics.clarityProjectId || '').trim();
+    if (gaId) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', gaId, { page_title: document.title, page_path: window.location.pathname });
+      var gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+      document.head.appendChild(gaScript);
+    }
+    if (clarityId && !window.clarity) {
+      (function(c,l,a,r,i,m,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
+        t=l.createElement(r); t.async=1; t.src='https://www.clarity.ms/tag/' + i;
+        y=l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t,y);
+      })(window, document, 'clarity', 'script', clarityId);
+    }
+    trackEvent('page_view_custom', { page_kind: 'format_landing', format_name: payload.meta.format || '', format_code: payload.meta.expansion || payload.meta.slug || '' });
+  }
+  function trackEvent(name, params) {
+    var data = Object.assign({
+      page_kind: 'format_landing',
+      format_name: payload.meta.format || '',
+      format_code: payload.meta.expansion || payload.meta.slug || ''
+    }, params || {});
+    if (window.gtag) window.gtag('event', name, data);
+    if (window.clarity) {
+      try { window.clarity('event', name); } catch (err) {}
+    }
+  }
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var heroStats = document.getElementById('heroStats');
+  [
+    'Deck builds: ' + payload.meta.deck_count,
+    rowCountLabel + ': ' + payload.meta.game_count,
+    'Archetypes: ' + payload.meta.n_clusters,
+    'Views: analysis + pick + build-around detector'
+  ].forEach(function(text) {
+    var span = document.createElement('span');
+    span.className = 'pill';
+    span.textContent = text;
+    heroStats.appendChild(span);
+  });
+  var grid = document.getElementById('archetypeGrid');
+  payload.overview.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '' +
+      '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
+      '<div class="row"><span>' + performanceLabel + '</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
+      '<div class="row"><span>' + rowUnitLabel + '</span><strong>' + row.games + '</strong></div>' +
+      '<div><div class="muted">What defines the deck</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">What wins drafts</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Build-around candidates</div><div class="chips">' + row.build_arounds.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" data-open-map href="' + row.href + '">Open Map</a><span class="link-btn secondary">Card spotlight inside</span></div>';
+    grid.appendChild(div);
+  });
+  Array.prototype.slice.call(document.querySelectorAll('[data-open-map]')).forEach(function(link) {
+    link.addEventListener('click', function() {
+      trackEvent('archetype_open_from_format', { target_href: link.getAttribute('href') || '' });
+    });
+  });
+  if (siteConfigHref && siteConfigHref !== '../site-config.json') {
+    fetch(siteConfigHref)
+      .then(function(resp) { return resp.ok ? resp.json() : null; })
+      .then(function(config) { bootAnalytics(config && config.analytics ? config.analytics : {}); })
+      .catch(function() { bootAnalytics({}); });
+  } else {
+    bootAnalytics({});
+  }
+})();
+</script>
+</body>
+</html>
