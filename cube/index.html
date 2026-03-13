@@ -154,7 +154,7 @@
     <div class="map-head">
       <div>
         <div class="section-title" style="margin:0 0 6px">Whole Format Graph</div>
-        <div class="muted">Every mapped card appears once, grouped around its home archetype. Cross-cluster edges remain visible so you can see bridges, splash cards, and shared engines across the whole format.</div>
+        <div class="muted">Every tracked card appears once. Archetype cards stay grouped around their home cluster, while cards with no mapped archetype panel sit outside the cluster circles. Cross-cluster edges remain visible so you can see bridges, splash cards, and shared engines across the whole format.</div>
       </div>
       <div class="map-tools">
         <button class="link-btn secondary" type="button" id="formatZoomOut">-</button>
@@ -8035,6 +8035,7 @@
       note.innerHTML = html;
     }
     function nodeBorder(node) {
+      if (node.outside_cluster) return 'rgba(148, 163, 184, 0.88)';
       var clusterId = Number(node.home_cluster || 0);
       var palette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
       return palette[Math.abs(clusterId) % palette.length];
@@ -8115,10 +8116,14 @@
         var presence = (node.archetype_presence || []).slice(0, 4).map(function(row) {
           return '<div class="muted">' + esc(row.title) + ' · ' + pct(row.deck_prevalence || 0) + ' of decks</div>';
         }).join('');
+        if (!presence) presence = '<div class="muted">This card does not have a mapped archetype panel at the current support thresholds.</div>';
         var linkHtml = cardExplorerHref && cardExplorerHref !== '../cards/index.html'
           ? '<div style="margin-top:8px"><a class="link-btn secondary" href="' + cardExplorerHref + '?card=' + encodeURIComponent(node.id) + '">Open card page</a></div>'
           : '';
-        setNote('<strong>' + esc(node.id) + '</strong><div class="muted" style="margin-top:6px">' + esc(node.home_title) + '</div><div class="muted" style="margin-top:6px">WR ' + pct(node.win_rate || 0) + ' | Supported WR ' + pct(node.supported_win_rate || 0) + '</div><div class="muted" style="margin-top:8px">Best fits</div>' + presence + linkHtml);
+        var wrText = Number(node.draw_games || 0) > 0
+          ? '<div class="muted" style="margin-top:6px">WR ' + pct(node.win_rate || 0) + ' | Supported WR ' + pct(node.supported_win_rate || 0) + '</div>'
+          : '<div class="muted" style="margin-top:6px">No mapped game panel for this card yet.</div>';
+        setNote('<strong>' + esc(node.id) + '</strong><div class="muted" style="margin-top:6px">' + esc(node.home_title) + '</div>' + wrText + '<div class="muted" style="margin-top:8px">Best fits</div>' + presence + linkHtml);
         trackEvent('whole_format_node_click', { card_name: node.id, home_archetype: node.home_title || '' });
       });
       nodeLayer.appendChild(group);
