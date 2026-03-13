@@ -1291,8 +1291,8 @@
         "pick_radius": 30.0,
         "radius": 13.190848856703383,
         "community": 1,
-        "x": 1085.2150291235123,
-        "y": 789.2646796107916,
+        "x": 1069.784444703077,
+        "y": 792.3076393537499,
         "top_synergies": [
           {
             "card": "Underwater Tunnel // Slimy Aquarium",
@@ -1441,8 +1441,8 @@
         "pick_radius": 30.0,
         "radius": 14.664860500635848,
         "community": 0,
-        "x": 782.0017537323351,
-        "y": 708.8141689260411,
+        "x": 886.8355854073975,
+        "y": 789.5412104207908,
         "top_synergies": [
           {
             "card": "Paranormal Analyst",
@@ -1646,8 +1646,8 @@
         "pick_radius": 30.0,
         "radius": 14.742251532944035,
         "community": 0,
-        "x": 861.9085562928724,
-        "y": 747.6491354718456,
+        "x": 879.0417337203378,
+        "y": 756.7795124812743,
         "top_synergies": [
           {
             "card": "Manifest Dread",
@@ -1822,7 +1822,7 @@
         "pick_radius": 30.0,
         "radius": 11.763862730383751,
         "community": 4,
-        "x": 1019.874674786162,
+        "x": 1012.4056864555814,
         "y": 673.5406045852995,
         "top_synergies": [],
         "top_anti_synergies": [
@@ -1980,7 +1980,7 @@
         "pick_radius": 30.0,
         "radius": 12.724944223875072,
         "community": 5,
-        "x": 698.0085242825562,
+        "x": 763.5548785895086,
         "y": 743.9660375418156,
         "top_synergies": [],
         "top_anti_synergies": [
@@ -2443,8 +2443,8 @@
         "pick_radius": 30.0,
         "radius": 13.128654901335084,
         "community": 8,
-        "x": 694.2115911792523,
-        "y": 695.410619282158,
+        "x": 759.8140067485903,
+        "y": 687.898368825294,
         "top_synergies": [],
         "top_anti_synergies": [
           {
@@ -3097,8 +3097,8 @@
         "pick_radius": 30.0,
         "radius": 13.787645171965439,
         "community": 1,
-        "x": 1060.3786682685748,
-        "y": 766.522029029047,
+        "x": 1052.377936614033,
+        "y": 763.4790692860887,
         "top_synergies": [
           {
             "card": "Paranormal Analyst",
@@ -3293,8 +3293,8 @@
         "pick_radius": 30.0,
         "radius": 16.620924031254056,
         "community": 0,
-        "x": 945.1786682685748,
-        "y": 788.1186602855194,
+        "x": 931.1779366140331,
+        "y": 692.3518326682038,
         "top_synergies": [
           {
             "card": "Paranormal Analyst",
@@ -3454,7 +3454,7 @@
         "pick_radius": 30.0,
         "radius": 11.880533065421341,
         "community": 12,
-        "x": 1053.550674786162,
+        "x": 1046.0816864555813,
         "y": 673.5406045852995,
         "top_synergies": [],
         "top_anti_synergies": [
@@ -4152,8 +4152,8 @@
         "pick_radius": 30.0,
         "radius": 14.815409928693756,
         "community": 16,
-        "x": 831.9822818017336,
-        "y": 883.3186602855194,
+        "x": 729.7013702256165,
+        "y": 769.2796288046659,
         "top_synergies": [],
         "top_anti_synergies": [
           {
@@ -4803,8 +4803,8 @@
         "pick_radius": 30.0,
         "radius": 11.0,
         "community": 21,
-        "x": 709.4024265069369,
-        "y": 665.3554783234605,
+        "x": 705.605493403633,
+        "y": 672.8677287803245,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -4887,7 +4887,7 @@
         "radius": 11.0,
         "community": 22,
         "x": 887.5530847438837,
-        "y": 883.3186602855194,
+        "y": 893.023038342835,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -7656,12 +7656,11 @@
     segment.communities.forEach(function(community) {
       var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
       if (members.length < 2) return;
-      var xs = members.map(function(node) { return node.x; });
-      var ys = members.map(function(node) { return node.y; });
-      var minX = Math.min.apply(null, xs) - 64;
-      var maxX = Math.max.apply(null, xs) + 64;
-      var minY = Math.min.apply(null, ys) - 64;
-      var maxY = Math.max.apply(null, ys) + 64;
+      var pad = Math.max(20, Math.min(34, members.reduce(function(sum, node) { return sum + currentNodeRadius(node); }, 0) / members.length + 10));
+      var minX = Math.min.apply(null, members.map(function(node) { return node.x - currentNodeRadius(node); })) - pad;
+      var maxX = Math.max.apply(null, members.map(function(node) { return node.x + currentNodeRadius(node); })) + pad;
+      var minY = Math.min.apply(null, members.map(function(node) { return node.y - currentNodeRadius(node); })) - pad;
+      var maxY = Math.max.apply(null, members.map(function(node) { return node.y + currentNodeRadius(node); })) + pad;
       var knotOpacity = (0.03 + 0.12 * communityConfidence(community)).toFixed(3);
       var knotRect = svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: knotOpacity });
       knotRect.style.cursor = 'pointer';

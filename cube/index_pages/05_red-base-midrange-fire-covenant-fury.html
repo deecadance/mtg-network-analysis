@@ -1236,8 +1236,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1141.272077938642,
-        "y": 637.5390317624633,
+        "x": 1298.727922061358,
+        "y": 482.4609682375367,
         "top_synergies": [
           {
             "card": "Fable of the Mirror-Breaker",
@@ -3101,8 +3101,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1298.727922061358,
-        "y": 482.4609682375367,
+        "x": 1141.272077938642,
+        "y": 637.5390317624633,
         "top_synergies": [
           {
             "card": "Pyrogoyf",
@@ -5653,12 +5653,11 @@
     segment.communities.forEach(function(community) {
       var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
       if (members.length < 2) return;
-      var xs = members.map(function(node) { return node.x; });
-      var ys = members.map(function(node) { return node.y; });
-      var minX = Math.min.apply(null, xs) - 64;
-      var maxX = Math.max.apply(null, xs) + 64;
-      var minY = Math.min.apply(null, ys) - 64;
-      var maxY = Math.max.apply(null, ys) + 64;
+      var pad = Math.max(20, Math.min(34, members.reduce(function(sum, node) { return sum + currentNodeRadius(node); }, 0) / members.length + 10));
+      var minX = Math.min.apply(null, members.map(function(node) { return node.x - currentNodeRadius(node); })) - pad;
+      var maxX = Math.max.apply(null, members.map(function(node) { return node.x + currentNodeRadius(node); })) + pad;
+      var minY = Math.min.apply(null, members.map(function(node) { return node.y - currentNodeRadius(node); })) - pad;
+      var maxY = Math.max.apply(null, members.map(function(node) { return node.y + currentNodeRadius(node); })) + pad;
       var knotOpacity = (0.03 + 0.12 * communityConfidence(community)).toFixed(3);
       var knotRect = svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: knotOpacity });
       knotRect.style.cursor = 'pointer';

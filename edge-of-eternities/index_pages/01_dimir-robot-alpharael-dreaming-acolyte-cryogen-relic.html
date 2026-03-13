@@ -974,7 +974,7 @@
         "radius": 13.66515367227032,
         "community": 3,
         "x": 1109.5554348624912,
-        "y": 779.8498151190306,
+        "y": 770.1962549856432,
         "top_synergies": [],
         "top_anti_synergies": [
           {
@@ -1121,7 +1121,7 @@
         "radius": 18.128107868020834,
         "community": 2,
         "x": 1090.47320844462,
-        "y": 984.8854038111843,
+        "y": 985.2734230499989,
         "top_synergies": [
           {
             "card": "Singularity Rupture",
@@ -1619,8 +1619,8 @@
         "pick_radius": 30.0,
         "radius": 17.091839651964975,
         "community": 0,
-        "x": 1304.2814674007523,
-        "y": 344.92127492719015,
+        "x": 1159.4254447010092,
+        "y": 453.63116421082754,
         "top_synergies": [
           {
             "card": "Codecracker Hound",
@@ -1824,8 +1824,8 @@
         "pick_radius": 30.0,
         "radius": 18.118718310008774,
         "community": 0,
-        "x": 1191.4771585743936,
-        "y": 413.6127679299761,
+        "x": 1238.1363833180535,
+        "y": 425.40565394989704,
         "top_synergies": [
           {
             "card": "Codecracker Hound",
@@ -2777,8 +2777,8 @@
         "pick_radius": 30.0,
         "radius": 15.521166606119245,
         "community": 1,
-        "x": 1123.5885125079528,
-        "y": 592.4262206926907,
+        "x": 1154.6158324677388,
+        "y": 608.8293620916318,
         "top_synergies": [
           {
             "card": "Tractor Beam",
@@ -3140,8 +3140,8 @@
         "pick_radius": 30.0,
         "radius": 17.739923692404197,
         "community": 1,
-        "x": 1286.7654270441926,
-        "y": 684.6086252576091,
+        "x": 1269.3444486743317,
+        "y": 674.9962549856432,
         "top_synergies": [
           {
             "card": "Tractor Beam",
@@ -3293,7 +3293,7 @@
         "radius": 18.771747633285585,
         "community": 2,
         "x": 1247.929052567336,
-        "y": 829.8073402862577,
+        "y": 830.1953595250723,
         "top_synergies": [
           {
             "card": "Cryogen Relic",
@@ -4063,8 +4063,8 @@
         "pick_radius": 30.0,
         "radius": 19.91995704741492,
         "community": 0,
-        "x": 1247.9599066241017,
-        "y": 379.21687175494156,
+        "x": 1189.356004683321,
+        "y": 438.1963154864239,
         "top_synergies": [
           {
             "card": "Hullcarver",
@@ -4259,8 +4259,8 @@
         "pick_radius": 30.0,
         "radius": 24.126808083550948,
         "community": 0,
-        "x": 1136.2814674007523,
-        "y": 447.2270210774371,
+        "x": 1270.588483958605,
+        "y": 434.40199431781986,
         "top_synergies": [
           {
             "card": "Hullcarver",
@@ -4589,8 +4589,8 @@
         "pick_radius": 30.0,
         "radius": 18.76960515565782,
         "community": 1,
-        "x": 1210.7593151177723,
-        "y": 641.6710254615251,
+        "x": 1247.3168602201947,
+        "y": 649.5235573881141,
         "top_synergies": [
           {
             "card": "Divert Disaster",
@@ -5049,7 +5049,7 @@
         "radius": 11.0,
         "community": 19,
         "x": 1109.555434862491,
-        "y": 249.96656289896404,
+        "y": 272.1676481733067,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -5186,7 +5186,7 @@
         "pick_radius": 30.0,
         "radius": 11.314968118200412,
         "community": 20,
-        "x": 1041.0814674007524,
+        "x": 1061.4658787661824,
         "y": 386.9949384142088,
         "top_synergies": [],
         "top_anti_synergies": [],
@@ -5305,7 +5305,7 @@
         "radius": 15.984319709017969,
         "community": 21,
         "x": 1207.0377515566393,
-        "y": 497.2674105541121,
+        "y": 539.1952229259045,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -8009,12 +8009,11 @@
     segment.communities.forEach(function(community) {
       var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
       if (members.length < 2) return;
-      var xs = members.map(function(node) { return node.x; });
-      var ys = members.map(function(node) { return node.y; });
-      var minX = Math.min.apply(null, xs) - 64;
-      var maxX = Math.max.apply(null, xs) + 64;
-      var minY = Math.min.apply(null, ys) - 64;
-      var maxY = Math.max.apply(null, ys) + 64;
+      var pad = Math.max(20, Math.min(34, members.reduce(function(sum, node) { return sum + currentNodeRadius(node); }, 0) / members.length + 10));
+      var minX = Math.min.apply(null, members.map(function(node) { return node.x - currentNodeRadius(node); })) - pad;
+      var maxX = Math.max.apply(null, members.map(function(node) { return node.x + currentNodeRadius(node); })) + pad;
+      var minY = Math.min.apply(null, members.map(function(node) { return node.y - currentNodeRadius(node); })) - pad;
+      var maxY = Math.max.apply(null, members.map(function(node) { return node.y + currentNodeRadius(node); })) + pad;
       var knotOpacity = (0.03 + 0.12 * communityConfidence(community)).toFixed(3);
       var knotRect = svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: knotOpacity });
       knotRect.style.cursor = 'pointer';

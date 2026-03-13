@@ -1162,8 +1162,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1287.816047592863,
-        "y": 533.8440019503314,
+        "x": 1278.724393938774,
+        "y": 500.0425235668666,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -1842,7 +1842,7 @@
         "radius": 18.868612306732444,
         "community": 1,
         "x": 1284.511219912923,
-        "y": 679.0440019503314,
+        "y": 677.6097693682884,
         "top_synergies": [
           {
             "card": "Ultros, Obnoxious Octopus",
@@ -2635,7 +2635,7 @@
         "radius": 19.23174102219309,
         "community": 1,
         "x": 1127.055375790207,
-        "y": 834.1220654752581,
+        "y": 832.687832893215,
         "top_synergies": [
           {
             "card": "Dreams of Laguna",
@@ -2931,8 +2931,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1153.1169393719524,
-        "y": 513.7366438275942,
+        "x": 1167.728260013547,
+        "y": 513.6589424159449,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -3217,8 +3217,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1159.7683671357272,
-        "y": 361.5947783553352,
+        "x": 1237.8094170778604,
+        "y": 461.0346843907722,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -3378,8 +3378,8 @@
         "pick_radius": 30.0,
         "radius": 21.808736983573056,
         "community": 0,
-        "x": 1273.2602816100705,
-        "y": 420.3349404965842,
+        "x": 1175.5620199194102,
+        "y": 458.50852928058947,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -3675,8 +3675,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1226.038364289387,
-        "y": 459.18274586362793,
+        "x": 1191.1342120888605,
+        "y": 488.3678629475975,
         "top_synergies": [
           {
             "card": "Swallowed by Leviathan",
@@ -4433,7 +4433,7 @@
         "pick_radius": 30.0,
         "radius": 12.394933117275437,
         "community": 18,
-        "x": 1057.9169393719526,
+        "x": 1099.5167365947946,
         "y": 309.8139256102304,
         "top_synergies": [],
         "top_anti_synergies": [],
@@ -4527,8 +4527,8 @@
         "pick_radius": 30.0,
         "radius": 11.0,
         "community": 19,
-        "x": 1057.9169393719526,
-        "y": 379.7375814196407,
+        "x": 1164.3964077811183,
+        "y": 292.8185415959664,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -4621,7 +4621,7 @@
         "pick_radius": 30.0,
         "radius": 11.351412206183465,
         "community": 20,
-        "x": 1057.9169393719526,
+        "x": 1069.5197380309435,
         "y": 465.6783441885105,
         "top_synergies": [],
         "top_anti_synergies": [],
@@ -7346,12 +7346,11 @@
     segment.communities.forEach(function(community) {
       var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
       if (members.length < 2) return;
-      var xs = members.map(function(node) { return node.x; });
-      var ys = members.map(function(node) { return node.y; });
-      var minX = Math.min.apply(null, xs) - 64;
-      var maxX = Math.max.apply(null, xs) + 64;
-      var minY = Math.min.apply(null, ys) - 64;
-      var maxY = Math.max.apply(null, ys) + 64;
+      var pad = Math.max(20, Math.min(34, members.reduce(function(sum, node) { return sum + currentNodeRadius(node); }, 0) / members.length + 10));
+      var minX = Math.min.apply(null, members.map(function(node) { return node.x - currentNodeRadius(node); })) - pad;
+      var maxX = Math.max.apply(null, members.map(function(node) { return node.x + currentNodeRadius(node); })) + pad;
+      var minY = Math.min.apply(null, members.map(function(node) { return node.y - currentNodeRadius(node); })) - pad;
+      var maxY = Math.max.apply(null, members.map(function(node) { return node.y + currentNodeRadius(node); })) + pad;
       var knotOpacity = (0.03 + 0.12 * communityConfidence(community)).toFixed(3);
       var knotRect = svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: knotOpacity });
       knotRect.style.cursor = 'pointer';

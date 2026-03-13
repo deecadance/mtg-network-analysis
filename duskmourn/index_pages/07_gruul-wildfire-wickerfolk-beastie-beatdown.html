@@ -1607,8 +1607,8 @@
         "pick_radius": 30.0,
         "radius": 15.107113726211615,
         "community": 0,
-        "x": 1158.4648054276881,
-        "y": 362.1166797770245,
+        "x": 1283.8847459717572,
+        "y": 517.8432829090805,
         "top_synergies": [
           {
             "card": "Impossible Inferno",
@@ -2319,8 +2319,8 @@
         "pick_radius": 30.0,
         "radius": 16.18895655070153,
         "community": 0,
-        "x": 1227.3053776864222,
-        "y": 455.93336599970195,
+        "x": 1191.1909597969077,
+        "y": 492.01511578089645,
         "top_synergies": [
           {
             "card": "Overlord of the Boilerbilges",
@@ -3037,8 +3037,8 @@
         "pick_radius": 30.0,
         "radius": 15.276586930973934,
         "community": 0,
-        "x": 1138.6670814605416,
-        "y": 524.6893389893921,
+        "x": 1177.4679103832043,
+        "y": 461.26205266859733,
         "top_synergies": [
           {
             "card": "Impossible Inferno",
@@ -3198,8 +3198,8 @@
         "pick_radius": 30.0,
         "radius": 19.99393680986426,
         "community": 1,
-        "x": 1127.055375790207,
-        "y": 834.6439668969474,
+        "x": 1284.511219912923,
+        "y": 675.8728150707132,
         "top_synergies": [
           {
             "card": "Patchwork Beastie",
@@ -3370,8 +3370,8 @@
         "pick_radius": 30.0,
         "radius": 16.346103798607082,
         "community": 0,
-        "x": 1290.069238747027,
-        "y": 534.3659033720207,
+        "x": 1251.749560563787,
+        "y": 464.81891990344985,
         "top_synergies": [
           {
             "card": "Impossible Inferno",
@@ -3564,8 +3564,8 @@
         "pick_radius": 30.0,
         "radius": 17.178006163937077,
         "community": 1,
-        "x": 1284.511219912923,
-        "y": 679.5659033720208,
+        "x": 1127.055375790207,
+        "y": 830.9508785956398,
         "top_synergies": [
           {
             "card": "Fear of Burning Alive",
@@ -4423,8 +4423,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1285.4934966783212,
-        "y": 408.9783152468873,
+        "x": 1163.3795976393644,
+        "y": 511.0046157991163,
         "top_synergies": [
           {
             "card": "Impossible Inferno",
@@ -4817,7 +4817,7 @@
         "radius": 11.0,
         "community": 18,
         "x": 1099.5167365947946,
-        "y": 266.91667977702446,
+        "y": 309.8139256102304,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -4922,7 +4922,7 @@
         "radius": 11.406744986679492,
         "community": 19,
         "x": 1164.3964077811183,
-        "y": 266.91667977702446,
+        "y": 305.2126487413892,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -5015,7 +5015,7 @@
         "pick_radius": 30.0,
         "radius": 14.43190403815433,
         "community": 20,
-        "x": 1043.4670814605417,
+        "x": 1058.7570910950583,
         "y": 465.6783441885105,
         "top_synergies": [],
         "top_anti_synergies": [],
@@ -7722,12 +7722,11 @@
     segment.communities.forEach(function(community) {
       var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
       if (members.length < 2) return;
-      var xs = members.map(function(node) { return node.x; });
-      var ys = members.map(function(node) { return node.y; });
-      var minX = Math.min.apply(null, xs) - 64;
-      var maxX = Math.max.apply(null, xs) + 64;
-      var minY = Math.min.apply(null, ys) - 64;
-      var maxY = Math.max.apply(null, ys) + 64;
+      var pad = Math.max(20, Math.min(34, members.reduce(function(sum, node) { return sum + currentNodeRadius(node); }, 0) / members.length + 10));
+      var minX = Math.min.apply(null, members.map(function(node) { return node.x - currentNodeRadius(node); })) - pad;
+      var maxX = Math.max.apply(null, members.map(function(node) { return node.x + currentNodeRadius(node); })) + pad;
+      var minY = Math.min.apply(null, members.map(function(node) { return node.y - currentNodeRadius(node); })) - pad;
+      var maxY = Math.max.apply(null, members.map(function(node) { return node.y + currentNodeRadius(node); })) + pad;
       var knotOpacity = (0.03 + 0.12 * communityConfidence(community)).toFixed(3);
       var knotRect = svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: knotOpacity });
       knotRect.style.cursor = 'pointer';
