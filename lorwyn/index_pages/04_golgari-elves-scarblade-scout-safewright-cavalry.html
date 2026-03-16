@@ -7079,7 +7079,7 @@
     if (!target || !target.closest) return false;
     return !!(target.closest('.node-hit') || target.closest('.edge-hit'));
   }
-  function startNodeDrag(node, evt) {
+  function startNodeDrag(node, evt, clickHandler) {
     if (!node) return;
     if (evt.button !== undefined && evt.button !== 0) return;
     nodeDragState = {
@@ -7089,15 +7089,11 @@
       startX: Number(node.x || 0),
       startY: Number(node.y || 0),
       moved: false,
-      captured: false
+      captured: false,
+      clickHandler: clickHandler || null
     };
-    if (svg.setPointerCapture) {
-      try {
-        svg.setPointerCapture(evt.pointerId);
-        nodeDragState.captured = true;
-      } catch (err) {}
-    }
     suppressClickUntil = 0;
+    evt.stopPropagation();
     evt.preventDefault();
   }
   function applyViewportTransform() {
@@ -7958,13 +7954,13 @@
       }));
     }
     g.style.cursor = 'pointer';
-    bindInteractiveTarget(g, function() {
+    var onNodeClick = function() {
       var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
       setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>');
       nodeDetail(node);
-    });
+    };
     g.addEventListener('pointerdown', function(evt) {
-      startNodeDrag(node, evt);
+      startNodeDrag(node, evt, onNodeClick);
     });
     group.appendChild(g);
   }
@@ -8162,6 +8158,12 @@
     if (!nodeDragState.moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
       nodeDragState.moved = true;
       suppressClickUntil = Date.now() + 180;
+      if (svg.setPointerCapture) {
+        try {
+          svg.setPointerCapture(evt.pointerId);
+          nodeDragState.captured = true;
+        } catch (err) {}
+      }
     }
     if (!nodeDragState.moved) return;
     var node = findNodeById(nodeDragState.nodeId);
@@ -8177,6 +8179,7 @@
     var shouldRedraw = !!nodeDragState.moved;
     var pointerId = nodeDragState.pointerId;
     var wasCaptured = !!nodeDragState.captured;
+    var clickHandler = nodeDragState.clickHandler;
     if (nodeDragState.moved) {
       saveCurrentLayout();
       trackEvent('layout_node_drag', { view_mode: mode, card: nodeDragState.nodeId });
@@ -8185,6 +8188,10 @@
     nodeDragState = null;
     if (wasCaptured && svg.releasePointerCapture) {
       try { svg.releasePointerCapture(pointerId); } catch (err) {}
+    }
+    if (!shouldRedraw && clickHandler && !shouldSuppressClick()) {
+      clickHandler(evt);
+      suppressClickUntil = Date.now() + 220;
     }
     if (shouldRedraw) draw();
   }
