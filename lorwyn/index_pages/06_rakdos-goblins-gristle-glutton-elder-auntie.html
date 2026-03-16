@@ -482,9 +482,12 @@
     <button id="zoomOutBtn" type="button">-</button>
     <button id="resetViewBtn" type="button">Reset View</button>
     <button id="resetLayoutBtn" type="button">Reset Layout</button>
+    <button id="exportLayoutsBtn" type="button">Export Layouts</button>
+    <button id="importLayoutBtn" type="button">Import Layout</button>
     <button id="zoomInBtn" type="button">+</button>
     <span class="hint">Drag nodes to adjust the layout. Drag empty space to pan.</span>
   </div>
+  <input id="importLayoutInput" type="file" accept="application/json,.json" class="hidden" />
   <div class="canvas-wrap">
     <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
   </div>
@@ -1023,8 +1026,8 @@
         "pick_radius": 30.0,
         "radius": 14.61660144341738,
         "community": 1,
-        "x": 1212.3877568826165,
-        "y": 696.8451812169255,
+        "x": 1288.67453362252,
+        "y": 657.2343808762789,
         "top_synergies": [
           {
             "card": "Bile-Vial Boggart",
@@ -1173,8 +1176,8 @@
         "pick_radius": 30.0,
         "radius": 11.0,
         "community": 2,
-        "x": 1074.6568461101301,
-        "y": 566.7177524576236,
+        "x": 1036.0186894998042,
+        "y": 714.1611757125489,
         "top_synergies": [],
         "top_anti_synergies": [
           {
@@ -1309,8 +1312,8 @@
         "pick_radius": 30.0,
         "radius": 14.61660144341738,
         "community": 1,
-        "x": 1345.17111565377,
-        "y": 637.6868564615299,
+        "x": 1131.218689499804,
+        "y": 812.3124444012058,
         "top_synergies": [
           {
             "card": "Gristle Glutton",
@@ -1459,8 +1462,8 @@
         "pick_radius": 30.0,
         "radius": 11.0,
         "community": 3,
-        "x": 1145.7830937966792,
-        "y": 791.1275226276491,
+        "x": 1036.0186894998042,
+        "y": 779.0550738971804,
         "top_synergies": [],
         "top_anti_synergies": [
           {
@@ -1869,8 +1872,8 @@
         "pick_radius": 30.0,
         "radius": 18.83600342325989,
         "community": 0,
-        "x": 1246.3268322618087,
-        "y": 514.3980236091114,
+        "x": 1289.8088318326402,
+        "y": 502.03438087627893,
         "top_synergies": [
           {
             "card": "Boggart Mischief",
@@ -2451,8 +2454,8 @@
         "pick_radius": 30.0,
         "radius": 21.157812005869054,
         "community": 0,
-        "x": 1337.570383341082,
-        "y": 424.8852525414172,
+        "x": 1257.463402851602,
+        "y": 480.30528625656154,
         "top_synergies": [
           {
             "card": "Sourbread Auntie",
@@ -3888,8 +3891,8 @@
         "pick_radius": 30.0,
         "radius": 22.56985785411686,
         "community": 0,
-        "x": 1204.3881741414941,
-        "y": 376.45606308933066,
+        "x": 1169.0698395121035,
+        "y": 463.9369590113792,
         "top_synergies": [
           {
             "card": "Boggart Mischief",
@@ -4545,8 +4548,8 @@
         "pick_radius": 30.0,
         "radius": 11.0,
         "community": 23,
-        "x": 1113.3038655186201,
-        "y": 405.83882428745085,
+        "x": 1180.4181376140361,
+        "y": 339.1868256460442,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -4641,8 +4644,8 @@
         "pick_radius": 30.0,
         "radius": 13.978008249448603,
         "community": 24,
-        "x": 1113.3038655186201,
-        "y": 480.4192361072463,
+        "x": 1209.946611561162,
+        "y": 594.9487952103862,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -5033,7 +5036,7 @@
     ],
     "layout_span": {
       "min_x": 582.5232955793671,
-      "max_x": 1345.17111565377,
+      "max_x": 1289.8088318326402,
       "min_y": 240.6314469029531,
       "max_y": 879.368553097047
     },
@@ -6250,6 +6253,9 @@
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
   var resetLayoutBtn = document.getElementById('resetLayoutBtn');
+  var exportLayoutsBtn = document.getElementById('exportLayoutsBtn');
+  var importLayoutBtn = document.getElementById('importLayoutBtn');
+  var importLayoutInput = document.getElementById('importLayoutInput');
   var zoomInBtn = document.getElementById('zoomInBtn');
   var pageTitle = document.getElementById('pageTitle');
   var pageSubtitle = document.getElementById('pageSubtitle');
@@ -6433,6 +6439,9 @@
       String(segment.title || 'segment')
     ].join('::');
   }
+  function formatCode() {
+    return String(payload.meta && (payload.meta.expansion || payload.meta.slug || payload.meta.format || 'format'));
+  }
   function saveCurrentLayout() {
     try {
       var positions = {};
@@ -6471,6 +6480,76 @@
       node.x = Number(node._baseX || 900);
       node.y = Number(node._baseY || 560);
     });
+  }
+  function collectFormatLayouts() {
+    var layouts = {};
+    var prefix = 'mtgnet-layout::' + formatCode() + '::';
+    try {
+      Object.keys(window.localStorage || {}).forEach(function(key) {
+        if (key.indexOf(prefix) !== 0) return;
+        var parts = key.split('::');
+        var title = parts.slice(3).join('::');
+        var raw = window.localStorage.getItem(key);
+        if (!raw || !title) return;
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          layouts[title] = parsed;
+        }
+      });
+    } catch (err) {}
+    if (!layouts[segment.title]) {
+      var current = {};
+      segment.nodes.forEach(function(node) {
+        current[node.id] = { x: Number(node.x || 0), y: Number(node.y || 0) };
+      });
+      layouts[segment.title] = current;
+    }
+    return layouts;
+  }
+  function downloadJson(filename, data) {
+    var text = JSON.stringify(data, null, 2);
+    var blob = new Blob([text], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 250);
+  }
+  function applyImportedLayout(layouts) {
+    if (!layouts || typeof layouts !== 'object') return false;
+    var positions = null;
+    if (layouts[segment.title] && typeof layouts[segment.title] === 'object') {
+      positions = layouts[segment.title];
+    } else if (layouts.layouts && layouts.layouts[segment.title] && typeof layouts.layouts[segment.title] === 'object') {
+      positions = layouts.layouts[segment.title];
+    } else {
+      var looksLikePositionMap = Object.keys(layouts).some(function(key) {
+        var pos = layouts[key];
+        return pos && typeof pos === 'object' && pos.x != null && pos.y != null;
+      });
+      if (looksLikePositionMap) positions = layouts;
+    }
+    if (!positions) return false;
+    var applied = false;
+    segment.nodes.forEach(function(node) {
+      var pos = positions[node.id];
+      if (!pos) return;
+      var x = Number(pos.x);
+      var y = Number(pos.y);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      node.x = x;
+      node.y = y;
+      applied = true;
+    });
+    if (!applied) return false;
+    saveCurrentLayout();
+    draw();
+    trackEvent('layout_import', { view_mode: mode, imported_nodes: Object.keys(positions).length });
+    setSelection('<strong>Layout imported</strong><div class="muted" style="margin-top:8px">Imported positions for ' + esc(segment.title) + '. They are now saved in this browser.</div>');
+    return true;
   }
   function scheduleDraw() {
     if (drawScheduled) return;
@@ -7448,6 +7527,32 @@
     resetStoredLayout();
     trackEvent('layout_reset', { view_mode: mode });
     draw();
+  });
+  exportLayoutsBtn.addEventListener('click', function() {
+    var layouts = collectFormatLayouts();
+    var filename = (formatCode().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'format') + '-layouts.json';
+    downloadJson(filename, layouts);
+    trackEvent('layout_export', { view_mode: mode, layout_count: Object.keys(layouts).length });
+  });
+  importLayoutBtn.addEventListener('click', function() {
+    importLayoutInput.value = '';
+    importLayoutInput.click();
+  });
+  importLayoutInput.addEventListener('change', function() {
+    var file = importLayoutInput.files && importLayoutInput.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+      try {
+        var parsed = JSON.parse(String(reader.result || '{}'));
+        if (!applyImportedLayout(parsed)) {
+          setSelection('<strong>Layout import failed</strong><div class="muted" style="margin-top:8px">The JSON did not contain positions for this archetype page.</div>');
+        }
+      } catch (err) {
+        setSelection('<strong>Layout import failed</strong><div class="muted" style="margin-top:8px">' + esc(String(err)) + '</div>');
+      }
+    };
+    reader.readAsText(file);
   });
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);

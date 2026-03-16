@@ -482,9 +482,12 @@
     <button id="zoomOutBtn" type="button">-</button>
     <button id="resetViewBtn" type="button">Reset View</button>
     <button id="resetLayoutBtn" type="button">Reset Layout</button>
+    <button id="exportLayoutsBtn" type="button">Export Layouts</button>
+    <button id="importLayoutBtn" type="button">Import Layout</button>
     <button id="zoomInBtn" type="button">+</button>
     <span class="hint">Drag nodes to adjust the layout. Drag empty space to pan.</span>
   </div>
+  <input id="importLayoutInput" type="file" accept="application/json,.json" class="hidden" />
   <div class="canvas-wrap">
     <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
   </div>
@@ -1163,8 +1166,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1158.952416408246,
-        "y": 469.6990893227018,
+        "x": 1290.8508160895371,
+        "y": 477.7807877415205,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -1843,7 +1846,7 @@
         "radius": 18.868612306732444,
         "community": 1,
         "x": 1284.511219912923,
-        "y": 673.8648262260741,
+        "y": 682.3355403076275,
         "top_synergies": [
           {
             "card": "Ultros, Obnoxious Octopus",
@@ -2636,7 +2639,7 @@
         "radius": 19.23174102219309,
         "community": 1,
         "x": 1127.055375790207,
-        "y": 828.9428897510007,
+        "y": 837.4136038325541,
         "top_synergies": [
           {
             "card": "Dreams of Laguna",
@@ -2932,8 +2935,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1232.3975245220618,
-        "y": 461.4296715383078,
+        "x": 1190.9468989328127,
+        "y": 488.29735790899196,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -3218,8 +3221,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1284.2845613230797,
-        "y": 501.2701483492291,
+        "x": 1159.035444211369,
+        "y": 457.37121062618615,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -3379,8 +3382,8 @@
         "pick_radius": 30.0,
         "radius": 21.808736983573056,
         "community": 0,
-        "x": 1187.0647153846814,
-        "y": 511.9422026864777,
+        "x": 1228.5216171148552,
+        "y": 430.9986093053503,
         "top_synergies": [
           {
             "card": "Sage's Nouliths",
@@ -3676,8 +3679,8 @@
         "pick_radius": 30.0,
         "radius": 28.0,
         "community": 0,
-        "x": 1194.3649125441098,
-        "y": 476.60716556920096,
+        "x": 1259.6437147989272,
+        "y": 454.44632485938826,
         "top_synergies": [
           {
             "card": "Swallowed by Leviathan",
@@ -4529,7 +4532,7 @@
         "radius": 11.0,
         "community": 19,
         "x": 1164.3964077811183,
-        "y": 302.5595308357522,
+        "y": 294.18897566021656,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -4623,7 +4626,7 @@
         "radius": 11.351412206183465,
         "community": 20,
         "x": 1205.7832978515648,
-        "y": 613.8648262260741,
+        "y": 622.3355403076275,
         "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
@@ -5093,7 +5096,7 @@
     ],
     "layout_span": {
       "min_x": 583.5741356079589,
-      "max_x": 1287.816047592863,
+      "max_x": 1290.8508160895371,
       "min_y": 240.89478490202237,
       "max_y": 879.1052150979776
     },
@@ -6390,6 +6393,9 @@
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
   var resetLayoutBtn = document.getElementById('resetLayoutBtn');
+  var exportLayoutsBtn = document.getElementById('exportLayoutsBtn');
+  var importLayoutBtn = document.getElementById('importLayoutBtn');
+  var importLayoutInput = document.getElementById('importLayoutInput');
   var zoomInBtn = document.getElementById('zoomInBtn');
   var pageTitle = document.getElementById('pageTitle');
   var pageSubtitle = document.getElementById('pageSubtitle');
@@ -6573,6 +6579,9 @@
       String(segment.title || 'segment')
     ].join('::');
   }
+  function formatCode() {
+    return String(payload.meta && (payload.meta.expansion || payload.meta.slug || payload.meta.format || 'format'));
+  }
   function saveCurrentLayout() {
     try {
       var positions = {};
@@ -6611,6 +6620,76 @@
       node.x = Number(node._baseX || 900);
       node.y = Number(node._baseY || 560);
     });
+  }
+  function collectFormatLayouts() {
+    var layouts = {};
+    var prefix = 'mtgnet-layout::' + formatCode() + '::';
+    try {
+      Object.keys(window.localStorage || {}).forEach(function(key) {
+        if (key.indexOf(prefix) !== 0) return;
+        var parts = key.split('::');
+        var title = parts.slice(3).join('::');
+        var raw = window.localStorage.getItem(key);
+        if (!raw || !title) return;
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          layouts[title] = parsed;
+        }
+      });
+    } catch (err) {}
+    if (!layouts[segment.title]) {
+      var current = {};
+      segment.nodes.forEach(function(node) {
+        current[node.id] = { x: Number(node.x || 0), y: Number(node.y || 0) };
+      });
+      layouts[segment.title] = current;
+    }
+    return layouts;
+  }
+  function downloadJson(filename, data) {
+    var text = JSON.stringify(data, null, 2);
+    var blob = new Blob([text], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 250);
+  }
+  function applyImportedLayout(layouts) {
+    if (!layouts || typeof layouts !== 'object') return false;
+    var positions = null;
+    if (layouts[segment.title] && typeof layouts[segment.title] === 'object') {
+      positions = layouts[segment.title];
+    } else if (layouts.layouts && layouts.layouts[segment.title] && typeof layouts.layouts[segment.title] === 'object') {
+      positions = layouts.layouts[segment.title];
+    } else {
+      var looksLikePositionMap = Object.keys(layouts).some(function(key) {
+        var pos = layouts[key];
+        return pos && typeof pos === 'object' && pos.x != null && pos.y != null;
+      });
+      if (looksLikePositionMap) positions = layouts;
+    }
+    if (!positions) return false;
+    var applied = false;
+    segment.nodes.forEach(function(node) {
+      var pos = positions[node.id];
+      if (!pos) return;
+      var x = Number(pos.x);
+      var y = Number(pos.y);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      node.x = x;
+      node.y = y;
+      applied = true;
+    });
+    if (!applied) return false;
+    saveCurrentLayout();
+    draw();
+    trackEvent('layout_import', { view_mode: mode, imported_nodes: Object.keys(positions).length });
+    setSelection('<strong>Layout imported</strong><div class="muted" style="margin-top:8px">Imported positions for ' + esc(segment.title) + '. They are now saved in this browser.</div>');
+    return true;
   }
   function scheduleDraw() {
     if (drawScheduled) return;
@@ -7588,6 +7667,32 @@
     resetStoredLayout();
     trackEvent('layout_reset', { view_mode: mode });
     draw();
+  });
+  exportLayoutsBtn.addEventListener('click', function() {
+    var layouts = collectFormatLayouts();
+    var filename = (formatCode().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'format') + '-layouts.json';
+    downloadJson(filename, layouts);
+    trackEvent('layout_export', { view_mode: mode, layout_count: Object.keys(layouts).length });
+  });
+  importLayoutBtn.addEventListener('click', function() {
+    importLayoutInput.value = '';
+    importLayoutInput.click();
+  });
+  importLayoutInput.addEventListener('change', function() {
+    var file = importLayoutInput.files && importLayoutInput.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+      try {
+        var parsed = JSON.parse(String(reader.result || '{}'));
+        if (!applyImportedLayout(parsed)) {
+          setSelection('<strong>Layout import failed</strong><div class="muted" style="margin-top:8px">The JSON did not contain positions for this archetype page.</div>');
+        }
+      } catch (err) {
+        setSelection('<strong>Layout import failed</strong><div class="muted" style="margin-top:8px">' + esc(String(err)) + '</div>');
+      }
+    };
+    reader.readAsText(file);
   });
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
