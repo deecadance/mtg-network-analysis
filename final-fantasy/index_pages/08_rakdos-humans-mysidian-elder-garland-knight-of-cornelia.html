@@ -7666,8 +7666,10 @@
   }
   function nodeWinRate(node) {
     if (!node) return Number(segment.win_rate || 0);
-    var value = Number(node.win_rate);
-    return Number.isFinite(value) ? value : Number(segment.win_rate || 0);
+    var supportedValue = Number(node.supported_win_rate);
+    if (Number.isFinite(supportedValue)) return supportedValue;
+    var fallbackValue = Number(node.win_rate);
+    return Number.isFinite(fallbackValue) ? fallbackValue : Number(segment.win_rate || 0);
   }
   function edgeDirection(edge) {
     var a = visibleNodeMap[edge.from];
@@ -7920,7 +7922,7 @@
     if (direction) {
       flowHtml =
         '<div>Flow: ' + esc(direction.source) + ' &rarr; ' + esc(direction.target) +
-        ' (' + pct(direction.sourceWinRate) + ' to ' + pct(direction.targetWinRate) + ' card WR' +
+        ' (' + pct(direction.sourceWinRate) + ' to ' + pct(direction.targetWinRate) + ' supported WR' +
         (direction.tied ? ', alphabetical tiebreak' : '') + ')</div>';
       titleHtml = '<strong>' + esc(direction.source) + ' &rarr; ' + esc(direction.target) + '</strong>';
     }
@@ -8063,8 +8065,8 @@
     var edgeText = !hasGameData
       ? 'Game data has not been released, so pair arrows and triplet motifs are hidden in this draft-only view.'
       : mode === 'analysis'
-        ? 'Arrow width/brightness = stronger positive pair synergy, but scaled by confidence. Arrows point from the higher-win-rate card to the lower-win-rate card. Visible edges keep only non-negative synergy and at least 85% confidence; edges around an established knot can sneak in a bit lower.'
-        : 'Arrow width/brightness = the same supported pair network, scaled by confidence. Arrows point from the higher-win-rate card to the lower-win-rate card. If both cards are visible here, the same supported link stays visible here too.';
+        ? 'Arrow width/brightness = stronger positive pair synergy, but scaled by confidence. Arrows point from the higher-supported-WR card to the lower-supported-WR card. Visible edges keep only non-negative synergy and at least 85% confidence; edges around an established knot can sneak in a bit lower.'
+        : 'Arrow width/brightness = the same supported pair network, scaled by confidence. Arrows point from the higher-supported-WR card to the lower-supported-WR card. If both cards are visible here, the same supported link stays visible here too.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
       : 'Showing ' + shown + ' of ' + total + ' cards. Pick-focused view keeps cards whose supported or overall performance is at least viable inside the archetype.';
