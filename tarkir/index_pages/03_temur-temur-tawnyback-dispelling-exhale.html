@@ -7394,8 +7394,15 @@
       startPoint: svgPointFromClient(evt.clientX, evt.clientY),
       startX: Number(node.x || 0),
       startY: Number(node.y || 0),
-      moved: false
+      moved: false,
+      captured: false
     };
+    if (svg.setPointerCapture) {
+      try {
+        svg.setPointerCapture(evt.pointerId);
+        nodeDragState.captured = true;
+      } catch (err) {}
+    }
     suppressClickUntil = 0;
     evt.preventDefault();
   }
@@ -8472,18 +8479,31 @@
   }, { passive: false });
   function endNodeDrag(evt) {
     if (!nodeDragState) return;
-    if (evt && nodeDragState.pointerId !== evt.pointerId) return;
+    if (evt && evt.pointerId !== undefined && nodeDragState.pointerId !== evt.pointerId) return;
     var shouldRedraw = !!nodeDragState.moved;
+    var pointerId = nodeDragState.pointerId;
+    var wasCaptured = !!nodeDragState.captured;
     if (nodeDragState.moved) {
       saveCurrentLayout();
       trackEvent('layout_node_drag', { view_mode: mode, card: nodeDragState.nodeId });
       suppressClickUntil = Date.now() + 220;
     }
     nodeDragState = null;
+    if (wasCaptured && svg.releasePointerCapture) {
+      try { svg.releasePointerCapture(pointerId); } catch (err) {}
+    }
     if (shouldRedraw) draw();
+  }
+  function cancelNodeDrag() {
+    endNodeDrag();
   }
   window.addEventListener('pointerup', endNodeDrag);
   window.addEventListener('pointercancel', endNodeDrag);
+  window.addEventListener('mouseup', cancelNodeDrag);
+  window.addEventListener('blur', cancelNodeDrag);
+  svg.addEventListener('pointerup', endNodeDrag);
+  svg.addEventListener('pointercancel', endNodeDrag);
+  svg.addEventListener('lostpointercapture', cancelNodeDrag);
   svg.addEventListener('wheel', function(evt) {
     evt.preventDefault();
     zoomAt(evt.deltaY < 0 ? 1.14 : (1 / 1.14), evt.clientX, evt.clientY);
