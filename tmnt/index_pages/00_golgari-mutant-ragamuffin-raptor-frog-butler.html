@@ -442,6 +442,9 @@
     }
     .hidden { display: none !important; }
     .overlay-link.open { display: block; }
+    .wr-good { color: var(--good); }
+    .wr-ok { color: var(--muted); }
+    .wr-warn { color: var(--warn); }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
       .group { width: 100%; }
@@ -459,7 +462,10 @@
 <body>
   <div class="toolbar">
     <div class="group">
-      <a href="../index.html" class="chip">Back to Archetypes</a>
+      <a href="../index.html" class="chip">↩ Format</a>
+      <a id="prevArchetypeBtn" class="chip" href="#" title="">← Prev</a>
+      <span id="archetypeNavLabel" class="chip" style="color:var(--muted);font-size:11px"></span>
+      <a id="nextArchetypeBtn" class="chip" href="#" title="">Next →</a>
       <a href="../../privacy/index.html" class="chip">Privacy</a>
       <div class="title-wrap">
         <strong id="pageTitle"></strong>
@@ -6687,7 +6693,31 @@
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
+  (function() {
+    var overview = payload.overview || [];
+    var currentId = Number(segment.cluster_id);
+    var idx = -1;
+    for (var i = 0; i < overview.length; i++) { if (Number(overview[i].cluster_id) === currentId) { idx = i; break; } }
+    if (idx < 0 || overview.length < 2) return;
+    var navLabel = document.getElementById('archetypeNavLabel');
+    var prevBtn = document.getElementById('prevArchetypeBtn');
+    var nextBtn = document.getElementById('nextArchetypeBtn');
+    if (!navLabel || !prevBtn || !nextBtn) return;
+    navLabel.textContent = (idx + 1) + ' / ' + overview.length;
+    function pageFilename(row) { var h = row.href || ''; return h.split('/').pop() || '#'; }
+    prevBtn.href = pageFilename(overview[(idx - 1 + overview.length) % overview.length]);
+    prevBtn.title = overview[(idx - 1 + overview.length) % overview.length].title || '';
+    nextBtn.href = pageFilename(overview[(idx + 1) % overview.length]);
+    nextBtn.title = overview[(idx + 1) % overview.length].title || '';
+  })();
+
   function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function wrColor(wr) {
+    if (wr >= 0.555) return 'var(--good)';
+    if (wr >= 0.505) return 'var(--muted)';
+    return 'var(--warn)';
+  }
+  function pctWr(wr) { return '<span style="color:' + wrColor(wr) + '">' + pct(wr) + '</span>'; }
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
   function pctAbs(x) { return (100 * Math.abs(x)).toFixed(2) + '%'; }
   function esc(value) {
@@ -7259,6 +7289,7 @@
   }
   function shouldLabel(node) {
     if (!showLabels) return false;
+    if (currentNodeRadius(node) < 9.5) return false;
     if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028 || node.is_build_around || node.core_score >= 7.0;
     return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
   }
@@ -7406,7 +7437,7 @@
             metricBox('Pick Urgency', node.pick_urgency_score.toFixed(1) + ' / 10', '0 = easy pass, 10 = slam it. Higher means the archetype wants the card and the table usually does too.') +
             metricBox('ALSA', statValue(node.alsa, node.draft_occurrences, function(value) { return value.toFixed(2); }), alsaEnough ? 'Global average last seen at across the whole table.' : 'Need at least 30 draft appearances.') +
             metricBox('Wheel Likelihood', statValue(node.wheel_likelihood, node.wheel_opportunities, pct), wheelEnough ? 'Probability that the card comes back when passed on picks 1-4.' : 'Need at least 30 early-pass opportunities.') +
-            metricBox(hasGameData ? 'Drawn-game WR' : 'With-Card Draft WR', hasGameData ? pct(node.win_rate) : pct(node.draft_win_rate), hasGameData ? String(node.draw_games) + ' games with this card drawn' : String(node.draft_drafts) + ' clustered drafts including this card') +
+            metricBox(hasGameData ? 'Drawn-game WR' : 'With-Card Draft WR', hasGameData ? pctWr(node.win_rate) : pct(node.draft_win_rate), hasGameData ? String(node.draw_games) + ' games with this card drawn' : String(node.draft_drafts) + ' clustered drafts including this card') +
             metricBox('Solo Drawn WR', hasGameData ? statValue(node.isolated_win_rate, node.isolated_games, pct) : gameReleaseText, hasGameData ? (soloEnough ? supportGamesText(node.isolated_games, 'games where this was the only mapped card seen') : 'Need at least 30 solo-drawn games.') : gameReleaseText) +
             metricBox('Supported WR', hasGameData ? statValue(node.supported_win_rate, node.supported_games, pct) : gameReleaseText, hasGameData ? (supportedEnough ? supportGamesText(node.supported_games, 'games with another mapped card alongside it') : 'Need at least 30 supported games.') : gameReleaseText) +
             metricBox('Support Delta', hasGameData ? ((soloEnough && supportedEnough) ? pp(node.support_delta) : 'Not enough data') : gameReleaseText, hasGameData ? ((soloEnough && supportedEnough) ? 'Supported WR minus solo-drawn WR.' : 'Need at least 30 solo and 30 supported games.') : gameReleaseText) +
@@ -7724,20 +7755,26 @@
     if (fill.mode === 'split' && fill.colors.length === 2) {
       g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
       g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('line', { x1: node.x, y1: node.y - r, x2: node.x, y2: node.y + r, stroke: 'rgba(255,255,255,0.35)', 'stroke-width': 1 }));
       g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
     } else {
       g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
     }
     if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    var ringOffset = r + 4;
     if (node.is_build_around) {
       g.appendChild(svgEl('circle', {
-        cx: node.x,
-        cy: node.y,
-        r: r + 4,
-        fill: 'none',
-        stroke: 'rgba(244, 201, 93, 0.95)',
-        'stroke-width': 1.8,
-        'stroke-dasharray': '5 4'
+        cx: node.x, cy: node.y, r: ringOffset,
+        fill: 'none', stroke: 'rgba(244, 201, 93, 0.95)',
+        'stroke-width': 1.8, 'stroke-dasharray': '5 4'
+      }));
+      ringOffset += 6;
+    }
+    if ((node.archetype_presence || []).length > 1) {
+      g.appendChild(svgEl('circle', {
+        cx: node.x, cy: node.y, r: ringOffset,
+        fill: 'none', stroke: 'rgba(255, 255, 255, 0.5)',
+        'stroke-width': 1.2, 'stroke-dasharray': '3 3'
       }));
     }
     g.style.cursor = 'pointer';
@@ -7805,9 +7842,14 @@
       var confidence = edgeConfidence(edge);
       var width = 1.0 + 2.4 * confidence + 4.8 * signal;
       var alpha = 0.12 + 0.76 * confidence;
-      var stroke = mode === 'analysis'
-        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
-        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var fromNode = nodeMap[edge.from];
+      var toNode = nodeMap[edge.to];
+      var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
+      var stroke = isCrossCommunity
+        ? 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')'
+        : (mode === 'analysis'
+            ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+            : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')');
       var geometry = edgeGeometry(direction, width);
       var edgeGroup = svgEl('g');
       var line = svgEl('line', {
@@ -7853,19 +7895,27 @@
     });
     syncFloatingLayout();
   }
+  function switchViewMode(newMode) {
+    mode = newMode;
+    analysisBtn.classList.toggle('active', mode === 'analysis');
+    pickBtn.classList.toggle('active', mode === 'pick');
+    svg.style.transition = 'opacity 0.15s';
+    svg.style.opacity = '0';
+    setTimeout(function() {
+      draw();
+      svg.style.opacity = '1';
+      setTimeout(function() { svg.style.transition = ''; }, 180);
+    }, 130);
+  }
   analysisBtn.addEventListener('click', function() {
-    mode = 'analysis';
-    analysisBtn.classList.add('active');
-    pickBtn.classList.remove('active');
+    if (mode === 'analysis') return;
     trackEvent('view_mode_selected', { view_mode: 'analysis' });
-    draw();
+    switchViewMode('analysis');
   });
   pickBtn.addEventListener('click', function() {
-    mode = 'pick';
-    pickBtn.classList.add('active');
-    analysisBtn.classList.remove('active');
+    if (mode === 'pick') return;
     trackEvent('view_mode_selected', { view_mode: 'pick' });
-    draw();
+    switchViewMode('pick');
   });
   buildAroundBtn.addEventListener('click', function() {
     if (access.premiumFilters.buildArounds) {

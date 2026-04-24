@@ -13,6 +13,8 @@
       --panel: rgba(13, 20, 34, 0.9);
       --accent: #5cc8ff;
       --gold: #f4c95d;
+      --good: #43d17a;
+      --warn: #f59e0b;
     }
     * { box-sizing: border-box; }
     body {
@@ -133,6 +135,20 @@
       fill: var(--muted);
       letter-spacing: 0.04em;
     }
+    .minimap {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      width: 160px;
+      height: 110px;
+      background: rgba(9, 14, 24, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .minimap svg { width: 100%; height: 100%; display: block; }
     @media (max-width: 720px) {
       .map-shell { min-height: 620px; }
       .map-shell svg { height: 620px; }
@@ -165,6 +181,9 @@
     <div class="map-shell">
       <svg id="formatGraph" viewBox="0 0 2100 1440" aria-label="Whole format graph"></svg>
       <div id="formatGraphNote" class="map-note"><strong>Whole format graph</strong><div class="muted" style="margin-top:6px">Click a node to see where that card lives across the format. Drag to pan and use the buttons or wheel to zoom.</div></div>
+      <div class="minimap" id="minimapBox">
+        <svg id="minimapSvg" viewBox="0 0 2100 1440" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
     </div>
   </div>
   <div class="section-title">Archetypes</div>
@@ -11414,6 +11433,11 @@
     }
   }
   function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  function wrColor(wr) {
+    if (wr >= 0.555) return 'var(--good)';
+    if (wr >= 0.505) return 'var(--muted)';
+    return 'var(--warn)';
+  }
   function esc(value) {
     return String(value)
       .replace(/&/g, '&amp;')
@@ -11448,7 +11472,7 @@
     div.className = 'card';
     div.innerHTML = '' +
       '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
-      '<div class="row"><span>' + performanceLabel + '</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>' + performanceLabel + '</span><strong style="color:' + wrColor(row.win_rate) + '">' + pct(row.win_rate) + '</strong></div>' +
       '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
       '<div class="row"><span>' + rowUnitLabel + '</span><strong>' + row.games + '</strong></div>' +
       '<div><div class="muted">What defines the deck</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
@@ -11481,6 +11505,7 @@
     var dragState = null;
     function applyView() {
       viewport.setAttribute('transform', 'translate(' + view.tx + ' ' + view.ty + ') scale(' + view.scale + ')');
+      if (typeof updateMinimap === 'function') updateMinimap();
     }
     function setNote(html) {
       note.innerHTML = html;
@@ -11496,6 +11521,7 @@
       if (fill.mode === 'split' && fill.colors && fill.colors.length === 2) {
         group.appendChild(svgEl('path', { d: polarArc(node.x, node.y, radius, -90, 90), fill: fill.colors[0] }));
         group.appendChild(svgEl('path', { d: polarArc(node.x, node.y, radius, 90, 270), fill: fill.colors[1] }));
+        group.appendChild(svgEl('line', { x1: node.x, y1: node.y - radius, x2: node.x, y2: node.y + radius, stroke: 'rgba(255,255,255,0.3)', 'stroke-width': 1 }));
       } else {
         group.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: radius, fill: (fill.colors || ['rgb(148, 163, 184)'])[0] }));
       }
@@ -11516,20 +11542,18 @@
     var clusterLayer = svgEl('g');
     var edgeLayer = svgEl('g');
     var nodeLayer = svgEl('g');
+    var labelLayer = svgEl('g');
     viewport.appendChild(clusterLayer);
     viewport.appendChild(edgeLayer);
     viewport.appendChild(nodeLayer);
+    viewport.appendChild(labelLayer);
     svg.appendChild(viewport);
-    clusters.forEach(function(cluster) {
-      clusterLayer.appendChild(svgEl('circle', {
-        cx: cluster.center_x,
-        cy: cluster.center_y,
-        r: cluster.radius,
-        fill: 'rgba(92, 200, 255, 0.05)',
-        stroke: 'rgba(126, 157, 197, 0.16)',
-        'stroke-width': 1.2
-      }));
-      var label = svgEl('text', { x: cluster.center_x, y: cluster.center_y - cluster.radius - 12, 'text-anchor': 'middle', class: 'cluster-tag' });
+    var clusterPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+    clusters.forEach(function(cluster, idx) {
+      var clusterColor = clusterPalette[idx % clusterPalette.length];
+      clusterLayer.appendChild(svgEl('circle', { cx: cluster.center_x, cy: cluster.center_y, r: cluster.radius, fill: clusterColor, opacity: '0.07', stroke: 'none' }));
+      clusterLayer.appendChild(svgEl('circle', { cx: cluster.center_x, cy: cluster.center_y, r: cluster.radius, fill: 'none', stroke: clusterColor, 'stroke-width': 1.8, 'stroke-dasharray': '8 5', opacity: '0.55' }));
+      var label = svgEl('text', { x: cluster.center_x, y: cluster.center_y - cluster.radius - 12, 'text-anchor': 'middle', class: 'cluster-tag', fill: clusterColor, opacity: '0.9' });
       label.textContent = cluster.title;
       clusterLayer.appendChild(label);
     });
@@ -11561,6 +11585,13 @@
       var group = svgEl('g');
       var radius = Math.max(7.5, Math.min(18.0, Number(node.radius || 10)));
       drawNodeFill(group, node, radius);
+      if ((node.archetype_presence || []).length > 1) {
+        group.appendChild(svgEl('circle', {
+          cx: node.x, cy: node.y, r: radius + 3.5,
+          fill: 'none', stroke: 'rgba(255,255,255,0.45)',
+          'stroke-width': 1.0, 'stroke-dasharray': '3 2'
+        }));
+      }
       group.style.cursor = 'pointer';
       group.addEventListener('click', function(evt) {
         evt.stopPropagation();
@@ -11578,7 +11609,35 @@
         trackEvent('whole_format_node_click', { card_name: node.id, home_archetype: node.home_title || '' });
       });
       nodeLayer.appendChild(group);
+      if (radius >= 12 && node.label) {
+        var lbl = svgEl('text', { x: node.x + radius + 3, y: node.y + 4, fill: '#e8edf5', 'font-size': 10, 'pointer-events': 'none' });
+        lbl.textContent = node.label;
+        labelLayer.appendChild(lbl);
+      }
     });
+    var minimapSvg = document.getElementById('minimapSvg');
+    var minimapViewRect = null;
+    if (minimapSvg) {
+      var miniPalette = ['#5cc8ff', '#43d17a', '#f4c95d', '#f38ba8', '#c084fc', '#fb7185', '#60a5fa', '#34d399'];
+      nodes.forEach(function(node) {
+        var mr = Math.max(2.5, Math.min(6, Number(node.radius || 5) * 0.4));
+        var mc = node.outside_cluster ? 'rgba(148,163,184,0.5)' : miniPalette[Math.abs(Number(node.home_cluster || 0)) % miniPalette.length];
+        minimapSvg.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: mr, fill: mc }));
+      });
+      minimapViewRect = svgEl('rect', { x: 0, y: 0, width: 2100, height: 1440, fill: 'rgba(255,255,255,0.08)', stroke: 'rgba(255,255,255,0.55)', 'stroke-width': 30 });
+      minimapSvg.appendChild(minimapViewRect);
+    }
+    function updateMinimap() {
+      if (!minimapViewRect) return;
+      var vW = 2100 / view.scale;
+      var vH = 1440 / view.scale;
+      var vX = -view.tx / view.scale;
+      var vY = -view.ty / view.scale;
+      minimapViewRect.setAttribute('x', vX.toFixed(1));
+      minimapViewRect.setAttribute('y', vY.toFixed(1));
+      minimapViewRect.setAttribute('width', vW.toFixed(1));
+      minimapViewRect.setAttribute('height', vH.toFixed(1));
+    }
     svg.addEventListener('pointerdown', function(evt) {
       dragState = { x: evt.clientX, y: evt.clientY, tx: view.tx, ty: view.ty };
     });
