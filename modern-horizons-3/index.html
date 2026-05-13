@@ -1,0 +1,490 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modern Horizons 3 Learned Archetype Synergy Map</title>
+  <style>
+    :root {
+      --bg: #08101d;
+      --text: #ecf2fb;
+      --muted: #97aac6;
+      --line: rgba(126, 157, 197, 0.18);
+      --panel: rgba(13, 20, 34, 0.9);
+      --accent: #5cc8ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .muted { color: var(--muted); }
+    .hero {
+      display: grid;
+      gap: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+    }
+    .hero .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(92, 200, 255, 0.16);
+      border: 1px solid rgba(92, 200, 255, 0.34);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-btn.secondary {
+      background: rgba(244, 201, 93, 0.14);
+      border-color: rgba(244, 201, 93, 0.28);
+    }
+    .section-title { margin: 28px 0 10px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="section-title" style="margin:0 0 8px">Interactive Limited Map</div>
+      <h1>Learn the archetypes and pick priorities fast.</h1>
+      <div class="muted">Interactive archetype maps built from game and draft data. Use the analysis view to see what defines a deck. Use the pick-focused view to see which cards actually push wins.</div>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div>
+  <div class="section-title">Archetypes</div>
+  <div id="archetypeGrid" class="grid"></div>
+</div>
+<script id="payloadData" type="application/json">{
+  "meta": {
+    "format": "MH3",
+    "deck_zone": "deck",
+    "game_zone": "drawn",
+    "has_game_data": true,
+    "has_draft_data": true,
+    "performance_basis": "game",
+    "n_clusters": 9,
+    "fit_summary": {
+      "deck_count": 163693,
+      "cluster_feature_count": 308,
+      "svd_components": 48,
+      "svd_explained_variance": 0.4082644283771515,
+      "k_search": [
+        {
+          "k": 5,
+          "silhouette": 0.1262606531381607,
+          "dominant_main_color_share": 0.4516509296996679,
+          "objective": 0.15335970892014078
+        },
+        {
+          "k": 6,
+          "silhouette": 0.13220830261707306,
+          "dominant_main_color_share": 0.5485965839669229,
+          "objective": 0.16512409765508843
+        },
+        {
+          "k": 7,
+          "silhouette": 0.17161788046360016,
+          "dominant_main_color_share": 0.6036239317013666,
+          "objective": 0.20783531636568214
+        },
+        {
+          "k": 8,
+          "silhouette": 0.15073224902153015,
+          "dominant_main_color_share": 0.6099686303950012,
+          "objective": 0.18733036684523022
+        },
+        {
+          "k": 9,
+          "silhouette": 0.17531295120716095,
+          "dominant_main_color_share": 0.6828060755638701,
+          "objective": 0.21628131574099316
+        },
+        {
+          "k": 10,
+          "silhouette": 0.14716535806655884,
+          "dominant_main_color_share": 0.6439765374813677,
+          "objective": 0.1858039503154409
+        }
+      ],
+      "chosen_k": 9,
+      "label_counts": {
+        "8": 12275,
+        "2": 23367,
+        "6": 15741,
+        "5": 13078,
+        "0": 12371,
+        "3": 28695,
+        "7": 22384,
+        "1": 21713,
+        "4": 14069
+      }
+    },
+    "deck_count": 163693,
+    "game_count": 767772
+  },
+  "overview": [
+    {
+      "cluster_id": 0,
+      "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
+      "color_name": "Azorius",
+      "deck_count": 12371,
+      "games": 57669,
+      "win_rate": 0.5559832839133677,
+      "signposts": [
+        "Riddle Gate Gargoyle",
+        "Emissary of Soulfire",
+        "Solstice Zealot",
+        "Tune the Narrative"
+      ],
+      "pick_cards": [
+        "Guide of Souls",
+        "Static Prison",
+        "Aerie Auxiliary",
+        "Riddle Gate Gargoyle"
+      ],
+      "build_arounds": [
+        "Emissary of Soulfire",
+        "Aether Spike",
+        "Tune the Narrative"
+      ],
+      "core_cards": [
+        "Riddle Gate Gargoyle",
+        "Emissary of Soulfire",
+        "Solstice Zealot",
+        "Tune the Narrative"
+      ],
+      "href": "index_pages/00_azorius-riddle-gate-gargoyle-emissary-of-soulfire.html"
+    },
+    {
+      "cluster_id": 1,
+      "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
+      "color_name": "Gruul Eldrazi",
+      "deck_count": 21713,
+      "games": 108250,
+      "win_rate": 0.5796120092378753,
+      "signposts": [
+        "Writhing Chrysalis",
+        "Glimpse the Impossible",
+        "Voidpouncer",
+        "Malevolent Rumble"
+      ],
+      "pick_cards": [
+        "Writhing Chrysalis",
+        "Malevolent Rumble",
+        "Eldrazi Repurposer",
+        "Horrific Assault"
+      ],
+      "build_arounds": [
+        "Evolution Witness",
+        "Warped Tusker",
+        "Nightshade Dryad"
+      ],
+      "core_cards": [
+        "Writhing Chrysalis",
+        "Glimpse the Impossible",
+        "Voidpouncer",
+        "Malevolent Rumble"
+      ],
+      "href": "index_pages/01_gruul-eldrazi-writhing-chrysalis-glimpse-the-impossible.html"
+    },
+    {
+      "cluster_id": 2,
+      "title": "Black Base | Dreamdrinker Vampire / Wither and Bloom",
+      "color_name": "Black Base",
+      "deck_count": 23367,
+      "games": 104659,
+      "win_rate": 0.5231943741102055,
+      "signposts": [
+        "Dreamdrinker Vampire",
+        "Wither and Bloom",
+        "Expanding Ooze",
+        "Breathe Your Last"
+      ],
+      "pick_cards": [
+        "Crabomination",
+        "Wither and Bloom",
+        "Marionette Apprentice",
+        "Malevolent Rumble"
+      ],
+      "build_arounds": [
+        "Fetid Gargantua",
+        "Gravedig",
+        "Refurbished Familiar"
+      ],
+      "core_cards": [
+        "Dreamdrinker Vampire",
+        "Wither and Bloom",
+        "Expanding Ooze",
+        "Breathe Your Last"
+      ],
+      "href": "index_pages/02_black-base-dreamdrinker-vampire-wither-and-bloom.html"
+    },
+    {
+      "cluster_id": 3,
+      "title": "Simic Eldrazi | Snapping Voidcraw / Drownyard Lurker",
+      "color_name": "Simic Eldrazi",
+      "deck_count": 28695,
+      "games": 135385,
+      "win_rate": 0.5367876795804557,
+      "signposts": [
+        "Snapping Voidcraw",
+        "Drownyard Lurker",
+        "Sage of the Unknowable",
+        "Petrifying Meddler"
+      ],
+      "pick_cards": [
+        "Writhing Chrysalis",
+        "Path of Annihilation",
+        "Horrific Assault",
+        "Wastescape Battlemage"
+      ],
+      "build_arounds": [
+        "Kozilek's Unsealing",
+        "Snapping Voidcraw"
+      ],
+      "core_cards": [
+        "Snapping Voidcraw",
+        "Drownyard Lurker",
+        "Sage of the Unknowable",
+        "Petrifying Meddler"
+      ],
+      "href": "index_pages/03_simic-eldrazi-snapping-voidcraw-drownyard-lurker.html"
+    },
+    {
+      "cluster_id": 4,
+      "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
+      "color_name": "Selesnya",
+      "deck_count": 14069,
+      "games": 66943,
+      "win_rate": 0.5528584019240249,
+      "signposts": [
+        "Faithful Watchdog",
+        "Aerie Auxiliary",
+        "Nyxborn Unicorn",
+        "Dog Umbra"
+      ],
+      "pick_cards": [
+        "Signature Slam",
+        "Aerie Auxiliary",
+        "Guide of Souls",
+        "Malevolent Rumble"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Faithful Watchdog",
+        "Aerie Auxiliary",
+        "Nyxborn Unicorn",
+        "Dog Umbra"
+      ],
+      "href": "index_pages/04_selesnya-faithful-watchdog-aerie-auxiliary.html"
+    },
+    {
+      "cluster_id": 5,
+      "title": "Rakdos Zombies | Cranial Ram / Refurbished Familiar",
+      "color_name": "Rakdos Zombies",
+      "deck_count": 13078,
+      "games": 58312,
+      "win_rate": 0.5311256688160242,
+      "signposts": [
+        "Cranial Ram",
+        "Refurbished Familiar",
+        "Drossclaw",
+        "Retrofitted Transmogrant"
+      ],
+      "pick_cards": [
+        "Refurbished Familiar",
+        "Marionette Apprentice",
+        "Crabomination",
+        "Etherium Pteramander"
+      ],
+      "build_arounds": [
+        "Pyretic Rebirth",
+        "Eviscerator's Insight",
+        "Sarpadian Simulacrum"
+      ],
+      "core_cards": [
+        "Cranial Ram",
+        "Refurbished Familiar",
+        "Drossclaw",
+        "Retrofitted Transmogrant"
+      ],
+      "href": "index_pages/05_rakdos-zombies-cranial-ram-refurbished-familiar.html"
+    },
+    {
+      "cluster_id": 6,
+      "title": "Dimir | Sneaky Snacker / Kami of Jealous Thirst",
+      "color_name": "Dimir",
+      "deck_count": 15741,
+      "games": 72303,
+      "win_rate": 0.5470865662558954,
+      "signposts": [
+        "Sneaky Snacker",
+        "Kami of Jealous Thirst",
+        "Eviscerator's Insight",
+        "Mindless Conscription"
+      ],
+      "pick_cards": [
+        "Psychic Frog",
+        "Deem Inferior",
+        "Eviscerator's Insight",
+        "Mindless Conscription"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Sneaky Snacker",
+        "Kami of Jealous Thirst",
+        "Eviscerator's Insight",
+        "Mindless Conscription"
+      ],
+      "href": "index_pages/06_dimir-sneaky-snacker-kami-of-jealous-thirst.html"
+    },
+    {
+      "cluster_id": 7,
+      "title": "Boros | Conduit Goblin / Hexgold Slith",
+      "color_name": "Boros",
+      "deck_count": 22384,
+      "games": 109504,
+      "win_rate": 0.5847457627118644,
+      "signposts": [
+        "Conduit Goblin",
+        "Hexgold Slith",
+        "Solstice Zealot",
+        "Smelted Chargebug"
+      ],
+      "pick_cards": [
+        "Amped Raptor",
+        "Guide of Souls",
+        "Scurry of Gremlins",
+        "Phlage, Titan of Fire's Fury"
+      ],
+      "build_arounds": [],
+      "core_cards": [
+        "Conduit Goblin",
+        "Hexgold Slith",
+        "Solstice Zealot",
+        "Smelted Chargebug"
+      ],
+      "href": "index_pages/07_boros-conduit-goblin-hexgold-slith.html"
+    },
+    {
+      "cluster_id": 8,
+      "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
+      "color_name": "Izzet",
+      "deck_count": 12275,
+      "games": 54747,
+      "win_rate": 0.5334721537253183,
+      "signposts": [
+        "Cyclops Superconductor",
+        "Tune the Narrative",
+        "Aether Spike",
+        "Tempest Harvester"
+      ],
+      "pick_cards": [
+        "Amped Raptor",
+        "Galvanic Discharge",
+        "Roil Cartographer",
+        "Unstable Amulet"
+      ],
+      "build_arounds": [
+        "Thriving Skyclaw",
+        "Electrozoa"
+      ],
+      "core_cards": [
+        "Cyclops Superconductor",
+        "Tune the Narrative",
+        "Aether Spike",
+        "Tempest Harvester"
+      ],
+      "href": "index_pages/08_izzet-cyclops-superconductor-tune-the-narrative.html"
+    }
+  ]
+}</script>
+<script>
+(function() {
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var heroStats = document.getElementById('heroStats');
+  [
+    'Deck builds: ' + payload.meta.deck_count,
+    'Game rows: ' + payload.meta.game_count,
+    'Archetypes: ' + payload.meta.n_clusters,
+    'Views: analysis + pick + build-around detector'
+  ].forEach(function(text) {
+    var span = document.createElement('span');
+    span.className = 'pill';
+    span.textContent = text;
+    heroStats.appendChild(span);
+  });
+  var grid = document.getElementById('archetypeGrid');
+  payload.overview.forEach(function(row) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '' +
+      '<div><h2>' + row.title + '</h2><div class="muted">' + row.color_name + '</div></div>' +
+      '<div class="row"><span>Game WR</span><strong>' + pct(row.win_rate) + '</strong></div>' +
+      '<div class="row"><span>Decks</span><strong>' + row.deck_count + '</strong></div>' +
+      '<div class="row"><span>Games</span><strong>' + row.games + '</strong></div>' +
+      '<div><div class="muted">What defines the deck</div><div class="chips">' + row.signposts.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">What wins drafts</div><div class="chips">' + row.pick_cards.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div><div class="muted">Build-around candidates</div><div class="chips">' + row.build_arounds.map(function(card) { return '<span class="chip">' + card + '</span>'; }).join('') + '</div></div>' +
+      '<div class="actions"><a class="link-btn" href="' + row.href + '">Open Map</a><span class="link-btn secondary">Card spotlight inside</span></div>';
+    grid.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

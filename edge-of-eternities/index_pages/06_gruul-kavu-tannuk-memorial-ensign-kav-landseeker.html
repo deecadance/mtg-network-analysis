@@ -254,47 +254,6 @@
       padding: 18px;
     }
     .card-modal.hidden { display: none; }
-    .help-popover {
-      position: fixed;
-      left: 50%;
-      top: 112px;
-      transform: translateX(-50%);
-      z-index: 13;
-      width: min(420px, calc(100vw - 32px));
-      max-height: min(52vh, 420px);
-      overflow: auto;
-      background: linear-gradient(180deg, rgba(13,20,34,0.99), rgba(10,17,31,0.99));
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 28px 72px rgba(0,0,0,0.52);
-      padding: 16px 18px 18px;
-    }
-    .help-popover.hidden { display: none; }
-    .help-popover-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .help-popover-head strong {
-      display: block;
-      margin: 0;
-      font-size: 14px;
-      letter-spacing: 0.02em;
-    }
-    .help-popover-close {
-      padding: 4px 9px;
-      font-size: 12px;
-    }
-    .help-popover-body {
-      color: var(--text);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    .help-popover-body strong {
-      color: var(--text);
-    }
     .card-modal-grid {
       display: grid;
       grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
@@ -357,19 +316,6 @@
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-    }
-    .metric-help {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      margin-left: 6px;
-      padding: 0;
-      border-radius: 999px;
-      font-size: 11px;
-      line-height: 1;
-      vertical-align: middle;
     }
     .spotlight-kpi strong {
       display: block;
@@ -442,9 +388,6 @@
     }
     .hidden { display: none !important; }
     .overlay-link.open { display: block; }
-    .wr-good { color: var(--good); }
-    .wr-ok { color: var(--muted); }
-    .wr-warn { color: var(--warn); }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
       .group { width: 100%; }
@@ -453,7 +396,6 @@
       .legend-panel { left: 10px; right: 10px; top: auto; bottom: 170px; width: auto; }
       .selection { left: 10px; right: 10px; width: auto; }
       .mini-nav { left: 10px; bottom: 10px; }
-      .help-popover { left: 10px; right: 10px; top: 124px; width: auto; transform: none; max-height: min(44vh, 360px); }
       .card-modal { left: 10px; right: 10px; top: 124px; width: auto; max-height: calc(100vh - 136px); transform: none; }
       .card-modal-grid { grid-template-columns: 1fr; }
     }
@@ -462,11 +404,7 @@
 <body>
   <div class="toolbar">
     <div class="group">
-      <a href="../index.html" class="chip">↩ Format</a>
-      <a id="prevArchetypeBtn" class="chip" href="#" title="">← Prev</a>
-      <span id="archetypeNavLabel" class="chip" style="color:var(--muted);font-size:11px"></span>
-      <a id="nextArchetypeBtn" class="chip" href="#" title="">Next →</a>
-      <a href="../../privacy/index.html" class="chip">Privacy</a>
+      <a href="../index.html" class="chip">Back to Archetypes</a>
       <div class="title-wrap">
         <strong id="pageTitle"></strong>
         <span id="pageSubtitle"></span>
@@ -487,19 +425,14 @@
   <div class="map-controls" id="mapControls">
     <button id="zoomOutBtn" type="button">-</button>
     <button id="resetViewBtn" type="button">Reset View</button>
-    <button id="resetLayoutBtn" type="button">Reset Layout</button>
-    <button id="exportLayoutsBtn" type="button">Export Layouts</button>
-    <button id="importLayoutBtn" type="button">Import Layout</button>
     <button id="zoomInBtn" type="button">+</button>
-    <span class="hint">Drag nodes to adjust the layout. Drag empty space to pan.</span>
+    <span class="hint">Drag to pan. Wheel or buttons to zoom.</span>
   </div>
-  <input id="importLayoutInput" type="file" accept="application/json,.json" class="hidden" />
   <div class="canvas-wrap">
     <svg id="network" viewBox="0 0 1800 1120" preserveAspectRatio="xMidYMid meet"></svg>
   </div>
   <div id="selectionBox" class="selection hidden"></div>
   <div id="cardModal" class="card-modal hidden"></div>
-  <div id="helpPopover" class="help-popover hidden"></div>
   <div id="drawerOverlay" class="overlay-link"></div>
   <aside id="drawer" class="drawer"></aside>
   <div id="legendBox" class="legend-panel hidden"></div>
@@ -8065,8 +7998,7 @@
     }
   ],
   "index_href": "../index.html",
-  "config_href": "../site-config.json",
-  "privacy_href": "../../privacy/index.html"
+  "config_href": "../site-config.json"
 }</script>
 <script>
 (function() {
@@ -8082,7 +8014,6 @@
   var mode = 'analysis';
   var quickMode = 'analysis';
   var quickRarity = 'all';
-  var signpostRarity = 'all';
   var showLabels = true;
   var filters = { buildArounds: false, topSynergies: false, coreOnly: false };
   var access = {
@@ -8096,7 +8027,6 @@
   var mapControls = document.getElementById('mapControls');
   var selectionBox = document.getElementById('selectionBox');
   var cardModal = document.getElementById('cardModal');
-  var helpPopover = document.getElementById('helpPopover');
   var drawer = document.getElementById('drawer');
   var drawerOverlay = document.getElementById('drawerOverlay');
   var legendBox = document.getElementById('legendBox');
@@ -8119,10 +8049,6 @@
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
-  var resetLayoutBtn = document.getElementById('resetLayoutBtn');
-  var exportLayoutsBtn = document.getElementById('exportLayoutsBtn');
-  var importLayoutBtn = document.getElementById('importLayoutBtn');
-  var importLayoutInput = document.getElementById('importLayoutInput');
   var zoomInBtn = document.getElementById('zoomInBtn');
   var pageTitle = document.getElementById('pageTitle');
   var pageSubtitle = document.getElementById('pageSubtitle');
@@ -8135,48 +8061,13 @@
   var viewportGroup = null;
   var viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
   var dragState = null;
-  var nodeDragState = null;
-  var drawScheduled = false;
   var suppressClickUntil = 0;
   var siteConfigHref = '../site-config.json';
-  var analyticsBooted = false;
-  var hasGameData = !!(payload.meta && payload.meta.has_game_data);
-  var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
-  var performanceRowLabel = hasGameData ? 'games' : 'matches';
-  segment.nodes.forEach(function(node) {
-    node._baseX = Number(node.x || 900);
-    node._baseY = Number(node.y || 560);
-  });
   pageTitle.textContent = segment.title;
-  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
-
-  (function() {
-    var overview = payload.overview || [];
-    var currentId = Number(segment.cluster_id);
-    var idx = -1;
-    for (var i = 0; i < overview.length; i++) { if (Number(overview[i].cluster_id) === currentId) { idx = i; break; } }
-    if (idx < 0 || overview.length < 2) return;
-    var navLabel = document.getElementById('archetypeNavLabel');
-    var prevBtn = document.getElementById('prevArchetypeBtn');
-    var nextBtn = document.getElementById('nextArchetypeBtn');
-    if (!navLabel || !prevBtn || !nextBtn) return;
-    navLabel.textContent = (idx + 1) + ' / ' + overview.length;
-    function pageFilename(row) { var h = row.href || ''; return h.split('/').pop() || '#'; }
-    prevBtn.href = pageFilename(overview[(idx - 1 + overview.length) % overview.length]);
-    prevBtn.title = overview[(idx - 1 + overview.length) % overview.length].title || '';
-    nextBtn.href = pageFilename(overview[(idx + 1) % overview.length]);
-    nextBtn.title = overview[(idx + 1) % overview.length].title || '';
-  })();
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
 
   function pct(x) { return (100 * x).toFixed(2) + '%'; }
-  function wrColor(wr) {
-    if (wr >= 0.555) return 'var(--good)';
-    if (wr >= 0.505) return 'var(--muted)';
-    return 'var(--warn)';
-  }
-  function pctWr(wr) { return '<span style="color:' + wrColor(wr) + '">' + pct(wr) + '</span>'; }
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function pctAbs(x) { return (100 * Math.abs(x)).toFixed(2) + '%'; }
   function esc(value) {
     return String(value)
       .replace(/&/g, '&amp;')
@@ -8187,43 +8078,6 @@
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function bootAnalytics(config) {
-    if (analyticsBooted) return;
-    analyticsBooted = true;
-    var analytics = config || {};
-    var gaId = String(analytics.ga4MeasurementId || '').trim();
-    var clarityId = String(analytics.clarityProjectId || '').trim();
-    if (gaId) {
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
-      window.gtag('js', new Date());
-      window.gtag('config', gaId, { page_title: document.title, page_path: window.location.pathname });
-      var gaScript = document.createElement('script');
-      gaScript.async = true;
-      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
-      document.head.appendChild(gaScript);
-    }
-    if (clarityId && !window.clarity) {
-      (function(c,l,a,r,i,m,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments);};
-        t=l.createElement(r); t.async=1; t.src='https://www.clarity.ms/tag/' + i;
-        y=l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t,y);
-      })(window, document, 'clarity', 'script', clarityId);
-    }
-    trackEvent('page_view_custom', { page_kind: 'archetype_page', view_mode: mode });
-  }
-  function trackEvent(name, params) {
-    var data = Object.assign({
-      page_kind: 'archetype_page',
-      format_name: payload.meta.format || '',
-      format_code: payload.meta.expansion || payload.meta.slug || '',
-      archetype: segment.title || ''
-    }, params || {});
-    if (window.gtag) window.gtag('event', name, data);
-    if (window.clarity) {
-      try { window.clarity('event', name); } catch (err) {}
-    }
-  }
   function svgEl(name, attrs) {
     var node = document.createElementNS('http://www.w3.org/2000/svg', name);
     attrs = attrs || {};
@@ -8231,38 +8085,8 @@
     return node;
   }
   function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
-  }
-  function bindInteractiveTarget(el, handler) {
-    var downPoint = null;
-    var pointerActivatedUntil = 0;
-    el.addEventListener('pointerdown', function(evt) {
-      evt.stopPropagation();
-      downPoint = { x: evt.clientX, y: evt.clientY, pointerId: evt.pointerId };
-    });
-    el.addEventListener('pointerup', function(evt) {
-      evt.stopPropagation();
-      if (!downPoint) return;
-      if (downPoint.pointerId !== undefined && evt.pointerId !== downPoint.pointerId) return;
-      var dx = evt.clientX - downPoint.x;
-      var dy = evt.clientY - downPoint.y;
-      downPoint = null;
-      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) return;
-      if (shouldSuppressClick()) return;
-      pointerActivatedUntil = Date.now() + 260;
-      handler(evt);
-    });
-    el.addEventListener('pointercancel', function() {
-      downPoint = null;
-    });
-    el.addEventListener('click', function(evt) {
-      evt.stopPropagation();
-      if (Date.now() < pointerActivatedUntil) return;
-      if (shouldSuppressClick()) return;
-      handler(evt);
-    });
   }
   function svgPointFromClient(clientX, clientY) {
     var pt = svg.createSVGPoint();
@@ -8275,27 +8099,6 @@
   }
   function clamp(value, lo, hi) {
     return Math.max(lo, Math.min(hi, value));
-  }
-  function blocksPan(target) {
-    if (!target || !target.closest) return false;
-    return !!(target.closest('.node-hit') || target.closest('.edge-hit'));
-  }
-  function startNodeDrag(node, evt, clickHandler) {
-    if (!node) return;
-    if (evt.button !== undefined && evt.button !== 0) return;
-    nodeDragState = {
-      pointerId: evt.pointerId,
-      nodeId: String(node.id),
-      startPoint: svgPointFromClient(evt.clientX, evt.clientY),
-      startX: Number(node.x || 0),
-      startY: Number(node.y || 0),
-      moved: false,
-      captured: false,
-      clickHandler: clickHandler || null
-    };
-    suppressClickUntil = 0;
-    evt.stopPropagation();
-    evt.preventDefault();
   }
   function applyViewportTransform() {
     if (!viewportGroup) return;
@@ -8322,140 +8125,6 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function layoutStorageKey() {
-    return [
-      'mtgnet-layout',
-      payload.meta && (payload.meta.expansion || payload.meta.slug || payload.meta.format || 'format'),
-      String(segment.cluster_id != null ? segment.cluster_id : 'cluster'),
-      String(segment.title || 'segment')
-    ].join('::');
-  }
-  function formatCode() {
-    return String(payload.meta && (payload.meta.expansion || payload.meta.slug || payload.meta.format || 'format'));
-  }
-  function saveCurrentLayout() {
-    try {
-      var positions = {};
-      segment.nodes.forEach(function(node) {
-        positions[node.id] = { x: Number(node.x || 0), y: Number(node.y || 0) };
-      });
-      window.localStorage.setItem(layoutStorageKey(), JSON.stringify(positions));
-    } catch (err) {}
-  }
-  function loadSavedLayout() {
-    try {
-      var raw = window.localStorage.getItem(layoutStorageKey());
-      if (!raw) return false;
-      var positions = JSON.parse(raw);
-      var applied = false;
-      segment.nodes.forEach(function(node) {
-        var pos = positions && positions[node.id];
-        if (!pos) return;
-        var x = Number(pos.x);
-        var y = Number(pos.y);
-        if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-        node.x = x;
-        node.y = y;
-        applied = true;
-      });
-      return applied;
-    } catch (err) {
-      return false;
-    }
-  }
-  function resetStoredLayout() {
-    try {
-      window.localStorage.removeItem(layoutStorageKey());
-    } catch (err) {}
-    segment.nodes.forEach(function(node) {
-      node.x = Number(node._baseX || 900);
-      node.y = Number(node._baseY || 560);
-    });
-  }
-  function collectFormatLayouts() {
-    var layouts = {};
-    var prefix = 'mtgnet-layout::' + formatCode() + '::';
-    try {
-      Object.keys(window.localStorage || {}).forEach(function(key) {
-        if (key.indexOf(prefix) !== 0) return;
-        var parts = key.split('::');
-        var title = parts.slice(3).join('::');
-        var raw = window.localStorage.getItem(key);
-        if (!raw || !title) return;
-        var parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object') {
-          layouts[title] = parsed;
-        }
-      });
-    } catch (err) {}
-    if (!layouts[segment.title]) {
-      var current = {};
-      segment.nodes.forEach(function(node) {
-        current[node.id] = { x: Number(node.x || 0), y: Number(node.y || 0) };
-      });
-      layouts[segment.title] = current;
-    }
-    return layouts;
-  }
-  function downloadJson(filename, data) {
-    var text = JSON.stringify(data, null, 2);
-    var blob = new Blob([text], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(function() { URL.revokeObjectURL(url); }, 250);
-  }
-  function applyImportedLayout(layouts) {
-    if (!layouts || typeof layouts !== 'object') return false;
-    var positions = null;
-    if (layouts[segment.title] && typeof layouts[segment.title] === 'object') {
-      positions = layouts[segment.title];
-    } else if (layouts.layouts && layouts.layouts[segment.title] && typeof layouts.layouts[segment.title] === 'object') {
-      positions = layouts.layouts[segment.title];
-    } else {
-      var looksLikePositionMap = Object.keys(layouts).some(function(key) {
-        var pos = layouts[key];
-        return pos && typeof pos === 'object' && pos.x != null && pos.y != null;
-      });
-      if (looksLikePositionMap) positions = layouts;
-    }
-    if (!positions) return false;
-    var applied = false;
-    segment.nodes.forEach(function(node) {
-      var pos = positions[node.id];
-      if (!pos) return;
-      var x = Number(pos.x);
-      var y = Number(pos.y);
-      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-      node.x = x;
-      node.y = y;
-      applied = true;
-    });
-    if (!applied) return false;
-    saveCurrentLayout();
-    draw();
-    trackEvent('layout_import', { view_mode: mode, imported_nodes: Object.keys(positions).length });
-    setSelection('<strong>Layout imported</strong><div class="muted" style="margin-top:8px">Imported positions for ' + esc(segment.title) + '. They are now saved in this browser.</div>');
-    return true;
-  }
-  function scheduleDraw() {
-    if (drawScheduled) return;
-    drawScheduled = true;
-    window.requestAnimationFrame(function() {
-      drawScheduled = false;
-      draw();
-    });
-  }
-  function findNodeIndexById(cardName) {
-    for (var i = 0; i < segment.nodes.length; i += 1) {
-      if (segment.nodes[i].id === cardName) return i;
-    }
-    return -1;
-  }
   function polarArc(cx, cy, r, startDeg, endDeg) {
     var start = (Math.PI / 180) * startDeg;
     var end = (Math.PI / 180) * endDeg;
@@ -8471,7 +8140,6 @@
     drawer.classList.add('open');
     drawerOverlay.classList.add('open');
     drawerBtn.textContent = 'Close Menu';
-    trackEvent('drawer_open', { view_mode: mode });
     renderDrawer();
     syncFloatingLayout();
   }
@@ -8489,14 +8157,12 @@
     var willShow = quickReadBox.classList.contains('hidden');
     quickReadBox.classList.toggle('hidden', !willShow);
     quickToggleBtn.classList.toggle('active', willShow);
-    if (willShow) trackEvent('quick_read_open', { view_mode: mode, quick_mode: quickMode });
     syncFloatingLayout();
   }
   function toggleLegend() {
     var willShow = legendBox.classList.contains('hidden');
     legendBox.classList.toggle('hidden', !willShow);
     legendToggleBtn.classList.toggle('active', willShow);
-    if (willShow) trackEvent('legend_open', { view_mode: mode });
     syncFloatingLayout();
   }
   function openModal() {
@@ -8505,21 +8171,6 @@
   }
   function closeModal() {
     cardModal.classList.add('hidden');
-    closeHelpPopover();
-    syncFloatingLayout();
-  }
-  function openHelpPopover(title, bodyHtml) {
-    helpPopover.innerHTML =
-      '<div class="help-popover-head"><strong>' + title + '</strong><button type="button" class="help-popover-close" id="helpPopoverClose">Close</button></div>' +
-      '<div class="help-popover-body">' + bodyHtml + '</div>';
-    helpPopover.classList.remove('hidden');
-    var closeBtn = document.getElementById('helpPopoverClose');
-    if (closeBtn) closeBtn.addEventListener('click', closeHelpPopover);
-    syncFloatingLayout();
-  }
-  function closeHelpPopover() {
-    helpPopover.classList.add('hidden');
-    helpPopover.innerHTML = '';
     syncFloatingLayout();
   }
   function syncFloatingLayout() {
@@ -8535,7 +8186,6 @@
       selectionBox.style.bottom = '16px';
       quickReadBox.style.bottom = '16px';
       cardModal.style.top = toolbarBottom + 'px';
-      helpPopover.style.top = (toolbarBottom + 18) + 'px';
     } else {
       mapControls.style.top = toolbarBottom + 'px';
       var bottomCursor = 16;
@@ -8546,7 +8196,6 @@
       legendBox.style.bottom = bottomCursor + 'px';
       legendBox.style.top = 'auto';
       cardModal.style.top = toolbarBottom + mapControls.offsetHeight + 12 + 'px';
-      helpPopover.style.top = cardModal.style.top;
     }
   }
   function applyAccessConfig(config) {
@@ -8564,22 +8213,15 @@
     draw();
   }
   function loadAccessConfig() {
-    if (!siteConfigHref || siteConfigHref === '../site-config.json') {
-      bootAnalytics({});
-      return;
-    }
+    if (!siteConfigHref || siteConfigHref === '../site-config.json') return;
     fetch(siteConfigHref)
       .then(function(resp) { return resp.ok ? resp.json() : null; })
       .then(function(config) {
-        if (!config) {
-          bootAnalytics({});
-          return;
-        }
+        if (!config) return;
         var formatConfig = (config.formats && (config.formats[payload.meta.format] || config.formats[payload.meta.slug])) || {};
         applyAccessConfig(Object.assign({}, config.default || {}, formatConfig));
-        bootAnalytics(config.analytics || {});
       })
-      .catch(function() { bootAnalytics({}); });
+      .catch(function() {});
   }
   function roleText(role) {
     if (role === 'good_alone') return 'Good Alone';
@@ -8610,7 +8252,7 @@
     return lower + rest * (upper - lower);
   }
   function isVisibleNode(node) {
-    if (mode === 'pick' && !node.pick_view_visible) return false;
+    if (mode === 'pick' && !(node.draft_win_lift > 0 && (node.pick_priority_score_raw || 0) > 0)) return false;
     if (filters.buildArounds && !node.is_build_around) return false;
     if (filters.coreOnly && (node.core_score || 0) < 6.0) return false;
     return true;
@@ -8621,15 +8263,8 @@
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
     visibleEdges = segment.edges
-      .filter(function(edge) {
-        return visibleNodeMap[edge.from]
-          && visibleNodeMap[edge.to]
-          && Number(edge.pair_games || 0) >= 30
-          && Number(edge.synergy_delta_logit || 0) >= 0.0
-          && (Number(edge.confidence_probability || 0) >= 0.85 || !!edge.knot_promoted)
-          && Number(edge.quality_score || 0) > 0;
-      })
-      .sort(function(a, b) { return displayEdgeScore(b) - displayEdgeScore(a); });
+      .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
+      .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
     if (filters.topSynergies) {
       visibleEdges = visibleEdges.slice(0, mode === 'analysis' ? 26 : 20);
       var connected = Object.create(null);
@@ -8640,6 +8275,8 @@
       visibleNodes = visibleNodes.filter(function(node) { return !!connected[node.id]; });
       visibleNodeMap = Object.create(null);
       visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
+    } else {
+      visibleEdges = visibleEdges.slice(0, 72);
     }
     if (!visibleNodes.length) return;
     var positiveScores = visibleNodes
@@ -8670,83 +8307,8 @@
   function currentEdgeScore(edge) {
     return mode === 'analysis' ? edge.quality_score : edge.pick_score;
   }
-  function displayEdgeScore(edge) {
-    return Math.max(Number(edge.quality_score || 0), Number(edge.pick_score || 0), 0);
-  }
-  function currentSignpostRows() {
-    if (!segment.signposts_by_rarity) return segment.signposts || [];
-    if (signpostRarity === 'all') return segment.signposts || [];
-    return segment.signposts_by_rarity[signpostRarity] || [];
-  }
-  function nodeWinRate(node) {
-    if (!node) return Number(segment.win_rate || 0);
-    var supportedValue = Number(node.supported_win_rate);
-    if (Number.isFinite(supportedValue)) return supportedValue;
-    var fallbackValue = Number(node.win_rate);
-    return Number.isFinite(fallbackValue) ? fallbackValue : Number(segment.win_rate || 0);
-  }
-  function edgeDirection(edge) {
-    var a = visibleNodeMap[edge.from];
-    var b = visibleNodeMap[edge.to];
-    if (!a || !b) return null;
-    var aWinRate = nodeWinRate(a);
-    var bWinRate = nodeWinRate(b);
-    if (Math.abs(aWinRate - bWinRate) < 1e-9) {
-      var keepOriginal = String(edge.from).localeCompare(String(edge.to)) <= 0;
-      return keepOriginal
-        ? { source: edge.from, target: edge.to, sourceNode: a, targetNode: b, sourceWinRate: aWinRate, targetWinRate: bWinRate, tied: true }
-        : { source: edge.to, target: edge.from, sourceNode: b, targetNode: a, sourceWinRate: bWinRate, targetWinRate: aWinRate, tied: true };
-    }
-    return aWinRate > bWinRate
-      ? { source: edge.from, target: edge.to, sourceNode: a, targetNode: b, sourceWinRate: aWinRate, targetWinRate: bWinRate, tied: false }
-      : { source: edge.to, target: edge.from, sourceNode: b, targetNode: a, sourceWinRate: bWinRate, targetWinRate: aWinRate, tied: false };
-  }
-  function edgeGeometry(direction, lineWidth) {
-    var sourceNode = direction.sourceNode;
-    var targetNode = direction.targetNode;
-    var dx = targetNode.x - sourceNode.x;
-    var dy = targetNode.y - sourceNode.y;
-    var length = Math.sqrt(dx * dx + dy * dy) || 1;
-    var ux = dx / length;
-    var uy = dy / length;
-    var sourcePad = currentNodeRadius(sourceNode) + 2;
-    var targetPad = currentNodeRadius(targetNode) + 2;
-    var arrowLength = Math.max(9, Math.min(15, lineWidth * 2.2));
-    var arrowWidth = Math.max(7, Math.min(12, lineWidth * 1.5));
-    var x1 = sourceNode.x + ux * sourcePad;
-    var y1 = sourceNode.y + uy * sourcePad;
-    var tipX = targetNode.x - ux * targetPad;
-    var tipY = targetNode.y - uy * targetPad;
-    var x2 = tipX - ux * Math.max(arrowLength * 0.7, 6);
-    var y2 = tipY - uy * Math.max(arrowLength * 0.7, 6);
-    var baseX = tipX - ux * arrowLength;
-    var baseY = tipY - uy * arrowLength;
-    var leftX = baseX - uy * (arrowWidth / 2);
-    var leftY = baseY + ux * (arrowWidth / 2);
-    var rightX = baseX + uy * (arrowWidth / 2);
-    var rightY = baseY - ux * (arrowWidth / 2);
-    return {
-      x1: x1, y1: y1, x2: x2, y2: y2,
-      tipX: tipX, tipY: tipY,
-      leftX: leftX, leftY: leftY,
-      rightX: rightX, rightY: rightY
-    };
-  }
-  function confidencePercent(probability) {
-    return (100.0 * Math.max(0.0, Math.min(1.0, Number(probability || 0.0)))).toFixed(1) + '%';
-  }
-  function edgeConfidence(edge) {
-    return Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-  }
-  function edgeConfidenceText(edge) {
-    return confidencePercent(edge.confidence_probability || 0.0);
-  }
-  function communityConfidence(community) {
-    return Math.max(0.0, Math.min(1.0, Number(community.confidence_probability || 0.0)));
-  }
   function shouldLabel(node) {
     if (!showLabels) return false;
-    if (currentNodeRadius(node) < 9.5) return false;
     if (mode === 'analysis') return node.analysis_score >= 6.5 || node.dependency_score >= 0.09 || node.standalone_delta >= 0.028 || node.is_build_around || node.core_score >= 7.0;
     return node.pick_priority_score >= 6.0 || node.rarity === 'rare' || node.rarity === 'mythic' || node.draft_drafts >= 220;
   }
@@ -8756,28 +8318,13 @@
       return;
     }
     var url = 'https://api.scryfall.com/cards/named?exact=' + encodeURIComponent(cardName);
-    var settled = false;
-    var timeoutId = setTimeout(function() {
-      if (settled) return;
-      settled = true;
-      if (onFailure) onFailure(new Error('Card lookup timed out'));
-    }, 2200);
     fetch(url)
-      .then(function(resp) {
-        if (!resp.ok) throw new Error('Card lookup failed with status ' + resp.status);
-        return resp.json();
-      })
+      .then(function(resp) { return resp.json(); })
       .then(function(data) {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timeoutId);
         imageCache[cardName] = data;
         onSuccess(data);
       })
       .catch(function(err) {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timeoutId);
         if (onFailure) onFailure(err);
       });
   }
@@ -8798,55 +8345,8 @@
     if (!rows || !rows.length) return '<div class="muted">' + emptyText + '</div>';
     return '<div class="tableish">' + rows.map(function(row) { return formatter(row); }).join('') + '</div>';
   }
-  function enoughSupport(count) {
-    return Number(count || 0) >= 30;
-  }
-  function supportGamesText(count, noun) {
-    return enoughSupport(count)
-      ? String(count) + ' ' + noun
-      : 'Not enough data (' + String(count || 0) + ' ' + noun + ')';
-  }
-  function statValue(value, count, formatter) {
-    return enoughSupport(count) ? formatter(value) : 'Not enough data';
-  }
-  function shellDependenceSummary(node, shellScore) {
-    if (node.is_build_around) return 'High shell dependence and flagged as a build-around.';
-    if (shellScore < 1.0) return 'Runs mostly on rate. Little sign that this card needs shell support.';
-    if (shellScore < 5.0) return 'Mostly self-sufficient. The shell helps, but the card is usually fine on its own.';
-    if (shellScore < 7.5) return 'Shell-sensitive. It gets noticeably better when the rest of the archetype is working.';
-    return 'Very shell-dependent. It wants the right shell, but it does not clear the stricter build-around test.';
-  }
-  function showShellDependenceHelp() {
-    openHelpPopover(
-      'Shell Dependence',
-      '<div class="muted" style="margin-bottom:8px">This score asks how much a card needs the rest of the archetype to look good.</div>' +
-      '<div style="margin-top:8px"><strong>0 to 1</strong>: almost entirely self-sufficient.</div>' +
-      '<div><strong>1 to 5</strong>: mostly strong on its own, with some upside from the shell.</div>' +
-      '<div><strong>5 to 10</strong>: increasingly shell-dependent.</div>' +
-      '<div style="margin-top:8px">A true <strong>build-around</strong> is stricter: it needs enough supported games, a clear supported-versus-solo jump, and a low solo floor. High shell dependence alone is not enough.</div>'
-    );
-  }
-  function communityDetail(community) {
-    trackEvent('knot_click', { community_id: community.community_id, knot_size: community.size, view_mode: mode });
-    var pairHtml = (community.top_pairs || []).length
-      ? '<div class="chips" style="margin-top:8px">' + community.top_pairs.map(function(pair) { return '<span class="chip">' + esc(pair[0]) + ' + ' + esc(pair[1]) + '</span>'; }).join('') + '</div>'
-      : '<div class="muted" style="margin-top:8px">No internal pair cleared the current edge threshold.</div>';
-    setSelection(
-      '<strong>Synergy Knot ' + community.community_id + '</strong>' +
-      '<div class="muted">' + community.size + ' cards | ' + (community.internal_edge_count || 0) + ' supported internal edges | confidence ' + confidencePercent(community.confidence_probability || 0.0) + '</div>' +
-      '<div style="margin-top:8px"><strong>Top cards</strong></div>' +
-      '<div class="chips" style="margin-top:8px">' + (community.top_cards || []).map(function(card) { return '<span class="chip">' + esc(card) + '</span>'; }).join('') + '</div>' +
-      '<div style="margin-top:12px"><strong>Strongest internal pairs</strong></div>' +
-      pairHtml
-    );
-  }
-  function renderCardModal(node, cardData, loading) {
+  function renderCardModal(node, cardData) {
     var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
-    var gameReleaseText = 'Game data has not been released.';
-    var soloEnough = enoughSupport(node.isolated_games);
-    var supportedEnough = enoughSupport(node.supported_games);
-    var alsaEnough = enoughSupport(node.draft_occurrences);
-    var wheelEnough = enoughSupport(node.wheel_opportunities);
     var imgUrl = null;
     if (cardData && cardData.image_uris && cardData.image_uris.normal) imgUrl = cardData.image_uris.normal;
     if (!imgUrl && cardData && cardData.card_faces && cardData.card_faces[0] && cardData.card_faces[0].image_uris) imgUrl = cardData.card_faces[0].image_uris.normal;
@@ -8861,28 +8361,22 @@
       return '<span class="chip">' + esc(row.title) + ' <small>' + row.core_score.toFixed(1) + '/10 core</small></span>';
     }).join('');
     var synergyRows = listRows(
-      (node.top_synergies || []).filter(function(row) {
-        return Number(row.pair_games || 0) >= 30 && Number(row.synergy_delta_logit || 0) >= 0.05;
-      }),
+      node.top_synergies || [],
       function(row) {
-        return '<div class="row"><div><strong>' + esc(row.card) + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games | conf ' + confidencePercent(row.confidence_probability || 0.0) + '</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+        return '<div class="row"><div><strong>' + esc(row.card) + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
       },
-      hasGameData ? 'No positive pair synergies cleared the threshold.' : gameReleaseText
+      'No positive pair synergies cleared the threshold.'
     );
     var antiRows = listRows(
-      (node.top_anti_synergies || []).filter(function(row) {
-        return Number(row.pair_games || 0) >= 30;
-      }),
+      node.top_anti_synergies || [],
       function(row) {
-        return '<div class="row"><div><strong>' + esc(row.card) + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games | conf ' + confidencePercent(row.confidence_probability || 0.0) + '</div></div><div>' + row.synergy_delta_logit.toFixed(3) + '</div></div>';
+        return '<div class="row"><div><strong>' + esc(row.card) + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.synergy_delta_logit.toFixed(3) + '</div></div>';
       },
-      hasGameData ? 'No supported anti-synergies were detected.' : gameReleaseText
+      'No supported anti-synergies were detected.'
     );
-    var imageHtml = loading
-      ? '<div class="muted" style="padding:24px">Loading card image…</div>'
-      : imgUrl
-        ? '<img src="' + imgUrl + '" alt="' + esc(node.id) + '" />'
-        : '<div class="muted" style="padding:24px">Card image unavailable.</div>';
+    var imageHtml = imgUrl
+      ? '<img src="' + imgUrl + '" alt="' + esc(node.id) + '" />'
+      : '<div class="muted">Card image unavailable.</div>';
     cardModal.innerHTML = '' +
       '<button type="button" class="card-modal-close" id="cardModalClose">Close</button>' +
       '<div class="card-modal-grid">' +
@@ -8891,14 +8385,13 @@
           '<div class="spotlight-head"><div><h2>' + esc(node.id) + '</h2><div class="muted">' + esc(segment.title) + '</div><div class="spotlight-badges">' + spotlightBadges.join('') + '</div></div></div>' +
           '<div class="spotlight-grid">' +
             metricBox(mode === 'analysis' ? 'Analysis Score' : 'Pick Score', (mode === 'analysis' ? node.analysis_score : node.pick_priority_score).toFixed(1) + ' / 10', mode === 'analysis' ? 'How defining this card is inside the archetype.' : 'How much this card improves projected draft wins.') +
-            metricBox('Pick Urgency', node.pick_urgency_score.toFixed(1) + ' / 10', '0 = easy pass, 10 = slam it. Higher means the archetype wants the card and the table usually does too.') +
-            metricBox('ALSA', statValue(node.alsa, node.draft_occurrences, function(value) { return value.toFixed(2); }), alsaEnough ? 'Global average last seen at across the whole table.' : 'Need at least 30 draft appearances.') +
-            metricBox('Wheel Likelihood', statValue(node.wheel_likelihood, node.wheel_opportunities, pct), wheelEnough ? 'Probability that the card comes back when passed on picks 1-4.' : 'Need at least 30 early-pass opportunities.') +
-            metricBox(hasGameData ? 'Drawn-game WR' : 'With-Card Draft WR', hasGameData ? pctWr(node.win_rate) : pct(node.draft_win_rate), hasGameData ? String(node.draw_games) + ' games with this card drawn' : String(node.draft_drafts) + ' clustered drafts including this card') +
-            metricBox('Solo Drawn WR', hasGameData ? statValue(node.isolated_win_rate, node.isolated_games, pct) : gameReleaseText, hasGameData ? (soloEnough ? supportGamesText(node.isolated_games, 'games where this was the only mapped card seen') : 'Need at least 30 solo-drawn games.') : gameReleaseText) +
-            metricBox('Supported WR', hasGameData ? statValue(node.supported_win_rate, node.supported_games, pct) : gameReleaseText, hasGameData ? (supportedEnough ? supportGamesText(node.supported_games, 'games with another mapped card alongside it') : 'Need at least 30 supported games.') : gameReleaseText) +
-            metricBox('Support Delta', hasGameData ? ((soloEnough && supportedEnough) ? pp(node.support_delta) : 'Not enough data') : gameReleaseText, hasGameData ? ((soloEnough && supportedEnough) ? 'Supported WR minus solo-drawn WR.' : 'Need at least 30 solo and 30 supported games.') : gameReleaseText) +
-            metricBox('Shell Dependence <button type="button" class="metric-help" id="shellDependenceHelp" aria-label="Explain shell dependence">?</button>', hasGameData ? (shellScore.toFixed(1) + ' / 10') : gameReleaseText, hasGameData ? shellDependenceSummary(node, shellScore) : gameReleaseText) +
+            metricBox('Pick Urgency', node.pick_urgency_score.toFixed(1) + ' / 10', '0 = easy pass, 10 = slam it. This is mostly global draft-market pressure, with a smaller win-impact term.') +
+            metricBox('ALSA', node.alsa.toFixed(2), 'Global average last seen at across the whole draft table.') +
+            metricBox('Wheel Likelihood', pct(node.wheel_likelihood), 'Global estimated chance a seen copy comes back') +
+            metricBox('Win Rate Alone', pct(node.isolated_win_rate), node.isolated_games + ' isolated games') +
+            metricBox('Win Rate Supported', pct(node.supported_win_rate), node.supported_games + ' supported games') +
+            metricBox('Support Delta', pp(node.support_delta), 'Supported minus isolated') +
+            metricBox('Shell Dependence', shellScore.toFixed(1) + ' / 10', node.is_build_around ? 'High shell dependence and flagged as a build-around.' : 'Relies on the shell, but is not necessarily a build-around.') +
             metricBox('Core Score', node.core_score.toFixed(1) + ' / 10', pct(node.deck_prevalence) + ' of decks in archetype') +
           '</div>' +
           '<div class="spotlight-section"><h3>Appears In</h3><div class="chips">' + (archetypeHtml || '<span class="muted">Only detected in this archetype.</span>') + '</div></div>' +
@@ -8908,45 +8401,21 @@
       '</div>';
     var closeBtn = document.getElementById('cardModalClose');
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    var shellHelpBtn = document.getElementById('shellDependenceHelp');
-    if (shellHelpBtn) shellHelpBtn.addEventListener('click', function(evt) {
-      evt.preventDefault();
-      evt.stopPropagation();
-      showShellDependenceHelp();
-    });
     openModal();
   }
   function nodeDetail(node) {
-    trackEvent('card_spotlight_open', { card_name: node.id, rarity: node.rarity || '', view_mode: mode });
-    renderCardModal(node, null, true);
     getCardData(
       node.id,
-      function(cardData) { renderCardModal(node, cardData, false); },
-      function() { renderCardModal(node, null, false); }
+      function(cardData) { renderCardModal(node, cardData); },
+      function() { renderCardModal(node, null); }
     );
   }
   function edgeDetail(edge) {
-    if (!hasGameData) {
-      closeModal();
-      setSelection('<strong>Pair detail unavailable</strong><div class="muted" style="margin-top:8px">Game data has not been released.</div>');
-      return;
-    }
-    var direction = edgeDirection(edge);
-    var flowHtml = '';
-    var titleHtml = '<strong>' + edge.from + ' + ' + edge.to + '</strong>';
-    if (direction) {
-      flowHtml =
-        '<div>Flow: ' + esc(direction.source) + ' &rarr; ' + esc(direction.target) +
-        ' (' + pct(direction.sourceWinRate) + ' to ' + pct(direction.targetWinRate) + ' supported WR' +
-        (direction.tied ? ', alphabetical tiebreak' : '') + ')</div>';
-      titleHtml = '<strong>' + esc(direction.source) + ' &rarr; ' + esc(direction.target) + '</strong>';
-    }
-    trackEvent('pair_click', { card_a: edge.from, card_b: edge.to, pair_games: edge.pair_games || 0, view_mode: mode });
     var body = mode === 'analysis'
-      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div>' + flowHtml + '<div>Pair WR: ' + pct(edge.pair_win_rate) + ' ± ' + pctAbs(edge.pair_win_rate_se || 0) + ' | Expected ' + pct(edge.pair_expected_win_rate) + ' ± ' + pctAbs(edge.expected_win_rate_se || 0) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + ' ± ' + (edge.synergy_delta_logit_se || 0).toFixed(3) + '</div><div>Confidence: ' + edgeConfidenceText(edge) + '</div>'
-      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div>' + flowHtml + '<div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div><div>Confidence: ' + edgeConfidenceText(edge) + '</div>';
+      ? '<div>Analysis score: ' + edge.quality_score.toFixed(2) + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' | Expected ' + pct(edge.pair_expected_win_rate) + '</div><div>Synergy logit delta: ' + edge.synergy_delta_logit.toFixed(3) + '</div>'
+      : '<div>Pair pick score: ' + edge.pick_score.toFixed(1) + ' / 10</div><div>Draft pair events: ' + edge.draft_pair_events + '</div><div>Pair WR: ' + pct(edge.pair_win_rate) + ' across ' + edge.pair_games + ' games</div>';
     closeModal();
-    setSelection(titleHtml + '<div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
+    setSelection('<strong>' + edge.from + ' + ' + edge.to + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">' + body + '</div>');
   }
   function isSignificantBooster(row, rarity) {
     if (!row || typeof row.draft_win_lift !== 'number') return false;
@@ -9027,10 +8496,6 @@
         quickHint.textContent = 'Build-around detector is part of the premium view.';
         return;
       }
-      if (!hasGameData) {
-        quickHint.textContent = 'Game data has not been released.';
-        return;
-      }
       quickHint.textContent = 'Only flagged build-arounds. Shell-dependent cards that do not clear the detector stay out of this list.';
       (segment.build_arounds || []).slice(0, 5).forEach(function(row) {
         var shellScore = row.shell_dependence_score != null ? row.shell_dependence_score : (row.build_around_score || 0);
@@ -9077,24 +8542,22 @@
     var sizeText = mode === 'analysis'
       ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
       : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
-    var edgeText = !hasGameData
-      ? 'Game data has not been released, so pair arrows and triplet motifs are hidden in this draft-only view.'
-      : mode === 'analysis'
-        ? 'Arrow width/brightness = stronger positive pair synergy, but scaled by confidence. Arrows point from the higher-supported-WR card to the lower-supported-WR card. Visible edges keep only non-negative synergy and at least 85% confidence; edges around an established knot can sneak in a bit lower.'
-        : 'Arrow width/brightness = the same supported pair network, scaled by confidence. Arrows point from the higher-supported-WR card to the lower-supported-WR card. If both cards are visible here, the same supported link stays visible here too.';
+    var edgeText = mode === 'analysis'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
-      : 'Showing ' + shown + ' of ' + total + ' cards. Pick-focused view keeps cards whose supported or overall performance is at least viable inside the archetype.';
+      : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
-        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>' + (hasGameData ? 'Shaded box = learned synergy knot. Only knots above roughly 80% confidence are shown, and darker boxes are more reliable.' : 'Shaded box = learned knot from the current network. In draft-only mode these usually stay empty until game interactions are available.') + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>' + (hasGameData ? 'No edge = the pair failed the support floor, fell below zero synergy, or did not clear the 85% confidence bar. Around a proven knot, that confidence bar relaxes by about 10%.' : 'No edge = game data has not been released.') + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
@@ -9104,59 +8567,45 @@
   }
   function renderDrawer() {
     var html = '';
-    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + pct(segment.win_rate) + ' ' + performanceLabel + '</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
+    html += '<div class="drawer-card"><strong>' + segment.title + '</strong><div class="muted">' + segment.deck_count + ' decks | ' + segment.games + ' games | ' + pct(segment.win_rate) + ' game WR</div><div class="muted">Draft cluster WR: ' + pct(segment.draft_match_win_rate || 0) + ' | Color signature: ' + (segment.color_signature || 'C') + '</div></div>';
     html += '<h2>' + (mode === 'analysis' ? 'Analysis Signposts' : 'Priority Picks By Rarity') + '</h2>';
     if (mode === 'analysis') {
-      html += '<div class="pill-row">' + ['all', 'common', 'uncommon', 'rare', 'mythic'].map(function(rarity) { var active = rarity === signpostRarity ? ' active' : ''; var label = rarity === 'all' ? 'All' : rarity.charAt(0).toUpperCase() + rarity.slice(1); return '<button type="button" class="chip chip-button' + active + '" data-signpost-rarity="' + rarity + '">' + label + '</button>'; }).join('') + '</div>';
       html += '<div class="tableish">';
-      currentSignpostRows().slice(0, 10).forEach(function(row) {
+      segment.signposts.slice(0, 10).forEach(function(row) {
         html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">lift ' + row.lift.toFixed(2) + 'x | ' + pct(row.cluster_prevalence) + ' of decks</div></div><div>' + row.z_score.toFixed(2) + '</div></div>';
       });
-      if (!currentSignpostRows().length) html += '<div class="muted">No signposts found for that rarity in this archetype.</div>';
       if (access.premiumDrawer.buildAroundDetector) {
         html += premiumSection('Build-Around Detector', 'Unlock flagged build-arounds, shell dependence, and support-dependent payoffs.');
-      } else if (!hasGameData) {
-        html += '</div><h2>Build-Around Detector</h2><div class="drawer-card"><div class="muted">Game data has not been released.</div></div>';
       } else {
         html += '</div><h2>Build-Around Detector</h2><div class="tableish">';
         (segment.build_arounds || []).slice(0, 8).forEach(function(row) {
           var shellScore = row.shell_dependence_score != null ? row.shell_dependence_score : (row.build_around_score || 0);
-          var supportedText = enoughSupport(row.supported_games) ? pct(row.supported_win_rate) : 'Not enough data';
-          var soloText = enoughSupport(row.isolated_games) ? pct(row.isolated_win_rate) : 'Not enough data';
-          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Supported ' + supportedText + ' vs solo drawn ' + soloText + '</div></div><div>' + shellScore.toFixed(1) + ' / 10</div></div>';
+          html += '<div class="row"><div><strong>' + row.card + '</strong><div class="sub">Supported ' + pct(row.supported_win_rate) + ' vs alone ' + pct(row.isolated_win_rate) + '</div></div><div>' + shellScore.toFixed(1) + ' / 10</div></div>';
         });
         if (!(segment.build_arounds || []).length) html += '<div class="muted">No high-confidence build-arounds detected.</div>';
         html += '</div>';
       }
       if (access.premiumDrawer.bestPairSynergies) {
         html += premiumSection('Best Pair Synergies', 'Unlock the strongest within-archetype card pairs and how much they exceed baseline.');
-      } else if (!hasGameData) {
-        html += '<h2>Best Pair Synergies</h2><div class="drawer-card"><div class="muted">Game data has not been released.</div></div>';
       } else {
         html += '<h2>Best Pair Synergies</h2><div class="tableish">';
         segment.top_pairs.slice(0, 10).forEach(function(row) {
-          html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games | conf ' + confidencePercent(row.confidence_probability || 0.0) + '</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
+          html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.quality_score.toFixed(2) + '</div></div>';
         });
         html += '</div>';
       }
-      if (!hasGameData) {
-        html += '<h2>Anti-Synergies</h2><div class="drawer-card"><div class="muted">Game data has not been released.</div></div>';
-      } else {
-        html += '</div><h2>Anti-Synergies</h2><div class="tableish">';
-        (segment.top_anti_pairs || []).slice(0, 8).forEach(function(row) {
-          html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games | conf ' + confidencePercent(row.confidence_probability || 0.0) + '</div></div><div>' + row.synergy_delta_logit.toFixed(3) + '</div></div>';
-        });
-        if (!(segment.top_anti_pairs || []).length) html += '<div class="muted">No anti-synergies cleared the support threshold.</div>';
-        html += '</div>';
-      }
+      html += '</div><h2>Anti-Synergies</h2><div class="tableish">';
+      (segment.top_anti_pairs || []).slice(0, 8).forEach(function(row) {
+        html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.pair_win_rate) + ' | ' + row.pair_games + ' games</div></div><div>' + row.synergy_delta_logit.toFixed(3) + '</div></div>';
+      });
+      if (!(segment.top_anti_pairs || []).length) html += '<div class="muted">No anti-synergies cleared the support threshold.</div>';
+      html += '</div>';
       if (access.premiumDrawer.tripletMotifs) {
         html += premiumSection('Triplet Motifs', 'Unlock higher-order motifs that show which three-card groups repeatedly outperform.');
-      } else if (!hasGameData) {
-        html += '<h2>Triplet Motifs</h2><div class="drawer-card"><div class="muted">Game data has not been released.</div></div>';
       } else {
         html += '<h2>Triplet Motifs</h2><div class="tableish">';
         (segment.triplets.length ? segment.triplets.slice(0, 10) : []).forEach(function(row) {
-          html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games | conf ' + confidencePercent(row.confidence_probability || 0.0) + '</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
+          html += '<div class="row"><div><strong>' + row.cards.join(' + ') + '</strong><div class="sub">WR ' + pct(row.win_rate) + ' | ' + row.games + ' games</div></div><div>' + row.quality.toFixed(2) + '</div></div>';
         });
         if (!segment.triplets.length) html += '<div class="muted">No triplets cleared the support threshold for this archetype.</div>';
         html += '</div>';
@@ -9185,74 +8634,55 @@
     }
     if (access.premiumDrawer.communities) {
       html += premiumSection('Communities', 'Unlock the learned synergy knots and their top cards.');
-    } else if (!hasGameData) {
-      html += '<h2>Synergy Knots</h2><div class="drawer-card"><div class="muted">Game data has not been released.</div></div>';
     } else {
-      html += '<h2>Synergy Knots</h2><div class="tableish">';
+      html += '<h2>Communities</h2><div class="tableish">';
       segment.communities.forEach(function(row) {
-        var pairText = (row.top_pairs || []).length ? row.top_pairs.map(function(pair) { return pair.join(' + '); }).join(' | ') : 'No internal pair cleared the threshold';
-        html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div><div class="sub">' + pairText + '</div></div><div>' + row.size + '<div class="sub">' + confidencePercent(row.confidence_probability || 0.0) + '</div></div></div>';
+        html += '<div class="row"><div><strong>Knot ' + row.community_id + '</strong><div class="sub">' + row.top_cards.join(', ') + '</div></div><div>' + row.size + '</div></div>';
       });
       html += '</div>';
     }
     drawer.innerHTML = html;
-    Array.prototype.slice.call(drawer.querySelectorAll('[data-signpost-rarity]')).forEach(function(button) {
-      button.addEventListener('click', function() {
-        signpostRarity = button.getAttribute('data-signpost-rarity') || 'all';
-        renderDrawer();
-      });
-    });
   }
   function drawNode(group, node) {
     var g = svgEl('g');
-    g.setAttribute('class', 'node-hit');
     var border = communityPalette[node.community % communityPalette.length];
     var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
     var r = currentNodeRadius(node);
     if (fill.mode === 'split' && fill.colors.length === 2) {
       g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
       g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
-      g.appendChild(svgEl('line', { x1: node.x, y1: node.y - r, x2: node.x, y2: node.y + r, stroke: 'rgba(255,255,255,0.35)', 'stroke-width': 1 }));
       g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
     } else {
       g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
     }
     if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
-    var ringOffset = r + 4;
     if (node.is_build_around) {
       g.appendChild(svgEl('circle', {
-        cx: node.x, cy: node.y, r: ringOffset,
-        fill: 'none', stroke: 'rgba(244, 201, 93, 0.95)',
-        'stroke-width': 1.8, 'stroke-dasharray': '5 4'
-      }));
-      ringOffset += 6;
-    }
-    if ((node.archetype_presence || []).length > 1) {
-      g.appendChild(svgEl('circle', {
-        cx: node.x, cy: node.y, r: ringOffset,
-        fill: 'none', stroke: 'rgba(255, 255, 255, 0.5)',
-        'stroke-width': 1.2, 'stroke-dasharray': '3 3'
+        cx: node.x,
+        cy: node.y,
+        r: r + 4,
+        fill: 'none',
+        stroke: 'rgba(244, 201, 93, 0.95)',
+        'stroke-width': 1.8,
+        'stroke-dasharray': '5 4'
       }));
     }
     g.style.cursor = 'pointer';
-    var onNodeClick = function() {
+    g.addEventListener('click', function(evt) {
+      if (shouldSuppressClick()) return;
+      evt.stopPropagation();
       var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
       setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>');
       nodeDetail(node);
-    };
-    g.addEventListener('pointerdown', function(evt) {
-      startNodeDrag(node, evt, onNodeClick);
     });
     group.appendChild(g);
   }
   function draw() {
     prepareViewState();
     clear(svg);
-    if (!(nodeDragState && nodeDragState.moved)) {
-      renderQuickChips();
-      renderLegend();
-      if (drawer.classList.contains('open')) renderDrawer();
-    }
+    renderQuickChips();
+    renderLegend();
+    if (drawer.classList.contains('open')) renderDrawer();
     if (access.formatLocked) {
       closeModal();
       setSelection('<strong>Members only format</strong><div class="muted" style="margin-top:8px">This set is currently behind the paywall. The public homepage still shows the archetype list.</div>');
@@ -9276,103 +8706,57 @@
     segment.communities.forEach(function(community) {
       var members = visibleNodes.filter(function(node) { return node.community === community.community_id; });
       if (members.length < 2) return;
-      var pad = Math.max(24, Math.min(40, members.reduce(function(sum, node) { return sum + currentNodeRadius(node); }, 0) / members.length + 12));
-      var minX = Math.min.apply(null, members.map(function(node) { return node.x - currentNodeRadius(node); })) - pad;
-      var maxX = Math.max.apply(null, members.map(function(node) { return node.x + currentNodeRadius(node); })) + pad;
-      var minY = Math.min.apply(null, members.map(function(node) { return node.y - currentNodeRadius(node); })) - pad;
-      var maxY = Math.max.apply(null, members.map(function(node) { return node.y + currentNodeRadius(node); })) + pad;
-      var knotOpacity = (0.03 + 0.12 * communityConfidence(community)).toFixed(3);
-      var knotRect = svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: knotOpacity });
-      knotRect.style.cursor = 'pointer';
-      bindInteractiveTarget(knotRect, function() {
-        communityDetail(community);
-      });
-      bg.appendChild(knotRect);
+      var xs = members.map(function(node) { return node.x; });
+      var ys = members.map(function(node) { return node.y; });
+      var minX = Math.min.apply(null, xs) - 64;
+      var maxX = Math.max.apply(null, xs) + 64;
+      var minY = Math.min.apply(null, ys) - 64;
+      var maxY = Math.max.apply(null, ys) + 64;
+      bg.appendChild(svgEl('rect', { x: minX, y: minY, width: maxX - minX, height: maxY - minY, rx: 42, fill: communityPalette[community.community_id % communityPalette.length], opacity: 0.06 }));
     });
     var nodeMap = visibleNodeMap;
     var sortedEdges = visibleEdges;
-    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return displayEdgeScore(edge); }).concat([0.01]));
+    var maxEdge = Math.max.apply(null, sortedEdges.map(function(edge) { return currentEdgeScore(edge); }).concat([0.01]));
     sortedEdges.forEach(function(edge) {
-      var direction = edgeDirection(edge);
-      if (!direction) return;
-      var signal = Math.pow(Math.max(0.0, displayEdgeScore(edge)) / maxEdge, 0.62);
-      var confidence = edgeConfidence(edge);
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
-      var fromNode = nodeMap[edge.from];
-      var toNode = nodeMap[edge.to];
-      var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
-      var stroke = isCrossCommunity
-        ? 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')'
-        : (mode === 'analysis'
-            ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
-            : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')');
-      var geometry = edgeGeometry(direction, width);
-      var edgeGroup = svgEl('g');
-      var line = svgEl('line', {
-        x1: geometry.x1,
-        y1: geometry.y1,
-        x2: geometry.x2,
-        y2: geometry.y2,
-        stroke: stroke,
-        'stroke-width': width.toFixed(2),
-        'stroke-linecap': 'round'
-      });
-      var arrow = svgEl('polygon', {
-        points: geometry.tipX + ',' + geometry.tipY + ' ' + geometry.leftX + ',' + geometry.leftY + ' ' + geometry.rightX + ',' + geometry.rightY,
-        fill: stroke,
-        stroke: 'none'
-      });
-      var hitLine = svgEl('line', {
-        x1: geometry.x1,
-        y1: geometry.y1,
-        x2: geometry.tipX,
-        y2: geometry.tipY,
-        stroke: 'transparent',
-        'stroke-width': Math.max(10, width + 8).toFixed(2),
-        'stroke-linecap': 'round'
-      });
-      edgeGroup.setAttribute('class', 'edge-hit');
-      edgeGroup.style.cursor = 'pointer';
-      edgeGroup.appendChild(line);
-      edgeGroup.appendChild(arrow);
-      edgeGroup.appendChild(hitLine);
-      bindInteractiveTarget(edgeGroup, function() {
+      var a = nodeMap[edge.from];
+      var b = nodeMap[edge.to];
+      if (!a || !b) return;
+      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var width = 1.1 + 9.4 * q;
+      var alpha = 0.16 + 0.76 * q;
+      var stroke = mode === 'analysis'
+        ? 'rgba(92, 200, 255, ' + alpha.toFixed(3) + ')'
+        : 'rgba(244, 201, 93, ' + alpha.toFixed(3) + ')';
+      var line = svgEl('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: stroke, 'stroke-width': width.toFixed(2), 'stroke-linecap': 'round' });
+      line.style.cursor = 'pointer';
+      line.addEventListener('click', function(evt) {
+        if (shouldSuppressClick()) return;
+        evt.stopPropagation();
         edgeDetail(edge);
       });
-      edges.appendChild(edgeGroup);
+      edges.appendChild(line);
     });
     var sortedNodes = visibleNodes.slice().sort(function(a, b) { return currentNodeRadius(b) - currentNodeRadius(a); });
     sortedNodes.forEach(function(node) {
       drawNode(nodes, node);
       if (!shouldLabel(node)) return;
-      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13, 'pointer-events': 'none' });
+      var text = svgEl('text', { x: node.x + currentNodeRadius(node) + 4, y: node.y + 4, fill: '#edf2fb', 'font-size': 13 });
       text.textContent = node.label;
       labels.appendChild(text);
     });
     syncFloatingLayout();
   }
-  function switchViewMode(newMode) {
-    mode = newMode;
-    analysisBtn.classList.toggle('active', mode === 'analysis');
-    pickBtn.classList.toggle('active', mode === 'pick');
-    svg.style.transition = 'opacity 0.15s';
-    svg.style.opacity = '0';
-    setTimeout(function() {
-      draw();
-      svg.style.opacity = '1';
-      setTimeout(function() { svg.style.transition = ''; }, 180);
-    }, 130);
-  }
   analysisBtn.addEventListener('click', function() {
-    if (mode === 'analysis') return;
-    trackEvent('view_mode_selected', { view_mode: 'analysis' });
-    switchViewMode('analysis');
+    mode = 'analysis';
+    analysisBtn.classList.add('active');
+    pickBtn.classList.remove('active');
+    draw();
   });
   pickBtn.addEventListener('click', function() {
-    if (mode === 'pick') return;
-    trackEvent('view_mode_selected', { view_mode: 'pick' });
-    switchViewMode('pick');
+    mode = 'pick';
+    pickBtn.classList.add('active');
+    analysisBtn.classList.remove('active');
+    draw();
   });
   buildAroundBtn.addEventListener('click', function() {
     if (access.premiumFilters.buildArounds) {
@@ -9409,12 +8793,10 @@
   });
   quickAnalysisBtn.addEventListener('click', function() {
     quickMode = 'analysis';
-    trackEvent('quick_mode_selected', { quick_mode: 'analysis', view_mode: mode });
     renderQuickChips();
   });
   quickBoostersBtn.addEventListener('click', function() {
     quickMode = 'boosters';
-    trackEvent('quick_mode_selected', { quick_mode: 'boosters', view_mode: mode });
     renderQuickChips();
   });
   quickBuildBtn.addEventListener('click', function() {
@@ -9423,7 +8805,6 @@
       return;
     }
     quickMode = 'builds';
-    trackEvent('quick_mode_selected', { quick_mode: 'builds', view_mode: mode });
     renderQuickChips();
   });
   quickRarityButtons.forEach(function(button) {
@@ -9434,105 +8815,17 @@
   });
   zoomOutBtn.addEventListener('click', function() { zoomAt(1 / 1.18); });
   resetViewBtn.addEventListener('click', resetViewport);
-  resetLayoutBtn.addEventListener('click', function() {
-    resetStoredLayout();
-    trackEvent('layout_reset', { view_mode: mode });
-    draw();
-  });
-  exportLayoutsBtn.addEventListener('click', function() {
-    var layouts = collectFormatLayouts();
-    var filename = (formatCode().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'format') + '-layouts.json';
-    downloadJson(filename, layouts);
-    trackEvent('layout_export', { view_mode: mode, layout_count: Object.keys(layouts).length });
-  });
-  importLayoutBtn.addEventListener('click', function() {
-    importLayoutInput.value = '';
-    importLayoutInput.click();
-  });
-  importLayoutInput.addEventListener('change', function() {
-    var file = importLayoutInput.files && importLayoutInput.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function() {
-      try {
-        var parsed = JSON.parse(String(reader.result || '{}'));
-        if (!applyImportedLayout(parsed)) {
-          setSelection('<strong>Layout import failed</strong><div class="muted" style="margin-top:8px">The JSON did not contain positions for this archetype page.</div>');
-        }
-      } catch (err) {
-        setSelection('<strong>Layout import failed</strong><div class="muted" style="margin-top:8px">' + esc(String(err)) + '</div>');
-      }
-    };
-    reader.readAsText(file);
-  });
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
-  window.addEventListener('pointermove', function(evt) {
-    if (!nodeDragState || nodeDragState.pointerId !== evt.pointerId) return;
-    var point = svgPointFromClient(evt.clientX, evt.clientY);
-    var dx = point.x - nodeDragState.startPoint.x;
-    var dy = point.y - nodeDragState.startPoint.y;
-    if (!nodeDragState.moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
-      nodeDragState.moved = true;
-      suppressClickUntil = Date.now() + 180;
-      if (svg.setPointerCapture) {
-        try {
-          svg.setPointerCapture(evt.pointerId);
-          nodeDragState.captured = true;
-        } catch (err) {}
-      }
-    }
-    if (!nodeDragState.moved) return;
-    var node = findNodeById(nodeDragState.nodeId);
-    if (!node) return;
-    node.x = nodeDragState.startX + dx;
-    node.y = nodeDragState.startY + dy;
-    scheduleDraw();
-    evt.preventDefault();
-  }, { passive: false });
-  function endNodeDrag(evt) {
-    if (!nodeDragState) return;
-    if (evt && evt.pointerId !== undefined && nodeDragState.pointerId !== evt.pointerId) return;
-    var shouldRedraw = !!nodeDragState.moved;
-    var pointerId = nodeDragState.pointerId;
-    var wasCaptured = !!nodeDragState.captured;
-    var clickHandler = nodeDragState.clickHandler;
-    if (nodeDragState.moved) {
-      saveCurrentLayout();
-      trackEvent('layout_node_drag', { view_mode: mode, card: nodeDragState.nodeId });
-      suppressClickUntil = Date.now() + 220;
-    }
-    nodeDragState = null;
-    if (wasCaptured && svg.releasePointerCapture) {
-      try { svg.releasePointerCapture(pointerId); } catch (err) {}
-    }
-    if (!shouldRedraw && clickHandler && !shouldSuppressClick()) {
-      clickHandler(evt);
-      suppressClickUntil = Date.now() + 220;
-    }
-    if (shouldRedraw) draw();
-  }
-  function cancelNodeDrag() {
-    endNodeDrag();
-  }
-  window.addEventListener('pointerup', endNodeDrag);
-  window.addEventListener('pointercancel', endNodeDrag);
-  window.addEventListener('mouseup', cancelNodeDrag);
-  window.addEventListener('blur', cancelNodeDrag);
-  svg.addEventListener('pointerup', endNodeDrag);
-  svg.addEventListener('pointercancel', endNodeDrag);
-  svg.addEventListener('lostpointercapture', cancelNodeDrag);
   svg.addEventListener('wheel', function(evt) {
     evt.preventDefault();
     zoomAt(evt.deltaY < 0 ? 1.14 : (1 / 1.14), evt.clientX, evt.clientY);
   }, { passive: false });
   svg.addEventListener('pointerdown', function(evt) {
     if (evt.button !== undefined && evt.button !== 0) return;
-    if (nodeDragState) return;
-    if (blocksPan(evt.target)) return;
     dragState = {
       pointerId: evt.pointerId,
       startPoint: svgPointFromClient(evt.clientX, evt.clientY),
@@ -9583,7 +8876,6 @@
     }
   });
   window.addEventListener('resize', syncFloatingLayout);
-  loadSavedLayout();
   loadAccessConfig();
   renderQuickChips();
   draw();
