@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Azorius Humans | Tunnel Surveyor / Gremlin Tamer | Duskmourn: House of Horror Learned Archetype Synergy Map</title>
+  <title>Azorius Humans | Tunnel Surveyor / Gremlin Tamer | DSK Learned Archetype Synergy Map</title>
   <style>
     :root {
       --bg: #09111f;
@@ -8119,10 +8119,15 @@
   var viewportGroup = null;
   var viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
   var dragState = null;
+  var nodeDragState = null;
+  var drawScheduled = false;
   var suppressClickUntil = 0;
   var siteConfigHref = '../site-config.json';
+  var hasGameData = !!(payload.meta && payload.meta.has_game_data);
+  var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
+  var performanceRowLabel = hasGameData ? 'games' : 'matches';
   pageTitle.textContent = segment.title;
-  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' games | ' + (100 * segment.win_rate).toFixed(2) + '% game WR';
+  pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
   function pct(x) { return (100 * x).toFixed(2) + '%'; }
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
@@ -8145,6 +8150,33 @@
   function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
+  }
+  function scheduleDraw() {
+    if (drawScheduled) return;
+    drawScheduled = true;
+    requestAnimationFrame(function() { drawScheduled = false; draw(); });
+  }
+  function clamp(value, lo, hi) { return Math.max(lo, Math.min(hi, value)); }
+  function blocksPan(target) {
+    if (!target || !target.closest) return false;
+    return !!(target.closest('.node-hit') || target.closest('.edge-hit'));
+  }
+  function startNodeDrag(node, evt, clickHandler) {
+    if (!node) return;
+    if (evt.button !== undefined && evt.button !== 0) return;
+    nodeDragState = {
+      pointerId: evt.pointerId,
+      nodeId: String(node.id),
+      startPoint: svgPointFromClient(evt.clientX, evt.clientY),
+      startX: Number(node.x || 0),
+      startY: Number(node.y || 0),
+      moved: false,
+      captured: false,
+      clickHandler: clickHandler || null
+    };
+    suppressClickUntil = 0;
+    evt.stopPropagation();
+    evt.preventDefault();
   }
   function svgPointFromClient(clientX, clientY) {
     var pt = svg.createSVGPoint();
@@ -8703,44 +8735,58 @@
   }
   function drawNode(group, node) {
     var g = svgEl('g');
+    g.setAttribute('class', 'node-hit');
     var border = communityPalette[node.community % communityPalette.length];
     var fill = node.fill || { mode: 'solid', colors: ['rgb(148, 163, 184)'] };
     var r = currentNodeRadius(node);
     if (fill.mode === 'split' && fill.colors.length === 2) {
       g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, -90, 90), fill: fill.colors[0] }));
       g.appendChild(svgEl('path', { d: polarArc(node.x, node.y, r, 90, 270), fill: fill.colors[1] }));
+      g.appendChild(svgEl('line', { x1: node.x, y1: node.y - r, x2: node.x, y2: node.y + r, stroke: 'rgba(255,255,255,0.35)', 'stroke-width': 1 }));
       g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: 'none', stroke: border, 'stroke-width': 2 }));
     } else {
       g.appendChild(svgEl('circle', { cx: node.x, cy: node.y, r: r, fill: fill.colors[0], stroke: border, 'stroke-width': 2 }));
     }
     if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
+    var ringOffset = r + 4;
     if (node.is_build_around) {
       g.appendChild(svgEl('circle', {
         cx: node.x,
         cy: node.y,
-        r: r + 4,
+        r: ringOffset,
         fill: 'none',
         stroke: 'rgba(244, 201, 93, 0.95)',
         'stroke-width': 1.8,
         'stroke-dasharray': '5 4'
       }));
+      ringOffset += 6;
+    }
+    if ((node.archetype_presence || []).length > 1) {
+      g.appendChild(svgEl('circle', {
+        cx: node.x, cy: node.y, r: ringOffset,
+        fill: 'none', stroke: 'rgba(255, 255, 255, 0.5)',
+        'stroke-width': 1.2, 'stroke-dasharray': '3 3'
+      }));
     }
     g.style.cursor = 'pointer';
-    g.addEventListener('click', function(evt) {
-      if (shouldSuppressClick()) return;
-      evt.stopPropagation();
+    var onNodeClick = function() {
       var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
       setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>');
       nodeDetail(node);
+    };
+    g.addEventListener('pointerdown', function(evt) {
+      startNodeDrag(node, evt, onNodeClick);
     });
     group.appendChild(g);
   }
   function draw() {
     prepareViewState();
     clear(svg);
-    renderQuickChips();
-    renderLegend();
-    if (drawer.classList.contains('open')) renderDrawer();
+    if (!(nodeDragState && nodeDragState.moved)) {
+      renderQuickChips();
+      renderLegend();
+      if (drawer.classList.contains('open')) renderDrawer();
+    }
     if (access.formatLocked) {
       closeModal();
       setSelection('<strong>Members only format</strong><div class="muted" style="margin-top:8px">This set is currently behind the paywall. The public homepage still shows the archetype list.</div>');
@@ -8878,12 +8924,60 @@
   legendToggleBtn.addEventListener('click', toggleLegend);
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
+  window.addEventListener('pointermove', function(evt) {
+    if (!nodeDragState || nodeDragState.pointerId !== evt.pointerId) return;
+    var point = svgPointFromClient(evt.clientX, evt.clientY);
+    var dx = point.x - nodeDragState.startPoint.x;
+    var dy = point.y - nodeDragState.startPoint.y;
+    if (!nodeDragState.moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+      nodeDragState.moved = true;
+      suppressClickUntil = Date.now() + 180;
+      if (svg.setPointerCapture) {
+        try { svg.setPointerCapture(evt.pointerId); nodeDragState.captured = true; } catch (err) {}
+      }
+    }
+    if (!nodeDragState.moved) return;
+    var node = findNodeById(nodeDragState.nodeId);
+    if (!node) return;
+    node.x = nodeDragState.startX + dx;
+    node.y = nodeDragState.startY + dy;
+    scheduleDraw();
+    evt.preventDefault();
+  }, { passive: false });
+  function endNodeDrag(evt) {
+    if (!nodeDragState) return;
+    if (evt && evt.pointerId !== undefined && nodeDragState.pointerId !== evt.pointerId) return;
+    var shouldRedraw = !!nodeDragState.moved;
+    var pointerId = nodeDragState.pointerId;
+    var wasCaptured = !!nodeDragState.captured;
+    var clickHandler = nodeDragState.clickHandler;
+    if (nodeDragState.moved) suppressClickUntil = Date.now() + 220;
+    nodeDragState = null;
+    if (wasCaptured && svg.releasePointerCapture) {
+      try { svg.releasePointerCapture(pointerId); } catch (err) {}
+    }
+    if (!shouldRedraw && clickHandler && !shouldSuppressClick()) {
+      clickHandler(evt);
+      suppressClickUntil = Date.now() + 220;
+    }
+    if (shouldRedraw) draw();
+  }
+  function cancelNodeDrag() { endNodeDrag(); }
+  window.addEventListener('pointerup', endNodeDrag);
+  window.addEventListener('pointercancel', endNodeDrag);
+  window.addEventListener('mouseup', cancelNodeDrag);
+  window.addEventListener('blur', cancelNodeDrag);
+  svg.addEventListener('pointerup', endNodeDrag);
+  svg.addEventListener('pointercancel', endNodeDrag);
+  svg.addEventListener('lostpointercapture', cancelNodeDrag);
   svg.addEventListener('wheel', function(evt) {
     evt.preventDefault();
     zoomAt(evt.deltaY < 0 ? 1.14 : (1 / 1.14), evt.clientX, evt.clientY);
   }, { passive: false });
   svg.addEventListener('pointerdown', function(evt) {
     if (evt.button !== undefined && evt.button !== 0) return;
+    if (nodeDragState) return;
+    if (blocksPan(evt.target)) return;
     dragState = {
       pointerId: evt.pointerId,
       startPoint: svgPointFromClient(evt.clientX, evt.clientY),
