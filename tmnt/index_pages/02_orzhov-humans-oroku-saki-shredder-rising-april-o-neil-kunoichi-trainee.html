@@ -420,6 +420,8 @@
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
+      <button id="exportLayoutBtn" title="Download a layout JSON you can bake in with promote_layout.py">Export Layout</button>
+      <button id="resetLayoutBtn" title="Clear your saved positions and revert to the computed default">Reset Layout</button>
     </div>
   </div>
   <div class="map-controls" id="mapControls">
@@ -7149,6 +7151,65 @@
     throw err;
   }
   var segment = payload.segment;
+  // ── Layout persistence ─────────────────────────────────────────────────────
+  var _LAYOUT_PREFIX = 'mtgnet_layout_' + (payload.meta.format || '') + '_';
+  function _layoutKey() { return _LAYOUT_PREFIX + segment.cluster_id; }
+  function _persistLayout() {
+    try {
+      localStorage.setItem(_layoutKey(), JSON.stringify({
+        title: segment.title,
+        positions: (function() {
+          var p = {};
+          segment.nodes.forEach(function(n) { p[n.id] = { x: n.x, y: n.y }; });
+          return p;
+        }())
+      }));
+    } catch(e) {}
+  }
+  function _loadSavedLayout() {
+    try {
+      var raw = localStorage.getItem(_layoutKey());
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      var pos = data.positions || data;
+      segment.nodes.forEach(function(n) {
+        var p = pos[n.id];
+        if (p && typeof p.x === 'number' && typeof p.y === 'number') { n.x = p.x; n.y = p.y; }
+      });
+    } catch(e) {}
+  }
+  function _exportAllLayouts() {
+    var result = {};
+    // Collect every archetype for this format saved in localStorage
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (!k || k.indexOf(_LAYOUT_PREFIX) !== 0) continue;
+        try {
+          var d = JSON.parse(localStorage.getItem(k));
+          if (d && d.title && d.positions) result[d.title] = d.positions;
+        } catch(e) {}
+      }
+    } catch(e) {}
+    // Always include current segment at its live positions (may not be saved yet)
+    var cur = {};
+    segment.nodes.forEach(function(n) { cur[n.id] = { x: n.x, y: n.y }; });
+    result[segment.title] = cur;
+    var blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (payload.meta.format || 'layout').toLowerCase() + '_layout.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  }
+  function _resetLayout() {
+    try { localStorage.removeItem(_layoutKey()); } catch(e) {}
+  }
+  _loadSavedLayout();
+  // ───────────────────────────────────────────────────────────────────────────
   var mode = 'analysis';
   var quickMode = 'analysis';
   var quickRarity = 'all';
@@ -8106,7 +8167,7 @@
     var pointerId = nodeDragState.pointerId;
     var wasCaptured = !!nodeDragState.captured;
     var clickHandler = nodeDragState.clickHandler;
-    if (nodeDragState.moved) suppressClickUntil = Date.now() + 220;
+    if (nodeDragState.moved) { suppressClickUntil = Date.now() + 220; _persistLayout(); }
     nodeDragState = null;
     if (wasCaptured && svg.releasePointerCapture) {
       try { svg.releasePointerCapture(pointerId); } catch (err) {}
@@ -8183,6 +8244,17 @@
     }
   });
   window.addEventListener('resize', syncFloatingLayout);
+  document.getElementById('exportLayoutBtn').addEventListener('click', _exportAllLayouts);
+  document.getElementById('resetLayoutBtn').addEventListener('click', function() {
+    _resetLayout();
+    // Reload positions from payload (re-parse to get original coords)
+    var fresh = JSON.parse(document.getElementById('payloadData').textContent);
+    var freshNodes = fresh.segment.nodes;
+    segment.nodes.forEach(function(n, i) {
+      if (freshNodes[i]) { n.x = freshNodes[i].x; n.y = freshNodes[i].y; }
+    });
+    draw();
+  });
   loadAccessConfig();
   renderQuickChips();
   draw();
