@@ -7316,9 +7316,10 @@
     sortedEdges.forEach(function(edge) {
       var direction = edgeDirection(edge);
       if (!direction) return;
-      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
-      var width = 1.1 + 9.4 * q;
-      var alpha = 0.16 + 0.76 * q;
+      var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
+      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
+      var alpha = 0.12 + 0.76 * confidence;
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;

@@ -3140,7 +3140,8 @@
         "quality_score": 1.5902766629120257,
         "anti_quality": 0.0,
         "pick_score_raw": 3.149647561261215,
-        "pick_score": 10.0
+        "pick_score": 10.0,
+        "confidence_probability": 0.9834685028870879
       },
       {
         "from": "Fable of the Mirror-Breaker",
@@ -3157,7 +3158,8 @@
         "quality_score": 0.19139994420240722,
         "anti_quality": 0.0,
         "pick_score_raw": 1.6724100459210962,
-        "pick_score": 3.348144119221886
+        "pick_score": 3.348144119221886,
+        "confidence_probability": 0.7036649320248961
       },
       {
         "from": "Fire Covenant",
@@ -3174,41 +3176,8 @@
         "quality_score": 0.07975970770757784,
         "anti_quality": 0.0,
         "pick_score_raw": 1.1262799198450952,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Pyrogoyf",
-        "to": "Pyrokinesis",
-        "pair_games": 90,
-        "pair_win_rate": 0.6777777777777778,
-        "pair_expected_win_rate": 0.6756239999385772,
-        "pair_lift_vs_baseline": 0.12161842681531942,
-        "synergy_delta_logit": 0.009844662952776417,
-        "synergy_delta_prob": 0.0021537778392005658,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 406,
-        "quality_score": 0.017200157034465556,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.8278845288939478,
-        "pick_score": 4.383391041008006
-      },
-      {
-        "from": "Fiery Confluence",
-        "to": "Fury",
-        "pair_games": 95,
-        "pair_win_rate": 0.6631578947368421,
-        "pair_expected_win_rate": 0.6617340889584112,
-        "pair_lift_vs_baseline": 0.10699854377438367,
-        "synergy_delta_logit": 0.006367331899444051,
-        "synergy_delta_prob": 0.00142380577843082,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 372,
-        "quality_score": 0.010215261285097345,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.6776226671158152,
-        "pick_score": 3.3838183760220644
+        "pick_score": 0.0,
+        "confidence_probability": 0.6298576620250946
       }
     ],
     "triplets": [],
@@ -5296,9 +5265,10 @@
     sortedEdges.forEach(function(edge) {
       var direction = edgeDirection(edge);
       if (!direction) return;
-      var q = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
-      var width = 1.1 + 9.4 * q;
-      var alpha = 0.16 + 0.76 * q;
+      var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
+      var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
+      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
+      var alpha = 0.12 + 0.76 * confidence;
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
