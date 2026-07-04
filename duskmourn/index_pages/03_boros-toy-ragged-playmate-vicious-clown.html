@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Boros Toy | Ragged Playmate / Vicious Clown | Duskmourn Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -743,8 +623,8 @@
         "supported_win_rate": 0.5572792897816438,
         "support_delta": 0.04113229646315819,
         "standalone_delta": -0.01424810699747825,
-        "dependency_score": 0.16644284539066073,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 25926.084667055224,
         "signpost_lift": 3.924688830130086,
         "deck_prevalence": 0.6098814504274612,
@@ -757,7 +637,7 @@
         "alsa": 4.690157988565808,
         "average_taken_at": 7.8975603750021985,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 25929.080638272255,
+        "analysis_score_raw": 25926.084667055224,
         "analysis_score": 10.0,
         "pick_priority_score_raw": 25.40352713662467,
         "pick_priority_score": 5.331265974689417,
@@ -765,59 +645,24 @@
         "pick_market_score": 8.295035411413192,
         "pick_urgency_score_raw": 6.03787691188616,
         "pick_urgency_score": 6.03787691188616,
-        "shell_dependence_score_raw": 15.619274921807333,
-        "shell_dependence_score": 9.237256030635944,
-        "build_around_score_raw": 15.619274921807333,
-        "build_around_score": 9.237256030635944,
-        "core_score_raw": 25960.128702312923,
+        "shell_dependence_score_raw": 9.376601792230968,
+        "shell_dependence_score": 10.0,
+        "build_around_score_raw": 9.376601792230968,
+        "build_around_score": 10.0,
+        "core_score_raw": 25957.798502477453,
         "core_score": 10.0,
-        "is_build_around": true,
-        "role": "needs_support",
+        "win_contribution_logit": -0.08168912658229965,
+        "contribution_score": 0.0,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Ragged%20Playmate%22",
-        "community": 2,
-        "x": 874.7695640833342,
-        "y": 998.5752026759135,
-        "analysis_radius": 16.991942434063787,
+        "community": 1,
+        "x": 1273.9675427460859,
+        "y": 797.3563626447651,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 16.991942434063787,
-        "top_synergies": [
-          {
-            "card": "Painter's Studio // Defaced Gallery",
-            "quality_score": 0.26208533603992257,
-            "pair_win_rate": 0.6088004822182037,
-            "pair_games": 1659,
-            "synergy_delta_logit": 0.07506756302959999,
-            "partner_pick_score": 9.422311826688441,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Most Valuable Slayer",
-            "quality_score": 0.12069030548353529,
-            "pair_win_rate": 0.567060637204522,
-            "pair_games": 3892,
-            "synergy_delta_logit": 0.0664497283381002,
-            "partner_pick_score": 4.785732728454327,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Jump Scare",
-            "quality_score": 0.08499701375287812,
-            "pair_win_rate": 0.5658823529411765,
-            "pair_games": 2550,
-            "synergy_delta_logit": 0.058020235472010684,
-            "partner_pick_score": 3.94026267949475,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.08133796840323769,
-            "pair_win_rate": 0.5504587155963303,
-            "pair_games": 2507,
-            "synergy_delta_logit": 0.052118121472563894,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Irreverent Gremlin",
@@ -864,9 +709,9 @@
             "deck_prevalence": 0.6098814504274612,
             "analysis_score": 10.0,
             "pick_priority_score": 5.331265974689417,
-            "build_around_score": 9.237256030635944,
+            "build_around_score": 10.0,
             "core_score": 10.0,
-            "role": "needs_support"
+            "role": "balanced"
           }
         ]
       },
@@ -891,8 +736,8 @@
         "supported_win_rate": 0.5441028225806451,
         "support_delta": 0.034403825925126696,
         "standalone_delta": -0.026769919484643356,
-        "dependency_score": 0.07584849439831982,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 25068.781354752795,
         "signpost_lift": 5.1548124583862975,
         "deck_prevalence": 0.5341364646690707,
@@ -905,7 +750,7 @@
         "alsa": 4.947050177288908,
         "average_taken_at": 8.719921378653114,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 25070.146627651964,
+        "analysis_score_raw": 25068.781354752795,
         "analysis_score": 10.0,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
@@ -913,68 +758,24 @@
         "pick_market_score": 7.9741897485224165,
         "pick_urgency_score_raw": 3.996944343197872,
         "pick_urgency_score": 3.996944343197872,
-        "shell_dependence_score_raw": 11.039806977316955,
-        "shell_dependence_score": 8.177830980044462,
-        "build_around_score_raw": 11.039806977316955,
-        "build_around_score": 8.177830980044462,
-        "core_score_raw": 25097.618329837165,
+        "shell_dependence_score_raw": 8.470046023767878,
+        "shell_dependence_score": 9.704041087890314,
+        "build_around_score_raw": 8.470046023767878,
+        "build_around_score": 9.704041087890314,
+        "core_score_raw": 25096.55645091559,
         "core_score": 10.0,
-        "is_build_around": true,
+        "win_contribution_logit": -0.13562423988264938,
+        "contribution_score": 0.0,
+        "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Vicious%20Clown%22",
-        "community": 1,
-        "x": 1106.1320369004277,
-        "y": 859.9054802400849,
-        "analysis_radius": 13.730545798339513,
+        "community": 2,
+        "x": 1136.9517644415664,
+        "y": 632.7478001487335,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.730545798339513,
-        "top_synergies": [
-          {
-            "card": "Razorkin Hordecaller",
-            "quality_score": 0.16449128813105526,
-            "pair_win_rate": 0.5911602209944752,
-            "pair_games": 1448,
-            "synergy_delta_logit": 0.07131336345644546,
-            "partner_pick_score": 8.962040210909661,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.13163830643059124,
-            "pair_win_rate": 0.5397260273972603,
-            "pair_games": 1460,
-            "synergy_delta_logit": 0.12092587995997789,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Most Valuable Slayer",
-            "quality_score": 0.12436091519850895,
-            "pair_win_rate": 0.5564516129032258,
-            "pair_games": 3348,
-            "synergy_delta_logit": 0.07390947679276638,
-            "partner_pick_score": 4.785732728454327,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Painter's Studio // Defaced Gallery",
-            "quality_score": 0.12145161652222054,
-            "pair_win_rate": 0.5913226032190343,
-            "pair_games": 1429,
-            "synergy_delta_logit": 0.05278530698748385,
-            "partner_pick_score": 9.422311826688441,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Hardened Escort",
-            "quality_score": 0.07315870913805696,
-            "pair_win_rate": 0.5336109458655562,
-            "pair_games": 1681,
-            "synergy_delta_logit": 0.06204853252860157,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Scorching Dragonfire",
@@ -1021,7 +822,7 @@
             "deck_prevalence": 0.5341364646690707,
             "analysis_score": 10.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 8.177830980044462,
+            "build_around_score": 9.704041087890314,
             "core_score": 10.0,
             "role": "balanced"
           }
@@ -1050,8 +851,8 @@
         "supported_win_rate": 0.6312204767659013,
         "support_delta": -0.011244440866801542,
         "standalone_delta": 0.06368718116585736,
-        "dependency_score": 0.252976261173565,
-        "degree": 2,
+        "dependency_score": 0.32289817770854023,
+        "degree": 1,
         "signpost_score": 22426.390899218804,
         "signpost_lift": 6.190470212245123,
         "deck_prevalence": 0.4943320815487066,
@@ -1064,8 +865,8 @@
         "alsa": 3.0602528287477138,
         "average_taken_at": 3.8201008191556394,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 22439.860677283148,
-        "analysis_score": 9.935446857887467,
+        "analysis_score_raw": 22441.11927178078,
+        "analysis_score": 9.935514752635664,
         "pick_priority_score_raw": 763.3298490887727,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 9.814180013255049,
@@ -1076,17 +877,19 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 22461.051245514867,
-        "core_score": 9.901676798539656,
+        "core_score_raw": 22462.030152346357,
+        "core_score": 9.901759266986891,
+        "win_contribution_logit": 0.31169686532690505,
+        "contribution_score": 9.478367553786981,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Midnight%20Mayhem%22",
-        "community": 3,
-        "x": 646.1357733782636,
-        "y": 772.8573597928914,
-        "analysis_radius": 23.609940366370495,
+        "community": 0,
+        "x": 1517.3454396480872,
+        "y": 445.0812905096071,
+        "analysis_radius": 26.127129361629606,
         "pick_radius": 30.0,
-        "radius": 23.609940366370495,
+        "radius": 26.127129361629606,
         "top_synergies": [
           {
             "card": "Painter's Studio // Defaced Gallery",
@@ -1096,15 +899,6 @@
             "synergy_delta_logit": 0.32289817770854023,
             "partner_pick_score": 9.422311826688441,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Toby, Beastie Befriender",
-            "quality_score": 0.5724546569381159,
-            "pair_win_rate": 0.7089201877934272,
-            "pair_games": 426,
-            "synergy_delta_logit": 0.12753880113057292,
-            "partner_pick_score": 9.351974490717069,
-            "partner_rarity": "rare"
           }
         ],
         "top_anti_synergies": [
@@ -1151,10 +945,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.4943320815487066,
-            "analysis_score": 9.935446857887467,
+            "analysis_score": 9.935514752635664,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 9.901676798539656,
+            "core_score": 9.901759266986891,
             "role": "engine"
           }
         ]
@@ -1182,8 +976,8 @@
         "supported_win_rate": 0.5962729544713681,
         "support_delta": -8.121219529855228e-05,
         "standalone_delta": 0.027817234915331168,
-        "dependency_score": 0.07950102948471184,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 22134.7401011559,
         "signpost_lift": 6.522823008234,
         "deck_prevalence": 0.5125799476519529,
@@ -1196,8 +990,8 @@
         "alsa": 2.772751750134626,
         "average_taken_at": 3.3470960520084385,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 22140.065532574772,
-        "analysis_score": 9.925002431653395,
+        "analysis_score_raw": 22138.634514044046,
+        "analysis_score": 9.924977154560182,
         "pick_priority_score_raw": 407.48868136684865,
         "pick_priority_score": 9.791986955567625,
         "pick_market_score_raw": 9.930849609070705,
@@ -1208,37 +1002,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 22164.871737814392,
-        "core_score": 9.88599798791382,
+        "core_score_raw": 22163.758723401606,
+        "core_score": 9.88597069105687,
+        "win_contribution_logit": 0.1373783333851511,
+        "contribution_score": 4.496919459873057,
         "is_build_around": false,
-        "role": "engine",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Arabella%2C%20Abandoned%20Doll%22",
-        "community": 4,
-        "x": 472.5,
-        "y": 665.8766152619708,
-        "analysis_radius": 15.391984981792842,
+        "community": 3,
+        "x": 1160.7083927083736,
+        "y": 752.3018377116841,
+        "analysis_radius": 12.529947920343215,
         "pick_radius": 30.0,
-        "radius": 15.391984981792842,
-        "top_synergies": [
-          {
-            "card": "Overlord of the Mistmoors",
-            "quality_score": 0.356886226363753,
-            "pair_win_rate": 0.7419354838709677,
-            "pair_games": 155,
-            "synergy_delta_logit": 0.11360303092505042,
-            "partner_pick_score": 9.478988232790515,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.11567212577944523,
-            "pair_win_rate": 0.5815176558978212,
-            "pair_games": 1331,
-            "synergy_delta_logit": 0.06786360998694402,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 12.529947920343215,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Razorkin Hordecaller",
@@ -1283,11 +1060,11 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5125799476519529,
-            "analysis_score": 9.925002431653395,
+            "analysis_score": 9.924977154560182,
             "pick_priority_score": 9.791986955567625,
             "build_around_score": 0.0,
-            "core_score": 9.88599798791382,
-            "role": "engine"
+            "core_score": 9.88597069105687,
+            "role": "balanced"
           }
         ]
       },
@@ -1312,8 +1089,8 @@
         "supported_win_rate": 0.5780105682766292,
         "support_delta": 0.03972227998834088,
         "standalone_delta": 0.006527318569061968,
-        "dependency_score": 0.5036861169524544,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 21828.24804587089,
         "signpost_lift": 3.176765039762402,
         "deck_prevalence": 0.5808256207244216,
@@ -1326,58 +1103,32 @@
         "alsa": 4.3484724288056285,
         "average_taken_at": 6.919984762157148,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 21838.228220575704,
-        "analysis_score": 9.914343003866499,
+        "analysis_score_raw": 21829.161870470558,
+        "analysis_score": 9.914046061271986,
         "pick_priority_score_raw": 109.04478399649373,
         "pick_priority_score": 7.655933843761632,
         "pick_market_score_raw": 8.667439924870719,
         "pick_market_score": 8.667439924870719,
         "pick_urgency_score_raw": 7.2829071852604805,
         "pick_urgency_score": 7.2829071852604805,
-        "shell_dependence_score_raw": 22.166206969000957,
-        "shell_dependence_score": 10.0,
-        "build_around_score_raw": 22.166206969000957,
-        "build_around_score": 10.0,
-        "core_score_raw": 21866.057405864263,
-        "core_score": 9.869965943020569,
-        "is_build_around": true,
-        "role": "needs_support",
+        "shell_dependence_score_raw": 7.352598936885848,
+        "shell_dependence_score": 9.162058497389854,
+        "build_around_score_raw": 7.352598936885848,
+        "build_around_score": 9.162058497389854,
+        "core_score_raw": 21859.00580022693,
+        "core_score": 9.86961804699877,
+        "win_contribution_logit": 0.019539454801093686,
+        "contribution_score": 0.6760094977859455,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Turn%20Inside%20Out%22",
-        "community": 0,
-        "x": 1268.7762544073862,
-        "y": 495.8996821890945,
-        "analysis_radius": 28.0,
+        "community": 4,
+        "x": 1102.9288084437653,
+        "y": 859.4875741402815,
+        "analysis_radius": 11.359002521298407,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Unidentified Hovership",
-            "quality_score": 0.2615308498858641,
-            "pair_win_rate": 0.6467181467181468,
-            "pair_games": 518,
-            "synergy_delta_logit": 0.08581685470244349,
-            "partner_pick_score": 9.077333858615644,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.1189743207489671,
-            "pair_win_rate": 0.5722585330428468,
-            "pair_games": 2754,
-            "synergy_delta_logit": 0.05614004627737956,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.0643857077662925,
-            "pair_win_rate": 0.5576036866359447,
-            "pair_games": 1519,
-            "synergy_delta_logit": 0.05804777490399843,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.359002521298407,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Overlord of the Mistmoors",
@@ -1422,21 +1173,21 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5808256207244216,
-            "analysis_score": 9.914343003866499,
+            "analysis_score": 9.914046061271986,
             "pick_priority_score": 7.655933843761632,
-            "build_around_score": 10.0,
-            "core_score": 9.869965943020569,
-            "role": "needs_support"
+            "build_around_score": 9.162058497389854,
+            "core_score": 9.86961804699877,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.525317019068219,
-            "analysis_score": 9.77270742547879,
+            "analysis_score": 9.772683725078608,
             "pick_priority_score": 8.37666874694295,
-            "build_around_score": 8.511578611337036,
-            "core_score": 9.640316745139861,
+            "build_around_score": 8.455547347504051,
+            "core_score": 9.640286962110414,
             "role": "balanced"
           },
           {
@@ -1444,10 +1195,10 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.39392526564656977,
-            "analysis_score": 9.362832362083855,
+            "analysis_score": 9.362830446379593,
             "pick_priority_score": 8.138915365127687,
-            "build_around_score": 7.436657652842784,
-            "core_score": 8.959811175377999,
+            "build_around_score": 7.351008259487457,
+            "core_score": 8.959803791392904,
             "role": "balanced"
           },
           {
@@ -1455,9 +1206,9 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.002787018232475829,
-            "analysis_score": 0.11393405738732584,
+            "analysis_score": 0.11393444470970136,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.7728111283394057,
+            "build_around_score": 3.244687593742423,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -1484,8 +1235,8 @@
         "supported_win_rate": 0.5583380514785942,
         "support_delta": 0.009064192557432293,
         "standalone_delta": -0.010826071381677016,
-        "dependency_score": 0.07676083359635356,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 20889.33105948094,
         "signpost_lift": 2.8534966052295876,
         "deck_prevalence": 0.5989637506072345,
@@ -1498,49 +1249,32 @@
         "alsa": 4.01355433531905,
         "average_taken_at": 5.937316693601485,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 20890.712754485674,
-        "analysis_score": 9.87989791422461,
+        "analysis_score_raw": 20889.33105948094,
+        "analysis_score": 9.87987392572914,
         "pick_priority_score_raw": 68.88177985760949,
         "pick_priority_score": 6.916408530338493,
         "pick_market_score_raw": 9.019819065053154,
         "pick_market_score": 9.019819065053154,
         "pick_urgency_score_raw": 7.605951599088741,
         "pick_urgency_score": 7.605951599088741,
-        "shell_dependence_score_raw": 2.3941406816626207,
-        "shell_dependence_score": 4.016417270764644,
-        "build_around_score_raw": 2.3941406816626207,
-        "build_around_score": 4.016417270764644,
-        "core_score_raw": 20921.551826182866,
-        "core_score": 9.817811037599686,
+        "shell_dependence_score_raw": 1.831722498159077,
+        "shell_dependence_score": 4.492967781605811,
+        "build_around_score_raw": 1.831722498159077,
+        "build_around_score": 4.492967781605811,
+        "core_score_raw": 20920.477174512518,
+        "core_score": 9.817786809071567,
+        "win_contribution_logit": -0.07778035461320747,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Clockwork%20Percussionist%22",
-        "community": 3,
-        "x": 788.8962349340626,
-        "y": 841.6206271714917,
-        "analysis_radius": 13.76339000946873,
+        "community": 5,
+        "x": 1004.0356026013743,
+        "y": 930.4206766248625,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.76339000946873,
-        "top_synergies": [
-          {
-            "card": "Painter's Studio // Defaced Gallery",
-            "quality_score": 0.2185608771811491,
-            "pair_win_rate": 0.6086711711711712,
-            "pair_games": 1776,
-            "synergy_delta_logit": 0.06066302873068996,
-            "partner_pick_score": 9.422311826688441,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.10738704836890185,
-            "pair_win_rate": 0.548923076923077,
-            "pair_games": 1625,
-            "synergy_delta_logit": 0.093589955516343,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Acrobatic Cheerleader",
@@ -1585,10 +1319,10 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.6045311899510699,
-            "analysis_score": 9.810560348634855,
+            "analysis_score": 9.810658180451926,
             "pick_priority_score": 9.010817733685077,
-            "build_around_score": 8.345886257089743,
-            "core_score": 9.691006540961784,
+            "build_around_score": 8.965333850010753,
+            "core_score": 9.691129205113487,
             "role": "balanced"
           },
           {
@@ -1596,10 +1330,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5989637506072345,
-            "analysis_score": 9.87989791422461,
+            "analysis_score": 9.87987392572914,
             "pick_priority_score": 6.916408530338493,
-            "build_around_score": 4.016417270764644,
-            "core_score": 9.817811037599686,
+            "build_around_score": 4.492967781605811,
+            "core_score": 9.817786809071567,
             "role": "balanced"
           },
           {
@@ -1607,10 +1341,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5357375736872697,
-            "analysis_score": 9.723472068534964,
+            "analysis_score": 9.723461581510609,
             "pick_priority_score": 6.458841025697942,
-            "build_around_score": 6.601588970560625,
-            "core_score": 9.56259772405446,
+            "build_around_score": 6.624477551961597,
+            "core_score": 9.562584076686846,
             "role": "balanced"
           },
           {
@@ -1620,7 +1354,7 @@
             "deck_prevalence": 0.0037851673778559994,
             "analysis_score": 0.0,
             "pick_priority_score": 5.767744431081425,
-            "build_around_score": 1.5072227199700114,
+            "build_around_score": 1.7842803739296003,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -1647,8 +1381,8 @@
         "supported_win_rate": 0.5670044779637049,
         "support_delta": 0.02466681562604256,
         "standalone_delta": -0.0035095115257524068,
-        "dependency_score": 0.07073947117980826,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 19887.375550182056,
         "signpost_lift": 2.828271757743646,
         "deck_prevalence": 0.5746595952237039,
@@ -1661,67 +1395,32 @@
         "alsa": 3.9875804234507113,
         "average_taken_at": 6.188463916319949,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 19888.648860663292,
-        "analysis_score": 9.841726926947182,
+        "analysis_score_raw": 19887.375550182056,
+        "analysis_score": 9.841706661746255,
         "pick_priority_score_raw": 17.8880590981697,
         "pick_priority_score": 4.785732728454327,
         "pick_market_score_raw": 8.97245471350153,
         "pick_market_score": 8.97245471350153,
         "pick_urgency_score_raw": 6.913780356170868,
         "pick_urgency_score": 6.913780356170868,
-        "shell_dependence_score_raw": 6.126339246031133,
-        "shell_dependence_score": 6.45425875643383,
-        "build_around_score_raw": 6.126339246031133,
-        "build_around_score": 6.45425875643383,
-        "core_score_raw": 19918.248201730206,
-        "core_score": 9.759764904034299,
+        "shell_dependence_score_raw": 4.775167851571248,
+        "shell_dependence_score": 7.569251253620377,
+        "build_around_score_raw": 4.775167851571248,
+        "build_around_score": 7.569251253620377,
+        "core_score_raw": 19917.25784913369,
+        "core_score": 9.759746387213884,
+        "win_contribution_logit": -0.016658227525127252,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Most%20Valuable%20Slayer%22",
-        "community": 2,
-        "x": 894.5712681030275,
-        "y": 909.4401006168446,
-        "analysis_radius": 13.546620962473098,
+        "community": 6,
+        "x": 902.7738680719299,
+        "y": 863.100893438142,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.546620962473098,
-        "top_synergies": [
-          {
-            "card": "Friendly Ghost",
-            "quality_score": 0.2095248486327628,
-            "pair_win_rate": 0.5932721712538226,
-            "pair_games": 1635,
-            "synergy_delta_logit": 0.08050545637766438,
-            "partner_pick_score": 7.1029832956661245,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Vicious Clown",
-            "quality_score": 0.12436091519850895,
-            "pair_win_rate": 0.5564516129032258,
-            "pair_games": 3348,
-            "synergy_delta_logit": 0.07390947679276638,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Ragged Playmate",
-            "quality_score": 0.12069030548353529,
-            "pair_win_rate": 0.567060637204522,
-            "pair_games": 3892,
-            "synergy_delta_logit": 0.0664497283381002,
-            "partner_pick_score": 5.331265974689417,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.06930961226437587,
-            "pair_win_rate": 0.5486432825943084,
-            "pair_games": 1511,
-            "synergy_delta_logit": 0.06274669092149482,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Clockwork Percussionist",
@@ -1766,10 +1465,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5746595952237039,
-            "analysis_score": 9.841726926947182,
+            "analysis_score": 9.841706661746255,
             "pick_priority_score": 4.785732728454327,
-            "build_around_score": 6.45425875643383,
-            "core_score": 9.759764904034299,
+            "build_around_score": 7.569251253620377,
+            "core_score": 9.759746387213884,
             "role": "balanced"
           },
           {
@@ -1777,10 +1476,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5603908021458597,
-            "analysis_score": 9.794845088685273,
+            "analysis_score": 9.794836060823608,
             "pick_priority_score": 4.3167303822751055,
-            "build_around_score": 9.552522679668261,
-            "core_score": 9.675565515436157,
+            "build_around_score": 9.744008325168215,
+            "core_score": 9.675553857708653,
             "role": "balanced"
           },
           {
@@ -1788,10 +1487,10 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.4465834486797009,
-            "analysis_score": 9.461328426132695,
+            "analysis_score": 9.461320916148662,
             "pick_priority_score": 4.476107426222405,
-            "build_around_score": 8.62304360149888,
-            "core_score": 9.120888094318698,
+            "build_around_score": 8.462219687460255,
+            "core_score": 9.12087442175534,
             "role": "balanced"
           }
         ]
@@ -1817,8 +1516,8 @@
         "supported_win_rate": 0.5689221305745841,
         "support_delta": 0.04145918375679858,
         "standalone_delta": -0.002617155016727213,
-        "dependency_score": 0.06490646319874079,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 17145.0402520708,
         "signpost_lift": 3.7073745377581457,
         "deck_prevalence": 0.4194234024058514,
@@ -1831,58 +1530,32 @@
         "alsa": 4.712596264280965,
         "average_taken_at": 8.233052842781975,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 17146.20856840838,
-        "analysis_score": 9.726511418426838,
+        "analysis_score_raw": 17145.0402520708,
+        "analysis_score": 9.72649423244111,
         "pick_priority_score_raw": 10.239062267990406,
         "pick_priority_score": 3.94026267949475,
         "pick_market_score_raw": 8.198422689674052,
         "pick_market_score": 8.198422689674052,
         "pick_urgency_score_raw": 5.485667432809752,
         "pick_urgency_score": 5.485667432809752,
-        "shell_dependence_score_raw": 9.29026296534016,
-        "shell_dependence_score": 7.661764747901965,
-        "build_around_score_raw": 9.29026296534016,
-        "build_around_score": 7.661764747901965,
-        "core_score_raw": 17167.75895948069,
-        "core_score": 9.584242341231924,
+        "shell_dependence_score_raw": 7.3754146477115805,
+        "shell_dependence_score": 9.173833211579195,
+        "build_around_score_raw": 7.3754146477115805,
+        "build_around_score": 9.173833211579195,
+        "core_score_raw": 17166.850268995906,
+        "core_score": 9.584231430398118,
+        "win_contribution_logit": -0.016897603399277504,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Jump%20Scare%22",
-        "community": 1,
-        "x": 1219.1047063219082,
-        "y": 678.8652594851881,
-        "analysis_radius": 13.336632675154668,
+        "community": 7,
+        "x": 806.4367827282682,
+        "y": 936.9320952131424,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.336632675154668,
-        "top_synergies": [
-          {
-            "card": "Painter's Studio // Defaced Gallery",
-            "quality_score": 0.14428029653039562,
-            "pair_win_rate": 0.6141078838174274,
-            "pair_games": 964,
-            "synergy_delta_logit": 0.05020095061276053,
-            "partner_pick_score": 9.422311826688441,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Fear of Surveillance",
-            "quality_score": 0.10190950700750627,
-            "pair_win_rate": 0.5676880222841225,
-            "pair_games": 1795,
-            "synergy_delta_logit": 0.08389083754825938,
-            "partner_pick_score": 5.981877346182983,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Ragged Playmate",
-            "quality_score": 0.08499701375287812,
-            "pair_win_rate": 0.5658823529411765,
-            "pair_games": 2550,
-            "synergy_delta_logit": 0.058020235472010684,
-            "partner_pick_score": 5.331265974689417,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Scorching Dragonfire",
@@ -1927,10 +1600,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.4194234024058514,
-            "analysis_score": 9.726511418426838,
+            "analysis_score": 9.72649423244111,
             "pick_priority_score": 3.94026267949475,
-            "build_around_score": 7.661764747901965,
-            "core_score": 9.584242341231924,
+            "build_around_score": 9.173833211579195,
+            "core_score": 9.584231430398118,
             "role": "balanced"
           },
           {
@@ -1938,11 +1611,11 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.35744871997331534,
-            "analysis_score": 9.39907597417438,
+            "analysis_score": 9.399300240908167,
             "pick_priority_score": 8.968635846781371,
-            "build_around_score": 5.655038958341666,
-            "core_score": 9.09327213213391,
-            "role": "engine"
+            "build_around_score": 6.434027189207688,
+            "core_score": 9.093514642311629,
+            "role": "balanced"
           }
         ]
       },
@@ -1982,7 +1655,7 @@
         "average_taken_at": 6.464701249015416,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 16049.28845877894,
-        "analysis_score": 9.67517328674092,
+        "analysis_score": 9.675211807307313,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.934982744413645,
@@ -1990,17 +1663,19 @@
         "pick_urgency_score_raw": 5.464337282377202,
         "pick_urgency_score": 5.464337282377202,
         "shell_dependence_score_raw": 0.9882550355446212,
-        "shell_dependence_score": 2.2587545919576146,
+        "shell_dependence_score": 2.9665378563185665,
         "build_around_score_raw": 0.9882550355446212,
-        "build_around_score": 2.2587545919576146,
+        "build_around_score": 2.9665378563185665,
         "core_score_raw": 16071.821150769933,
-        "core_score": 9.506327519260354,
+        "core_score": 9.506384182780074,
+        "win_contribution_logit": -0.1416268716283445,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Acrobatic%20Cheerleader%22",
-        "community": 5,
-        "x": 673.7258300203048,
-        "y": 333.7258300203048,
+        "community": 8,
+        "x": 783.8985541686991,
+        "y": 815.7292302968854,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -2049,21 +1724,21 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.5149561418506432,
-            "analysis_score": 9.85124040504731,
+            "analysis_score": 9.851600966179285,
             "pick_priority_score": 0.0,
-            "build_around_score": 7.495963463422679,
-            "core_score": 9.77633162917587,
-            "role": "needs_support"
+            "build_around_score": 8.704498297419079,
+            "core_score": 9.776749578960944,
+            "role": "balanced"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.43332099982677413,
-            "analysis_score": 9.67517328674092,
+            "analysis_score": 9.675211807307313,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.2587545919576146,
-            "core_score": 9.506327519260354,
+            "build_around_score": 2.9665378563185665,
+            "core_score": 9.506384182780074,
             "role": "balanced"
           },
           {
@@ -2073,7 +1748,7 @@
             "deck_prevalence": 0.011770213431629876,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.7853539328864945,
+            "build_around_score": 4.805992047184981,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2100,8 +1775,8 @@
         "supported_win_rate": 0.5795292439372325,
         "support_delta": -0.016451352043363454,
         "standalone_delta": 0.012366842199568184,
-        "dependency_score": 0.08317535100573445,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 15828.844384264832,
         "signpost_lift": 2.832368927019065,
         "deck_prevalence": 0.4618469551455175,
@@ -2114,8 +1789,8 @@
         "alsa": 3.9880161781594845,
         "average_taken_at": 6.3811472360687445,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 15832.072898490875,
-        "analysis_score": 9.66459182112614,
+        "analysis_score_raw": 15830.575742172772,
+        "analysis_score": 9.664557486752459,
         "pick_priority_score_raw": 126.78383543193192,
         "pick_priority_score": 7.899334595192713,
         "pick_market_score_raw": 8.928055425496012,
@@ -2126,37 +1801,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 15855.076062433442,
-        "core_score": 9.490290249908252,
+        "core_score_raw": 15853.911607519361,
+        "core_score": 9.490261209930335,
+        "win_contribution_logit": 0.05284651624979878,
+        "contribution_score": 1.799015864609341,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Unsettling%20Twins%22",
-        "community": 0,
-        "x": 1260.177658865926,
-        "y": 608.4213179286435,
-        "analysis_radius": 14.674488957182689,
+        "community": 9,
+        "x": 676.4596562084666,
+        "y": 875.3773799111215,
+        "analysis_radius": 11.68017632097625,
         "pick_radius": 30.0,
-        "radius": 14.674488957182689,
-        "top_synergies": [
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.16990969512225595,
-            "pair_win_rate": 0.5834218916046758,
-            "pair_games": 1882,
-            "synergy_delta_logit": 0.07796511098225484,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.09830894030210481,
-            "pair_win_rate": 0.571304347826087,
-            "pair_games": 1150,
-            "synergy_delta_logit": 0.08984063440911388,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.68017632097625,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Midnight Mayhem",
@@ -2201,10 +1859,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.4618469551455175,
-            "analysis_score": 9.66459182112614,
+            "analysis_score": 9.664557486752459,
             "pick_priority_score": 7.899334595192713,
             "build_around_score": 0.0,
-            "core_score": 9.490290249908252,
+            "core_score": 9.490261209930335,
             "role": "balanced"
           },
           {
@@ -2212,22 +1870,22 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.38708744904245973,
-            "analysis_score": 9.243240168226055,
+            "analysis_score": 9.243404201084811,
             "pick_priority_score": 8.835287860685705,
-            "build_around_score": 3.833427116267281,
-            "core_score": 8.859219612489515,
-            "role": "engine"
+            "build_around_score": 4.212582641405413,
+            "core_score": 8.85938664900581,
+            "role": "balanced"
           },
           {
             "cluster_id": 6,
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.3733966930097201,
-            "analysis_score": 9.297324848551696,
+            "analysis_score": 9.29691484394773,
             "pick_priority_score": 9.415446122681029,
-            "build_around_score": 1.9855830750858514,
-            "core_score": 8.889091579241017,
-            "role": "engine"
+            "build_around_score": 1.5114198221431054,
+            "core_score": 8.888600031197265,
+            "role": "good_alone"
           }
         ]
       },
@@ -2252,8 +1910,8 @@
         "supported_win_rate": 0.5813020068526676,
         "support_delta": 0.018676420784348835,
         "standalone_delta": 0.011568130575968283,
-        "dependency_score": 0.051003987286727115,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 15288.21239687611,
         "signpost_lift": 2.2124607366550313,
         "deck_prevalence": 0.5499268534176278,
@@ -2266,40 +1924,32 @@
         "alsa": 2.347282676934667,
         "average_taken_at": 3.0216003470930954,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 15290.750006927907,
-        "analysis_score": 9.63757678375672,
+        "analysis_score_raw": 15289.831935156746,
+        "analysis_score": 9.637570730063977,
         "pick_priority_score_raw": 159.33153458139657,
         "pick_priority_score": 8.268873291996675,
         "pick_market_score_raw": 9.99572151272789,
         "pick_market_score": 9.99572151272789,
         "pick_urgency_score_raw": 9.489865086201627,
         "pick_urgency_score": 9.489865086201627,
-        "shell_dependence_score_raw": 3.3040195451031584,
-        "shell_dependence_score": 4.796985653503198,
-        "build_around_score_raw": 3.3040195451031584,
-        "build_around_score": 4.796985653503198,
-        "core_score_raw": 15318.505940174799,
-        "core_score": 9.449625958272891,
+        "shell_dependence_score_raw": 2.744165928569454,
+        "shell_dependence_score": 5.698621819444716,
+        "build_around_score_raw": 2.744165928569454,
+        "build_around_score": 5.698621819444716,
+        "core_score_raw": 15317.791884352784,
+        "core_score": 9.449631248075754,
+        "win_contribution_logit": 0.05345756280393376,
+        "contribution_score": 1.819284867706515,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Scorching%20Dragonfire%22",
-        "community": 1,
-        "x": 1004.1047063219083,
-        "y": 782.1993929138066,
-        "analysis_radius": 13.472390724000432,
+        "community": 10,
+        "x": 645.0270191257287,
+        "y": 758.5428716952257,
+        "analysis_radius": 11.636247181678256,
         "pick_radius": 30.0,
-        "radius": 13.472390724000432,
-        "top_synergies": [
-          {
-            "card": "Razorkin Hordecaller",
-            "quality_score": 0.21082307443386192,
-            "pair_win_rate": 0.6234446627373936,
-            "pair_games": 1527,
-            "synergy_delta_logit": 0.051003987286727115,
-            "partner_pick_score": 8.962040210909661,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.636247181678256,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Jump Scare",
@@ -2344,10 +1994,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5922772743957804,
-            "analysis_score": 9.75226580219395,
+            "analysis_score": 9.752304675083225,
             "pick_priority_score": 8.947599872496736,
-            "build_around_score": 6.464424174545283,
-            "core_score": 9.608254971973496,
+            "build_around_score": 7.096238421274635,
+            "core_score": 9.608302116601822,
             "role": "good_alone"
           },
           {
@@ -2355,10 +2005,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5499268534176278,
-            "analysis_score": 9.63757678375672,
+            "analysis_score": 9.637570730063977,
             "pick_priority_score": 8.268873291996675,
-            "build_around_score": 4.796985653503198,
-            "core_score": 9.449625958272891,
+            "build_around_score": 5.698621819444716,
+            "core_score": 9.449631248075754,
             "role": "balanced"
           },
           {
@@ -2366,22 +2016,22 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.536472866792192,
-            "analysis_score": 9.574022155989349,
+            "analysis_score": 9.574013633611049,
             "pick_priority_score": 8.234553989057517,
-            "build_around_score": 8.239974539340885,
-            "core_score": 9.304983757901061,
-            "role": "engine"
+            "build_around_score": 7.905284368422596,
+            "core_score": 9.304969693093387,
+            "role": "balanced"
           },
           {
             "cluster_id": 4,
             "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
             "color_name": "Izzet Spirit",
             "deck_prevalence": 0.52459191433289,
-            "analysis_score": 9.601573735539898,
+            "analysis_score": 9.602552763945504,
             "pick_priority_score": 9.392834430908689,
-            "build_around_score": 4.3525243810978775,
-            "core_score": 9.353390852322505,
-            "role": "balanced"
+            "build_around_score": 5.954597286487723,
+            "core_score": 9.35459333393027,
+            "role": "good_alone"
           }
         ]
       },
@@ -2406,8 +2056,8 @@
         "supported_win_rate": 0.5463419002417839,
         "support_delta": 0.015387020913347316,
         "standalone_delta": -0.023329961591502357,
-        "dependency_score": 0.05869058194646823,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 13727.205988278532,
         "signpost_lift": 3.5977045968189407,
         "deck_prevalence": 0.34466825093344894,
@@ -2420,49 +2070,32 @@
         "alsa": 4.421433042782971,
         "average_taken_at": 7.933451801488578,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 13728.26241875357,
-        "analysis_score": 9.553874664566813,
+        "analysis_score_raw": 13727.205988278532,
+        "analysis_score": 9.55386003760224,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.388167790042955,
         "pick_market_score": 8.388167790042955,
         "pick_urgency_score_raw": 4.629201715701967,
         "pick_urgency_score": 4.629201715701967,
-        "shell_dependence_score_raw": 2.9465239668394116,
-        "shell_dependence_score": 4.5119890017541335,
-        "build_around_score_raw": 2.9465239668394116,
-        "build_around_score": 4.5119890017541335,
-        "core_score_raw": 13745.950405474323,
-        "core_score": 9.321688835323933,
+        "shell_dependence_score_raw": 2.386308604120602,
+        "shell_dependence_score": 5.2649941621132,
+        "build_around_score_raw": 2.386308604120602,
+        "build_around_score": 5.2649941621132,
+        "core_score_raw": 13745.128737327072,
+        "core_score": 9.321686886929083,
+        "win_contribution_logit": -0.09597439890125949,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Hardened%20Escort%22",
-        "community": 1,
-        "x": 1192.9673137639713,
-        "y": 851.4621151510133,
-        "analysis_radius": 13.112860950072857,
+        "community": 11,
+        "x": 534.8957807871795,
+        "y": 708.838638394374,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.112860950072857,
-        "top_synergies": [
-          {
-            "card": "Vicious Clown",
-            "quality_score": 0.07315870913805696,
-            "pair_win_rate": 0.5336109458655562,
-            "pair_games": 1681,
-            "synergy_delta_logit": 0.06204853252860157,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Fear of Surveillance",
-            "quality_score": 0.058741876590745985,
-            "pair_win_rate": 0.5398293029871978,
-            "pair_games": 1406,
-            "synergy_delta_logit": 0.05501889625676776,
-            "partner_pick_score": 5.981877346182983,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Toby, Beastie Befriender",
@@ -2507,10 +2140,10 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.39710469175336366,
-            "analysis_score": 9.667087641961368,
+            "analysis_score": 9.667454197299264,
             "pick_priority_score": 5.677446155591847,
-            "build_around_score": 8.37478632222924,
-            "core_score": 9.497818664508003,
+            "build_around_score": 10.0,
+            "core_score": 9.49823713108344,
             "role": "balanced"
           },
           {
@@ -2518,10 +2151,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.34466825093344894,
-            "analysis_score": 9.553874664566813,
+            "analysis_score": 9.55386003760224,
             "pick_priority_score": 0.0,
-            "build_around_score": 4.5119890017541335,
-            "core_score": 9.321688835323933,
+            "build_around_score": 5.2649941621132,
+            "core_score": 9.321686886929083,
             "role": "balanced"
           }
         ]
@@ -2547,8 +2180,8 @@
         "supported_win_rate": 0.5558443289350926,
         "support_delta": 0.05108997077344446,
         "standalone_delta": -0.016580981431622566,
-        "dependency_score": 0.423380829090379,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 13538.32478936884,
         "signpost_lift": 2.5782713109005524,
         "deck_prevalence": 0.4293165978926343,
@@ -2561,76 +2194,32 @@
         "alsa": 4.415845720238378,
         "average_taken_at": 7.312376756497486,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 13545.945644292467,
-        "analysis_score": 9.543493134259009,
+        "analysis_score_raw": 13538.32478936884,
+        "analysis_score": 9.543101865587385,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.54691830484078,
         "pick_market_score": 8.54691830484078,
         "pick_urgency_score_raw": 4.87165704739319,
         "pick_urgency_score": 4.87165704739319,
-        "shell_dependence_score_raw": 21.6463130439266,
-        "shell_dependence_score": 10.0,
-        "build_around_score_raw": 21.6463130439266,
-        "build_around_score": 10.0,
-        "core_score_raw": 13566.576584066523,
-        "core_score": 9.30617461246271,
-        "is_build_around": true,
-        "role": "needs_support",
+        "shell_dependence_score_raw": 8.036430541528418,
+        "shell_dependence_score": 9.501729385210261,
+        "build_around_score_raw": 8.036430541528418,
+        "build_around_score": 9.501729385210261,
+        "core_score_raw": 13560.649252459258,
+        "core_score": 9.305728149508138,
+        "win_contribution_logit": -0.08031934290546663,
+        "contribution_score": 0.0,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Hand%20That%20Feeds%22",
-        "community": 0,
-        "x": 1283.7881522064883,
-        "y": 551.304711758444,
-        "analysis_radius": 26.241709847253645,
+        "community": 12,
+        "x": 586.921230690038,
+        "y": 599.9359296620306,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 26.241709847253645,
-        "top_synergies": [
-          {
-            "card": "Unsettling Twins",
-            "quality_score": 0.16990969512225595,
-            "pair_win_rate": 0.5834218916046758,
-            "pair_games": 1882,
-            "synergy_delta_logit": 0.07796511098225484,
-            "partner_pick_score": 7.899334595192713,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Turn Inside Out",
-            "quality_score": 0.1189743207489671,
-            "pair_win_rate": 0.5722585330428468,
-            "pair_games": 2754,
-            "synergy_delta_logit": 0.05614004627737956,
-            "partner_pick_score": 7.655933843761632,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Unidentified Hovership",
-            "quality_score": 0.10043353654471471,
-            "pair_win_rate": 0.6183431952662722,
-            "pair_games": 338,
-            "synergy_delta_logit": 0.057657788669769006,
-            "partner_pick_score": 9.077333858615644,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Ragged Playmate",
-            "quality_score": 0.08133796840323769,
-            "pair_win_rate": 0.5504587155963303,
-            "pair_games": 2507,
-            "synergy_delta_logit": 0.052118121472563894,
-            "partner_pick_score": 5.331265974689417,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.054344527317310175,
-            "pair_win_rate": 0.5344506517690876,
-            "pair_games": 1074,
-            "synergy_delta_logit": 0.05859018402030017,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Vicious Clown",
@@ -2675,10 +2264,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5473612945307564,
-            "analysis_score": 9.861289701631657,
+            "analysis_score": 9.861277089312757,
             "pick_priority_score": 0.0,
             "build_around_score": 10.0,
-            "core_score": 9.780623974758681,
+            "core_score": 9.780608081170072,
             "role": "balanced"
           },
           {
@@ -2686,21 +2275,21 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.4293165978926343,
-            "analysis_score": 9.543493134259009,
+            "analysis_score": 9.543101865587385,
             "pick_priority_score": 0.0,
-            "build_around_score": 10.0,
-            "core_score": 9.30617461246271,
-            "role": "needs_support"
+            "build_around_score": 9.501729385210261,
+            "core_score": 9.305728149508138,
+            "role": "balanced"
           },
           {
             "cluster_id": 2,
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.420550585838783,
-            "analysis_score": 9.508125263495648,
+            "analysis_score": 9.508121131912002,
             "pick_priority_score": 6.3005121011365235,
-            "build_around_score": 8.455536450444114,
-            "core_score": 9.196975579939423,
+            "build_around_score": 8.252047561692091,
+            "core_score": 9.196966511307625,
             "role": "balanced"
           }
         ]
@@ -2726,8 +2315,8 @@
         "supported_win_rate": 0.5390284757118928,
         "support_delta": 0.03592288564978108,
         "standalone_delta": -0.03184357704305685,
-        "dependency_score": 0.07898995980516771,
-        "degree": 10,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 12881.60897141559,
         "signpost_lift": 4.361621746160167,
         "deck_prevalence": 0.29587151611708307,
@@ -2740,76 +2329,32 @@
         "alsa": 3.9136168034204593,
         "average_taken_at": 6.277957974897758,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 12883.030790692083,
-        "analysis_score": 9.50453053632924,
+        "analysis_score_raw": 12881.60897141559,
+        "analysis_score": 9.504492652370821,
         "pick_priority_score_raw": 12.259357547494254,
         "pick_priority_score": 4.209485896817385,
         "pick_market_score_raw": 8.979114208550513,
         "pick_market_score": 8.979114208550513,
         "pick_urgency_score_raw": 6.756315779405839,
         "pick_urgency_score": 6.756315779405839,
-        "shell_dependence_score_raw": 7.180365531805546,
-        "shell_dependence_score": 6.907612511622728,
-        "build_around_score_raw": 7.180365531805546,
-        "build_around_score": 6.907612511622728,
-        "core_score_raw": 12898.10014969095,
-        "core_score": 9.246493422934346,
-        "is_build_around": true,
+        "shell_dependence_score_raw": 5.45637132517498,
+        "shell_dependence_score": 8.050540136165793,
+        "build_around_score_raw": 5.45637132517498,
+        "build_around_score": 8.050540136165793,
+        "core_score_raw": 12896.994290253679,
+        "core_score": 9.246465691452096,
+        "win_contribution_logit": -0.1411871398529641,
+        "contribution_score": 0.0,
+        "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Norin%2C%20Swift%20Survivalist%22",
-        "community": 0,
-        "x": 1188.2873755844935,
-        "y": 574.480092770137,
-        "analysis_radius": 13.843638552986038,
+        "community": 13,
+        "x": 507.37300753770023,
+        "y": 509.0245155285951,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.843638552986038,
-        "top_synergies": [
-          {
-            "card": "Sheltered by Ghosts",
-            "quality_score": 0.1431704842375192,
-            "pair_win_rate": 0.6264367816091954,
-            "pair_games": 522,
-            "synergy_delta_logit": 0.05864062328690439,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Vicious Clown",
-            "quality_score": 0.13163830643059124,
-            "pair_win_rate": 0.5397260273972603,
-            "pair_games": 1460,
-            "synergy_delta_logit": 0.12092587995997789,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Arabella, Abandoned Doll",
-            "quality_score": 0.11567212577944523,
-            "pair_win_rate": 0.5815176558978212,
-            "pair_games": 1331,
-            "synergy_delta_logit": 0.06786360998694402,
-            "partner_pick_score": 9.791986955567625,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Clockwork Percussionist",
-            "quality_score": 0.10738704836890185,
-            "pair_win_rate": 0.548923076923077,
-            "pair_games": 1625,
-            "synergy_delta_logit": 0.093589955516343,
-            "partner_pick_score": 6.916408530338493,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Unsettling Twins",
-            "quality_score": 0.09830894030210481,
-            "pair_win_rate": 0.571304347826087,
-            "pair_games": 1150,
-            "synergy_delta_logit": 0.08984063440911388,
-            "partner_pick_score": 7.899334595192713,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Acrobatic Cheerleader",
@@ -2854,10 +2399,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.29587151611708307,
-            "analysis_score": 9.50453053632924,
+            "analysis_score": 9.504492652370821,
             "pick_priority_score": 4.209485896817385,
-            "build_around_score": 6.907612511622728,
-            "core_score": 9.246493422934346,
+            "build_around_score": 8.050540136165793,
+            "core_score": 9.246465691452096,
             "role": "balanced"
           }
         ]
@@ -2883,8 +2428,8 @@
         "supported_win_rate": 0.5494675701839303,
         "support_delta": -0.0021019365425271053,
         "standalone_delta": -0.018827328562204038,
-        "dependency_score": 0.07130564379474297,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 12831.858005748416,
         "signpost_lift": 2.311665873394448,
         "deck_prevalence": 0.4497111283128114,
@@ -2897,8 +2442,8 @@
         "alsa": 3.0923827146216416,
         "average_taken_at": 4.691234859020094,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 12833.14150733672,
-        "analysis_score": 9.501517669174376,
+        "analysis_score_raw": 12831.858005748416,
+        "analysis_score": 9.50148798597155,
         "pick_priority_score_raw": 38.369256776160086,
         "pick_priority_score": 5.981877346182983,
         "pick_market_score_raw": 9.62197777117441,
@@ -2909,64 +2454,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 12856.241263433809,
-        "core_score": 9.242654032449375,
+        "core_score_raw": 12855.242984420682,
+        "core_score": 9.242636104281914,
+        "win_contribution_logit": -0.10515619020773623,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fear%20of%20Surveillance%22",
-        "community": 1,
-        "x": 1161.4154448578247,
-        "y": 751.9289136459842,
-        "analysis_radius": 13.567003176610747,
+        "community": 14,
+        "x": 607.8799152163747,
+        "y": 442.44646357231653,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.567003176610747,
-        "top_synergies": [
-          {
-            "card": "Friendly Ghost",
-            "quality_score": 0.18670800445828356,
-            "pair_win_rate": 0.5825179386823223,
-            "pair_games": 1533,
-            "synergy_delta_logit": 0.09820648959628292,
-            "partner_pick_score": 7.1029832956661245,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Painter's Studio // Defaced Gallery",
-            "quality_score": 0.14181926359493563,
-            "pair_win_rate": 0.6003568242640499,
-            "pair_games": 1121,
-            "synergy_delta_logit": 0.0582634822301043,
-            "partner_pick_score": 9.422311826688441,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Razorkin Hordecaller",
-            "quality_score": 0.12056853089953307,
-            "pair_win_rate": 0.5950044603033007,
-            "pair_games": 1121,
-            "synergy_delta_logit": 0.055204192614809466,
-            "partner_pick_score": 8.962040210909661,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Jump Scare",
-            "quality_score": 0.10190950700750627,
-            "pair_win_rate": 0.5676880222841225,
-            "pair_games": 1795,
-            "synergy_delta_logit": 0.08389083754825938,
-            "partner_pick_score": 3.94026267949475,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hardened Escort",
-            "quality_score": 0.058741876590745985,
-            "pair_win_rate": 0.5398293029871978,
-            "pair_games": 1406,
-            "synergy_delta_logit": 0.05501889625676776,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Irreverent Gremlin",
@@ -3011,10 +2512,10 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.4983041489937218,
-            "analysis_score": 9.844474529394171,
+            "analysis_score": 9.844536191702701,
             "pick_priority_score": 5.515707801995682,
-            "build_around_score": 8.566584796130154,
-            "core_score": 9.749002627531448,
+            "build_around_score": 9.927007901924641,
+            "core_score": 9.749079644929521,
             "role": "needs_support"
           },
           {
@@ -3022,10 +2523,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.4497111283128114,
-            "analysis_score": 9.501517669174376,
+            "analysis_score": 9.50148798597155,
             "pick_priority_score": 5.981877346182983,
             "build_around_score": 0.0,
-            "core_score": 9.242654032449375,
+            "core_score": 9.242636104281914,
             "role": "balanced"
           },
           {
@@ -3033,11 +2534,11 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.4105118035768065,
-            "analysis_score": 9.18172249671359,
+            "analysis_score": 9.18181721371172,
             "pick_priority_score": 6.308593957899017,
-            "build_around_score": 4.562554887213027,
-            "core_score": 8.767458983598818,
-            "role": "needs_support"
+            "build_around_score": 5.009910453639955,
+            "core_score": 8.767543269076544,
+            "role": "balanced"
           }
         ]
       },
@@ -3062,8 +2563,8 @@
         "supported_win_rate": 0.5729942632074664,
         "support_delta": 0.0166939951109516,
         "standalone_delta": 0.0035299769174390594,
-        "dependency_score": 0.09634469796487286,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 12406.574115173653,
         "signpost_lift": 3.0037336213414774,
         "deck_prevalence": 0.35131244709955173,
@@ -3076,49 +2577,32 @@
         "alsa": 2.5013120022194224,
         "average_taken_at": 3.2288893901797127,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 12408.80251650546,
-        "analysis_score": 9.475407546350858,
+        "analysis_score_raw": 12407.068311942094,
+        "analysis_score": 9.475348423868535,
         "pick_priority_score_raw": 120.7491282345887,
         "pick_priority_score": 7.820546375735768,
         "pick_market_score_raw": 9.954496115291992,
         "pick_market_score": 9.954496115291992,
         "pick_urgency_score_raw": 9.296480285387265,
         "pick_urgency_score": 9.296480285387265,
-        "shell_dependence_score_raw": 3.219022279264448,
-        "shell_dependence_score": 4.7314308739401545,
-        "build_around_score_raw": 3.219022279264448,
-        "build_around_score": 4.7314308739401545,
-        "core_score_raw": 12426.49123623232,
-        "core_score": 9.202497354240375,
+        "shell_dependence_score_raw": 2.3235683252692154,
+        "shell_dependence_score": 5.18426972581596,
+        "build_around_score_raw": 2.3235683252692154,
+        "build_around_score": 5.18426972581596,
+        "core_score_raw": 12425.14241046081,
+        "core_score": 9.202445541837283,
+        "win_contribution_logit": 0.004393268857129974,
+        "contribution_score": 0.15313860548562008,
         "is_build_around": false,
-        "role": "needs_support",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Irreverent%20Gremlin%22",
-        "community": 0,
-        "x": 1103.3337556349381,
-        "y": 541.294915570761,
-        "analysis_radius": 14.662557857194571,
+        "community": 15,
+        "x": 582.7216203848816,
+        "y": 324.43218445134937,
+        "analysis_radius": 11.194148730459148,
         "pick_radius": 30.0,
-        "radius": 14.662557857194571,
-        "top_synergies": [
-          {
-            "card": "Toby, Beastie Befriender",
-            "quality_score": 0.12050345349356831,
-            "pair_win_rate": 0.6389891696750902,
-            "pair_games": 277,
-            "synergy_delta_logit": 0.05983780658658833,
-            "partner_pick_score": 9.351974490717069,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.09789980428981139,
-            "pair_win_rate": 0.5691937424789411,
-            "pair_games": 831,
-            "synergy_delta_logit": 0.11742196152940187,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.194148730459148,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Glassworks // Shattered Yard",
@@ -3163,11 +2647,11 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.35131244709955173,
-            "analysis_score": 9.475407546350858,
+            "analysis_score": 9.475348423868535,
             "pick_priority_score": 7.820546375735768,
-            "build_around_score": 4.7314308739401545,
-            "core_score": 9.202497354240375,
-            "role": "needs_support"
+            "build_around_score": 5.18426972581596,
+            "core_score": 9.202445541837283,
+            "role": "balanced"
           }
         ]
       },
@@ -3192,8 +2676,8 @@
         "supported_win_rate": 0.5800696627304393,
         "support_delta": 0.03436070750655862,
         "standalone_delta": 0.00873961362109954,
-        "dependency_score": 0.106000253969782,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 12333.609114501449,
         "signpost_lift": 3.0280056572258123,
         "deck_prevalence": 0.3473519194556018,
@@ -3206,58 +2690,32 @@
         "alsa": 4.500718060368178,
         "average_taken_at": 7.874032247391755,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 12336.74066497986,
-        "analysis_score": 9.470884960418754,
+        "analysis_score_raw": 12334.832660408403,
+        "analysis_score": 9.470814509868754,
         "pick_priority_score_raw": 77.36405742787863,
         "pick_priority_score": 7.1029832956661245,
         "pick_market_score_raw": 8.373484818911368,
         "pick_market_score": 8.373484818911368,
         "pick_urgency_score_raw": 6.673099227622052,
         "pick_urgency_score": 6.673099227622052,
-        "shell_dependence_score_raw": 6.357454203132163,
-        "shell_dependence_score": 6.559155551945751,
-        "build_around_score_raw": 6.357454203132163,
-        "build_around_score": 6.559155551945751,
-        "core_score_raw": 12353.89828502651,
-        "core_score": 9.19557727731392,
-        "is_build_around": true,
-        "role": "needs_support",
+        "shell_dependence_score_raw": 4.464501171164751,
+        "shell_dependence_score": 7.330573324026015,
+        "build_around_score_raw": 4.464501171164751,
+        "build_around_score": 7.330573324026015,
+        "core_score_raw": 12352.414281470932,
+        "core_score": 9.195512236319878,
+        "win_contribution_logit": 0.034361607807475145,
+        "contribution_score": 1.180227628753867,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Friendly%20Ghost%22",
-        "community": 2,
-        "x": 910.986199815321,
-        "y": 828.4094940313284,
-        "analysis_radius": 15.296687892072626,
+        "community": 16,
+        "x": 702.7395104491135,
+        "y": 313.99269623969263,
+        "analysis_radius": 11.480678749160475,
         "pick_radius": 30.0,
-        "radius": 15.296687892072626,
-        "top_synergies": [
-          {
-            "card": "Sheltered by Ghosts",
-            "quality_score": 0.7840209681026009,
-            "pair_win_rate": 0.685672514619883,
-            "pair_games": 684,
-            "synergy_delta_logit": 0.15708498317844266,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Most Valuable Slayer",
-            "quality_score": 0.2095248486327628,
-            "pair_win_rate": 0.5932721712538226,
-            "pair_games": 1635,
-            "synergy_delta_logit": 0.08050545637766438,
-            "partner_pick_score": 4.785732728454327,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Fear of Surveillance",
-            "quality_score": 0.18670800445828356,
-            "pair_win_rate": 0.5825179386823223,
-            "pair_games": 1533,
-            "synergy_delta_logit": 0.09820648959628292,
-            "partner_pick_score": 5.981877346182983,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.480678749160475,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Norin, Swift Survivalist",
@@ -3302,22 +2760,22 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.3884756790184154,
-            "analysis_score": 9.525533811101432,
+            "analysis_score": 9.52578214630814,
             "pick_priority_score": 8.778945917887205,
-            "build_around_score": 2.9087236492499864,
-            "core_score": 9.284201823817963,
-            "role": "engine"
+            "build_around_score": 3.054055643851163,
+            "core_score": 9.284476906232927,
+            "role": "balanced"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.3473519194556018,
-            "analysis_score": 9.470884960418754,
+            "analysis_score": 9.470814509868754,
             "pick_priority_score": 7.1029832956661245,
-            "build_around_score": 6.559155551945751,
-            "core_score": 9.19557727731392,
-            "role": "needs_support"
+            "build_around_score": 7.330573324026015,
+            "core_score": 9.195512236319878,
+            "role": "balanced"
           }
         ]
       },
@@ -3342,8 +2800,8 @@
         "supported_win_rate": 0.5804388641164046,
         "support_delta": 0.029004294487293247,
         "standalone_delta": 0.009733229018144884,
-        "dependency_score": 0.059184550038031865,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 11989.465694369308,
         "signpost_lift": 2.0530734729153175,
         "deck_prevalence": 0.47582151688390867,
@@ -3356,40 +2814,32 @@
         "alsa": 2.6800801492434188,
         "average_taken_at": 3.673850526102108,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 11991.893668332534,
-        "analysis_score": 9.448870179192292,
+        "analysis_score_raw": 11990.828346431848,
+        "analysis_score": 9.448852043933005,
         "pick_priority_score_raw": 114.6639613094926,
         "pick_priority_score": 7.73704160548906,
         "pick_market_score_raw": 9.864944808322193,
         "pick_market_score": 9.864944808322193,
         "pick_urgency_score_raw": 9.13541871976162,
         "pick_urgency_score": 9.13541871976162,
-        "shell_dependence_score_raw": 4.820062957763251,
-        "shell_dependence_score": 5.788762056661658,
-        "build_around_score_raw": 4.820062957763251,
-        "build_around_score": 5.788762056661658,
-        "core_score_raw": 12015.864321414347,
-        "core_score": 9.162808543829255,
+        "shell_dependence_score_raw": 3.897399592872889,
+        "shell_dependence_score": 6.857622396766843,
+        "build_around_score_raw": 3.897399592872889,
+        "build_around_score": 6.857622396766843,
+        "core_score_raw": 12015.035737713813,
+        "core_score": 9.162806066419995,
+        "win_contribution_logit": 0.04479079566451613,
+        "contribution_score": 1.5306944863028598,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Glassworks%20//%20Shattered%20Yard%22",
-        "community": 0,
-        "x": 1117.3030476658296,
-        "y": 667.2687854017573,
-        "analysis_radius": 13.665971397367116,
+        "community": 17,
+        "x": 747.244329704466,
+        "y": 202.08515601207873,
+        "analysis_radius": 11.535327595997968,
         "pick_radius": 30.0,
-        "radius": 13.665971397367116,
-        "top_synergies": [
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.05722301079857018,
-            "pair_win_rate": 0.5611205432937182,
-            "pair_games": 1178,
-            "synergy_delta_logit": 0.05918455003803186,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.535327595997968,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Irreverent Gremlin",
@@ -3434,21 +2884,21 @@
             "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
             "color_name": "Izzet Spirit",
             "deck_prevalence": 0.632121980592565,
-            "analysis_score": 9.883130511438388,
+            "analysis_score": 9.884165756925627,
             "pick_priority_score": 9.579655905591212,
-            "build_around_score": 5.022483344113277,
-            "core_score": 9.811128758614341,
-            "role": "engine"
+            "build_around_score": 6.810156715081854,
+            "core_score": 9.812427742817286,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.49913413908258913,
-            "analysis_score": 9.56825057710868,
+            "analysis_score": 9.568194192543915,
             "pick_priority_score": 7.939326954598311,
-            "build_around_score": 9.608933467050683,
-            "core_score": 9.316880081530936,
+            "build_around_score": 9.558178119886174,
+            "core_score": 9.316809575806538,
             "role": "balanced"
           },
           {
@@ -3456,21 +2906,21 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.48387124328927544,
-            "analysis_score": 9.480715787076665,
+            "analysis_score": 9.480699404468822,
             "pick_priority_score": 9.493528545379187,
-            "build_around_score": 6.627024052793511,
-            "core_score": 9.152357845662989,
-            "role": "engine"
+            "build_around_score": 6.281214822895537,
+            "core_score": 9.152333048815784,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.47582151688390867,
-            "analysis_score": 9.448870179192292,
+            "analysis_score": 9.448852043933005,
             "pick_priority_score": 7.73704160548906,
-            "build_around_score": 5.788762056661658,
-            "core_score": 9.162808543829255,
+            "build_around_score": 6.857622396766843,
+            "core_score": 9.162806066419995,
             "role": "balanced"
           }
         ]
@@ -3496,8 +2946,8 @@
         "supported_win_rate": 0.6389413988657845,
         "support_delta": -0.052960009584919754,
         "standalone_delta": 0.07425184512190042,
-        "dependency_score": 0.10555038001542115,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 5714.184716356426,
         "signpost_lift": 2.139926233954036,
         "deck_prevalence": 0.2292329436004476,
@@ -3510,8 +2960,8 @@
         "alsa": 1.095393528025767,
         "average_taken_at": 1.2769662420949497,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5726.479881513769,
-        "analysis_score": 8.874952722901645,
+        "analysis_score_raw": 5724.579974673492,
+        "analysis_score": 8.87477719719747,
         "pick_priority_score_raw": 483.3281968575088,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
@@ -3522,46 +2972,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 5733.893941579227,
-        "core_score": 8.289015565517312,
+        "core_score_raw": 5732.416236259011,
+        "core_score": 8.28884688249653,
+        "win_contribution_logit": 0.3380734200644076,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Sheltered%20by%20Ghosts%22",
-        "community": 2,
-        "x": 919.6729679983174,
-        "y": 783.5752026759135,
-        "analysis_radius": 18.883665162259685,
+        "community": 18,
+        "x": 856.7890005765868,
+        "y": 249.9878297384644,
+        "analysis_radius": 15.083851481704523,
         "pick_radius": 30.0,
-        "radius": 18.883665162259685,
-        "top_synergies": [
-          {
-            "card": "Friendly Ghost",
-            "quality_score": 0.7840209681026009,
-            "pair_win_rate": 0.685672514619883,
-            "pair_games": 684,
-            "synergy_delta_logit": 0.15708498317844266,
-            "partner_pick_score": 7.1029832956661245,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Painter's Studio // Defaced Gallery",
-            "quality_score": 0.4538713905056643,
-            "pair_win_rate": 0.6964912280701754,
-            "pair_games": 570,
-            "synergy_delta_logit": 0.09398822897609804,
-            "partner_pick_score": 9.422311826688441,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Norin, Swift Survivalist",
-            "quality_score": 0.1431704842375192,
-            "pair_win_rate": 0.6264367816091954,
-            "pair_games": 522,
-            "synergy_delta_logit": 0.05864062328690439,
-            "partner_pick_score": 4.209485896817385,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 15.083851481704523,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Midnight Mayhem",
@@ -3606,33 +3030,33 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.24620513926317505,
-            "analysis_score": 9.315937659051075,
+            "analysis_score": 9.315806182304469,
             "pick_priority_score": 9.973066590183965,
-            "build_around_score": 1.5609008417237156,
-            "core_score": 8.894341352148542,
-            "role": "engine"
+            "build_around_score": 1.1648133337623525,
+            "core_score": 8.894174445139122,
+            "role": "good_alone"
           },
           {
             "cluster_id": 10,
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.2340768541338227,
-            "analysis_score": 8.66662510917103,
+            "analysis_score": 8.666199580211577,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 7.985791449753471,
-            "role": "engine"
+            "core_score": 7.985246591586026,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.2292329436004476,
-            "analysis_score": 8.874952722901645,
+            "analysis_score": 8.87477719719747,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 8.289015565517312,
-            "role": "engine"
+            "core_score": 8.28884688249653,
+            "role": "good_alone"
           }
         ]
       },
@@ -3657,8 +3081,8 @@
         "supported_win_rate": 0.6875,
         "support_delta": -0.10689252336448596,
         "standalone_delta": 0.12747898461677165,
-        "dependency_score": 0.11360303092505042,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 682.1210765176139,
         "signpost_lift": 1.6775843436519384,
         "deck_prevalence": 0.04164132482646145,
@@ -3671,8 +3095,8 @@
         "alsa": 0.20873427091043673,
         "average_taken_at": 0.1915127528583993,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 702.0129889206128,
-        "analysis_score": 7.245970103260251,
+        "analysis_score_raw": 699.9681343639619,
+        "analysis_score": 7.243878947980572,
         "pick_priority_score_raw": 336.0654421761711,
         "pick_priority_score": 9.478988232790515,
         "pick_market_score_raw": 10.0,
@@ -3683,28 +3107,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 696.7125815339662,
-        "core_score": 5.80076885117804,
+        "core_score_raw": 695.1221391010155,
+        "core_score": 5.798370615907681,
+        "win_contribution_logit": 0.5697567604094709,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Overlord%20of%20the%20Mistmoors%22",
-        "community": 4,
-        "x": 687.5,
-        "y": 454.1233847380292,
-        "analysis_radius": 22.101053267224255,
+        "community": 19,
+        "x": 945.9702956049007,
+        "y": 174.90138141970564,
+        "analysis_radius": 18.01134415392244,
         "pick_radius": 30.0,
-        "radius": 22.101053267224255,
-        "top_synergies": [
-          {
-            "card": "Arabella, Abandoned Doll",
-            "quality_score": 0.356886226363753,
-            "pair_win_rate": 0.7419354838709677,
-            "pair_games": 155,
-            "synergy_delta_logit": 0.11360303092505042,
-            "partner_pick_score": 9.791986955567625,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 18.01134415392244,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Turn Inside Out",
@@ -3749,10 +3165,10 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.048578917269439637,
-            "analysis_score": 7.061922198372466,
+            "analysis_score": 7.062333790552349,
             "pick_priority_score": 9.997330918771604,
             "build_around_score": 0.0,
-            "core_score": 5.540079740879329,
+            "core_score": 5.540458391857978,
             "role": "good_alone"
           },
           {
@@ -3760,22 +3176,22 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.04663750398513529,
-            "analysis_score": 8.113085555472638,
+            "analysis_score": 8.111868348680762,
             "pick_priority_score": 9.726155875849027,
             "build_around_score": 0.0,
-            "core_score": 6.94370835021287,
-            "role": "engine"
+            "core_score": 6.942164939817445,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.04164132482646145,
-            "analysis_score": 7.245970103260251,
+            "analysis_score": 7.243878947980572,
             "pick_priority_score": 9.478988232790515,
             "build_around_score": 0.0,
-            "core_score": 5.80076885117804,
-            "role": "engine"
+            "core_score": 5.798370615907681,
+            "role": "good_alone"
           }
         ]
       },
@@ -3800,8 +3216,8 @@
         "supported_win_rate": 0.6097048629345657,
         "support_delta": 0.06927359608820449,
         "standalone_delta": 0.036234507717164854,
-        "dependency_score": 0.10287702578160399,
-        "degree": 7,
+        "dependency_score": 0.32289817770854023,
+        "degree": 1,
         "signpost_score": 9407.785691614094,
         "signpost_lift": 2.676390864246862,
         "deck_prevalence": 0.295397311654028,
@@ -3814,29 +3230,31 @@
         "alsa": 2.8624804441854046,
         "average_taken_at": 3.7628570321280472,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9414.710309158565,
-        "analysis_score": 9.260990245331392,
+        "analysis_score_raw": 9418.67068989325,
+        "analysis_score": 9.261377876243879,
         "pick_priority_score_raw": 324.53719398019683,
         "pick_priority_score": 9.422311826688441,
         "pick_market_score_raw": 9.846851048228078,
         "pick_market_score": 9.846851048228078,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 7.861965767055291,
-        "shell_dependence_score": 7.170646624917123,
-        "build_around_score_raw": 7.861965767055291,
-        "build_around_score": 7.170646624917123,
-        "core_score_raw": 9427.666563337005,
-        "core_score": 8.876297714306085,
+        "shell_dependence_score_raw": 12.76395325305337,
+        "shell_dependence_score": 10.0,
+        "build_around_score_raw": 12.76395325305337,
+        "build_around_score": 10.0,
+        "core_score_raw": 9430.746859463983,
+        "core_score": 8.876781091368251,
+        "win_contribution_logit": 0.1517873093103665,
+        "contribution_score": 4.936704830562441,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Painter%27s%20Studio%20//%20Defaced%20Gallery%22",
-        "community": 3,
-        "x": 685.9750768348304,
-        "y": 791.8618211588134,
-        "analysis_radius": 16.69647085258181,
+        "community": 0,
+        "x": 1287.3454396480872,
+        "y": 655.7801310750597,
+        "analysis_radius": 24.617232321951516,
         "pick_radius": 30.0,
-        "radius": 16.69647085258181,
+        "radius": 24.617232321951516,
         "top_synergies": [
           {
             "card": "Midnight Mayhem",
@@ -3846,42 +3264,6 @@
             "synergy_delta_logit": 0.32289817770854023,
             "partner_pick_score": 10.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Sheltered by Ghosts",
-            "quality_score": 0.4538713905056643,
-            "pair_win_rate": 0.6964912280701754,
-            "pair_games": 570,
-            "synergy_delta_logit": 0.09398822897609804,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Ragged Playmate",
-            "quality_score": 0.26208533603992257,
-            "pair_win_rate": 0.6088004822182037,
-            "pair_games": 1659,
-            "synergy_delta_logit": 0.07506756302959999,
-            "partner_pick_score": 5.331265974689417,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Clockwork Percussionist",
-            "quality_score": 0.2185608771811491,
-            "pair_win_rate": 0.6086711711711712,
-            "pair_games": 1776,
-            "synergy_delta_logit": 0.06066302873068996,
-            "partner_pick_score": 6.916408530338493,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Jump Scare",
-            "quality_score": 0.14428029653039562,
-            "pair_win_rate": 0.6141078838174274,
-            "pair_games": 964,
-            "synergy_delta_logit": 0.05020095061276053,
-            "partner_pick_score": 3.94026267949475,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -3928,10 +3310,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.295397311654028,
-            "analysis_score": 9.260990245331392,
+            "analysis_score": 9.261377876243879,
             "pick_priority_score": 9.422311826688441,
-            "build_around_score": 7.170646624917123,
-            "core_score": 8.876297714306085,
+            "build_around_score": 10.0,
+            "core_score": 8.876781091368251,
             "role": "engine"
           }
         ]
@@ -3957,8 +3339,8 @@
         "supported_win_rate": 0.5982445008460237,
         "support_delta": -0.02479214836863608,
         "standalone_delta": 0.03163587256529887,
-        "dependency_score": 0.05926225071425981,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8644.305740986007,
         "signpost_lift": 2.461403849401779,
         "deck_prevalence": 0.2935257418533361,
@@ -3971,8 +3353,8 @@
         "alsa": 2.3043843798624706,
         "average_taken_at": 2.8703682719546744,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8649.801483658006,
-        "analysis_score": 9.195193056809721,
+        "analysis_score_raw": 8648.734763145148,
+        "analysis_score": 9.195161961362478,
         "pick_priority_score_raw": 244.3930697428474,
         "pick_priority_score": 8.962040210909661,
         "pick_market_score_raw": 10.0,
@@ -3983,46 +3365,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 8663.08780024043,
-        "core_score": 8.776404802465013,
+        "core_score_raw": 8662.25812873043,
+        "core_score": 8.776395746089076,
+        "win_contribution_logit": 0.1307975203619218,
+        "contribution_score": 4.2942057163699054,
         "is_build_around": false,
-        "role": "balanced",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Razorkin%20Hordecaller%22",
-        "community": 1,
-        "x": 1073.9208117121311,
-        "y": 793.2838584420942,
-        "analysis_radius": 14.87341401680479,
+        "community": 20,
+        "x": 1007.9214904001138,
+        "y": 273.86441217770675,
+        "analysis_radius": 12.739972991091438,
         "pick_radius": 30.0,
-        "radius": 14.87341401680479,
-        "top_synergies": [
-          {
-            "card": "Scorching Dragonfire",
-            "quality_score": 0.21082307443386192,
-            "pair_win_rate": 0.6234446627373936,
-            "pair_games": 1527,
-            "synergy_delta_logit": 0.051003987286727115,
-            "partner_pick_score": 8.268873291996675,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Vicious Clown",
-            "quality_score": 0.16449128813105526,
-            "pair_win_rate": 0.5911602209944752,
-            "pair_games": 1448,
-            "synergy_delta_logit": 0.07131336345644546,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Fear of Surveillance",
-            "quality_score": 0.12056853089953307,
-            "pair_win_rate": 0.5950044603033007,
-            "pair_games": 1121,
-            "synergy_delta_logit": 0.055204192614809466,
-            "partner_pick_score": 5.981877346182983,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 12.739972991091438,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Arabella, Abandoned Doll",
@@ -4067,22 +3423,22 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.30672341634744754,
-            "analysis_score": 9.349188345544997,
+            "analysis_score": 9.349098407135704,
             "pick_priority_score": 9.124903427035145,
-            "build_around_score": 6.295205298787606,
-            "core_score": 8.969003913070157,
-            "role": "engine"
+            "build_around_score": 6.064113993417008,
+            "core_score": 8.96889141930451,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.2935257418533361,
-            "analysis_score": 9.195193056809721,
+            "analysis_score": 9.195161961362478,
             "pick_priority_score": 8.962040210909661,
             "build_around_score": 0.0,
-            "core_score": 8.776404802465013,
-            "role": "balanced"
+            "core_score": 8.776395746089076,
+            "role": "good_alone"
           }
         ]
       },
@@ -4107,8 +3463,8 @@
         "supported_win_rate": 0.6180271036873621,
         "support_delta": -0.04738643014722432,
         "standalone_delta": 0.05323037763520899,
-        "dependency_score": 0.09731680824935161,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2851.6681659382784,
         "signpost_lift": 2.3421432339755732,
         "deck_prevalence": 0.10607677777963449,
@@ -4121,8 +3477,8 @@
         "alsa": 0.8306913386775963,
         "average_taken_at": 0.8485550408118244,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2860.8721213556964,
-        "analysis_score": 8.336166677654797,
+        "analysis_score_raw": 2859.120418807208,
+        "analysis_score": 8.33580268312778,
         "pick_priority_score_raw": 310.77702685595654,
         "pick_priority_score": 9.351974490717069,
         "pick_market_score_raw": 10.0,
@@ -4133,37 +3489,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 2863.071175797303,
-        "core_score": 7.468869300600807,
+        "core_score_raw": 2861.708740481812,
+        "core_score": 7.46849624907,
+        "win_contribution_logit": 0.235038286506241,
+        "contribution_score": 7.3746504234680215,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Toby%2C%20Beastie%20Befriender%22",
-        "community": 3,
-        "x": 573.8962349340626,
-        "y": 738.7568717955844,
-        "analysis_radius": 17.43107586691315,
+        "community": 21,
+        "x": 1121.4883199380456,
+        "y": 233.05808258639814,
+        "analysis_radius": 13.927670769936494,
         "pick_radius": 30.0,
-        "radius": 17.43107586691315,
-        "top_synergies": [
-          {
-            "card": "Midnight Mayhem",
-            "quality_score": 0.5724546569381159,
-            "pair_win_rate": 0.7089201877934272,
-            "pair_games": 426,
-            "synergy_delta_logit": 0.12753880113057292,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Irreverent Gremlin",
-            "quality_score": 0.12050345349356831,
-            "pair_win_rate": 0.6389891696750902,
-            "pair_games": 277,
-            "synergy_delta_logit": 0.05983780658658833,
-            "partner_pick_score": 7.820546375735768,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 13.927670769936494,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Hardened Escort",
@@ -4208,20 +3547,20 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.10607677777963449,
-            "analysis_score": 8.336166677654797,
+            "analysis_score": 8.33580268312778,
             "pick_priority_score": 9.351974490717069,
             "build_around_score": 0.0,
-            "core_score": 7.468869300600807,
-            "role": "engine"
+            "core_score": 7.46849624907,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.006249258324290288,
-            "analysis_score": 0.0914313861933409,
+            "analysis_score": 0.09143175064220067,
             "pick_priority_score": 3.1648327729100703,
-            "build_around_score": 3.189201179915455,
+            "build_around_score": 3.5009045407640462,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4248,8 +3587,8 @@
         "supported_win_rate": 0.6187560425394779,
         "support_delta": -0.026543102759667425,
         "standalone_delta": 0.05215534615413586,
-        "dependency_score": 0.07323438272128857,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2622.945940195496,
         "signpost_lift": 2.283873555932312,
         "deck_prevalence": 0.10047118907309992,
@@ -4262,8 +3601,8 @@
         "alsa": 0.8605723180076629,
         "average_taken_at": 0.8773100054674685,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2631.565907546058,
-        "analysis_score": 8.27130963339776,
+        "analysis_score_raw": 2630.247688657075,
+        "analysis_score": 8.271035684213327,
         "pick_priority_score_raw": 262.39472431107845,
         "pick_priority_score": 9.077333858615644,
         "pick_market_score_raw": 10.0,
@@ -4274,37 +3613,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 2633.628927808497,
-        "core_score": 7.370235900734936,
+        "core_score_raw": 2632.6036464503986,
+        "core_score": 7.369971516359847,
+        "win_contribution_logit": 0.24091732552532452,
+        "contribution_score": 7.540549302133638,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Unidentified%20Hovership%22",
-        "community": 0,
-        "x": 1318.3337556349381,
-        "y": 481.33049438116274,
-        "analysis_radius": 16.50498181644386,
+        "community": 22,
+        "x": 1073.0797750372228,
+        "y": 372.59887009422647,
+        "analysis_radius": 13.868544038477472,
         "pick_radius": 30.0,
-        "radius": 16.50498181644386,
-        "top_synergies": [
-          {
-            "card": "Turn Inside Out",
-            "quality_score": 0.2615308498858641,
-            "pair_win_rate": 0.6467181467181468,
-            "pair_games": 518,
-            "synergy_delta_logit": 0.08581685470244349,
-            "partner_pick_score": 7.655933843761632,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.10043353654471471,
-            "pair_win_rate": 0.6183431952662722,
-            "pair_games": 338,
-            "synergy_delta_logit": 0.057657788669769006,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.868544038477472,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Norin, Swift Survivalist",
@@ -4349,22 +3671,22 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.1264277348085359,
-            "analysis_score": 8.340095534549814,
+            "analysis_score": 8.338950153009078,
             "pick_priority_score": 10.0,
-            "build_around_score": 0.6499111974428969,
-            "core_score": 7.48941341167327,
-            "role": "engine"
+            "build_around_score": 0.5536239951173808,
+            "core_score": 7.488009386671395,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.10047118907309992,
-            "analysis_score": 8.27130963339776,
+            "analysis_score": 8.271035684213327,
             "pick_priority_score": 9.077333858615644,
             "build_around_score": 0.0,
-            "core_score": 7.370235900734936,
-            "role": "engine"
+            "core_score": 7.369971516359847,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
@@ -4423,17 +3745,19 @@
         "pick_urgency_score_raw": 4.009579516323483,
         "pick_urgency_score": 4.009579516323483,
         "shell_dependence_score_raw": 0.6674238124719143,
-        "shell_dependence_score": 1.680382976307639,
+        "shell_dependence_score": 2.2069328514389652,
         "build_around_score_raw": 0.6674238124719143,
-        "build_around_score": 1.680382976307639,
+        "build_around_score": 2.2069328514389652,
         "core_score_raw": -358.61960592044176,
         "core_score": 0.0,
+        "win_contribution_logit": 0.010503809947738401,
+        "contribution_score": 0.36502705322839074,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Piranha%20Fly%22",
-        "community": 6,
-        "x": 899.9999999999999,
-        "y": 240.0,
+        "community": 23,
+        "x": 1175.4326324807573,
+        "y": 367.7662986479487,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4445,10 +3769,10 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.3054687093126958,
-            "analysis_score": 9.632727617137206,
+            "analysis_score": 9.632709512388272,
             "pick_priority_score": 0.0,
-            "build_around_score": 8.34557189999677,
-            "core_score": 9.406563719936042,
+            "build_around_score": 8.489261675561954,
+            "core_score": 9.406540030762644,
             "role": "balanced"
           },
           {
@@ -4458,7 +3782,7 @@
             "deck_prevalence": 0.0035423842837993304,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.680382976307639,
+            "build_around_score": 2.2069328514389652,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4513,12 +3837,14 @@
         "build_around_score": 0.0,
         "core_score_raw": -531.6753122924378,
         "core_score": 0.0,
+        "win_contribution_logit": -0.06776865073422447,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Vanish%20from%20Sight%22",
-        "community": 7,
-        "x": 1126.2741699796952,
-        "y": 333.7258300203047,
+        "community": 24,
+        "x": 1154.0096603002748,
+        "y": 454.64010885793607,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4530,10 +3856,10 @@
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.41900635735708924,
-            "analysis_score": 9.646113754950695,
+            "analysis_score": 9.646123955433149,
             "pick_priority_score": 9.658938272577364,
-            "build_around_score": 6.105969698293031,
-            "core_score": 9.434440701325498,
+            "build_around_score": 6.990258572552952,
+            "core_score": 9.434453096124791,
             "role": "good_alone"
           },
           {
@@ -4541,10 +3867,10 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.41199531614912543,
-            "analysis_score": 9.696829465389394,
+            "analysis_score": 9.69680367279465,
             "pick_priority_score": 8.118069373909975,
-            "build_around_score": 7.2780386084087505,
-            "core_score": 9.510370549312038,
+            "build_around_score": 7.181029895586077,
+            "core_score": 9.510337391703251,
             "role": "balanced"
           },
           {
@@ -4572,661 +3898,17 @@
         "synergy_delta_logit": 0.32289817770854023,
         "synergy_delta_prob": 0.0675945636943438,
         "confidence_probability": 0.9999999369270636,
+        "p_value": 6.307293642926481e-08,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3496,
         "quality_score": 3.119451554853297,
         "anti_quality": 0.0,
         "pick_score_raw": 10.22066038514009,
-        "pick_score": 10.0
-      },
-      {
-        "from": "Friendly Ghost",
-        "to": "Sheltered by Ghosts",
-        "pair_games": 684,
-        "pair_win_rate": 0.685672514619883,
-        "pair_expected_win_rate": 0.650873220716646,
-        "pair_lift_vs_baseline": 0.11721053982706053,
-        "synergy_delta_logit": 0.15708498317844266,
-        "synergy_delta_prob": 0.034799293903236994,
-        "confidence_probability": 0.971757209854754,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2481,
-        "quality_score": 0.7840209681026009,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.271570741738079,
-        "pick_score": 10.0
-      },
-      {
-        "from": "Midnight Mayhem",
-        "to": "Toby, Beastie Befriender",
-        "pair_games": 426,
-        "pair_win_rate": 0.7089201877934272,
-        "pair_expected_win_rate": 0.6819193981307833,
-        "pair_lift_vs_baseline": 0.1404582130006048,
-        "synergy_delta_logit": 0.12753880113057292,
-        "synergy_delta_prob": 0.027000789662643965,
-        "confidence_probability": 0.8841090893037091,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1218,
-        "quality_score": 0.5724546569381159,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.723805362798845,
-        "pick_score": 9.391735251785187
-      },
-      {
-        "from": "Painter's Studio // Defaced Gallery",
-        "to": "Sheltered by Ghosts",
-        "pair_games": 570,
-        "pair_win_rate": 0.6964912280701754,
-        "pair_expected_win_rate": 0.6762642832308514,
-        "pair_lift_vs_baseline": 0.12802925327735293,
-        "synergy_delta_logit": 0.09398822897609804,
-        "synergy_delta_prob": 0.020226944839323968,
-        "confidence_probability": 0.8488941693646171,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1521,
-        "quality_score": 0.4538713905056643,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.087998510590731,
-        "pick_score": 9.94655980510056
-      },
-      {
-        "from": "Arabella, Abandoned Doll",
-        "to": "Overlord of the Mistmoors",
-        "pair_games": 155,
-        "pair_win_rate": 0.7419354838709677,
-        "pair_expected_win_rate": 0.7195942082721711,
-        "pair_lift_vs_baseline": 0.1734735090781453,
-        "synergy_delta_logit": 0.11360303092505042,
-        "synergy_delta_prob": 0.022341275598796617,
-        "confidence_probability": 0.7320006670199947,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 438,
-        "quality_score": 0.356886226363753,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.2880791923285315,
-        "pick_score": 6.794196289597095
-      },
-      {
-        "from": "Painter's Studio // Defaced Gallery",
-        "to": "Ragged Playmate",
-        "pair_games": 1659,
-        "pair_win_rate": 0.6088004822182037,
-        "pair_expected_win_rate": 0.5907835154513756,
-        "pair_lift_vs_baseline": 0.040338507425381254,
-        "synergy_delta_logit": 0.07506756302959999,
-        "synergy_delta_prob": 0.01801696676682807,
-        "confidence_probability": 0.9321699409370499,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4500,
-        "quality_score": 0.26208533603992257,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.698063801867919,
-        "pick_score": 7.615489600403382
-      },
-      {
-        "from": "Turn Inside Out",
-        "to": "Unidentified Hovership",
-        "pair_games": 518,
-        "pair_win_rate": 0.6467181467181468,
-        "pair_expected_win_rate": 0.6268735614296663,
-        "pair_lift_vs_baseline": 0.0782561719253243,
-        "synergy_delta_logit": 0.08581685470244349,
-        "synergy_delta_prob": 0.019844585288480432,
-        "confidence_probability": 0.8247419934269146,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1415,
-        "quality_score": 0.2615308498858641,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.20980122931595,
-        "pick_score": 6.628488229829667
-      },
-      {
-        "from": "Clockwork Percussionist",
-        "to": "Painter's Studio // Defaced Gallery",
-        "pair_games": 1776,
-        "pair_win_rate": 0.6086711711711712,
-        "pair_expected_win_rate": 0.5941304108995247,
-        "pair_lift_vs_baseline": 0.040209196378348744,
-        "synergy_delta_logit": 0.06066302873068996,
-        "synergy_delta_prob": 0.014540760271646525,
-        "confidence_probability": 0.8939283100559172,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4439,
-        "quality_score": 0.2185608771811491,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.815966848769948,
-        "pick_score": 7.838428146373504
-      },
-      {
-        "from": "Razorkin Hordecaller",
-        "to": "Scorching Dragonfire",
-        "pair_games": 1527,
-        "pair_win_rate": 0.6234446627373936,
-        "pair_expected_win_rate": 0.6113976559801564,
-        "pair_lift_vs_baseline": 0.054982687944571174,
-        "synergy_delta_logit": 0.051003987286727115,
-        "synergy_delta_prob": 0.012047006757237244,
-        "confidence_probability": 0.8328999327963641,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3691,
-        "quality_score": 0.21082307443386192,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.374137722179368,
-        "pick_score": 8.824766438538724
-      },
-      {
-        "from": "Friendly Ghost",
-        "to": "Most Valuable Slayer",
-        "pair_games": 1635,
-        "pair_win_rate": 0.5932721712538226,
-        "pair_expected_win_rate": 0.5737098528030864,
-        "pair_lift_vs_baseline": 0.024810196461000134,
-        "synergy_delta_logit": 0.08050545637766438,
-        "synergy_delta_prob": 0.019562318450736194,
-        "confidence_probability": 0.9450956967343508,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 6172,
-        "quality_score": 0.2095248486327628,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.760758838157505,
-        "pick_score": 5.613967191955187
-      },
-      {
-        "from": "Fear of Surveillance",
-        "to": "Friendly Ghost",
-        "pair_games": 1533,
-        "pair_win_rate": 0.5825179386823223,
-        "pair_expected_win_rate": 0.5584593923124328,
-        "pair_lift_vs_baseline": 0.014055963889499812,
-        "synergy_delta_logit": 0.09820648959628292,
-        "synergy_delta_prob": 0.024058546369889466,
-        "confidence_probability": 0.9710333958308801,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4993,
-        "quality_score": 0.18670800445828356,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.01473110546697,
-        "pick_score": 3.6252132053701263
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Unsettling Twins",
-        "pair_games": 1882,
-        "pair_win_rate": 0.5834218916046758,
-        "pair_expected_win_rate": 0.5643588590226637,
-        "pair_lift_vs_baseline": 0.01495991681185338,
-        "synergy_delta_logit": 0.07796511098225484,
-        "synergy_delta_prob": 0.01906303258201214,
-        "confidence_probability": 0.9522863279517997,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 6239,
-        "quality_score": 0.16990969512225595,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.3118386705650735,
-        "pick_score": 4.4706232987814305
-      },
-      {
-        "from": "Razorkin Hordecaller",
-        "to": "Vicious Clown",
-        "pair_games": 1448,
-        "pair_win_rate": 0.5911602209944752,
-        "pair_expected_win_rate": 0.5738191224907901,
-        "pair_lift_vs_baseline": 0.022698246201652728,
-        "synergy_delta_logit": 0.07131336345644546,
-        "synergy_delta_prob": 0.017341098503685037,
-        "confidence_probability": 0.9089124392177352,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4414,
-        "quality_score": 0.16449128813105526,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.442962232226813,
-        "pick_score": 4.819864274044828
-      },
-      {
-        "from": "Jump Scare",
-        "to": "Painter's Studio // Defaced Gallery",
-        "pair_games": 964,
-        "pair_win_rate": 0.6141078838174274,
-        "pair_expected_win_rate": 0.6021452796218878,
-        "pair_lift_vs_baseline": 0.04564590902460497,
-        "synergy_delta_logit": 0.05020095061276053,
-        "synergy_delta_prob": 0.011962604195539628,
-        "confidence_probability": 0.7760026208763595,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3647,
-        "quality_score": 0.14428029653039562,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.0412266577635356,
-        "pick_score": 6.260912442784698
-      },
-      {
-        "from": "Norin, Swift Survivalist",
-        "to": "Sheltered by Ghosts",
-        "pair_games": 522,
-        "pair_win_rate": 0.6264367816091954,
-        "pair_expected_win_rate": 0.6126155552532,
-        "pair_lift_vs_baseline": 0.057974806816372904,
-        "synergy_delta_logit": 0.05864062328690439,
-        "synergy_delta_prob": 0.013821226355995364,
-        "confidence_probability": 0.7415458887784726,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1650,
-        "quality_score": 0.1431704842375192,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.573484710611766,
-        "pick_score": 5.154537228403261
-      },
-      {
-        "from": "Fear of Surveillance",
-        "to": "Painter's Studio // Defaced Gallery",
-        "pair_games": 1121,
-        "pair_win_rate": 0.6003568242640499,
-        "pair_expected_win_rate": 0.5862995353902055,
-        "pair_lift_vs_baseline": 0.03189484947122745,
-        "synergy_delta_logit": 0.0582634822301043,
-        "synergy_delta_prob": 0.014057288873844387,
-        "confidence_probability": 0.8303428179907978,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3035,
-        "quality_score": 0.14181926359493563,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.5734207023879088,
-        "pick_score": 5.154376119259265
-      },
-      {
-        "from": "Norin, Swift Survivalist",
-        "to": "Vicious Clown",
-        "pair_games": 1460,
-        "pair_win_rate": 0.5397260273972603,
-        "pair_expected_win_rate": 0.5095772957876739,
-        "pair_lift_vs_baseline": -0.028735947395562178,
-        "synergy_delta_logit": 0.12092587995997789,
-        "synergy_delta_prob": 0.03014873160958642,
-        "confidence_probability": 0.9893600765692191,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4863,
-        "quality_score": 0.13163830643059124,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.1534642726679076,
-        "pick_score": 0.5992002022280374
-      },
-      {
-        "from": "Most Valuable Slayer",
-        "to": "Vicious Clown",
-        "pair_games": 3348,
-        "pair_win_rate": 0.5564516129032258,
-        "pair_expected_win_rate": 0.5381417169681085,
-        "pair_lift_vs_baseline": -0.012010361889596699,
-        "synergy_delta_logit": 0.07390947679276638,
-        "synergy_delta_prob": 0.018309895935117226,
-        "confidence_probability": 0.9831899736276756,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 8775,
-        "quality_score": 0.12436091519850895,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.7876858503256312,
-        "pick_score": 2.920961765766749
-      },
-      {
-        "from": "Painter's Studio // Defaced Gallery",
-        "to": "Vicious Clown",
-        "pair_games": 1429,
-        "pair_win_rate": 0.5913226032190343,
-        "pair_expected_win_rate": 0.5785076975362718,
-        "pair_lift_vs_baseline": 0.022860628426211838,
-        "synergy_delta_logit": 0.05278530698748385,
-        "synergy_delta_prob": 0.012814905682762445,
-        "confidence_probability": 0.8366828592142883,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4454,
-        "quality_score": 0.12145161652222054,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.4369878505225224,
-        "pick_score": 4.804243223540686
-      },
-      {
-        "from": "Most Valuable Slayer",
-        "to": "Ragged Playmate",
-        "pair_games": 3892,
-        "pair_win_rate": 0.567060637204522,
-        "pair_expected_win_rate": 0.5506800706938615,
-        "pair_lift_vs_baseline": -0.0014013375883004109,
-        "synergy_delta_logit": 0.0664497283381002,
-        "synergy_delta_prob": 0.016380566510660555,
-        "confidence_probability": 0.9800138646962931,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 9075,
-        "quality_score": 0.12069030548353529,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.9299742296073343,
-        "pick_score": 3.368719633206867
-      },
-      {
-        "from": "Fear of Surveillance",
-        "to": "Razorkin Hordecaller",
-        "pair_games": 1121,
-        "pair_win_rate": 0.5950044603033007,
-        "pair_expected_win_rate": 0.5816349535904775,
-        "pair_lift_vs_baseline": 0.02654248551047822,
-        "synergy_delta_logit": 0.055204192614809466,
-        "synergy_delta_prob": 0.01336950671282322,
-        "confidence_probability": 0.8178809872354978,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3074,
-        "quality_score": 0.12056853089953307,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.3091950187015073,
-        "pick_score": 4.463440711088833
-      },
-      {
-        "from": "Irreverent Gremlin",
-        "to": "Toby, Beastie Befriender",
-        "pair_games": 277,
-        "pair_win_rate": 0.6389891696750902,
-        "pair_expected_win_rate": 0.625074086814024,
-        "pair_lift_vs_baseline": 0.07052719488226777,
-        "synergy_delta_logit": 0.05983780658658833,
-        "synergy_delta_prob": 0.013915082861066241,
-        "confidence_probability": 0.6837902863655323,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 838,
-        "quality_score": 0.12050345349356831,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.115267124577847,
-        "pick_score": 3.920268034719203
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Turn Inside Out",
-        "pair_games": 2754,
-        "pair_win_rate": 0.5722585330428468,
-        "pair_expected_win_rate": 0.5584643103952452,
-        "pair_lift_vs_baseline": 0.00379655825002434,
-        "synergy_delta_logit": 0.05614004627737956,
-        "synergy_delta_prob": 0.01379422264760155,
-        "confidence_probability": 0.9275260618030724,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.9597362714980899,
-        "draft_pair_events": 7635,
-        "quality_score": 0.1189743207489671,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.1028640171762403,
-        "pick_score": 3.884386281789149
-      },
-      {
-        "from": "Arabella, Abandoned Doll",
-        "to": "Norin, Swift Survivalist",
-        "pair_games": 1331,
-        "pair_win_rate": 0.5815176558978212,
-        "pair_expected_win_rate": 0.5649172515520682,
-        "pair_lift_vs_baseline": 0.013055681104998773,
-        "synergy_delta_logit": 0.06786360998694402,
-        "synergy_delta_prob": 0.01660040434575305,
-        "confidence_probability": 0.8890263597720077,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3894,
-        "quality_score": 0.11567212577944523,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.8041820485606612,
-        "pick_score": 2.9740295154385636
-      },
-      {
-        "from": "Clockwork Percussionist",
-        "to": "Norin, Swift Survivalist",
-        "pair_games": 1625,
-        "pair_win_rate": 0.548923076923077,
-        "pair_expected_win_rate": 0.5256600557047593,
-        "pair_lift_vs_baseline": -0.019538897869745497,
-        "synergy_delta_logit": 0.093589955516343,
-        "synergy_delta_prob": 0.023263021218317692,
-        "confidence_probability": 0.9697624806614791,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4740,
-        "quality_score": 0.10738704836890185,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.2156596349949504,
-        "pick_score": 0.8552918573165135
-      },
-      {
-        "from": "Fear of Surveillance",
-        "to": "Jump Scare",
-        "pair_games": 1795,
-        "pair_win_rate": 0.5676880222841225,
-        "pair_expected_win_rate": 0.5469943004421114,
-        "pair_lift_vs_baseline": -0.0007739525086999377,
-        "synergy_delta_logit": 0.08389083754825938,
-        "synergy_delta_prob": 0.020693721842011126,
-        "confidence_probability": 0.9608605155600485,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 5840,
-        "quality_score": 0.10190950700750627,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.288274755047684,
-        "pick_score": 1.1453433379139584
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Unidentified Hovership",
-        "pair_games": 338,
-        "pair_win_rate": 0.6183431952662722,
-        "pair_expected_win_rate": 0.6046465885878668,
-        "pair_lift_vs_baseline": 0.04988122047344978,
-        "synergy_delta_logit": 0.057657788669769006,
-        "synergy_delta_prob": 0.013696606678405443,
-        "confidence_probability": 0.6967070837486488,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1231,
-        "quality_score": 0.10043353654471471,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.8333181083963452,
-        "pick_score": 3.0670011718367833
-      },
-      {
-        "from": "Norin, Swift Survivalist",
-        "to": "Unsettling Twins",
-        "pair_games": 1150,
-        "pair_win_rate": 0.571304347826087,
-        "pair_expected_win_rate": 0.5491740828393936,
-        "pair_lift_vs_baseline": 0.0028423730332645114,
-        "synergy_delta_logit": 0.08984063440911388,
-        "synergy_delta_prob": 0.02213026498669335,
-        "confidence_probability": 0.9341910481482137,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3837,
-        "quality_score": 0.09830894030210481,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.1581865226951005,
-        "pick_score": 0.618902098127299
-      },
-      {
-        "from": "Irreverent Gremlin",
-        "to": "Norin, Swift Survivalist",
-        "pair_games": 831,
-        "pair_win_rate": 0.5691937424789411,
-        "pair_expected_win_rate": 0.5401981648226134,
-        "pair_lift_vs_baseline": 0.0007317676861186007,
-        "synergy_delta_logit": 0.11742196152940187,
-        "synergy_delta_prob": 0.028995577656327653,
-        "confidence_probability": 0.9531486236291903,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2700,
-        "quality_score": 0.09789980428981139,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.8809650464397984,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Jump Scare",
-        "to": "Ragged Playmate",
-        "pair_games": 2550,
-        "pair_win_rate": 0.5658823529411765,
-        "pair_expected_win_rate": 0.5515784656847553,
-        "pair_lift_vs_baseline": -0.0025796218516459524,
-        "synergy_delta_logit": 0.058020235472010684,
-        "synergy_delta_prob": 0.014303887256421177,
-        "confidence_probability": 0.9267723234405112,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 8187,
-        "quality_score": 0.08499701375287812,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.555955481316752,
-        "pick_score": 2.140376112780447
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Ragged Playmate",
-        "pair_games": 2507,
-        "pair_win_rate": 0.5504587155963303,
-        "pair_expected_win_rate": 0.537530810464107,
-        "pair_lift_vs_baseline": -0.01800325919649215,
-        "synergy_delta_logit": 0.052118121472563894,
-        "synergy_delta_prob": 0.012927905132223305,
-        "confidence_probability": 0.9028760484586599,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.4225939311907628,
-        "draft_pair_events": 7831,
-        "quality_score": 0.08133796840323769,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.6051941428147773,
-        "pick_score": 2.311999082922723
-      },
-      {
-        "from": "Hardened Escort",
-        "to": "Vicious Clown",
-        "pair_games": 1681,
-        "pair_win_rate": 0.5336109458655562,
-        "pair_expected_win_rate": 0.518141610026562,
-        "pair_lift_vs_baseline": -0.034851028927266214,
-        "synergy_delta_logit": 0.06204853252860157,
-        "synergy_delta_prob": 0.015469335838994236,
-        "confidence_probability": 0.8978004609334338,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 6357,
-        "quality_score": 0.07315870913805696,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.2508674817603607,
-        "pick_score": 0.9970933929162275
-      },
-      {
-        "from": "Most Valuable Slayer",
-        "to": "Norin, Swift Survivalist",
-        "pair_games": 1511,
-        "pair_win_rate": 0.5486432825943084,
-        "pair_expected_win_rate": 0.5330626354120633,
-        "pair_lift_vs_baseline": -0.019818692198514065,
-        "synergy_delta_logit": 0.06274669092149482,
-        "synergy_delta_prob": 0.015580647182245055,
-        "confidence_probability": 0.8875777596695293,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4520,
-        "quality_score": 0.06930961226437587,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.1700263505425277,
-        "pick_score": 0.6681106185277155
-      },
-      {
-        "from": "Norin, Swift Survivalist",
-        "to": "Turn Inside Out",
-        "pair_games": 1519,
-        "pair_win_rate": 0.5576036866359447,
-        "pair_expected_win_rate": 0.5432403614817812,
-        "pair_lift_vs_baseline": -0.010858288156877727,
-        "synergy_delta_logit": 0.05804777490399843,
-        "synergy_delta_prob": 0.014363325154163498,
-        "confidence_probability": 0.8694203167998122,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4718,
-        "quality_score": 0.0643857077662925,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.1751243199882695,
-        "pick_score": 0.6892160888865263
-      },
-      {
-        "from": "Fear of Surveillance",
-        "to": "Hardened Escort",
-        "pair_games": 1406,
-        "pair_win_rate": 0.5398293029871978,
-        "pair_expected_win_rate": 0.526135305124122,
-        "pair_lift_vs_baseline": -0.028632671805624677,
-        "synergy_delta_logit": 0.05501889625676776,
-        "synergy_delta_prob": 0.01369399786307579,
-        "confidence_probability": 0.848080272310227,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4786,
-        "quality_score": 0.058741876590745985,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.13121409774945,
-        "pick_score": 0.5057841404218485
-      },
-      {
-        "from": "Glassworks // Shattered Yard",
-        "to": "Norin, Swift Survivalist",
-        "pair_games": 1178,
-        "pair_win_rate": 0.5611205432937182,
-        "pair_expected_win_rate": 0.5464968716026742,
-        "pair_lift_vs_baseline": -0.007341431499104267,
-        "synergy_delta_logit": 0.05918455003803186,
-        "synergy_delta_prob": 0.014623671691043949,
-        "confidence_probability": 0.8432845654536976,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3533,
-        "quality_score": 0.05722301079857018,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.02294067157634,
-        "pick_score": 0.03681957753036612
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Norin, Swift Survivalist",
-        "pair_games": 1074,
-        "pair_win_rate": 0.5344506517690876,
-        "pair_expected_win_rate": 0.5198473443258963,
-        "pair_lift_vs_baseline": -0.034011323023734885,
-        "synergy_delta_logit": 0.05859018402030017,
-        "synergy_delta_prob": 0.014603307443191271,
-        "confidence_probability": 0.8309119820870874,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4034,
-        "quality_score": 0.054344527317310175,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.9819559017477515,
-        "pick_score": 0.0
+        "pick_score": 10.0,
+        "q_value": 1.6966619899472235e-05,
+        "is_eligible": true,
+        "display_tier": "core"
       }
     ],
     "triplets": [
@@ -5388,70 +4070,175 @@
     "communities": [
       {
         "community_id": 0,
-        "size": 7,
+        "size": 2,
         "top_cards": [
-          "Turn Inside Out",
-          "Unsettling Twins",
-          "Hand That Feeds",
-          "Norin, Swift Survivalist",
-          "Irreverent Gremlin"
+          "Midnight Mayhem",
+          "Painter's Studio // Defaced Gallery"
         ]
       },
       {
         "community_id": 1,
-        "size": 6,
+        "size": 1,
         "top_cards": [
-          "Vicious Clown",
-          "Jump Scare",
-          "Scorching Dragonfire",
-          "Hardened Escort",
-          "Fear of Surveillance"
+          "Ragged Playmate"
         ]
       },
       {
         "community_id": 2,
-        "size": 4,
+        "size": 1,
         "top_cards": [
-          "Ragged Playmate",
-          "Most Valuable Slayer",
-          "Friendly Ghost",
-          "Sheltered by Ghosts"
+          "Vicious Clown"
         ]
       },
       {
         "community_id": 3,
-        "size": 4,
+        "size": 1,
         "top_cards": [
-          "Midnight Mayhem",
-          "Clockwork Percussionist",
-          "Painter's Studio // Defaced Gallery",
-          "Toby, Beastie Befriender"
+          "Arabella, Abandoned Doll"
         ]
       },
       {
         "community_id": 4,
-        "size": 2,
+        "size": 1,
         "top_cards": [
-          "Arabella, Abandoned Doll",
-          "Overlord of the Mistmoors"
+          "Turn Inside Out"
         ]
       },
       {
         "community_id": 5,
         "size": 1,
         "top_cards": [
-          "Acrobatic Cheerleader"
+          "Clockwork Percussionist"
         ]
       },
       {
         "community_id": 6,
         "size": 1,
         "top_cards": [
-          "Piranha Fly"
+          "Most Valuable Slayer"
         ]
       },
       {
         "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Jump Scare"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Acrobatic Cheerleader"
+        ]
+      },
+      {
+        "community_id": 9,
+        "size": 1,
+        "top_cards": [
+          "Unsettling Twins"
+        ]
+      },
+      {
+        "community_id": 10,
+        "size": 1,
+        "top_cards": [
+          "Scorching Dragonfire"
+        ]
+      },
+      {
+        "community_id": 11,
+        "size": 1,
+        "top_cards": [
+          "Hardened Escort"
+        ]
+      },
+      {
+        "community_id": 12,
+        "size": 1,
+        "top_cards": [
+          "Hand That Feeds"
+        ]
+      },
+      {
+        "community_id": 13,
+        "size": 1,
+        "top_cards": [
+          "Norin, Swift Survivalist"
+        ]
+      },
+      {
+        "community_id": 14,
+        "size": 1,
+        "top_cards": [
+          "Fear of Surveillance"
+        ]
+      },
+      {
+        "community_id": 15,
+        "size": 1,
+        "top_cards": [
+          "Irreverent Gremlin"
+        ]
+      },
+      {
+        "community_id": 16,
+        "size": 1,
+        "top_cards": [
+          "Friendly Ghost"
+        ]
+      },
+      {
+        "community_id": 17,
+        "size": 1,
+        "top_cards": [
+          "Glassworks // Shattered Yard"
+        ]
+      },
+      {
+        "community_id": 18,
+        "size": 1,
+        "top_cards": [
+          "Sheltered by Ghosts"
+        ]
+      },
+      {
+        "community_id": 19,
+        "size": 1,
+        "top_cards": [
+          "Overlord of the Mistmoors"
+        ]
+      },
+      {
+        "community_id": 20,
+        "size": 1,
+        "top_cards": [
+          "Razorkin Hordecaller"
+        ]
+      },
+      {
+        "community_id": 21,
+        "size": 1,
+        "top_cards": [
+          "Toby, Beastie Befriender"
+        ]
+      },
+      {
+        "community_id": 22,
+        "size": 1,
+        "top_cards": [
+          "Unidentified Hovership"
+        ]
+      },
+      {
+        "community_id": 23,
+        "size": 1,
+        "top_cards": [
+          "Piranha Fly"
+        ]
+      },
+      {
+        "community_id": 24,
         "size": 1,
         "top_cards": [
           "Vanish from Sight"
@@ -5684,74 +4471,7 @@
         }
       ]
     },
-    "build_arounds": [
-      {
-        "card": "Turn Inside Out",
-        "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 22.166206969000957,
-        "build_around_score": 10.0,
-        "build_around_score_raw": 22.166206969000957,
-        "support_delta": 0.03972227998834088,
-        "supported_win_rate": 0.5780105682766292,
-        "isolated_win_rate": 0.5382882882882883,
-        "supported_games": 21574
-      },
-      {
-        "card": "Hand That Feeds",
-        "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 21.6463130439266,
-        "build_around_score": 10.0,
-        "build_around_score_raw": 21.6463130439266,
-        "support_delta": 0.05108997077344446,
-        "supported_win_rate": 0.5558443289350926,
-        "isolated_win_rate": 0.5047543581616482,
-        "supported_games": 15006
-      },
-      {
-        "card": "Ragged Playmate",
-        "shell_dependence_score": 9.237256030635944,
-        "shell_dependence_score_raw": 15.619274921807333,
-        "build_around_score": 9.237256030635944,
-        "build_around_score_raw": 15.619274921807333,
-        "support_delta": 0.04113229646315819,
-        "supported_win_rate": 0.5572792897816438,
-        "isolated_win_rate": 0.5161469933184856,
-        "supported_games": 22303
-      },
-      {
-        "card": "Vicious Clown",
-        "shell_dependence_score": 8.177830980044462,
-        "shell_dependence_score_raw": 11.039806977316955,
-        "build_around_score": 8.177830980044462,
-        "build_around_score_raw": 11.039806977316955,
-        "support_delta": 0.034403825925126696,
-        "supported_win_rate": 0.5441028225806451,
-        "isolated_win_rate": 0.5096989966555184,
-        "supported_games": 19840
-      },
-      {
-        "card": "Norin, Swift Survivalist",
-        "shell_dependence_score": 6.907612511622728,
-        "shell_dependence_score_raw": 7.180365531805546,
-        "build_around_score": 6.907612511622728,
-        "build_around_score_raw": 7.180365531805546,
-        "support_delta": 0.03592288564978108,
-        "supported_win_rate": 0.5390284757118928,
-        "isolated_win_rate": 0.5031055900621118,
-        "supported_games": 8955
-      },
-      {
-        "card": "Friendly Ghost",
-        "shell_dependence_score": 6.559155551945751,
-        "shell_dependence_score_raw": 6.357454203132163,
-        "build_around_score": 6.559155551945751,
-        "build_around_score_raw": 6.357454203132163,
-        "support_delta": 0.03436070750655862,
-        "supported_win_rate": 0.5800696627304393,
-        "isolated_win_rate": 0.5457089552238806,
-        "supported_games": 11771
-      }
-    ],
+    "build_arounds": [],
     "core_cards": [
       {
         "card": "Ragged Playmate",
@@ -5767,61 +4487,61 @@
       },
       {
         "card": "Midnight Mayhem",
-        "core_score": 9.901676798539656,
+        "core_score": 9.901759266986891,
         "deck_prevalence": 0.4943320815487066,
         "signpost_score": 22426.390899218804
       },
       {
         "card": "Arabella, Abandoned Doll",
-        "core_score": 9.88599798791382,
+        "core_score": 9.88597069105687,
         "deck_prevalence": 0.5125799476519529,
         "signpost_score": 22134.7401011559
       },
       {
         "card": "Turn Inside Out",
-        "core_score": 9.869965943020569,
+        "core_score": 9.86961804699877,
         "deck_prevalence": 0.5808256207244216,
         "signpost_score": 21828.24804587089
       },
       {
         "card": "Clockwork Percussionist",
-        "core_score": 9.817811037599686,
+        "core_score": 9.817786809071567,
         "deck_prevalence": 0.5989637506072345,
         "signpost_score": 20889.33105948094
       },
       {
         "card": "Most Valuable Slayer",
-        "core_score": 9.759764904034299,
+        "core_score": 9.759746387213884,
         "deck_prevalence": 0.5746595952237039,
         "signpost_score": 19887.375550182056
       },
       {
         "card": "Jump Scare",
-        "core_score": 9.584242341231924,
+        "core_score": 9.584231430398118,
         "deck_prevalence": 0.4194234024058514,
         "signpost_score": 17145.0402520708
       },
       {
         "card": "Acrobatic Cheerleader",
-        "core_score": 9.506327519260354,
+        "core_score": 9.506384182780074,
         "deck_prevalence": 0.43332099982677413,
         "signpost_score": 16049.28845877894
       },
       {
         "card": "Unsettling Twins",
-        "core_score": 9.490290249908252,
+        "core_score": 9.490261209930335,
         "deck_prevalence": 0.4618469551455175,
         "signpost_score": 15828.844384264832
       },
       {
         "card": "Scorching Dragonfire",
-        "core_score": 9.449625958272891,
+        "core_score": 9.449631248075754,
         "deck_prevalence": 0.5499268534176278,
         "signpost_score": 15288.21239687611
       },
       {
         "card": "Hardened Escort",
-        "core_score": 9.321688835323933,
+        "core_score": 9.321686886929083,
         "deck_prevalence": 0.34466825093344894,
         "signpost_score": 13727.205988278532
       }
@@ -5902,76 +4622,76 @@
     ],
     "top_dependency": [
       {
-        "card": "Turn Inside Out",
-        "dependency_score": 0.5036861169524544,
-        "standalone_delta": 0.006527318569061968,
-        "draw_games": 23350
-      },
-      {
-        "card": "Hand That Feeds",
-        "dependency_score": 0.423380829090379,
-        "standalone_delta": -0.016580981431622566,
-        "draw_games": 16268
-      },
-      {
         "card": "Midnight Mayhem",
-        "dependency_score": 0.252976261173565,
+        "dependency_score": 0.32289817770854023,
         "standalone_delta": 0.06368718116585736,
         "draw_games": 19845
       },
       {
-        "card": "Ragged Playmate",
-        "dependency_score": 0.16644284539066073,
-        "standalone_delta": -0.01424810699747825,
-        "draw_games": 24099
-      },
-      {
-        "card": "Overlord of the Mistmoors",
-        "dependency_score": 0.11360303092505042,
-        "standalone_delta": 0.12747898461677165,
-        "draw_games": 1355
-      },
-      {
-        "card": "Friendly Ghost",
-        "dependency_score": 0.106000253969782,
-        "standalone_delta": 0.00873961362109954,
-        "draw_games": 12843
-      },
-      {
-        "card": "Sheltered by Ghosts",
-        "dependency_score": 0.10555038001542115,
-        "standalone_delta": 0.07425184512190042,
-        "draw_games": 7974
-      },
-      {
         "card": "Painter's Studio // Defaced Gallery",
-        "dependency_score": 0.10287702578160399,
+        "dependency_score": 0.32289817770854023,
         "standalone_delta": 0.036234507717164854,
         "draw_games": 10263
       },
       {
-        "card": "Toby, Beastie Befriender",
-        "dependency_score": 0.09731680824935161,
-        "standalone_delta": 0.05323037763520899,
-        "draw_games": 3439
+        "card": "Clockwork Percussionist",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.010826071381677016,
+        "draw_games": 24889
       },
       {
-        "card": "Irreverent Gremlin",
-        "dependency_score": 0.09634469796487286,
-        "standalone_delta": 0.0035299769174390594,
-        "draw_games": 12425
+        "card": "Ragged Playmate",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.01424810699747825,
+        "draw_games": 24099
+      },
+      {
+        "card": "Turn Inside Out",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.006527318569061968,
+        "draw_games": 23350
+      },
+      {
+        "card": "Most Valuable Slayer",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.0035095115257524068,
+        "draw_games": 23140
+      },
+      {
+        "card": "Scorching Dragonfire",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.011568130575968283,
+        "draw_games": 21923
+      },
+      {
+        "card": "Vicious Clown",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.026769919484643356,
+        "draw_games": 21335
+      },
+      {
+        "card": "Arabella, Abandoned Doll",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.027817234915331168,
+        "draw_games": 19942
+      },
+      {
+        "card": "Glassworks // Shattered Yard",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.009733229018144884,
+        "draw_games": 18473
       },
       {
         "card": "Unsettling Twins",
-        "dependency_score": 0.08317535100573445,
+        "dependency_score": 0.0,
         "standalone_delta": 0.012366842199568184,
         "draw_games": 18267
       },
       {
-        "card": "Arabella, Abandoned Doll",
-        "dependency_score": 0.07950102948471184,
-        "standalone_delta": 0.027817234915331168,
-        "draw_games": 19942
+        "card": "Fear of Surveillance",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.018827328562204038,
+        "draw_games": 16833
       }
     ],
     "top_pairs": [
@@ -5984,116 +4704,6 @@
         "pair_win_rate": 0.7337709700948213,
         "pair_games": 1371,
         "synergy_delta_logit": 0.32289817770854023
-      },
-      {
-        "cards": [
-          "Friendly Ghost",
-          "Sheltered by Ghosts"
-        ],
-        "quality_score": 0.7840209681026009,
-        "pair_win_rate": 0.685672514619883,
-        "pair_games": 684,
-        "synergy_delta_logit": 0.15708498317844266
-      },
-      {
-        "cards": [
-          "Midnight Mayhem",
-          "Toby, Beastie Befriender"
-        ],
-        "quality_score": 0.5724546569381159,
-        "pair_win_rate": 0.7089201877934272,
-        "pair_games": 426,
-        "synergy_delta_logit": 0.12753880113057292
-      },
-      {
-        "cards": [
-          "Painter's Studio // Defaced Gallery",
-          "Sheltered by Ghosts"
-        ],
-        "quality_score": 0.4538713905056643,
-        "pair_win_rate": 0.6964912280701754,
-        "pair_games": 570,
-        "synergy_delta_logit": 0.09398822897609804
-      },
-      {
-        "cards": [
-          "Arabella, Abandoned Doll",
-          "Overlord of the Mistmoors"
-        ],
-        "quality_score": 0.356886226363753,
-        "pair_win_rate": 0.7419354838709677,
-        "pair_games": 155,
-        "synergy_delta_logit": 0.11360303092505042
-      },
-      {
-        "cards": [
-          "Painter's Studio // Defaced Gallery",
-          "Ragged Playmate"
-        ],
-        "quality_score": 0.26208533603992257,
-        "pair_win_rate": 0.6088004822182037,
-        "pair_games": 1659,
-        "synergy_delta_logit": 0.07506756302959999
-      },
-      {
-        "cards": [
-          "Turn Inside Out",
-          "Unidentified Hovership"
-        ],
-        "quality_score": 0.2615308498858641,
-        "pair_win_rate": 0.6467181467181468,
-        "pair_games": 518,
-        "synergy_delta_logit": 0.08581685470244349
-      },
-      {
-        "cards": [
-          "Clockwork Percussionist",
-          "Painter's Studio // Defaced Gallery"
-        ],
-        "quality_score": 0.2185608771811491,
-        "pair_win_rate": 0.6086711711711712,
-        "pair_games": 1776,
-        "synergy_delta_logit": 0.06066302873068996
-      },
-      {
-        "cards": [
-          "Razorkin Hordecaller",
-          "Scorching Dragonfire"
-        ],
-        "quality_score": 0.21082307443386192,
-        "pair_win_rate": 0.6234446627373936,
-        "pair_games": 1527,
-        "synergy_delta_logit": 0.051003987286727115
-      },
-      {
-        "cards": [
-          "Friendly Ghost",
-          "Most Valuable Slayer"
-        ],
-        "quality_score": 0.2095248486327628,
-        "pair_win_rate": 0.5932721712538226,
-        "pair_games": 1635,
-        "synergy_delta_logit": 0.08050545637766438
-      },
-      {
-        "cards": [
-          "Fear of Surveillance",
-          "Friendly Ghost"
-        ],
-        "quality_score": 0.18670800445828356,
-        "pair_win_rate": 0.5825179386823223,
-        "pair_games": 1533,
-        "synergy_delta_logit": 0.09820648959628292
-      },
-      {
-        "cards": [
-          "Hand That Feeds",
-          "Unsettling Twins"
-        ],
-        "quality_score": 0.16990969512225595,
-        "pair_win_rate": 0.5834218916046758,
-        "pair_games": 1882,
-        "synergy_delta_logit": 0.07796511098225484
       }
     ],
     "top_anti_pairs": [
@@ -6363,127 +4973,6 @@
         "pair_win_rate": 0.7337709700948213,
         "pair_games": 1371,
         "draft_pair_events": 3496
-      },
-      {
-        "cards": [
-          "Friendly Ghost",
-          "Sheltered by Ghosts"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 5.271570741738079,
-        "pair_win_rate": 0.685672514619883,
-        "pair_games": 684,
-        "draft_pair_events": 2481
-      },
-      {
-        "cards": [
-          "Painter's Studio // Defaced Gallery",
-          "Sheltered by Ghosts"
-        ],
-        "pick_score": 9.94655980510056,
-        "pick_score_raw": 5.087998510590731,
-        "pair_win_rate": 0.6964912280701754,
-        "pair_games": 570,
-        "draft_pair_events": 1521
-      },
-      {
-        "cards": [
-          "Midnight Mayhem",
-          "Toby, Beastie Befriender"
-        ],
-        "pick_score": 9.391735251785187,
-        "pick_score_raw": 4.723805362798845,
-        "pair_win_rate": 0.7089201877934272,
-        "pair_games": 426,
-        "draft_pair_events": 1218
-      },
-      {
-        "cards": [
-          "Razorkin Hordecaller",
-          "Scorching Dragonfire"
-        ],
-        "pick_score": 8.824766438538724,
-        "pick_score_raw": 4.374137722179368,
-        "pair_win_rate": 0.6234446627373936,
-        "pair_games": 1527,
-        "draft_pair_events": 3691
-      },
-      {
-        "cards": [
-          "Clockwork Percussionist",
-          "Painter's Studio // Defaced Gallery"
-        ],
-        "pick_score": 7.838428146373504,
-        "pick_score_raw": 3.815966848769948,
-        "pair_win_rate": 0.6086711711711712,
-        "pair_games": 1776,
-        "draft_pair_events": 4439
-      },
-      {
-        "cards": [
-          "Painter's Studio // Defaced Gallery",
-          "Ragged Playmate"
-        ],
-        "pick_score": 7.615489600403382,
-        "pick_score_raw": 3.698063801867919,
-        "pair_win_rate": 0.6088004822182037,
-        "pair_games": 1659,
-        "draft_pair_events": 4500
-      },
-      {
-        "cards": [
-          "Arabella, Abandoned Doll",
-          "Overlord of the Mistmoors"
-        ],
-        "pick_score": 6.794196289597095,
-        "pick_score_raw": 3.2880791923285315,
-        "pair_win_rate": 0.7419354838709677,
-        "pair_games": 155,
-        "draft_pair_events": 438
-      },
-      {
-        "cards": [
-          "Turn Inside Out",
-          "Unidentified Hovership"
-        ],
-        "pick_score": 6.628488229829667,
-        "pick_score_raw": 3.20980122931595,
-        "pair_win_rate": 0.6467181467181468,
-        "pair_games": 518,
-        "draft_pair_events": 1415
-      },
-      {
-        "cards": [
-          "Jump Scare",
-          "Painter's Studio // Defaced Gallery"
-        ],
-        "pick_score": 6.260912442784698,
-        "pick_score_raw": 3.0412266577635356,
-        "pair_win_rate": 0.6141078838174274,
-        "pair_games": 964,
-        "draft_pair_events": 3647
-      },
-      {
-        "cards": [
-          "Friendly Ghost",
-          "Most Valuable Slayer"
-        ],
-        "pick_score": 5.613967191955187,
-        "pick_score_raw": 2.760758838157505,
-        "pair_win_rate": 0.5932721712538226,
-        "pair_games": 1635,
-        "draft_pair_events": 6172
-      },
-      {
-        "cards": [
-          "Norin, Swift Survivalist",
-          "Sheltered by Ghosts"
-        ],
-        "pick_score": 5.154537228403261,
-        "pick_score_raw": 2.573484710611766,
-        "pair_win_rate": 0.6264367816091954,
-        "pair_games": 522,
-        "draft_pair_events": 1650
       }
     ]
   },
@@ -6507,11 +4996,7 @@
         "Arabella, Abandoned Doll",
         "Overlord of the Mistmoors"
       ],
-      "build_arounds": [
-        "Turn Inside Out",
-        "Hand That Feeds",
-        "Ragged Playmate"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Ragged Playmate",
         "Vicious Clown",
@@ -6540,8 +5025,7 @@
       ],
       "build_arounds": [
         "Erratic Apparition",
-        "Stalked Researcher",
-        "Inquisitive Glimmer"
+        "Fear of Surveillance"
       ],
       "core_cards": [
         "Tunnel Surveyor",
@@ -6569,9 +5053,7 @@
         "Fear of Burning Alive",
         "Overlord of the Boilerbilges"
       ],
-      "build_arounds": [
-        "Patchwork Beastie"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Wildfire Wickerfolk",
         "Beastie Beatdown",
@@ -6598,9 +5080,7 @@
         "Oblivious Bookworm",
         "Under the Skin"
       ],
-      "build_arounds": [
-        "Moldering Gym // Weight Room"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Oblivious Bookworm",
         "Growing Dread",
@@ -6627,9 +5107,7 @@
         "Unholy Annex // Ritual Chamber",
         "Vengeful Possession"
       ],
-      "build_arounds": [
-        "Diversion Specialist"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Disturbing Mirth",
         "Final Vengeance",
@@ -6656,11 +5134,7 @@
         "Valgavoth's Onslaught",
         "Unholy Annex // Ritual Chamber"
       ],
-      "build_arounds": [
-        "Innocuous Rat",
-        "Spectral Snatcher",
-        "Flesh Burrower"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Broodspinner",
         "Drag to the Roots",
@@ -6687,10 +5161,7 @@
         "Beastie Beatdown",
         "Under the Skin"
       ],
-      "build_arounds": [
-        "Moldering Gym // Weight Room",
-        "Overgrown Zealot"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Spineseeker Centipede",
         "Moldering Gym // Weight Room",
@@ -6717,11 +5188,7 @@
         "Overlord of the Mistmoors",
         "Ghostly Dancers"
       ],
-      "build_arounds": [
-        "Baseball Bat",
-        "Shrewd Storyteller",
-        "Hardened Escort"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Shrewd Storyteller",
         "Baseball Bat",
@@ -6748,9 +5215,7 @@
         "Unholy Annex // Ritual Chamber",
         "Emerge from the Cocoon"
       ],
-      "build_arounds": [
-        "Balemurk Leech"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Emerge from the Cocoon",
         "Shroudstomper",
@@ -6777,10 +5242,7 @@
         "Floodpits Drowner",
         "Unnerving Grasp"
       ],
-      "build_arounds": [
-        "Rampaging Soulrager",
-        "Creeping Peeper"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Smoky Lounge // Misty Salon",
         "Rampaging Soulrager",
@@ -6807,11 +5269,7 @@
         "Unnerving Grasp",
         "Glimmerburst"
       ],
-      "build_arounds": [
-        "Balemurk Leech",
-        "Appendage Amalgam",
-        "Stalked Researcher"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Fear of Infinity",
         "Skullsnap Nuisance",
@@ -6823,6 +5281,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -6928,6 +5387,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -6950,28 +5411,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -7039,16 +5491,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -7176,7 +5619,7 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
     if (filters.topSynergies) {
@@ -7511,22 +5954,27 @@
       ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
       : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
     var edgeText = mode === 'analysis'
-      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\\'s own baseline.'
       : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -7704,8 +6152,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -7822,6 +6271,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

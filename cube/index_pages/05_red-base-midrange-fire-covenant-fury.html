@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Red Base Midrange | Fire Covenant / Fury | Cube - Powered Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -513,7 +393,8 @@
       }
     },
     "deck_count": 57913,
-    "game_count": 266117
+    "game_count": 266117,
+    "has_game_data": true
   },
   "segment": {
     "cluster_id": 5,
@@ -740,8 +621,8 @@
         "supported_win_rate": 0.6181150550795593,
         "support_delta": 0.10767421981273795,
         "standalone_delta": 0.024770136217028837,
-        "dependency_score": 2.3582223691713398,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1532.5557090938414,
         "signpost_lift": 2.991931329925263,
         "deck_prevalence": 0.23618443997598249,
@@ -754,38 +635,32 @@
         "alsa": 4.489587874316757,
         "average_taken_at": 6.5236434108527135,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1578.4715308093096,
+        "analysis_score_raw": 1536.0235281642254,
         "analysis_score": 10.0,
         "pick_priority_score_raw": 108.01132381929811,
         "pick_priority_score": 7.646432596083228,
+        "pick_market_score_raw": 8.707653713047417,
+        "pick_market_score": 8.707653713047417,
         "pick_urgency_score_raw": 7.3415606078784466,
         "pick_urgency_score": 7.3415606078784466,
-        "shell_dependence_score_raw": 31.24040131284305,
-        "shell_dependence_score": 10.0,
-        "build_around_score_raw": 31.24040131284305,
-        "build_around_score": 10.0,
-        "core_score_raw": 1579.9578747194387,
+        "shell_dependence_score_raw": 2.9944150546842048,
+        "shell_dependence_score": 9.882987690883514,
+        "build_around_score_raw": 2.9944150546842048,
+        "build_around_score": 9.882987690883514,
+        "core_score_raw": 1546.94276155104,
         "core_score": 10.0,
+        "win_contribution_logit": 0.10812052542978785,
+        "contribution_score": 2.832930266223146,
         "is_build_around": false,
-        "role": "engine",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fire%20Covenant%22",
-        "community": 1,
-        "x": 1315.633531951296,
-        "y": 540.4583515082769,
-        "analysis_radius": 28.0,
+        "community": 0,
+        "x": 890.8354456347381,
+        "y": 667.4438459225307,
+        "analysis_radius": 12.362357491936585,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Kolaghan's Command",
-            "quality_score": 0.07975970770757784,
-            "pair_win_rate": 0.6,
-            "pair_games": 110,
-            "synergy_delta_logit": 0.06451350387760585,
-            "partner_pick_score": 3.489265952423672,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 12.362357491936585,
+        "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
           {
@@ -795,9 +670,9 @@
             "deck_prevalence": 0.23618443997598249,
             "analysis_score": 10.0,
             "pick_priority_score": 7.646432596083228,
-            "build_around_score": 10.0,
+            "build_around_score": 9.882987690883514,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "balanced"
           },
           {
             "cluster_id": 1,
@@ -806,13 +681,11 @@
             "deck_prevalence": 0.017002785414461173,
             "analysis_score": 0.0,
             "pick_priority_score": 6.57612948338979,
-            "build_around_score": 1.0158783538494687,
+            "build_around_score": 1.3291730733508473,
             "core_score": 0.0,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.707653713047417,
-        "pick_market_score": 8.707653713047417
+        ]
       },
       {
         "id": "Fury",
@@ -835,8 +708,8 @@
         "supported_win_rate": 0.6373902132998746,
         "support_delta": 0.05633758172092718,
         "standalone_delta": 0.06019285029540322,
-        "dependency_score": 0.06222982429864593,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1512.5198943880582,
         "signpost_lift": 2.655100355183328,
         "deck_prevalence": 0.2575703242110438,
@@ -849,47 +722,32 @@
         "alsa": 2.6607900318133617,
         "average_taken_at": 3.254801798120147,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1522.0670302667902,
-        "analysis_score": 9.993723322678488,
+        "analysis_score_raw": 1520.9468934294146,
+        "analysis_score": 10.0,
         "pick_priority_score_raw": 204.0710325955646,
         "pick_priority_score": 9.55162474168465,
+        "pick_market_score_raw": 9.949321168677947,
+        "pick_market_score": 9.949321168677947,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 1.3133176357082756,
-        "shell_dependence_score": 2.9255916740221526,
-        "build_around_score_raw": 1.3133176357082756,
-        "build_around_score": 2.9255916740221526,
-        "core_score_raw": 1531.901161062323,
-        "core_score": 9.995590646887937,
+        "shell_dependence_score_raw": 1.051563250450488,
+        "shell_dependence_score": 5.087694615662417,
+        "build_around_score_raw": 1.051563250450488,
+        "build_around_score": 5.087694615662417,
+        "core_score_raw": 1531.0299435221418,
+        "core_score": 10.0,
+        "win_contribution_logit": 0.26536484983605085,
+        "contribution_score": 6.494497103550102,
         "is_build_around": false,
-        "role": "balanced",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fury%22",
         "community": 0,
-        "x": 1293.2847184358075,
-        "y": 536.4650105027375,
-        "analysis_radius": 16.55088044099843,
+        "x": 1002.5347368962746,
+        "y": 563.386515618039,
+        "analysis_radius": 14.310606766247178,
         "pick_radius": 30.0,
-        "radius": 16.55088044099843,
-        "top_synergies": [
-          {
-            "card": "Fable of the Mirror-Breaker",
-            "quality_score": 0.19139994420240722,
-            "pair_win_rate": 0.6666666666666666,
-            "pair_games": 90,
-            "synergy_delta_logit": 0.11962307936304395,
-            "partner_pick_score": 8.448220355221764,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Fiery Confluence",
-            "quality_score": 0.010215261285097345,
-            "pair_win_rate": 0.6631578947368421,
-            "pair_games": 95,
-            "synergy_delta_logit": 0.006367331899444051,
-            "partner_pick_score": 9.187165665627482,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 14.310606766247178,
+        "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
           {
@@ -897,26 +755,24 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.2575703242110438,
-            "analysis_score": 9.993723322678488,
+            "analysis_score": 10.0,
             "pick_priority_score": 9.55162474168465,
-            "build_around_score": 2.9255916740221526,
-            "core_score": 9.995590646887937,
-            "role": "balanced"
+            "build_around_score": 5.087694615662417,
+            "core_score": 10.0,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
             "color_name": "Boros Tokens",
             "deck_prevalence": 0.2180862720021952,
-            "analysis_score": 9.460072236878885,
+            "analysis_score": 9.460288994809806,
             "pick_priority_score": 9.484612340644095,
             "build_around_score": 0.0,
-            "core_score": 9.100009764093905,
-            "role": "engine"
+            "core_score": 9.10026159311892,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.949321168677947,
-        "pick_market_score": 9.949321168677947
+        ]
       },
       {
         "id": "Pyrogoyf",
@@ -939,8 +795,8 @@
         "supported_win_rate": 0.6528835690968444,
         "support_delta": 0.007838524051799411,
         "standalone_delta": 0.09377280643238561,
-        "dependency_score": 0.27162020341381765,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1497.6857555607378,
         "signpost_lift": 2.4145950339645164,
         "deck_prevalence": 0.27868512658423056,
@@ -953,47 +809,32 @@
         "alsa": 2.4710411075010597,
         "average_taken_at": 2.9477182896155227,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1515.7031121227205,
-        "analysis_score": 9.99008974452482,
+        "analysis_score_raw": 1510.8139484612718,
+        "analysis_score": 9.996228553455321,
         "pick_priority_score_raw": 339.46815355118787,
         "pick_priority_score": 10.0,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 0.248781291747552,
-        "shell_dependence_score": 0.7446234987212368,
-        "build_around_score_raw": 0.248781291747552,
-        "build_around_score": 0.7446234987212368,
-        "core_score_raw": 1523.950753537664,
-        "core_score": 9.988504385802013,
+        "shell_dependence_score_raw": 0.1192348811066785,
+        "shell_dependence_score": 0.7266535561929278,
+        "build_around_score_raw": 0.1192348811066785,
+        "build_around_score": 0.7266535561929278,
+        "core_score_raw": 1520.1480706898706,
+        "core_score": 9.993680497315605,
+        "win_contribution_logit": 0.39793063571838866,
+        "contribution_score": 9.24373988355704,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Pyrogoyf%22",
         "community": 0,
-        "x": 1213.8825542975494,
-        "y": 494.15017090511407,
-        "analysis_radius": 25.935831676678646,
+        "x": 835.6791373467534,
+        "y": 468.89205647522726,
+        "analysis_radius": 16.15750435378121,
         "pick_radius": 30.0,
-        "radius": 25.935831676678646,
-        "top_synergies": [
-          {
-            "card": "Fable of the Mirror-Breaker",
-            "quality_score": 1.5902766629120257,
-            "pair_win_rate": 0.776595744680851,
-            "pair_games": 94,
-            "synergy_delta_logit": 0.5277655042360293,
-            "partner_pick_score": 8.448220355221764,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Pyrokinesis",
-            "quality_score": 0.017200157034465556,
-            "pair_win_rate": 0.6777777777777778,
-            "pair_games": 90,
-            "synergy_delta_logit": 0.009844662952776417,
-            "partner_pick_score": 7.765482398653279,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 16.15750435378121,
+        "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
           {
@@ -1001,26 +842,24 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.27868512658423056,
-            "analysis_score": 9.99008974452482,
+            "analysis_score": 9.996228553455321,
             "pick_priority_score": 10.0,
-            "build_around_score": 0.7446234987212368,
-            "core_score": 9.988504385802013,
-            "role": "engine"
+            "build_around_score": 0.7266535561929278,
+            "core_score": 9.993680497315605,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
             "color_name": "Boros Tokens",
             "deck_prevalence": 0.2131286290162287,
-            "analysis_score": 9.272094172501909,
+            "analysis_score": 9.271838489829161,
             "pick_priority_score": 9.386695196386395,
-            "build_around_score": 1.6147948173291427,
-            "core_score": 8.787240634960273,
-            "role": "engine"
+            "build_around_score": 1.4541735402858624,
+            "core_score": 8.786872454640838,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Fiery Confluence",
@@ -1043,8 +882,8 @@
         "supported_win_rate": 0.6311475409836066,
         "support_delta": 0.076543686593885,
         "standalone_delta": 0.04792846130097839,
-        "dependency_score": 0.006367331899444051,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1496.9834947294985,
         "signpost_lift": 2.722897486305684,
         "deck_prevalence": 0.24948667210926637,
@@ -1057,38 +896,32 @@
         "alsa": 3.986946093657846,
         "average_taken_at": 5.56737987987988,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1503.8080912858254,
-        "analysis_score": 9.983257030045378,
+        "analysis_score_raw": 1503.6934793116354,
+        "analysis_score": 9.99212798884712,
         "pick_priority_score_raw": 180.72134566959838,
         "pick_priority_score": 9.187165665627482,
+        "pick_market_score_raw": 9.1120458204776,
+        "pick_market_score": 9.1120458204776,
         "pick_urgency_score_raw": 8.407390901275601,
         "pick_urgency_score": 8.407390901275601,
-        "shell_dependence_score_raw": 1.7008717648643066,
-        "shell_dependence_score": 3.4735337700734985,
-        "build_around_score_raw": 1.7008717648643066,
-        "build_around_score": 3.4735337700734985,
-        "core_score_raw": 1514.1198635363558,
-        "core_score": 9.979690774187157,
+        "shell_dependence_score_raw": 1.6586276342840025,
+        "shell_dependence_score": 6.953201880619746,
+        "build_around_score_raw": 1.6586276342840025,
+        "build_around_score": 6.953201880619746,
+        "core_score_raw": 1514.0307208897636,
+        "core_score": 9.988184421089883,
+        "win_contribution_logit": 0.18104677043566816,
+        "contribution_score": 4.591644378541154,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fiery%20Confluence%22",
         "community": 0,
-        "x": 1272.7446103160985,
-        "y": 701.0563257343999,
-        "analysis_radius": 13.865289319933797,
+        "x": 793.8204956625206,
+        "y": 581.2791051440215,
+        "analysis_radius": 13.636065371553812,
         "pick_radius": 30.0,
-        "radius": 13.865289319933797,
-        "top_synergies": [
-          {
-            "card": "Fury",
-            "quality_score": 0.010215261285097345,
-            "pair_win_rate": 0.6631578947368421,
-            "pair_games": 95,
-            "synergy_delta_logit": 0.006367331899444051,
-            "partner_pick_score": 9.55162474168465,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.636065371553812,
+        "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
           {
@@ -1096,10 +929,10 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.24948667210926637,
-            "analysis_score": 9.983257030045378,
+            "analysis_score": 9.99212798884712,
             "pick_priority_score": 9.187165665627482,
-            "build_around_score": 3.4735337700734985,
-            "core_score": 9.979690774187157,
+            "build_around_score": 6.953201880619746,
+            "core_score": 9.988184421089883,
             "role": "good_alone"
           },
           {
@@ -1107,15 +940,13 @@
             "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
             "color_name": "Green Base Ramp",
             "deck_prevalence": 0.03239901736033409,
-            "analysis_score": 0.000562609933659195,
+            "analysis_score": 0.0005626838170429677,
             "pick_priority_score": 7.98058498735029,
             "build_around_score": 0.0,
             "core_score": 0.0,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.1120458204776,
-        "pick_market_score": 9.1120458204776
+        ]
       },
       {
         "id": "Kolaghan's Command",
@@ -1140,8 +971,8 @@
         "supported_win_rate": 0.5868347338935574,
         "support_delta": 0.08124814171478645,
         "standalone_delta": 0.0035421415748549956,
-        "dependency_score": 2.3582223691713398,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1496.1656538809316,
         "signpost_lift": 3.85147136143971,
         "deck_prevalence": 0.19363465236658597,
@@ -1154,38 +985,32 @@
         "alsa": 5.13266885744548,
         "average_taken_at": 8.64890870687632,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1539.1095563464955,
-        "analysis_score": 10.0,
+        "analysis_score_raw": 1496.6615537014113,
+        "analysis_score": 9.988059326430625,
         "pick_priority_score_raw": 26.457062210532282,
         "pick_priority_score": 3.489265952423672,
+        "pick_market_score_raw": 7.920988499545549,
+        "pick_market_score": 7.920988499545549,
         "pick_urgency_score_raw": 4.930750712738271,
         "pick_urgency_score": 4.930750712738271,
-        "shell_dependence_score_raw": 32.437020978464034,
+        "shell_dependence_score_raw": 3.1091119148680586,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 32.437020978464034,
+        "build_around_score_raw": 3.1091119148680586,
         "build_around_score": 10.0,
-        "core_score_raw": 1539.5508510062555,
-        "core_score": 10.0,
-        "is_build_around": true,
-        "role": "needs_support",
+        "core_score_raw": 1506.5357378378567,
+        "core_score": 9.981420292211899,
+        "win_contribution_logit": 0.00978276789270719,
+        "contribution_score": 0.26863216204100593,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Kolaghan%27s%20Command%22",
-        "community": 1,
-        "x": 1100.633531951296,
-        "y": 752.2115820322186,
-        "analysis_radius": 28.0,
+        "community": 0,
+        "x": 972.5543662165096,
+        "y": 628.7581209955079,
+        "analysis_radius": 11.194817786617024,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Fire Covenant",
-            "quality_score": 0.07975970770757784,
-            "pair_win_rate": 0.6,
-            "pair_games": 110,
-            "synergy_delta_logit": 0.06451350387760585,
-            "partner_pick_score": 7.646432596083228,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.194817786617024,
+        "top_synergies": [],
         "top_anti_synergies": [],
         "archetype_presence": [
           {
@@ -1193,15 +1018,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.19363465236658597,
-            "analysis_score": 10.0,
+            "analysis_score": 9.988059326430625,
             "pick_priority_score": 3.489265952423672,
             "build_around_score": 10.0,
-            "core_score": 10.0,
-            "role": "needs_support"
+            "core_score": 9.981420292211899,
+            "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.920988499545549,
-        "pick_market_score": 7.920988499545549
+        ]
       },
       {
         "id": "Bloodtithe Harvester",
@@ -1241,23 +1064,27 @@
         "average_taken_at": 10.090703460755485,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1475.6638821540973,
-        "analysis_score": 9.966872980617836,
+        "analysis_score": 9.975795428982796,
         "pick_priority_score_raw": 18.066265484883345,
         "pick_priority_score": 2.389687108168253,
+        "pick_market_score_raw": 7.187462896015392,
+        "pick_market_score": 7.187462896015392,
         "pick_urgency_score_raw": 3.490579581745181,
         "pick_urgency_score": 3.490579581745181,
         "shell_dependence_score_raw": 1.7143474141979635,
-        "shell_dependence_score": 3.4911401683955545,
+        "shell_dependence_score": 7.102477430265018,
         "build_around_score_raw": 1.7143474141979635,
-        "build_around_score": 3.4911401683955545,
+        "build_around_score": 7.102477430265018,
         "core_score_raw": 1484.5635490211353,
-        "core_score": 9.952844292546812,
+        "core_score": 9.961395123320502,
+        "win_contribution_logit": -0.007071694334790171,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Bloodtithe%20Harvester%22",
-        "community": 2,
-        "x": 1173.4142094548763,
-        "y": 726.2668640113387,
+        "community": 0,
+        "x": 822.3422568589422,
+        "y": 645.4723008495876,
         "analysis_radius": 11.2529302344115,
         "pick_radius": 30.0,
         "radius": 11.2529302344115,
@@ -1269,15 +1096,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.17601148272018227,
-            "analysis_score": 9.966872980617836,
+            "analysis_score": 9.975795428982796,
             "pick_priority_score": 2.389687108168253,
-            "build_around_score": 3.4911401683955545,
-            "core_score": 9.952844292546812,
+            "build_around_score": 7.102477430265018,
+            "core_score": 9.961395123320502,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.187462896015392,
-        "pick_market_score": 7.187462896015392
+        ]
       },
       {
         "id": "Minsc & Boo, Timeless Heroes",
@@ -1317,23 +1142,27 @@
         "average_taken_at": 2.2275924665305196,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1476.930641560912,
-        "analysis_score": 9.967617106323374,
+        "analysis_score": 9.976540220837405,
         "pick_priority_score_raw": 112.54429264424473,
         "pick_priority_score": 7.76926740749704,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.351059609453683,
         "pick_urgency_score": 9.351059609453683,
         "shell_dependence_score_raw": 1.2983074073515677,
-        "shell_dependence_score": 2.902562900498005,
+        "shell_dependence_score": 5.905058661733996,
         "build_around_score_raw": 1.2983074073515677,
-        "build_around_score": 2.902562900498005,
+        "build_around_score": 5.905058661733996,
         "core_score_raw": 1488.2119009776388,
-        "core_score": 9.956186904693853,
+        "core_score": 9.964740607220579,
+        "win_contribution_logit": 0.16425495235196386,
+        "contribution_score": 4.196506771590794,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Minsc%20%26%20Boo%2C%20Timeless%20Heroes%22",
-        "community": 3,
-        "x": 1118.4170058299694,
-        "y": 793.8675085689997,
+        "community": 0,
+        "x": 994.2097611006295,
+        "y": 501.1734182651613,
         "analysis_radius": 12.859982849684377,
         "pick_radius": 30.0,
         "radius": 12.859982849684377,
@@ -1345,10 +1174,10 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.25271619743098583,
-            "analysis_score": 9.967617106323374,
+            "analysis_score": 9.976540220837405,
             "pick_priority_score": 7.76926740749704,
-            "build_around_score": 2.902562900498005,
-            "core_score": 9.956186904693853,
+            "build_around_score": 5.905058661733996,
+            "core_score": 9.964740607220579,
             "role": "good_alone"
           },
           {
@@ -1356,15 +1185,13 @@
             "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
             "color_name": "Green Base Ramp",
             "deck_prevalence": 0.2268974675850494,
-            "analysis_score": 9.559691901508238,
+            "analysis_score": 9.558973278782135,
             "pick_priority_score": 9.44107855570059,
-            "build_around_score": 2.975166940707162,
-            "core_score": 9.249328997939259,
-            "role": "engine"
+            "build_around_score": 1.9818632158993827,
+            "core_score": 9.248325851162567,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Gut, True Soul Zealot",
@@ -1402,23 +1229,27 @@
         "average_taken_at": 3.4316978468055064,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1423.442842112069,
-        "analysis_score": 9.935628108244444,
+        "analysis_score": 9.944522585874655,
         "pick_priority_score_raw": 118.12126671421228,
         "pick_priority_score": 7.913833667030583,
+        "pick_market_score_raw": 9.913862736661452,
+        "pick_market_score": 9.913862736661452,
         "pick_urgency_score_raw": 9.261560155491841,
         "pick_urgency_score": 9.261560155491841,
         "shell_dependence_score_raw": 0.4157035399059897,
-        "shell_dependence_score": 1.1884426707042024,
+        "shell_dependence_score": 2.4178024481095846,
         "build_around_score_raw": 0.4157035399059897,
-        "build_around_score": 1.1884426707042024,
+        "build_around_score": 2.4178024481095846,
         "core_score_raw": 1435.9909852706596,
-        "core_score": 9.907542892406749,
+        "core_score": 9.916054803189828,
+        "win_contribution_logit": 0.11468623067365886,
+        "contribution_score": 2.9959435075723353,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Gut%2C%20True%20Soul%20Zealot%22",
-        "community": 4,
-        "x": 1047.2208120739688,
-        "y": 844.1232698887601,
+        "community": 0,
+        "x": 806.2046190469903,
+        "y": 505.82230159725776,
         "analysis_radius": 12.497907219278918,
         "pick_radius": 30.0,
         "radius": 12.497907219278918,
@@ -1449,15 +1280,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.27011635342056817,
-            "analysis_score": 9.935628108244444,
+            "analysis_score": 9.944522585874655,
             "pick_priority_score": 7.913833667030583,
-            "build_around_score": 1.1884426707042024,
-            "core_score": 9.907542892406749,
+            "build_around_score": 2.4178024481095846,
+            "core_score": 9.916054803189828,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 9.913862736661452,
-        "pick_market_score": 9.913862736661452
+        ]
       },
       {
         "id": "Fear of Missing Out",
@@ -1495,23 +1324,27 @@
         "average_taken_at": 6.614326901752052,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1385.4789353321112,
-        "analysis_score": 9.91218589686049,
+        "analysis_score": 9.92105938877923,
         "pick_priority_score_raw": 63.009007239590645,
         "pick_priority_score": 6.041162642946185,
+        "pick_market_score_raw": 8.733974374407108,
+        "pick_market_score": 8.733974374407108,
         "pick_urgency_score_raw": 6.914771813406108,
         "pick_urgency_score": 6.914771813406108,
         "shell_dependence_score_raw": 2.0783998923336595,
-        "shell_dependence_score": 3.936373965848904,
+        "shell_dependence_score": 8.00827405975323,
         "build_around_score_raw": 2.0783998923336595,
-        "build_around_score": 3.936373965848904,
+        "build_around_score": 8.00827405975323,
         "core_score_raw": 1395.7957120826377,
-        "core_score": 9.868881260128132,
+        "core_score": 9.877359955373489,
+        "win_contribution_logit": 0.03790950267607173,
+        "contribution_score": 1.0267276096614777,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fear%20of%20Missing%20Out%22",
-        "community": 5,
-        "x": 965.1059241768428,
-        "y": 873.3069080583433,
+        "community": 0,
+        "x": 812.1710619334176,
+        "y": 601.3254671871802,
         "analysis_radius": 11.868430596882641,
         "pick_radius": 30.0,
         "radius": 11.868430596882641,
@@ -1523,15 +1356,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.21510014129632565,
-            "analysis_score": 9.91218589686049,
+            "analysis_score": 9.92105938877923,
             "pick_priority_score": 6.041162642946185,
-            "build_around_score": 3.936373965848904,
-            "core_score": 9.868881260128132,
+            "build_around_score": 8.00827405975323,
+            "core_score": 9.877359955373489,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 8.733974374407108,
-        "pick_market_score": 8.733974374407108
+        ]
       },
       {
         "id": "Magda, Brazen Outlaw",
@@ -1569,23 +1400,27 @@
         "average_taken_at": 7.379339364611824,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1370.6212734525448,
-        "analysis_score": 9.902836261752142,
+        "analysis_score": 9.911701383780281,
         "pick_priority_score_raw": 28.499615802349368,
         "pick_priority_score": 3.7056037037864082,
+        "pick_market_score_raw": 8.409007423499464,
+        "pick_market_score": 8.409007423499464,
         "pick_urgency_score_raw": 5.739023324264315,
         "pick_urgency_score": 5.739023324264315,
         "shell_dependence_score_raw": 3.0955883071413344,
-        "shell_dependence_score": 4.946353860146101,
+        "shell_dependence_score": 10.0,
         "build_around_score_raw": 3.0955883071413344,
-        "build_around_score": 4.946353860146101,
+        "build_around_score": 10.0,
         "core_score_raw": 1381.6661145767716,
-        "core_score": 9.855025956478654,
+        "core_score": 9.863492748156212,
+        "win_contribution_logit": -0.11643856160811418,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Magda%2C%20Brazen%20Outlaw%22",
-        "community": 6,
-        "x": 878.1624277233053,
-        "y": 879.2540061409725,
+        "community": 0,
+        "x": 883.8577885198916,
+        "y": 459.1469405689507,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -1597,15 +1432,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.21240079085051758,
-            "analysis_score": 9.902836261752142,
+            "analysis_score": 9.911701383780281,
             "pick_priority_score": 3.7056037037864082,
-            "build_around_score": 4.946353860146101,
-            "core_score": 9.855025956478654,
+            "build_around_score": 10.0,
+            "core_score": 9.863492748156212,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 8.409007423499464,
-        "pick_market_score": 8.409007423499464
+        ]
       },
       {
         "id": "Dragon's Rage Channeler",
@@ -1643,23 +1476,27 @@
         "average_taken_at": 8.597035347776512,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1369.1581897475749,
-        "analysis_score": 9.90191010024548,
+        "analysis_score": 9.910774393164203,
         "pick_priority_score_raw": 198.6701879776642,
         "pick_priority_score": 9.471155992904418,
+        "pick_market_score_raw": 7.908055791912721,
+        "pick_market_score": 7.908055791912721,
         "pick_urgency_score_raw": 6.65118513467526,
         "pick_urgency_score": 6.65118513467526,
         "shell_dependence_score_raw": 1.9767853353970646,
-        "shell_dependence_score": 3.81763172710023,
+        "shell_dependence_score": 7.766701384337225,
         "build_around_score_raw": 1.9767853353970646,
-        "build_around_score": 3.81763172710023,
+        "build_around_score": 7.766701384337225,
         "core_score_raw": 1376.5613945538344,
-        "core_score": 9.849985489513994,
+        "core_score": 9.858447950753058,
+        "win_contribution_logit": 0.14922013190853292,
+        "contribution_score": 3.837847981115699,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Dragon%27s%20Rage%20Channeler%22",
-        "community": 7,
-        "x": 792.8385241052845,
-        "y": 861.5234950780225,
+        "community": 0,
+        "x": 955.0101925518336,
+        "y": 466.1606941080209,
         "analysis_radius": 13.3317723327717,
         "pick_radius": 30.0,
         "radius": 13.3317723327717,
@@ -1671,15 +1508,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.1872110988275272,
-            "analysis_score": 9.90191010024548,
+            "analysis_score": 9.910774393164203,
             "pick_priority_score": 9.471155992904418,
-            "build_around_score": 3.81763172710023,
-            "core_score": 9.849985489513994,
+            "build_around_score": 7.766701384337225,
+            "core_score": 9.858447950753058,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 7.908055791912721,
-        "pick_market_score": 7.908055791912721
+        ]
       },
       {
         "id": "Kroxa, Titan of Death's Hunger",
@@ -1719,23 +1554,27 @@
         "average_taken_at": 9.60897435897436,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1361.6010711422277,
-        "analysis_score": 9.897110489666417,
+        "analysis_score": 9.905970485923826,
         "pick_priority_score_raw": 10.293486370895561,
         "pick_priority_score": 0.8107487039705367,
+        "pick_market_score_raw": 7.503150089726693,
+        "pick_market_score": 7.503150089726693,
         "pick_urgency_score_raw": 3.513392487283106,
         "pick_urgency_score": 3.513392487283106,
         "shell_dependence_score_raw": 2.2594816007885674,
-        "shell_dependence_score": 4.138575594748272,
+        "shell_dependence_score": 8.419638953841856,
         "build_around_score_raw": 2.2594816007885674,
-        "build_around_score": 4.138575594748272,
+        "build_around_score": 8.419638953841856,
         "core_score_raw": 1369.4284736800025,
-        "core_score": 9.842910977563182,
+        "core_score": 9.851367360845765,
+        "win_contribution_logit": 0.03006682729966101,
+        "contribution_score": 0.8174307540045319,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Kroxa%2C%20Titan%20of%20Death%27s%20Hunger%22",
-        "community": 8,
-        "x": 715.4622969232425,
-        "y": 821.4303657633415,
+        "community": 0,
+        "x": 825.4027157174605,
+        "y": 490.29331195070256,
         "analysis_radius": 11.219773860066084,
         "pick_radius": 30.0,
         "radius": 11.219773860066084,
@@ -1747,15 +1586,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.15475339226616946,
-            "analysis_score": 9.897110489666417,
+            "analysis_score": 9.905970485923826,
             "pick_priority_score": 0.8107487039705367,
-            "build_around_score": 4.138575594748272,
-            "core_score": 9.842910977563182,
+            "build_around_score": 8.419638953841856,
+            "core_score": 9.851367360845765,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.503150089726693,
-        "pick_market_score": 7.503150089726693
+        ]
       },
       {
         "id": "Inti, Seneschal of the Sun",
@@ -1793,23 +1630,27 @@
         "average_taken_at": 5.398946547015217,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1359.6810278703522,
-        "analysis_score": 9.895886807901281,
+        "analysis_score": 9.904745708706043,
         "pick_priority_score_raw": 157.80054531152675,
         "pick_priority_score": 8.780666976545328,
+        "pick_market_score_raw": 9.16049040865283,
+        "pick_market_score": 9.16049040865283,
         "pick_urgency_score_raw": 8.363124835482962,
         "pick_urgency_score": 8.363124835482962,
         "shell_dependence_score_raw": 0.6299622891204681,
-        "shell_dependence_score": 1.6869944303162023,
+        "shell_dependence_score": 3.432070695634713,
         "build_around_score_raw": 0.6299622891204681,
-        "build_around_score": 1.6869944303162023,
+        "build_around_score": 3.432070695634713,
         "core_score_raw": 1370.4502685646598,
-        "core_score": 9.843926661840706,
+        "core_score": 9.852383917732578,
+        "win_contribution_logit": 0.12376208118270544,
+        "contribution_score": 3.219704608091983,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Inti%2C%20Seneschal%20of%20the%20Sun%22",
-        "community": 9,
-        "x": 651.7723869745857,
-        "y": 761.9481421843369,
+        "community": 0,
+        "x": 915.7063587045247,
+        "y": 659.9994688894332,
         "analysis_radius": 12.681419549982458,
         "pick_radius": 30.0,
         "radius": 12.681419549982458,
@@ -1831,15 +1672,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.23943577392865456,
-            "analysis_score": 9.895886807901281,
+            "analysis_score": 9.904745708706043,
             "pick_priority_score": 8.780666976545328,
-            "build_around_score": 1.6869944303162023,
-            "core_score": 9.843926661840706,
+            "build_around_score": 3.432070695634713,
+            "core_score": 9.852383917732578,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.16049040865283,
-        "pick_market_score": 9.16049040865283
+        ]
       },
       {
         "id": "Ivora, Insatiable Heir",
@@ -1877,23 +1716,27 @@
         "average_taken_at": 8.331663133551745,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1357.3002506170076,
-        "analysis_score": 9.89436709101378,
+        "analysis_score": 9.90322463135218,
         "pick_priority_score_raw": 125.98119532235961,
         "pick_priority_score": 8.106483037341157,
+        "pick_market_score_raw": 7.978663658502092,
+        "pick_market_score": 7.978663658502092,
         "pick_urgency_score_raw": 6.362026834756984,
         "pick_urgency_score": 6.362026834756984,
         "shell_dependence_score_raw": 1.1950002315739934,
-        "shell_dependence_score": 2.7398669138486365,
+        "shell_dependence_score": 5.574065199015797,
         "build_around_score_raw": 1.1950002315739934,
-        "build_around_score": 2.7398669138486365,
+        "build_around_score": 5.574065199015797,
         "core_score_raw": 1366.6649269154093,
-        "core_score": 9.840160159059375,
+        "core_score": 9.848614179019188,
+        "win_contribution_logit": 0.07993659915350974,
+        "contribution_score": 2.1220297909942687,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Ivora%2C%20Insatiable%20Heir%22",
-        "community": 10,
-        "x": 606.492383518255,
-        "y": 687.4883487507973,
+        "community": 0,
+        "x": 797.5221887609628,
+        "y": 555.4494578103532,
         "analysis_radius": 12.345066079171032,
         "pick_radius": 30.0,
         "radius": 12.345066079171032,
@@ -1905,15 +1748,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.20595658418408858,
-            "analysis_score": 9.89436709101378,
+            "analysis_score": 9.90322463135218,
             "pick_priority_score": 8.106483037341157,
-            "build_around_score": 2.7398669138486365,
-            "core_score": 9.840160159059375,
+            "build_around_score": 5.574065199015797,
+            "core_score": 9.848614179019188,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.978663658502092,
-        "pick_market_score": 7.978663658502092
+        ]
       },
       {
         "id": "Pyrokinesis",
@@ -1936,8 +1777,8 @@
         "supported_win_rate": 0.6109589041095891,
         "support_delta": 0.08138143932085673,
         "standalone_delta": 0.028172446272564655,
-        "dependency_score": 0.009844662952776417,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1348.7906634414926,
         "signpost_lift": 2.8811334003717572,
         "deck_prevalence": 0.2151507400643179,
@@ -1950,38 +1791,32 @@
         "alsa": 4.9623098900464635,
         "average_taken_at": 7.5720058780308594,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1352.9120098528017,
-        "analysis_score": 9.89155896118439,
+        "analysis_score_raw": 1352.7348059196518,
+        "analysis_score": 9.900300298252882,
         "pick_priority_score_raw": 112.4018393807669,
         "pick_priority_score": 7.765482398653279,
+        "pick_market_score_raw": 8.272287773017656,
+        "pick_market_score": 8.272287773017656,
         "pick_urgency_score_raw": 6.711270751126099,
         "pick_urgency_score": 6.711270751126099,
-        "shell_dependence_score_raw": 2.1087126140059316,
-        "shell_dependence_score": 3.971037780839125,
-        "build_around_score_raw": 2.1087126140059316,
-        "build_around_score": 3.971037780839125,
-        "core_score_raw": 1362.5109851393438,
-        "core_score": 9.836014875000183,
+        "shell_dependence_score_raw": 2.028820401815569,
+        "shell_dependence_score": 7.891419259931019,
+        "build_around_score_raw": 2.028820401815569,
+        "build_around_score": 7.891419259931019,
+        "core_score_raw": 1362.373159858005,
+        "core_score": 9.84432746086971,
+        "win_contribution_logit": 0.07564683789029653,
+        "contribution_score": 2.012202365125133,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Pyrokinesis%22",
         "community": 0,
-        "x": 1078.2847184358075,
-        "y": 569.2248773893342,
-        "analysis_radius": 12.903892411291007,
+        "x": 932.2017619728183,
+        "y": 452.4438459225307,
+        "analysis_radius": 12.549484544991056,
         "pick_radius": 30.0,
-        "radius": 12.903892411291007,
-        "top_synergies": [
-          {
-            "card": "Pyrogoyf",
-            "quality_score": 0.017200157034465556,
-            "pair_win_rate": 0.6777777777777778,
-            "pair_games": 90,
-            "synergy_delta_logit": 0.009844662952776417,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 12.549484544991056,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Fable of the Mirror-Breaker",
@@ -1999,10 +1834,10 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.2151507400643179,
-            "analysis_score": 9.89155896118439,
+            "analysis_score": 9.900300298252882,
             "pick_priority_score": 7.765482398653279,
-            "build_around_score": 3.971037780839125,
-            "core_score": 9.836014875000183,
+            "build_around_score": 7.891419259931019,
+            "core_score": 9.84432746086971,
             "role": "good_alone"
           },
           {
@@ -2010,15 +1845,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.0192670246964693,
-            "analysis_score": 0.15900930043633626,
+            "analysis_score": 0.15902244403877694,
             "pick_priority_score": 3.674517515869616,
             "build_around_score": 0.0,
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 8.272287773017656,
-        "pick_market_score": 8.272287773017656
+        ]
       },
       {
         "id": "Laelia, the Blade Reforged",
@@ -2056,23 +1889,27 @@
         "average_taken_at": 4.039141174235227,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1329.259547222609,
-        "analysis_score": 9.87626473997536,
+        "analysis_score": 9.885106074900815,
         "pick_priority_score_raw": 212.59171619681567,
         "pick_priority_score": 9.674365079969347,
+        "pick_market_score_raw": 9.708367301052094,
+        "pick_market_score": 9.708367301052094,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 0.12341726539277789,
-        "shell_dependence_score": 0.37037277205298935,
+        "shell_dependence_score": 0.7534971749644737,
         "build_around_score_raw": 0.12341726539277789,
-        "build_around_score": 0.37037277205298935,
+        "build_around_score": 0.7534971749644737,
         "core_score_raw": 1338.967736519974,
-        "core_score": 9.812279415587229,
+        "core_score": 9.82070948224161,
+        "win_contribution_logit": 0.24402242937245847,
+        "contribution_score": 6.025112978151379,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Laelia%2C%20the%20Blade%20Reforged%22",
-        "community": 11,
-        "x": 582.9804972683742,
-        "y": 603.573327710799,
+        "community": 0,
+        "x": 972.5901437199822,
+        "y": 484.71863686208786,
         "analysis_radius": 14.15540365973975,
         "pick_radius": 30.0,
         "radius": 14.15540365973975,
@@ -2112,15 +1949,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.2473767876366307,
-            "analysis_score": 9.87626473997536,
+            "analysis_score": 9.885106074900815,
             "pick_priority_score": 9.674365079969347,
-            "build_around_score": 0.37037277205298935,
-            "core_score": 9.812279415587229,
+            "build_around_score": 0.7534971749644737,
+            "core_score": 9.82070948224161,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.708367301052094,
-        "pick_market_score": 9.708367301052094
+        ]
       },
       {
         "id": "Seasoned Pyromancer",
@@ -2158,23 +1993,27 @@
         "average_taken_at": 7.669843430905378,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1304.221180144751,
-        "analysis_score": 9.859775172823245,
+        "analysis_score": 9.868601746116664,
         "pick_priority_score_raw": 163.74808333086222,
         "pick_priority_score": 8.891524152593671,
+        "pick_market_score_raw": 8.287483466147735,
+        "pick_market_score": 8.287483466147735,
         "pick_urgency_score_raw": 7.062054501780155,
         "pick_urgency_score": 7.062054501780155,
         "shell_dependence_score_raw": 0.757140860096269,
-        "shell_dependence_score": 1.9527765148976364,
+        "shell_dependence_score": 3.972785524044473,
         "build_around_score_raw": 0.757140860096269,
-        "build_around_score": 1.9527765148976364,
+        "build_around_score": 3.972785524044473,
         "core_score_raw": 1310.9390478679252,
-        "core_score": 9.783472024585368,
+        "core_score": 9.791877341819559,
+        "win_contribution_logit": 0.19495386457423067,
+        "contribution_score": 4.914669834258104,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Seasoned%20Pyromancer%22",
-        "community": 12,
-        "x": 582.9804972683742,
-        "y": 516.4266722892012,
+        "community": 0,
+        "x": 862.026828943786,
+        "y": 664.2609485699057,
         "analysis_radius": 14.015631301460395,
         "pick_radius": 30.0,
         "radius": 14.015631301460395,
@@ -2186,15 +2025,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.18718267355066248,
-            "analysis_score": 9.859775172823245,
+            "analysis_score": 9.868601746116664,
             "pick_priority_score": 8.891524152593671,
-            "build_around_score": 1.9527765148976364,
-            "core_score": 9.783472024585368,
+            "build_around_score": 3.972785524044473,
+            "core_score": 9.791877341819559,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.287483466147735,
-        "pick_market_score": 8.287483466147735
+        ]
       },
       {
         "id": "Broadside Bombardiers",
@@ -2232,9 +2069,11 @@
         "average_taken_at": 2.103264996203493,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1278.1832734768427,
-        "analysis_score": 9.842288374087154,
+        "analysis_score": 9.851099293016452,
         "pick_priority_score_raw": 251.20136040934688,
         "pick_priority_score": 10.0,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 0.0,
@@ -2242,13 +2081,15 @@
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
         "core_score_raw": 1287.7449784268929,
-        "core_score": 9.759164311157056,
+        "core_score": 9.767548744798788,
+        "win_contribution_logit": 0.3145356138144032,
+        "contribution_score": 7.546455455594803,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Broadside%20Bombardiers%22",
-        "community": 13,
-        "x": 606.4923835182551,
-        "y": 432.5116512492027,
+        "community": 0,
+        "x": 999.9537110544235,
+        "y": 613.882374200869,
         "analysis_radius": 14.87457658897711,
         "pick_radius": 30.0,
         "radius": 14.87457658897711,
@@ -2260,10 +2101,10 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.2583900295966781,
-            "analysis_score": 9.842288374087154,
+            "analysis_score": 9.851099293016452,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 9.759164311157056,
+            "core_score": 9.767548744798788,
             "role": "good_alone"
           },
           {
@@ -2271,15 +2112,13 @@
             "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
             "color_name": "Boros Tokens",
             "deck_prevalence": 0.23982326379951782,
-            "analysis_score": 9.465336260327149,
+            "analysis_score": 9.465449413785347,
             "pick_priority_score": 9.853087171578478,
             "build_around_score": 0.0,
-            "core_score": 9.108725207098457,
-            "role": "engine"
+            "core_score": 9.108843337800373,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Black Lotus",
@@ -2317,23 +2156,27 @@
         "average_taken_at": 0.05896980461811723,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 24.79421642054193,
-        "analysis_score": 6.454544446229778,
+        "analysis_score": 6.460322621556463,
         "pick_priority_score_raw": 156.05701726021306,
         "pick_priority_score": 8.74738115394636,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.63560179023894,
         "pick_urgency_score": 9.63560179023894,
         "shell_dependence_score_raw": 0.03392991651588435,
-        "shell_dependence_score": 0.0767249155582291,
+        "shell_dependence_score": 0.15609140704933416,
         "build_around_score_raw": 0.03392991651588435,
-        "build_around_score": 0.0767249155582291,
+        "build_around_score": 0.15609140704933416,
         "core_score_raw": 22.94662364369875,
-        "core_score": 4.327829244766604,
+        "core_score": 4.331547431689024,
+        "win_contribution_logit": 0.5121049227121642,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Black%20Lotus%22",
-        "community": 14,
-        "x": 651.7723869745856,
-        "y": 358.0518578156631,
+        "community": 0,
+        "x": 860.7051815664693,
+        "y": 456.5000050970718,
         "analysis_radius": 17.468804993440056,
         "pick_radius": 30.0,
         "radius": 17.468804993440056,
@@ -2345,15 +2188,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.08886946570378612,
-            "analysis_score": 6.454544446229778,
+            "analysis_score": 6.460322621556463,
             "pick_priority_score": 8.74738115394636,
-            "build_around_score": 0.0767249155582291,
-            "core_score": 4.327829244766604,
+            "build_around_score": 0.15609140704933416,
+            "core_score": 4.331547431689024,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Time Walk",
@@ -2391,23 +2232,27 @@
         "average_taken_at": 0.22033898305084745,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -14.383995214550087,
-        "analysis_score": 1.2620775822593344,
+        "analysis_score": 1.2632074072387618,
         "pick_priority_score_raw": 159.84469267195323,
         "pick_priority_score": 8.819229647431115,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.656503170161777,
         "pick_urgency_score": 9.656503170161777,
         "shell_dependence_score_raw": 0.3979442526792875,
-        "shell_dependence_score": 1.143784849457049,
+        "shell_dependence_score": 2.3269492734464525,
         "build_around_score_raw": 0.3979442526792875,
-        "build_around_score": 1.143784849457049,
+        "build_around_score": 2.3269492734464525,
         "core_score_raw": -16.658767789798787,
         "core_score": 0.0,
+        "win_contribution_logit": 0.4581338342699113,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Time%20Walk%22",
-        "community": 15,
-        "x": 715.4622969232425,
-        "y": 298.56963423665854,
+        "community": 0,
+        "x": 996.3087089573803,
+        "y": 527.3511703773892,
         "analysis_radius": 17.372244871376715,
         "pick_radius": 30.0,
         "radius": 17.372244871376715,
@@ -2419,21 +2264,21 @@
             "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
             "color_name": "Blue Base Storm",
             "deck_prevalence": 0.15074017357090408,
-            "analysis_score": 9.249395033384795,
+            "analysis_score": 9.228647455662973,
             "pick_priority_score": 10.0,
-            "build_around_score": 1.97871503650754,
-            "core_score": 8.846957815753882,
-            "role": "engine"
+            "build_around_score": 1.2645532635310301,
+            "core_score": 8.822723278174495,
+            "role": "good_alone"
           },
           {
             "cluster_id": 0,
             "title": "Green Base Ramp | Birds of Paradise / Titania, Protector of Argoth",
             "color_name": "Green Base Ramp",
             "deck_prevalence": 0.10200839589756505,
-            "analysis_score": 8.015052158485421,
+            "analysis_score": 8.016104715753174,
             "pick_priority_score": 9.645888784074527,
-            "build_around_score": 0.9391268021035661,
-            "core_score": 6.591740064265212,
+            "build_around_score": 1.2846352884867862,
+            "core_score": 6.592885369402548,
             "role": "good_alone"
           },
           {
@@ -2441,10 +2286,10 @@
             "title": "White Base Control | No More Lies / The Wandering Emperor",
             "color_name": "White Base Control",
             "deck_prevalence": 0.09742381916177749,
-            "analysis_score": 7.562882846296339,
+            "analysis_score": 7.564011275734799,
             "pick_priority_score": 9.1670140675558,
-            "build_around_score": 0.5790372919412777,
-            "core_score": 6.232705488660458,
+            "build_around_score": 1.588815228548052,
+            "core_score": 6.233809946558461,
             "role": "good_alone"
           },
           {
@@ -2452,15 +2297,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.07879754415630796,
-            "analysis_score": 1.2620775822593344,
+            "analysis_score": 1.2632074072387618,
             "pick_priority_score": 8.819229647431115,
-            "build_around_score": 1.143784849457049,
+            "build_around_score": 2.3269492734464525,
             "core_score": 0.0,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Detective's Phoenix",
@@ -2498,23 +2341,27 @@
         "average_taken_at": 9.06911491644316,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 628.6914833525872,
-        "analysis_score": 9.227237092836123,
+        "analysis_score": 9.235497411460848,
         "pick_priority_score_raw": 198.67782159266497,
         "pick_priority_score": 9.471271257505691,
+        "pick_market_score_raw": 7.648190436017113,
+        "pick_market_score": 7.648190436017113,
         "pick_urgency_score_raw": 6.254333395373245,
         "pick_urgency_score": 6.254333395373245,
         "shell_dependence_score_raw": 0.21462972960694365,
-        "shell_dependence_score": 0.6465306190960304,
+        "shell_dependence_score": 1.3153207572915027,
         "build_around_score_raw": 0.21462972960694365,
-        "build_around_score": 0.6465306190960304,
+        "build_around_score": 1.3153207572915027,
         "core_score_raw": 630.9123324746023,
-        "core_score": 8.787975152818188,
+        "core_score": 8.795525204458341,
+        "win_contribution_logit": 0.3122135957922642,
+        "contribution_score": 7.49767014939439,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Detective%27s%20Phoenix%22",
-        "community": 16,
-        "x": 792.8385241052844,
-        "y": 258.4765049219775,
+        "community": 0,
+        "x": 798.65864358343,
+        "y": 530.4560640499117,
         "analysis_radius": 15.009526295355386,
         "pick_radius": 30.0,
         "radius": 15.009526295355386,
@@ -2526,15 +2373,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.11981491187250963,
-            "analysis_score": 9.227237092836123,
+            "analysis_score": 9.235497411460848,
             "pick_priority_score": 9.471271257505691,
-            "build_around_score": 0.6465306190960304,
-            "core_score": 8.787975152818188,
+            "build_around_score": 1.3153207572915027,
+            "core_score": 8.795525204458341,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 7.648190436017113,
-        "pick_market_score": 7.648190436017113
+        ]
       },
       {
         "id": "Flame Slash",
@@ -2572,23 +2417,27 @@
         "average_taken_at": 6.268804887361588,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 948.577638537246,
-        "analysis_score": 9.58371863542417,
+        "analysis_score": 9.592298080033844,
         "pick_priority_score_raw": 179.37780829856052,
         "pick_priority_score": 9.164791777733813,
+        "pick_market_score_raw": 8.856022605400561,
+        "pick_market_score": 8.856022605400561,
         "pick_urgency_score_raw": 8.00986485995251,
         "pick_urgency_score": 8.00986485995251,
         "shell_dependence_score_raw": 1.1280548025034278,
-        "shell_dependence_score": 2.630294595952711,
+        "shell_dependence_score": 5.351148078161468,
         "build_around_score_raw": 1.1280548025034278,
-        "build_around_score": 2.630294595952711,
+        "build_around_score": 5.351148078161468,
         "core_score_raw": 955.9794857792378,
-        "core_score": 9.353555186580644,
+        "core_score": 9.361591147476036,
+        "win_contribution_logit": 0.21827618216013478,
+        "contribution_score": 5.448039667223892,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Flame%20Slash%22",
-        "community": 17,
-        "x": 878.1624277233054,
-        "y": 240.7459938590274,
+        "community": 0,
+        "x": 803.4035233884603,
+        "y": 618.9858930022714,
         "analysis_radius": 14.007294810365284,
         "pick_radius": 30.0,
         "radius": 14.007294810365284,
@@ -2600,15 +2449,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.20017580869917637,
-            "analysis_score": 9.58371863542417,
+            "analysis_score": 9.592298080033844,
             "pick_priority_score": 9.164791777733813,
-            "build_around_score": 2.630294595952711,
-            "core_score": 9.353555186580644,
+            "build_around_score": 5.351148078161468,
+            "core_score": 9.361591147476036,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.856022605400561,
-        "pick_market_score": 8.856022605400561
+        ]
       },
       {
         "id": "Fable of the Mirror-Breaker",
@@ -2631,8 +2478,8 @@
         "supported_win_rate": 0.6033898305084746,
         "support_delta": 0.06974713909316144,
         "standalone_delta": 0.02438776149954769,
-        "dependency_score": 0.3259127192846271,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1230.1140496100033,
         "signpost_lift": 2.323746139094975,
         "deck_prevalence": 0.24019582610155776,
@@ -2645,47 +2492,32 @@
         "alsa": 2.250399209185613,
         "average_taken_at": 2.7077358109472836,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1239.3947651670633,
-        "analysis_score": 9.815566949472364,
+        "analysis_score_raw": 1233.52833621994,
+        "analysis_score": 9.820236276887497,
         "pick_priority_score_raw": 141.221363401273,
         "pick_priority_score": 8.448220355221764,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.548573194246332,
         "pick_urgency_score": 9.548573194246332,
-        "shell_dependence_score_raw": 4.2574834174623515,
-        "shell_dependence_score": 5.829835915826728,
-        "build_around_score_raw": 4.2574834174623515,
-        "build_around_score": 5.829835915826728,
-        "core_score_raw": 1249.2399703647304,
-        "core_score": 9.717827818892832,
+        "shell_dependence_score_raw": 1.8481461143759792,
+        "shell_dependence_score": 7.448771214193585,
+        "build_around_score_raw": 1.8481461143759792,
+        "build_around_score": 7.448771214193585,
+        "core_score_raw": 1244.6771922947457,
+        "core_score": 9.721190008995672,
+        "win_contribution_logit": 0.06366157710744824,
+        "contribution_score": 1.7030158256096812,
         "is_build_around": false,
-        "role": "engine",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fable%20of%20the%20Mirror-Breaker%22",
         "community": 0,
-        "x": 1241.8033985147372,
-        "y": 499.1036154684143,
-        "analysis_radius": 24.0741847767217,
+        "x": 848.0866588170242,
+        "y": 645.1476187520726,
+        "analysis_radius": 12.341326882475123,
         "pick_radius": 30.0,
-        "radius": 24.0741847767217,
-        "top_synergies": [
-          {
-            "card": "Pyrogoyf",
-            "quality_score": 1.5902766629120257,
-            "pair_win_rate": 0.776595744680851,
-            "pair_games": 94,
-            "synergy_delta_logit": 0.5277655042360293,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Fury",
-            "quality_score": 0.19139994420240722,
-            "pair_win_rate": 0.6666666666666666,
-            "pair_games": 90,
-            "synergy_delta_logit": 0.11962307936304395,
-            "partner_pick_score": 9.55162474168465,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 12.341326882475123,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Pyrokinesis",
@@ -2721,15 +2553,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.24019582610155776,
-            "analysis_score": 9.815566949472364,
+            "analysis_score": 9.820236276887497,
             "pick_priority_score": 8.448220355221764,
-            "build_around_score": 5.829835915826728,
-            "core_score": 9.717827818892832,
-            "role": "engine"
+            "build_around_score": 7.448771214193585,
+            "core_score": 9.721190008995672,
+            "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Lightning Bolt",
@@ -2767,23 +2597,27 @@
         "average_taken_at": 3.0872034070168324,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 1245.788802550824,
-        "analysis_score": 9.820028833925036,
+        "analysis_score": 9.828819825882443,
         "pick_priority_score_raw": 145.30219110167297,
         "pick_priority_score": 8.533513312152506,
+        "pick_market_score_raw": 9.982707252732382,
+        "pick_market_score": 9.982707252732382,
         "pick_urgency_score_raw": 9.546974949526547,
         "pick_urgency_score": 9.546974949526547,
         "shell_dependence_score_raw": 1.2655942112340481,
-        "shell_dependence_score": 2.851848638995676,
+        "shell_dependence_score": 5.801884088288441,
         "build_around_score_raw": 1.2655942112340481,
-        "build_around_score": 2.851848638995676,
+        "build_around_score": 5.801884088288441,
         "core_score_raw": 1256.5339189692631,
-        "core_score": 9.72575499994254,
+        "core_score": 9.734110730496182,
+        "win_contribution_logit": 0.0952805007998175,
+        "contribution_score": 2.5113279472772203,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Lightning%20Bolt%22",
-        "community": 18,
-        "x": 965.1059241768427,
-        "y": 246.69309194165663,
+        "community": 0,
+        "x": 985.5532677297184,
+        "y": 547.3640597638907,
         "analysis_radius": 12.651142529362923,
         "pick_radius": 30.0,
         "radius": 12.651142529362923,
@@ -2795,15 +2629,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.23838959515004246,
-            "analysis_score": 9.820028833925036,
+            "analysis_score": 9.828819825882443,
             "pick_priority_score": 8.533513312152506,
-            "build_around_score": 2.851848638995676,
-            "core_score": 9.72575499994254,
+            "build_around_score": 5.801884088288441,
+            "core_score": 9.734110730496182,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.982707252732382,
-        "pick_market_score": 9.982707252732382
+        ]
       },
       {
         "id": "Night's Whisper",
@@ -2841,23 +2673,27 @@
         "average_taken_at": 9.232112192329708,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 89.44222728664647,
-        "analysis_score": 7.543253439497374,
+        "analysis_score": 7.5500062384392885,
         "pick_priority_score_raw": 6.467243951697693,
         "pick_priority_score": 0.0,
+        "pick_market_score_raw": 7.696602514366737,
+        "pick_market_score": 7.696602514366737,
         "pick_urgency_score_raw": 3.572992931032833,
         "pick_urgency_score": 3.572992931032833,
         "shell_dependence_score_raw": 1.52241748523545,
-        "shell_dependence_score": 3.2317161633051628,
+        "shell_dependence_score": 6.574697664300978,
         "build_around_score_raw": 1.52241748523545,
-        "build_around_score": 3.2317161633051628,
+        "build_around_score": 6.574697664300978,
         "core_score_raw": 92.36727701939066,
-        "core_score": 6.182129069429833,
+        "core_score": 6.187440349094219,
+        "win_contribution_logit": -0.06281241847940233,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Night%27s%20Whisper%22",
-        "community": 19,
-        "x": 1047.2208120739685,
-        "y": 275.8767301112398,
+        "community": 0,
+        "x": 907.7488279589707,
+        "y": 454.45669257388465,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -2869,15 +2705,13 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.05625095639892657,
-            "analysis_score": 7.543253439497374,
+            "analysis_score": 7.5500062384392885,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.2317161633051628,
-            "core_score": 6.182129069429833,
+            "build_around_score": 6.574697664300978,
+            "core_score": 6.187440349094219,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.696602514366737,
-        "pick_market_score": 7.696602514366737
+        ]
       },
       {
         "id": "Bone Shards",
@@ -2918,6 +2752,8 @@
         "analysis_score": 0.0,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
+        "pick_market_score_raw": 7.911746961137693,
+        "pick_market_score": 7.911746961137693,
         "pick_urgency_score_raw": 3.901577177010295,
         "pick_urgency_score": 3.901577177010295,
         "shell_dependence_score_raw": 0.0,
@@ -2926,12 +2762,14 @@
         "build_around_score": 0.0,
         "core_score_raw": -71.89490581908632,
         "core_score": 0.0,
+        "win_contribution_logit": -0.18875474031606063,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Bone%20Shards%22",
-        "community": 20,
-        "x": 1118.4170058299694,
-        "y": 326.1324914310003,
+        "community": 0,
+        "x": 1008.5880440165625,
+        "y": 584.8498394134645,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -2943,11 +2781,11 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.2662065901389928,
-            "analysis_score": 9.770797583320713,
+            "analysis_score": 9.770822162611736,
             "pick_priority_score": 6.593691480246407,
-            "build_around_score": 8.036216743919399,
-            "core_score": 9.61889290743463,
-            "role": "engine"
+            "build_around_score": 9.605760153888717,
+            "core_score": 9.618908879060518,
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
@@ -2960,9 +2798,7 @@
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.911746961137693,
-        "pick_market_score": 7.911746961137693
+        ]
       },
       {
         "id": "Necromancy",
@@ -3003,20 +2839,24 @@
         "analysis_score": 0.0,
         "pick_priority_score_raw": 23.81738213221446,
         "pick_priority_score": 3.1845124971714425,
+        "pick_market_score_raw": 9.322987279087977,
+        "pick_market_score": 9.322987279087977,
         "pick_urgency_score_raw": 6.983329661784239,
         "pick_urgency_score": 6.983329661784239,
         "shell_dependence_score_raw": 0.2040793791680913,
-        "shell_dependence_score": 0.615668768518218,
+        "shell_dependence_score": 1.252534507925336,
         "build_around_score_raw": 0.2040793791680913,
-        "build_around_score": 0.615668768518218,
+        "build_around_score": 1.252534507925336,
         "core_score_raw": -120.94078082499396,
         "core_score": 0.0,
+        "win_contribution_logit": 0.1288064767232441,
+        "contribution_score": 3.343291891891587,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Necromancy%22",
-        "community": 21,
-        "x": 1173.4142094548763,
-        "y": 393.7331359886613,
+        "community": 0,
+        "x": 974.5459791221742,
+        "y": 646.0464590074907,
         "analysis_radius": 12.267671340629143,
         "pick_radius": 30.0,
         "radius": 12.267671340629143,
@@ -3028,11 +2868,11 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.3663505144116877,
-            "analysis_score": 10.0,
+            "analysis_score": 10.000000000000002,
             "pick_priority_score": 9.919472854691882,
-            "build_around_score": 5.2998163139176135,
+            "build_around_score": 6.0095253437850165,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
@@ -3041,13 +2881,11 @@
             "deck_prevalence": 0.03513675251957171,
             "analysis_score": 0.0,
             "pick_priority_score": 3.1845124971714425,
-            "build_around_score": 0.615668768518218,
+            "build_around_score": 1.252534507925336,
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 9.322987279087977,
-        "pick_market_score": 9.322987279087977
+        ]
       },
       {
         "id": "Dark Ritual",
@@ -3085,23 +2923,27 @@
         "average_taken_at": 5.941526263627354,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -51.0945292872327,
-        "analysis_score": 0.20359299265000452,
+        "analysis_score": 0.20377525121474388,
         "pick_priority_score_raw": 37.11686178211735,
         "pick_priority_score": 4.478286272434396,
+        "pick_market_score_raw": 9.027975676451147,
+        "pick_market_score": 9.027975676451147,
         "pick_urgency_score_raw": 6.909137039651756,
         "pick_urgency_score": 6.909137039651756,
         "shell_dependence_score_raw": 1.3435522290308455,
-        "shell_dependence_score": 2.971527559925116,
+        "shell_dependence_score": 6.04536237726544,
         "build_around_score_raw": 1.3435522290308455,
-        "build_around_score": 2.971527559925116,
+        "build_around_score": 6.04536237726544,
         "core_score_raw": -51.39748667288917,
         "core_score": 0.0,
+        "win_contribution_logit": 0.21427086099606002,
+        "contribution_score": 5.357170104913537,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Dark%20Ritual%22",
-        "community": 22,
-        "x": 1208.1335319512957,
-        "y": 473.66503322975194,
+        "community": 0,
+        "x": 941.7775942173512,
+        "y": 658.933387025186,
         "analysis_radius": 13.142943014137959,
         "pick_radius": 30.0,
         "radius": 13.142943014137959,
@@ -3113,239 +2955,27 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.03538433900925946,
-            "analysis_score": 0.20359299265000452,
+            "analysis_score": 0.20377525121474388,
             "pick_priority_score": 4.478286272434396,
-            "build_around_score": 2.971527559925116,
+            "build_around_score": 6.04536237726544,
             "core_score": 0.0,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.027975676451147,
-        "pick_market_score": 9.027975676451147
+        ]
       }
     ],
-    "edges": [
-      {
-        "from": "Fable of the Mirror-Breaker",
-        "to": "Pyrogoyf",
-        "pair_games": 94,
-        "pair_win_rate": 0.776595744680851,
-        "pair_expected_win_rate": 0.672204241714527,
-        "pair_lift_vs_baseline": 0.22043639371839263,
-        "synergy_delta_logit": 0.5277655042360293,
-        "synergy_delta_prob": 0.10439150296632405,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 347,
-        "quality_score": 1.5902766629120257,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.149647561261215,
-        "pick_score": 10.0,
-        "confidence_probability": 0.9834685028870879
-      },
-      {
-        "from": "Fable of the Mirror-Breaker",
-        "to": "Fury",
-        "pair_games": 90,
-        "pair_win_rate": 0.6666666666666666,
-        "pair_expected_win_rate": 0.6395759448104196,
-        "pair_lift_vs_baseline": 0.11050731570420824,
-        "synergy_delta_logit": 0.11962307936304395,
-        "synergy_delta_prob": 0.027090721856247058,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 345,
-        "quality_score": 0.19139994420240722,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.6724100459210962,
-        "pick_score": 3.348144119221886,
-        "confidence_probability": 0.7036649320248961
-      },
-      {
-        "from": "Fire Covenant",
-        "to": "Kolaghan's Command",
-        "pair_games": 110,
-        "pair_win_rate": 0.6,
-        "pair_expected_win_rate": 0.5844216604449771,
-        "pair_lift_vs_baseline": 0.04384064903754159,
-        "synergy_delta_logit": 0.06451350387760585,
-        "synergy_delta_prob": 0.015578339555022858,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 2.293708865293734,
-        "draft_pair_events": 462,
-        "quality_score": 0.07975970770757784,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.1262799198450952,
-        "pick_score": 0.0,
-        "confidence_probability": 0.6298576620250946
-      }
-    ],
+    "edges": [],
     "triplets": [],
     "communities": [
       {
         "community_id": 0,
-        "size": 5,
+        "size": 28,
         "top_cards": [
+          "Fire Covenant",
           "Fury",
           "Pyrogoyf",
           "Fiery Confluence",
-          "Pyrokinesis",
-          "Fable of the Mirror-Breaker"
-        ]
-      },
-      {
-        "community_id": 1,
-        "size": 2,
-        "top_cards": [
-          "Fire Covenant",
           "Kolaghan's Command"
-        ]
-      },
-      {
-        "community_id": 2,
-        "size": 1,
-        "top_cards": [
-          "Bloodtithe Harvester"
-        ]
-      },
-      {
-        "community_id": 3,
-        "size": 1,
-        "top_cards": [
-          "Minsc & Boo, Timeless Heroes"
-        ]
-      },
-      {
-        "community_id": 4,
-        "size": 1,
-        "top_cards": [
-          "Gut, True Soul Zealot"
-        ]
-      },
-      {
-        "community_id": 5,
-        "size": 1,
-        "top_cards": [
-          "Fear of Missing Out"
-        ]
-      },
-      {
-        "community_id": 6,
-        "size": 1,
-        "top_cards": [
-          "Magda, Brazen Outlaw"
-        ]
-      },
-      {
-        "community_id": 7,
-        "size": 1,
-        "top_cards": [
-          "Dragon's Rage Channeler"
-        ]
-      },
-      {
-        "community_id": 8,
-        "size": 1,
-        "top_cards": [
-          "Kroxa, Titan of Death's Hunger"
-        ]
-      },
-      {
-        "community_id": 9,
-        "size": 1,
-        "top_cards": [
-          "Inti, Seneschal of the Sun"
-        ]
-      },
-      {
-        "community_id": 10,
-        "size": 1,
-        "top_cards": [
-          "Ivora, Insatiable Heir"
-        ]
-      },
-      {
-        "community_id": 11,
-        "size": 1,
-        "top_cards": [
-          "Laelia, the Blade Reforged"
-        ]
-      },
-      {
-        "community_id": 12,
-        "size": 1,
-        "top_cards": [
-          "Seasoned Pyromancer"
-        ]
-      },
-      {
-        "community_id": 13,
-        "size": 1,
-        "top_cards": [
-          "Broadside Bombardiers"
-        ]
-      },
-      {
-        "community_id": 14,
-        "size": 1,
-        "top_cards": [
-          "Black Lotus"
-        ]
-      },
-      {
-        "community_id": 15,
-        "size": 1,
-        "top_cards": [
-          "Time Walk"
-        ]
-      },
-      {
-        "community_id": 16,
-        "size": 1,
-        "top_cards": [
-          "Detective's Phoenix"
-        ]
-      },
-      {
-        "community_id": 17,
-        "size": 1,
-        "top_cards": [
-          "Flame Slash"
-        ]
-      },
-      {
-        "community_id": 18,
-        "size": 1,
-        "top_cards": [
-          "Lightning Bolt"
-        ]
-      },
-      {
-        "community_id": 19,
-        "size": 1,
-        "top_cards": [
-          "Night's Whisper"
-        ]
-      },
-      {
-        "community_id": 20,
-        "size": 1,
-        "top_cards": [
-          "Bone Shards"
-        ]
-      },
-      {
-        "community_id": 21,
-        "size": 1,
-        "top_cards": [
-          "Necromancy"
-        ]
-      },
-      {
-        "community_id": 22,
-        "size": 1,
-        "top_cards": [
-          "Dark Ritual"
         ]
       }
     ],
@@ -3647,19 +3277,7 @@
         }
       ]
     },
-    "build_arounds": [
-      {
-        "card": "Kolaghan's Command",
-        "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 32.437020978464034,
-        "build_around_score": 10.0,
-        "build_around_score_raw": 32.437020978464034,
-        "support_delta": 0.08124814171478645,
-        "supported_win_rate": 0.5868347338935574,
-        "isolated_win_rate": 0.505586592178771,
-        "supported_games": 714
-      }
-    ],
+    "build_arounds": [],
     "core_cards": [
       {
         "card": "Fire Covenant",
@@ -3668,68 +3286,68 @@
         "signpost_score": 1532.5557090938414
       },
       {
-        "card": "Kolaghan's Command",
-        "core_score": 10.0,
-        "deck_prevalence": 0.19363465236658597,
-        "signpost_score": 1496.1656538809316
-      },
-      {
         "card": "Fury",
-        "core_score": 9.995590646887937,
+        "core_score": 10.0,
         "deck_prevalence": 0.2575703242110438,
         "signpost_score": 1512.5198943880582
       },
       {
         "card": "Pyrogoyf",
-        "core_score": 9.988504385802013,
+        "core_score": 9.993680497315605,
         "deck_prevalence": 0.27868512658423056,
         "signpost_score": 1497.6857555607378
       },
       {
         "card": "Fiery Confluence",
-        "core_score": 9.979690774187157,
+        "core_score": 9.988184421089883,
         "deck_prevalence": 0.24948667210926637,
         "signpost_score": 1496.9834947294985
       },
       {
+        "card": "Kolaghan's Command",
+        "core_score": 9.981420292211899,
+        "deck_prevalence": 0.19363465236658597,
+        "signpost_score": 1496.1656538809316
+      },
+      {
         "card": "Minsc & Boo, Timeless Heroes",
-        "core_score": 9.956186904693853,
+        "core_score": 9.964740607220579,
         "deck_prevalence": 0.25271619743098583,
         "signpost_score": 1472.1961397617154
       },
       {
         "card": "Bloodtithe Harvester",
-        "core_score": 9.952844292546812,
+        "core_score": 9.961395123320502,
         "deck_prevalence": 0.17601148272018227,
         "signpost_score": 1475.0200597392318
       },
       {
         "card": "Gut, True Soul Zealot",
-        "core_score": 9.907542892406749,
+        "core_score": 9.916054803189828,
         "deck_prevalence": 0.27011635342056817,
         "signpost_score": 1419.6299873720864
       },
       {
         "card": "Fear of Missing Out",
-        "core_score": 9.868881260128132,
+        "core_score": 9.877359955373489,
         "deck_prevalence": 0.21510014129632565,
         "signpost_score": 1383.2683847218645
       },
       {
         "card": "Magda, Brazen Outlaw",
-        "core_score": 9.855025956478654,
+        "core_score": 9.863492748156212,
         "deck_prevalence": 0.21240079085051758,
         "signpost_score": 1370.6212734525448
       },
       {
         "card": "Dragon's Rage Channeler",
-        "core_score": 9.849985489513994,
+        "core_score": 9.858447950753058,
         "deck_prevalence": 0.1872110988275272,
         "signpost_score": 1363.2227692641559
       },
       {
         "card": "Inti, Seneschal of the Sun",
-        "core_score": 9.843926661840706,
+        "core_score": 9.852383917732578,
         "deck_prevalence": 0.23943577392865456,
         "signpost_score": 1355.4010508340332
       }
@@ -3810,46 +3428,10 @@
     ],
     "top_dependency": [
       {
-        "card": "Fire Covenant",
-        "dependency_score": 2.3582223691713398,
-        "standalone_delta": 0.024770136217028837,
-        "draw_games": 1248
-      },
-      {
-        "card": "Kolaghan's Command",
-        "dependency_score": 2.3582223691713398,
-        "standalone_delta": 0.0035421415748549956,
-        "draw_games": 1072
-      },
-      {
-        "card": "Fable of the Mirror-Breaker",
-        "dependency_score": 0.3259127192846271,
-        "standalone_delta": 0.02438776149954769,
-        "draw_games": 1316
-      },
-      {
         "card": "Pyrogoyf",
-        "dependency_score": 0.27162020341381765,
+        "dependency_score": 0.0,
         "standalone_delta": 0.09377280643238561,
         "draw_games": 1474
-      },
-      {
-        "card": "Fury",
-        "dependency_score": 0.06222982429864593,
-        "standalone_delta": 0.06019285029540322,
-        "draw_games": 1272
-      },
-      {
-        "card": "Pyrokinesis",
-        "dependency_score": 0.009844662952776417,
-        "standalone_delta": 0.028172446272564655,
-        "draw_games": 1085
-      },
-      {
-        "card": "Fiery Confluence",
-        "dependency_score": 0.006367331899444051,
-        "standalone_delta": 0.04792846130097839,
-        "draw_games": 1321
       },
       {
         "card": "Gut, True Soul Zealot",
@@ -3864,10 +3446,22 @@
         "draw_games": 1323
       },
       {
+        "card": "Fiery Confluence",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.04792846130097839,
+        "draw_games": 1321
+      },
+      {
         "card": "Minsc & Boo, Timeless Heroes",
         "dependency_score": 0.0,
         "standalone_delta": 0.033817869994261396,
         "draw_games": 1317
+      },
+      {
+        "card": "Fable of the Mirror-Breaker",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.02438776149954769,
+        "draw_games": 1316
       },
       {
         "card": "Lightning Bolt",
@@ -3880,60 +3474,33 @@
         "dependency_score": 0.0,
         "standalone_delta": 0.05737097563163185,
         "draw_games": 1286
+      },
+      {
+        "card": "Fury",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.06019285029540322,
+        "draw_games": 1272
+      },
+      {
+        "card": "Inti, Seneschal of the Sun",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.03057126454513559,
+        "draw_games": 1251
+      },
+      {
+        "card": "Fire Covenant",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.024770136217028837,
+        "draw_games": 1248
+      },
+      {
+        "card": "Fear of Missing Out",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.01578964721604803,
+        "draw_games": 1098
       }
     ],
-    "top_pairs": [
-      {
-        "cards": [
-          "Fable of the Mirror-Breaker",
-          "Pyrogoyf"
-        ],
-        "quality_score": 1.5902766629120257,
-        "pair_win_rate": 0.776595744680851,
-        "pair_games": 94,
-        "synergy_delta_logit": 0.5277655042360293
-      },
-      {
-        "cards": [
-          "Fable of the Mirror-Breaker",
-          "Fury"
-        ],
-        "quality_score": 0.19139994420240722,
-        "pair_win_rate": 0.6666666666666666,
-        "pair_games": 90,
-        "synergy_delta_logit": 0.11962307936304395
-      },
-      {
-        "cards": [
-          "Fire Covenant",
-          "Kolaghan's Command"
-        ],
-        "quality_score": 0.07975970770757784,
-        "pair_win_rate": 0.6,
-        "pair_games": 110,
-        "synergy_delta_logit": 0.06451350387760585
-      },
-      {
-        "cards": [
-          "Pyrogoyf",
-          "Pyrokinesis"
-        ],
-        "quality_score": 0.017200157034465556,
-        "pair_win_rate": 0.6777777777777778,
-        "pair_games": 90,
-        "synergy_delta_logit": 0.009844662952776417
-      },
-      {
-        "cards": [
-          "Fiery Confluence",
-          "Fury"
-        ],
-        "quality_score": 0.010215261285097345,
-        "pair_win_rate": 0.6631578947368421,
-        "pair_games": 95,
-        "synergy_delta_logit": 0.006367331899444051
-      }
-    ],
+    "top_pairs": [],
     "top_anti_pairs": [
       {
         "cards": [
@@ -4120,63 +3687,7 @@
         "pick_urgency_score": 9.63560179023894
       }
     ],
-    "top_pick_pairs": [
-      {
-        "cards": [
-          "Fable of the Mirror-Breaker",
-          "Pyrogoyf"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 3.149647561261215,
-        "pair_win_rate": 0.776595744680851,
-        "pair_games": 94,
-        "draft_pair_events": 347
-      },
-      {
-        "cards": [
-          "Pyrogoyf",
-          "Pyrokinesis"
-        ],
-        "pick_score": 4.383391041008006,
-        "pick_score_raw": 1.8278845288939478,
-        "pair_win_rate": 0.6777777777777778,
-        "pair_games": 90,
-        "draft_pair_events": 406
-      },
-      {
-        "cards": [
-          "Fiery Confluence",
-          "Fury"
-        ],
-        "pick_score": 3.3838183760220644,
-        "pick_score_raw": 1.6776226671158152,
-        "pair_win_rate": 0.6631578947368421,
-        "pair_games": 95,
-        "draft_pair_events": 372
-      },
-      {
-        "cards": [
-          "Fable of the Mirror-Breaker",
-          "Fury"
-        ],
-        "pick_score": 3.348144119221886,
-        "pick_score_raw": 1.6724100459210962,
-        "pair_win_rate": 0.6666666666666666,
-        "pair_games": 90,
-        "draft_pair_events": 345
-      },
-      {
-        "cards": [
-          "Fire Covenant",
-          "Kolaghan's Command"
-        ],
-        "pick_score": 0.0,
-        "pick_score_raw": 1.1262799198450952,
-        "pair_win_rate": 0.6,
-        "pair_games": 110,
-        "draft_pair_events": 462
-      }
-    ]
+    "top_pick_pairs": []
   },
   "overview": [
     {
@@ -4199,9 +3710,8 @@
         "Broadside Bombardiers"
       ],
       "build_arounds": [
-        "Guide of Souls",
-        "Adeline, Resplendent Cathar",
-        "Luminarch Aspirant"
+        "Showdown of the Skalds",
+        "Ocelot Pride"
       ],
       "core_cards": [
         "Guide of Souls",
@@ -4229,14 +3739,12 @@
         "Laelia, the Blade Reforged",
         "Fury"
       ],
-      "build_arounds": [
-        "Kolaghan's Command"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Fire Covenant",
-        "Kolaghan's Command",
         "Fury",
-        "Pyrogoyf"
+        "Pyrogoyf",
+        "Fiery Confluence"
       ]
     },
     {
@@ -4258,9 +3766,7 @@
         "Phelia, Exuberant Shepherd",
         "Solitude"
       ],
-      "build_arounds": [
-        "Path to Exile"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "No More Lies",
         "The Wandering Emperor",
@@ -4287,9 +3793,7 @@
         "Necromancy",
         "Barrowgoyf"
       ],
-      "build_arounds": [
-        "Griselbrand"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Animate Dead",
         "Necromancy",
@@ -4316,11 +3820,7 @@
         "Oko, Thief of Crowns",
         "Nadu, Winged Wisdom"
       ],
-      "build_arounds": [
-        "Fastbond",
-        "Lotus Cobra",
-        "Llanowar Elves"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Birds of Paradise",
         "Titania, Protector of Argoth",
@@ -4386,6 +3886,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -4491,6 +3992,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -4513,28 +4016,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -4602,16 +4096,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -4739,7 +4224,7 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
     if (filters.topSynergies) {
@@ -5074,22 +4559,27 @@
       ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
       : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
     var edgeText = mode === 'analysis'
-      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\\'s own baseline.'
       : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -5267,8 +4757,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -5385,6 +4876,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

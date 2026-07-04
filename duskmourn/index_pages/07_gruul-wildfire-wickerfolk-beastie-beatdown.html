@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gruul | Wildfire Wickerfolk / Beastie Beatdown | Duskmourn Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -760,7 +640,7 @@
         "average_taken_at": 4.165448699210757,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 21175.909508694942,
-        "analysis_score": 10.000000000000002,
+        "analysis_score": 9.999999999999998,
         "pick_priority_score_raw": 495.6517312313408,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 9.693824796294388,
@@ -768,17 +648,19 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 6.902904414337074,
-        "shell_dependence_score": 7.116973419363327,
+        "shell_dependence_score": 7.812565954527398,
         "build_around_score_raw": 6.902904414337074,
-        "build_around_score": 7.116973419363327,
+        "build_around_score": 7.812565954527398,
         "core_score_raw": 21203.223856361597,
         "core_score": 10.0,
+        "win_contribution_logit": 0.2110364774144468,
+        "contribution_score": 4.61683845221249,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Wildfire%20Wickerfolk%22",
-        "community": 4,
-        "x": 641.1145618000169,
-        "y": 748.0912807335915,
+        "community": 0,
+        "x": 711.4930298102472,
+        "y": 473.18007740001246,
         "analysis_radius": 13.136747542263445,
         "pick_radius": 30.0,
         "radius": 13.136747542263445,
@@ -827,9 +709,9 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5663672155561406,
-            "analysis_score": 10.000000000000002,
+            "analysis_score": 9.999999999999998,
             "pick_priority_score": 10.0,
-            "build_around_score": 7.116973419363327,
+            "build_around_score": 7.812565954527398,
             "core_score": 10.0,
             "role": "good_alone"
           },
@@ -838,11 +720,11 @@
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.26118668143088025,
-            "analysis_score": 9.553206776784618,
+            "analysis_score": 9.553075418414581,
             "pick_priority_score": 7.64955771945867,
-            "build_around_score": 3.4597522871407502,
-            "core_score": 9.295348734522133,
-            "role": "engine"
+            "build_around_score": 4.477209658038736,
+            "core_score": 9.295183120203976,
+            "role": "good_alone"
           },
           {
             "cluster_id": 10,
@@ -880,8 +762,8 @@
         "supported_win_rate": 0.6014405762304922,
         "support_delta": 0.0911231159130319,
         "standalone_delta": 0.039426959437284914,
-        "dependency_score": 0.060381414809768996,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 19499.245905701868,
         "signpost_lift": 6.495263646756117,
         "deck_prevalence": 0.5300802413207818,
@@ -894,76 +776,32 @@
         "alsa": 3.3412321430162817,
         "average_taken_at": 4.51384603053741,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 19505.852545489663,
-        "analysis_score": 10.000000000000002,
+        "analysis_score_raw": 19504.765680023087,
+        "analysis_score": 9.999999999999998,
         "pick_priority_score_raw": 322.5652610397196,
         "pick_priority_score": 9.41492612041687,
         "pick_market_score_raw": 9.571762914283477,
         "pick_market_score": 9.571762914283477,
         "pick_urgency_score_raw": 9.175761867754218,
         "pick_urgency_score": 9.175761867754218,
-        "shell_dependence_score_raw": 15.930326635972431,
-        "shell_dependence_score": 9.916990808271349,
-        "build_around_score_raw": 15.930326635972431,
-        "build_around_score": 9.916990808271349,
-        "core_score_raw": 19531.006709610054,
+        "shell_dependence_score_raw": 12.831250419533044,
+        "shell_dependence_score": 10.0,
+        "build_around_score_raw": 12.831250419533044,
+        "build_around_score": 10.0,
+        "core_score_raw": 19530.161369802718,
         "core_score": 10.0,
+        "win_contribution_logit": 0.206890206524424,
+        "contribution_score": 4.534144458033281,
         "is_build_around": false,
-        "role": "balanced",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Beastie%20Beatdown%22",
         "community": 0,
-        "x": 1211.851678421879,
-        "y": 558.4002421219742,
-        "analysis_radius": 15.342213702202354,
+        "x": 980.8799790055291,
+        "y": 563.2247393446955,
+        "analysis_radius": 13.16848276905067,
         "pick_radius": 30.0,
-        "radius": 15.342213702202354,
-        "top_synergies": [
-          {
-            "card": "Under the Skin",
-            "quality_score": 0.42862731671500964,
-            "pair_win_rate": 0.6710929519918284,
-            "pair_games": 979,
-            "synergy_delta_logit": 0.07240758368800304,
-            "partner_pick_score": 9.589387503934311,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Wary Watchdog",
-            "quality_score": 0.32315017160134596,
-            "pair_win_rate": 0.6119617224880383,
-            "pair_games": 2090,
-            "synergy_delta_logit": 0.06423731343247474,
-            "partner_pick_score": 7.380797209066064,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.25723685364698,
-            "pair_win_rate": 0.6024844720496895,
-            "pair_games": 2093,
-            "synergy_delta_logit": 0.05779367169362665,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Ticket Booth // Tunnel of Hate",
-            "quality_score": 0.25038741775902423,
-            "pair_win_rate": 0.615562403697997,
-            "pair_games": 1298,
-            "synergy_delta_logit": 0.060387059399270415,
-            "partner_pick_score": 6.138453428172428,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Most Valuable Slayer",
-            "quality_score": 0.2429512567641622,
-            "pair_win_rate": 0.6078998073217726,
-            "pair_games": 2076,
-            "synergy_delta_logit": 0.05084781775851632,
-            "partner_pick_score": 4.3167303822751055,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.16848276905067,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Overlord of the Boilerbilges",
@@ -1008,22 +846,22 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5300802413207818,
-            "analysis_score": 10.000000000000002,
+            "analysis_score": 9.999999999999998,
             "pick_priority_score": 9.41492612041687,
-            "build_around_score": 9.916990808271349,
+            "build_around_score": 10.0,
             "core_score": 10.0,
-            "role": "balanced"
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.344135529769075,
-            "analysis_score": 9.836032904142632,
+            "analysis_score": 9.835911351872026,
             "pick_priority_score": 9.414107654087815,
-            "build_around_score": 6.146768626965974,
-            "core_score": 9.740410002713997,
-            "role": "engine"
+            "build_around_score": 7.543610986330871,
+            "core_score": 9.740259343224484,
+            "role": "good_alone"
           }
         ]
       },
@@ -1048,8 +886,8 @@
         "supported_win_rate": 0.5570403013718104,
         "support_delta": 0.09467470997396094,
         "standalone_delta": -0.005122214662407476,
-        "dependency_score": 0.0656123422709421,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 14630.262002289515,
         "signpost_lift": 3.287191618757233,
         "deck_prevalence": 0.5473612945307564,
@@ -1062,76 +900,32 @@
         "alsa": 4.415845720238378,
         "average_taken_at": 7.312376756497486,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 14631.443024450393,
-        "analysis_score": 9.861289701631657,
+        "analysis_score_raw": 14630.262002289515,
+        "analysis_score": 9.861277089312757,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.54691830484078,
         "pick_market_score": 8.54691830484078,
         "pick_urgency_score_raw": 4.87165704739319,
         "pick_urgency_score": 4.87165704739319,
-        "shell_dependence_score_raw": 20.013372918820295,
+        "shell_dependence_score_raw": 15.85281232572926,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 20.013372918820295,
+        "build_around_score_raw": 15.85281232572926,
         "build_around_score": 10.0,
-        "core_score_raw": 14659.643362396908,
-        "core_score": 9.780623974758681,
+        "core_score_raw": 14658.724789605114,
+        "core_score": 9.780608081170072,
+        "win_contribution_logit": -0.015863499309236813,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Hand%20That%20Feeds%22",
         "community": 0,
-        "x": 1247.9378719997849,
-        "y": 580.9262032960835,
-        "analysis_radius": 13.362044321753917,
+        "x": 868.5167202588653,
+        "y": 677.2898660589899,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.362044321753917,
-        "top_synergies": [
-          {
-            "card": "Beastie Beatdown",
-            "quality_score": 0.25723685364698,
-            "pair_win_rate": 0.6024844720496895,
-            "pair_games": 2093,
-            "synergy_delta_logit": 0.05779367169362665,
-            "partner_pick_score": 9.41492612041687,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.17521296070318523,
-            "pair_win_rate": 0.5816901408450704,
-            "pair_games": 1420,
-            "synergy_delta_logit": 0.06857375630769463,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Wary Watchdog",
-            "quality_score": 0.14369299783305228,
-            "pair_win_rate": 0.5686582809224319,
-            "pair_games": 1908,
-            "synergy_delta_logit": 0.06707886268449853,
-            "partner_pick_score": 7.380797209066064,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Grasping Longneck",
-            "quality_score": 0.12049072498703117,
-            "pair_win_rate": 0.562157935887412,
-            "pair_games": 1279,
-            "synergy_delta_logit": 0.08504456787049705,
-            "partner_pick_score": 4.077875379671428,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Most Valuable Slayer",
-            "quality_score": 0.111648303388891,
-            "pair_win_rate": 0.5647005029721079,
-            "pair_games": 2187,
-            "synergy_delta_logit": 0.054644586348574165,
-            "partner_pick_score": 4.3167303822751055,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Clockwork Percussionist",
@@ -1176,10 +970,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5473612945307564,
-            "analysis_score": 9.861289701631657,
+            "analysis_score": 9.861277089312757,
             "pick_priority_score": 0.0,
             "build_around_score": 10.0,
-            "core_score": 9.780623974758681,
+            "core_score": 9.780608081170072,
             "role": "balanced"
           },
           {
@@ -1187,21 +981,21 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.4293165978926343,
-            "analysis_score": 9.543493134259009,
+            "analysis_score": 9.543101865587385,
             "pick_priority_score": 0.0,
-            "build_around_score": 10.0,
-            "core_score": 9.30617461246271,
-            "role": "needs_support"
+            "build_around_score": 9.501729385210261,
+            "core_score": 9.305728149508138,
+            "role": "balanced"
           },
           {
             "cluster_id": 2,
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.420550585838783,
-            "analysis_score": 9.508125263495648,
+            "analysis_score": 9.508121131912002,
             "pick_priority_score": 6.3005121011365235,
-            "build_around_score": 8.455536450444114,
-            "core_score": 9.196975579939423,
+            "build_around_score": 8.252047561692091,
+            "core_score": 9.196966511307625,
             "role": "balanced"
           }
         ]
@@ -1227,8 +1021,8 @@
         "supported_win_rate": 0.5634275114155252,
         "support_delta": 0.07808083521824138,
         "standalone_delta": 0.00219812793420604,
-        "dependency_score": 0.05478619039681824,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 13194.108757885893,
         "signpost_lift": 2.758045792990643,
         "deck_prevalence": 0.5603908021458597,
@@ -1241,67 +1035,32 @@
         "alsa": 3.9875804234507113,
         "average_taken_at": 6.188463916319949,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 13195.402647223826,
-        "analysis_score": 9.794845088685273,
+        "analysis_score_raw": 13194.416495796682,
+        "analysis_score": 9.794836060823608,
         "pick_priority_score_raw": 13.151875361978526,
         "pick_priority_score": 4.3167303822751055,
         "pick_market_score_raw": 8.97245471350153,
         "pick_market_score": 8.97245471350153,
         "pick_urgency_score_raw": 6.77734331000964,
         "pick_urgency_score": 6.77734331000964,
-        "shell_dependence_score_raw": 14.331903117372832,
-        "shell_dependence_score": 9.552522679668261,
-        "build_around_score_raw": 14.331903117372832,
-        "build_around_score": 9.552522679668261,
-        "core_score_raw": 13224.20292713744,
-        "core_score": 9.675565515436157,
+        "shell_dependence_score_raw": 11.755702496488867,
+        "shell_dependence_score": 9.744008325168215,
+        "build_around_score_raw": 11.755702496488867,
+        "build_around_score": 9.744008325168215,
+        "core_score_raw": 13223.435920471884,
+        "core_score": 9.675553857708653,
+        "win_contribution_logit": 0.023491015082727287,
+        "contribution_score": 0.5598594507989844,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Most%20Valuable%20Slayer%22",
         "community": 0,
-        "x": 1273.8766270956369,
-        "y": 547.4051606922172,
-        "analysis_radius": 13.09319989066679,
+        "x": 952.6111749217627,
+        "y": 450.9677619164663,
+        "analysis_radius": 11.120897036381333,
         "pick_radius": 30.0,
-        "radius": 13.09319989066679,
-        "top_synergies": [
-          {
-            "card": "Beastie Beatdown",
-            "quality_score": 0.2429512567641622,
-            "pair_win_rate": 0.6078998073217726,
-            "pair_games": 2076,
-            "synergy_delta_logit": 0.05084781775851632,
-            "partner_pick_score": 9.41492612041687,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Say Its Name",
-            "quality_score": 0.18663482141874155,
-            "pair_win_rate": 0.5867656988521269,
-            "pair_games": 1481,
-            "synergy_delta_logit": 0.06514968183393172,
-            "partner_pick_score": 7.426135153684101,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.111648303388891,
-            "pair_win_rate": 0.5647005029721079,
-            "pair_games": 2187,
-            "synergy_delta_logit": 0.054644586348574165,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Clockwork Percussionist",
-            "quality_score": 0.09675994127178025,
-            "pair_win_rate": 0.5630444750114626,
-            "pair_games": 2181,
-            "synergy_delta_logit": 0.05023043066899596,
-            "partner_pick_score": 6.458841025697942,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.120897036381333,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Patchwork Beastie",
@@ -1346,10 +1105,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5746595952237039,
-            "analysis_score": 9.841726926947182,
+            "analysis_score": 9.841706661746255,
             "pick_priority_score": 4.785732728454327,
-            "build_around_score": 6.45425875643383,
-            "core_score": 9.759764904034299,
+            "build_around_score": 7.569251253620377,
+            "core_score": 9.759746387213884,
             "role": "balanced"
           },
           {
@@ -1357,10 +1116,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5603908021458597,
-            "analysis_score": 9.794845088685273,
+            "analysis_score": 9.794836060823608,
             "pick_priority_score": 4.3167303822751055,
-            "build_around_score": 9.552522679668261,
-            "core_score": 9.675565515436157,
+            "build_around_score": 9.744008325168215,
+            "core_score": 9.675553857708653,
             "role": "balanced"
           },
           {
@@ -1368,10 +1127,10 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.4465834486797009,
-            "analysis_score": 9.461328426132695,
+            "analysis_score": 9.461320916148662,
             "pick_priority_score": 4.476107426222405,
-            "build_around_score": 8.62304360149888,
-            "core_score": 9.120888094318698,
+            "build_around_score": 8.462219687460255,
+            "core_score": 9.12087442175534,
             "role": "balanced"
           }
         ]
@@ -1397,8 +1156,8 @@
         "supported_win_rate": 0.5823284034888131,
         "support_delta": 0.07284777694305877,
         "standalone_delta": 0.02204803951371903,
-        "dependency_score": 0.06899145089317729,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 12744.634123239655,
         "signpost_lift": 2.873166543319376,
         "deck_prevalence": 0.525317019068219,
@@ -1411,49 +1170,32 @@
         "alsa": 4.3484724288056285,
         "average_taken_at": 6.919984762157148,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 12748.962694887654,
-        "analysis_score": 9.77270742547879,
+        "analysis_score_raw": 12747.720848771576,
+        "analysis_score": 9.772683725078608,
         "pick_priority_score_raw": 170.06801030949137,
         "pick_priority_score": 8.37666874694295,
         "pick_market_score_raw": 8.667439924870719,
         "pick_market_score": 8.667439924870719,
         "pick_urgency_score_raw": 7.4925755207314095,
         "pick_urgency_score": 7.4925755207314095,
-        "shell_dependence_score_raw": 10.550146695809739,
-        "shell_dependence_score": 8.511578611337036,
-        "build_around_score_raw": 10.550146695809739,
-        "build_around_score": 8.511578611337036,
-        "core_score_raw": 12774.790571902371,
-        "core_score": 9.640316745139861,
+        "shell_dependence_score_raw": 8.268361633414695,
+        "shell_dependence_score": 8.455547347504051,
+        "build_around_score_raw": 8.268361633414695,
+        "build_around_score": 8.455547347504051,
+        "core_score_raw": 12773.824691589867,
+        "core_score": 9.640286962110414,
+        "win_contribution_logit": 0.1189804132355807,
+        "contribution_score": 2.710594604822341,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Turn%20Inside%20Out%22",
-        "community": 1,
-        "x": 1132.9380507455605,
-        "y": 662.253391540571,
-        "analysis_radius": 14.69633440540893,
+        "community": 0,
+        "x": 1110.1889896349232,
+        "y": 567.5321024633087,
+        "analysis_radius": 12.212642173254547,
         "pick_radius": 30.0,
-        "radius": 14.69633440540893,
-        "top_synergies": [
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.3129502072763563,
-            "pair_win_rate": 0.6111111111111112,
-            "pair_games": 1260,
-            "synergy_delta_logit": 0.08040198758214079,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Grasping Longneck",
-            "quality_score": 0.1285199382160314,
-            "pair_win_rate": 0.5822784810126582,
-            "pair_games": 1106,
-            "synergy_delta_logit": 0.05681239059098192,
-            "partner_pick_score": 4.077875379671428,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 12.212642173254547,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Monstrous Emergence",
@@ -1498,21 +1240,21 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5808256207244216,
-            "analysis_score": 9.914343003866499,
+            "analysis_score": 9.914046061271986,
             "pick_priority_score": 7.655933843761632,
-            "build_around_score": 10.0,
-            "core_score": 9.869965943020569,
-            "role": "needs_support"
+            "build_around_score": 9.162058497389854,
+            "core_score": 9.86961804699877,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.525317019068219,
-            "analysis_score": 9.77270742547879,
+            "analysis_score": 9.772683725078608,
             "pick_priority_score": 8.37666874694295,
-            "build_around_score": 8.511578611337036,
-            "core_score": 9.640316745139861,
+            "build_around_score": 8.455547347504051,
+            "core_score": 9.640286962110414,
             "role": "balanced"
           },
           {
@@ -1520,10 +1262,10 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.39392526564656977,
-            "analysis_score": 9.362832362083855,
+            "analysis_score": 9.362830446379593,
             "pick_priority_score": 8.138915365127687,
-            "build_around_score": 7.436657652842784,
-            "core_score": 8.959811175377999,
+            "build_around_score": 7.351008259487457,
+            "core_score": 8.959803791392904,
             "role": "balanced"
           },
           {
@@ -1531,9 +1273,9 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.002787018232475829,
-            "analysis_score": 0.11393405738732584,
+            "analysis_score": 0.11393444470970136,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.7728111283394057,
+            "build_around_score": 3.244687593742423,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -1575,7 +1317,7 @@
         "average_taken_at": 3.0216003470930954,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 12350.149598721797,
-        "analysis_score": 9.75226580219395,
+        "analysis_score": 9.752304675083225,
         "pick_priority_score_raw": 241.8709437886283,
         "pick_priority_score": 8.947599872496736,
         "pick_market_score_raw": 9.99572151272789,
@@ -1583,17 +1325,19 @@
         "pick_urgency_score_raw": 9.687312818710733,
         "pick_urgency_score": 9.687312818710733,
         "shell_dependence_score_raw": 5.617209065355984,
-        "shell_dependence_score": 6.464424174545283,
+        "shell_dependence_score": 7.096238421274635,
         "build_around_score_raw": 5.617209065355984,
-        "build_around_score": 6.464424174545283,
+        "build_around_score": 7.096238421274635,
         "core_score_raw": 12379.288242183715,
-        "core_score": 9.608254971973496,
+        "core_score": 9.608302116601822,
+        "win_contribution_logit": 0.16362040111918771,
+        "contribution_score": 3.6538047759833936,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Scorching%20Dragonfire%22",
-        "community": 5,
-        "x": 580.0,
-        "y": 560.0,
+        "community": 0,
+        "x": 875.5739613898153,
+        "y": 365.6646595504723,
         "analysis_radius": 12.659774806663956,
         "pick_radius": 30.0,
         "radius": 12.659774806663956,
@@ -1642,10 +1386,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5922772743957804,
-            "analysis_score": 9.75226580219395,
+            "analysis_score": 9.752304675083225,
             "pick_priority_score": 8.947599872496736,
-            "build_around_score": 6.464424174545283,
-            "core_score": 9.608254971973496,
+            "build_around_score": 7.096238421274635,
+            "core_score": 9.608302116601822,
             "role": "good_alone"
           },
           {
@@ -1653,10 +1397,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5499268534176278,
-            "analysis_score": 9.63757678375672,
+            "analysis_score": 9.637570730063977,
             "pick_priority_score": 8.268873291996675,
-            "build_around_score": 4.796985653503198,
-            "core_score": 9.449625958272891,
+            "build_around_score": 5.698621819444716,
+            "core_score": 9.449631248075754,
             "role": "balanced"
           },
           {
@@ -1664,22 +1408,22 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.536472866792192,
-            "analysis_score": 9.574022155989349,
+            "analysis_score": 9.574013633611049,
             "pick_priority_score": 8.234553989057517,
-            "build_around_score": 8.239974539340885,
-            "core_score": 9.304983757901061,
-            "role": "engine"
+            "build_around_score": 7.905284368422596,
+            "core_score": 9.304969693093387,
+            "role": "balanced"
           },
           {
             "cluster_id": 4,
             "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
             "color_name": "Izzet Spirit",
             "deck_prevalence": 0.52459191433289,
-            "analysis_score": 9.601573735539898,
+            "analysis_score": 9.602552763945504,
             "pick_priority_score": 9.392834430908689,
-            "build_around_score": 4.3525243810978775,
-            "core_score": 9.353390852322505,
-            "role": "balanced"
+            "build_around_score": 5.954597286487723,
+            "core_score": 9.35459333393027,
+            "role": "good_alone"
           }
         ]
       },
@@ -1704,8 +1448,8 @@
         "supported_win_rate": 0.5509912993866781,
         "support_delta": 0.032256911376686404,
         "standalone_delta": -0.0056966683998234124,
-        "dependency_score": 0.050230430668995955,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 11808.554717415534,
         "signpost_lift": 2.552283583540282,
         "deck_prevalence": 0.5357375736872697,
@@ -1718,40 +1462,32 @@
         "alsa": 4.01355433531905,
         "average_taken_at": 5.937316693601485,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 11809.458865167577,
-        "analysis_score": 9.723472068534964,
+        "analysis_score_raw": 11808.554717415534,
+        "analysis_score": 9.723461581510609,
         "pick_priority_score_raw": 51.70934618877278,
         "pick_priority_score": 6.458841025697942,
         "pick_market_score_raw": 9.019819065053154,
         "pick_market_score": 9.019819065053154,
         "pick_urgency_score_raw": 7.472841052284217,
         "pick_urgency_score": 7.472841052284217,
-        "shell_dependence_score_raw": 5.868843904420946,
-        "shell_dependence_score": 6.601588970560625,
-        "build_around_score_raw": 5.868843904420946,
-        "build_around_score": 6.601588970560625,
-        "core_score_raw": 11837.116297276638,
-        "core_score": 9.56259772405446,
+        "shell_dependence_score_raw": 4.886949576816337,
+        "shell_dependence_score": 6.624477551961597,
+        "build_around_score_raw": 4.886949576816337,
+        "build_around_score": 6.624477551961597,
+        "core_score_raw": 11836.413071247272,
+        "core_score": 9.562584076686846,
+        "win_contribution_logit": -0.032797279080429044,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Clockwork%20Percussionist%22",
         "community": 0,
-        "x": 1347.6311969777644,
-        "y": 547.2778081423415,
-        "analysis_radius": 12.808295504083855,
+        "x": 819.3785960271509,
+        "y": 620.102115020103,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 12.808295504083855,
-        "top_synergies": [
-          {
-            "card": "Most Valuable Slayer",
-            "quality_score": 0.09675994127178025,
-            "pair_win_rate": 0.5630444750114626,
-            "pair_games": 2181,
-            "synergy_delta_logit": 0.05023043066899596,
-            "partner_pick_score": 4.3167303822751055,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Say Its Name",
@@ -1796,10 +1532,10 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.6045311899510699,
-            "analysis_score": 9.810560348634855,
+            "analysis_score": 9.810658180451926,
             "pick_priority_score": 9.010817733685077,
-            "build_around_score": 8.345886257089743,
-            "core_score": 9.691006540961784,
+            "build_around_score": 8.965333850010753,
+            "core_score": 9.691129205113487,
             "role": "balanced"
           },
           {
@@ -1807,10 +1543,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.5989637506072345,
-            "analysis_score": 9.87989791422461,
+            "analysis_score": 9.87987392572914,
             "pick_priority_score": 6.916408530338493,
-            "build_around_score": 4.016417270764644,
-            "core_score": 9.817811037599686,
+            "build_around_score": 4.492967781605811,
+            "core_score": 9.817786809071567,
             "role": "balanced"
           },
           {
@@ -1818,10 +1554,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5357375736872697,
-            "analysis_score": 9.723472068534964,
+            "analysis_score": 9.723461581510609,
             "pick_priority_score": 6.458841025697942,
-            "build_around_score": 6.601588970560625,
-            "core_score": 9.56259772405446,
+            "build_around_score": 6.624477551961597,
+            "core_score": 9.562584076686846,
             "role": "balanced"
           },
           {
@@ -1831,7 +1567,7 @@
             "deck_prevalence": 0.0037851673778559994,
             "analysis_score": 0.0,
             "pick_priority_score": 5.767744431081425,
-            "build_around_score": 1.5072227199700114,
+            "build_around_score": 1.7842803739296003,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -1858,8 +1594,8 @@
         "supported_win_rate": 0.5627161270040868,
         "support_delta": 0.07650570820939834,
         "standalone_delta": 0.0031071390300524415,
-        "dependency_score": 0.060493951713482354,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 10791.65951561531,
         "signpost_lift": 2.4802356727864003,
         "deck_prevalence": 0.5040474131209264,
@@ -1872,76 +1608,32 @@
         "alsa": 3.741569194458242,
         "average_taken_at": 5.855932819543406,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 10793.18340621036,
-        "analysis_score": 9.665594662924596,
+        "analysis_score_raw": 10792.094515079518,
+        "analysis_score": 9.665568298408632,
         "pick_priority_score_raw": 91.8272586778366,
         "pick_priority_score": 7.380797209066064,
         "pick_market_score_raw": 9.137482597910356,
         "pick_market_score": 9.137482597910356,
         "pick_urgency_score_raw": 7.920750792173216,
         "pick_urgency_score": 7.920750792173216,
-        "shell_dependence_score_raw": 12.931031602065806,
-        "shell_dependence_score": 9.200379840357344,
-        "build_around_score_raw": 12.931031602065806,
-        "build_around_score": 9.200379840357344,
-        "core_score_raw": 10818.981003239143,
-        "core_score": 9.470908085373098,
+        "shell_dependence_score_raw": 10.411661427465024,
+        "shell_dependence_score": 9.294811890048942,
+        "build_around_score_raw": 10.411661427465024,
+        "build_around_score": 9.294811890048942,
+        "core_score_raw": 10818.134087915154,
+        "core_score": 9.47087474774447,
+        "win_contribution_logit": -0.00678094048408808,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Wary%20Watchdog%22",
         "community": 0,
-        "x": 1208.367650827987,
-        "y": 598.1504931512242,
-        "analysis_radius": 13.34867490833825,
+        "x": 984.1469193472651,
+        "y": 754.0700483871001,
+        "analysis_radius": 11.170892646652884,
         "pick_radius": 30.0,
-        "radius": 13.34867490833825,
-        "top_synergies": [
-          {
-            "card": "Beastie Beatdown",
-            "quality_score": 0.32315017160134596,
-            "pair_win_rate": 0.6119617224880383,
-            "pair_games": 2090,
-            "synergy_delta_logit": 0.06423731343247474,
-            "partner_pick_score": 9.41492612041687,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Glassworks // Shattered Yard",
-            "quality_score": 0.22912414984985466,
-            "pair_win_rate": 0.5917937927406628,
-            "pair_games": 1901,
-            "synergy_delta_logit": 0.06460511676627939,
-            "partner_pick_score": 7.939326954598311,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Say Its Name",
-            "quality_score": 0.14528035416386553,
-            "pair_win_rate": 0.5848275862068966,
-            "pair_games": 1450,
-            "synergy_delta_logit": 0.053478454873094716,
-            "partner_pick_score": 7.426135153684101,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.14369299783305228,
-            "pair_win_rate": 0.5686582809224319,
-            "pair_games": 1908,
-            "synergy_delta_logit": 0.06707886268449853,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Ticket Booth // Tunnel of Hate",
-            "quality_score": 0.11169806183196315,
-            "pair_win_rate": 0.5773584905660377,
-            "pair_games": 1325,
-            "synergy_delta_logit": 0.050305280318947765,
-            "partner_pick_score": 6.138453428172428,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.170892646652884,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Patchwork Beastie",
@@ -1986,10 +1678,10 @@
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.5482974444049238,
-            "analysis_score": 9.949122790640642,
+            "analysis_score": 9.949143898519536,
             "pick_priority_score": 5.821975288996594,
-            "build_around_score": 7.17089517269621,
-            "core_score": 9.920450013086032,
+            "build_around_score": 9.669498890971242,
+            "core_score": 9.920475323885238,
             "role": "balanced"
           },
           {
@@ -1997,10 +1689,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5040474131209264,
-            "analysis_score": 9.665594662924596,
+            "analysis_score": 9.665568298408632,
             "pick_priority_score": 7.380797209066064,
-            "build_around_score": 9.200379840357344,
-            "core_score": 9.470908085373098,
+            "build_around_score": 9.294811890048942,
+            "core_score": 9.47087474774447,
             "role": "balanced"
           },
           {
@@ -2008,10 +1700,10 @@
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.49183974180888546,
-            "analysis_score": 9.706418523482075,
+            "analysis_score": 9.706533172311447,
             "pick_priority_score": 7.372602403154116,
-            "build_around_score": 7.625744421917789,
-            "core_score": 9.524083774008583,
+            "build_around_score": 8.89881513865987,
+            "core_score": 9.524223590477781,
             "role": "balanced"
           },
           {
@@ -2019,10 +1711,10 @@
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.41009439439748735,
-            "analysis_score": 9.485771666767464,
+            "analysis_score": 9.485781697692861,
             "pick_priority_score": 7.301809261531391,
-            "build_around_score": 6.600642924646446,
-            "core_score": 9.178623144463154,
+            "build_around_score": 7.550249814510267,
+            "core_score": 9.178635203173922,
             "role": "balanced"
           },
           {
@@ -2032,7 +1724,7 @@
             "deck_prevalence": 0.00878126557919481,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.5171463491020147,
+            "build_around_score": 3.7781956580416596,
             "core_score": 0.0,
             "role": "balanced"
           },
@@ -2043,7 +1735,7 @@
             "deck_prevalence": 0.0037421789346924247,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.436140322956817,
+            "build_around_score": 2.8826845912756935,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2070,8 +1762,8 @@
         "supported_win_rate": 0.5777677156441023,
         "support_delta": 0.11080074867713535,
         "standalone_delta": 0.01585690185571098,
-        "dependency_score": 0.0956551629323331,
-        "degree": 8,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 10446.441469011144,
         "signpost_lift": 3.4007591079975414,
         "deck_prevalence": 0.3848453683586086,
@@ -2084,76 +1776,32 @@
         "alsa": 4.922235218567955,
         "average_taken_at": 8.782583664524756,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 10450.383228203726,
-        "analysis_score": 9.644835358345471,
+        "analysis_score_raw": 10448.661435270944,
+        "analysis_score": 9.644767824688921,
         "pick_priority_score_raw": 124.53199016607388,
         "pick_priority_score": 7.872477206258208,
         "pick_market_score_raw": 7.966189162101208,
         "pick_market_score": 7.966189162101208,
         "pick_urgency_score_raw": 6.2749004530296855,
         "pick_urgency_score": 6.2749004530296855,
-        "shell_dependence_score_raw": 16.44794514239376,
-        "shell_dependence_score": 10.0,
-        "build_around_score_raw": 16.44794514239376,
-        "build_around_score": 10.0,
-        "core_score_raw": 10469.14043710458,
-        "core_score": 9.437397904460337,
+        "shell_dependence_score_raw": 11.89620965217123,
+        "shell_dependence_score": 9.788204811143231,
+        "build_around_score_raw": 11.89620965217123,
+        "build_around_score": 9.788204811143231,
+        "core_score_raw": 10467.801264823527,
+        "core_score": 9.437313795159003,
+        "win_contribution_logit": 0.0852314618080809,
+        "contribution_score": 1.972180666532184,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Impossible%20Inferno%22",
-        "community": 1,
-        "x": 1175.9741025491228,
-        "y": 748.0648116582821,
-        "analysis_radius": 15.315715467628095,
+        "community": 0,
+        "x": 853.409924528181,
+        "y": 443.1865092300473,
+        "analysis_radius": 11.872129602064105,
         "pick_radius": 30.0,
-        "radius": 15.315715467628095,
-        "top_synergies": [
-          {
-            "card": "Overlord of the Boilerbilges",
-            "quality_score": 0.8669707003817408,
-            "pair_win_rate": 0.7520661157024794,
-            "pair_games": 121,
-            "synergy_delta_logit": 0.27711213721768013,
-            "partner_pick_score": 9.645218480073968,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Fear of Burning Alive",
-            "quality_score": 0.5283446003265576,
-            "pair_win_rate": 0.6543942992874109,
-            "pair_games": 842,
-            "synergy_delta_logit": 0.1083335487099748,
-            "partner_pick_score": 9.68147133862183,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Monstrous Emergence",
-            "quality_score": 0.448701798060832,
-            "pair_win_rate": 0.6161515453639083,
-            "pair_games": 1003,
-            "synergy_delta_logit": 0.1226671724553422,
-            "partner_pick_score": 7.50721910665187,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Ticket Booth // Tunnel of Hate",
-            "quality_score": 0.33389197781074564,
-            "pair_win_rate": 0.6035678889990089,
-            "pair_games": 1009,
-            "synergy_delta_logit": 0.106878455585875,
-            "partner_pick_score": 6.138453428172428,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Turn Inside Out",
-            "quality_score": 0.3129502072763563,
-            "pair_win_rate": 0.6111111111111112,
-            "pair_games": 1260,
-            "synergy_delta_logit": 0.08040198758214079,
-            "partner_pick_score": 8.37666874694295,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.872129602064105,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Razorkin Hordecaller",
@@ -2198,10 +1846,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.3848453683586086,
-            "analysis_score": 9.644835358345471,
+            "analysis_score": 9.644767824688921,
             "pick_priority_score": 7.872477206258208,
-            "build_around_score": 10.0,
-            "core_score": 9.437397904460337,
+            "build_around_score": 9.788204811143231,
+            "core_score": 9.437313795159003,
             "role": "balanced"
           }
         ]
@@ -2227,8 +1875,8 @@
         "supported_win_rate": 0.5879591063990912,
         "support_delta": 0.10766864996755593,
         "standalone_delta": 0.026490679821693064,
-        "dependency_score": 0.057143709007312145,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 10112.525605098363,
         "signpost_lift": 2.2902948930554268,
         "deck_prevalence": 0.5093614310021276,
@@ -2241,49 +1889,32 @@
         "alsa": 3.0783084738136304,
         "average_taken_at": 4.356943102659277,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 10117.262887035531,
-        "analysis_score": 9.623999341865131,
+        "analysis_score_raw": 10116.2343002734,
+        "analysis_score": 9.623972310493315,
         "pick_priority_score_raw": 217.56774010227304,
         "pick_priority_score": 8.77584238547731,
         "pick_market_score_raw": 9.69712552557024,
         "pick_market_score": 9.69712552557024,
         "pick_urgency_score_raw": 9.181309496646126,
         "pick_urgency_score": 9.181309496646126,
-        "shell_dependence_score_raw": 13.155140522986178,
-        "shell_dependence_score": 9.259031749672484,
-        "build_around_score_raw": 13.155140522986178,
-        "build_around_score": 9.259031749672484,
-        "core_score_raw": 10142.06411922142,
-        "core_score": 9.40503960500907,
+        "shell_dependence_score_raw": 10.707642820931905,
+        "shell_dependence_score": 9.398116113489577,
+        "build_around_score_raw": 10.707642820931905,
+        "build_around_score": 9.398116113489577,
+        "core_score_raw": 10141.264107295317,
+        "core_score": 9.40500533286995,
+        "win_contribution_logit": 0.11835390024754787,
+        "contribution_score": 2.6970907361536383,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Spineseeker%20Centipede%22",
         "community": 0,
-        "x": 1132.6311969777644,
-        "y": 539.4394163455532,
-        "analysis_radius": 14.514160914456356,
+        "x": 1025.7056873148326,
+        "y": 421.67600192827,
+        "analysis_radius": 12.456987390193119,
         "pick_radius": 30.0,
-        "radius": 14.514160914456356,
-        "top_synergies": [
-          {
-            "card": "Under the Skin",
-            "quality_score": 0.34260664285210835,
-            "pair_win_rate": 0.6574358974358975,
-            "pair_games": 975,
-            "synergy_delta_logit": 0.06453160128582713,
-            "partner_pick_score": 9.589387503934311,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Ticket Booth // Tunnel of Hate",
-            "quality_score": 0.17638685225429365,
-            "pair_win_rate": 0.6005852231163131,
-            "pair_games": 1367,
-            "synergy_delta_logit": 0.05090436968609374,
-            "partner_pick_score": 6.138453428172428,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 12.456987390193119,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Clockwork Percussionist",
@@ -2330,30 +1961,30 @@
             "deck_prevalence": 0.6517656429755744,
             "analysis_score": 10.0,
             "pick_priority_score": 8.574023762619683,
-            "build_around_score": 7.439330695913925,
+            "build_around_score": 8.306322161160125,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.5372044543988732,
-            "analysis_score": 9.765516437489056,
+            "analysis_score": 9.765668326295373,
             "pick_priority_score": 9.034676191353174,
-            "build_around_score": 7.599979679394311,
-            "core_score": 9.61997198905435,
-            "role": "balanced"
+            "build_around_score": 9.141653070727848,
+            "core_score": 9.620159769134835,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.5093614310021276,
-            "analysis_score": 9.623999341865131,
+            "analysis_score": 9.623972310493315,
             "pick_priority_score": 8.77584238547731,
-            "build_around_score": 9.259031749672484,
-            "core_score": 9.40503960500907,
+            "build_around_score": 9.398116113489577,
+            "core_score": 9.40500533286995,
             "role": "balanced"
           },
           {
@@ -2361,11 +1992,11 @@
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.4777272675886055,
-            "analysis_score": 9.637524790590751,
+            "analysis_score": 9.637480935863753,
             "pick_priority_score": 8.922067496307102,
-            "build_around_score": 7.573635943265262,
-            "core_score": 9.421014836379896,
-            "role": "balanced"
+            "build_around_score": 7.955922293896479,
+            "core_score": 9.420960110593391,
+            "role": "good_alone"
           }
         ]
       },
@@ -2390,8 +2021,8 @@
         "supported_win_rate": 0.5705409065562017,
         "support_delta": 0.04020822553858916,
         "standalone_delta": 0.013370714010407125,
-        "dependency_score": 0.054028663663938326,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9482.341590301647,
         "signpost_lift": 2.309329614329364,
         "deck_prevalence": 0.4762643382950811,
@@ -2404,40 +2035,32 @@
         "alsa": 3.7176021299022515,
         "average_taken_at": 5.6756424091185,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9485.186006209055,
-        "analysis_score": 9.582506975082772,
+        "analysis_score_raw": 9484.213490263104,
+        "analysis_score": 9.582479223329651,
         "pick_priority_score_raw": 132.81743728235455,
         "pick_priority_score": 7.976599221880569,
         "pick_market_score_raw": 9.186365526584726,
         "pick_market_score": 9.186365526584726,
         "pick_urgency_score_raw": 8.168732577876474,
         "pick_urgency_score": 8.168732577876474,
-        "shell_dependence_score_raw": 5.576668410527507,
-        "shell_dependence_score": 6.441838866155145,
-        "build_around_score_raw": 5.576668410527507,
-        "build_around_score": 6.441838866155145,
-        "core_score_raw": 9509.000247875172,
-        "core_score": 9.339332371707338,
+        "shell_dependence_score_raw": 4.585643622645185,
+        "shell_dependence_score": 6.412519119249006,
+        "build_around_score_raw": 4.585643622645185,
+        "build_around_score": 6.412519119249006,
+        "core_score_raw": 9508.243846583877,
+        "core_score": 9.339297099444632,
+        "win_contribution_logit": 0.05792508179905357,
+        "contribution_score": 1.3577219113891634,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Manifest%20Dread%22",
-        "community": 1,
-        "x": 1189.484080089124,
-        "y": 877.253391540571,
-        "analysis_radius": 13.680421162474172,
+        "community": 0,
+        "x": 1051.9513172910622,
+        "y": 614.8949216625629,
+        "analysis_radius": 11.735389270572393,
         "pick_radius": 30.0,
-        "radius": 13.680421162474172,
-        "top_synergies": [
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.17529980660439162,
-            "pair_win_rate": 0.5963235294117647,
-            "pair_games": 1360,
-            "synergy_delta_logit": 0.054028663663938326,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.735389270572393,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Clockwork Percussionist",
@@ -2482,10 +2105,10 @@
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.5801675263465257,
-            "analysis_score": 9.922121867549954,
+            "analysis_score": 9.922090719523458,
             "pick_priority_score": 8.209157903938694,
-            "build_around_score": 8.42917773379588,
-            "core_score": 9.875810493212642,
+            "build_around_score": 8.779476755555413,
+            "core_score": 9.875771749474145,
             "role": "balanced"
           },
           {
@@ -2493,10 +2116,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.4762643382950811,
-            "analysis_score": 9.582506975082772,
+            "analysis_score": 9.582479223329651,
             "pick_priority_score": 7.976599221880569,
-            "build_around_score": 6.441838866155145,
-            "core_score": 9.339332371707338,
+            "build_around_score": 6.412519119249006,
+            "core_score": 9.339297099444632,
             "role": "balanced"
           },
           {
@@ -2504,21 +2127,21 @@
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.45842709531931936,
-            "analysis_score": 9.68582331802176,
+            "analysis_score": 9.685626242203346,
             "pick_priority_score": 5.313282254519512,
-            "build_around_score": 4.669421552366506,
-            "core_score": 9.506425250426727,
-            "role": "engine"
+            "build_around_score": 5.553117676323813,
+            "core_score": 9.506181669450838,
+            "role": "balanced"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.43843736451036264,
-            "analysis_score": 9.541060990147423,
+            "analysis_score": 9.541180901251202,
             "pick_priority_score": 7.701075193212249,
-            "build_around_score": 7.408139861170606,
-            "core_score": 9.25571069400279,
+            "build_around_score": 8.893586765761968,
+            "core_score": 9.25585431802845,
             "role": "balanced"
           },
           {
@@ -2528,7 +2151,7 @@
             "deck_prevalence": 0.010350970630764669,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.5421058682860127,
+            "build_around_score": 2.3569732137040234,
             "core_score": 0.0,
             "role": "balanced"
           },
@@ -2539,7 +2162,7 @@
             "deck_prevalence": 0.007499459866034601,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.808840152674935,
+            "build_around_score": 1.9430957181161153,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2566,8 +2189,8 @@
         "supported_win_rate": 0.5815243226113136,
         "support_delta": 0.10730701137742776,
         "standalone_delta": 0.018879954087984152,
-        "dependency_score": 0.07574074155082411,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9273.245621790094,
         "signpost_lift": 2.1536627159862336,
         "deck_prevalence": 0.49913413908258913,
@@ -2580,67 +2203,32 @@
         "alsa": 2.6800801492434188,
         "average_taken_at": 3.673850526102108,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9277.252148710328,
-        "analysis_score": 9.56825057710868,
+        "analysis_score_raw": 9275.888815362412,
+        "analysis_score": 9.568194192543915,
         "pick_priority_score_raw": 129.79048473393667,
         "pick_priority_score": 7.939326954598311,
         "pick_market_score_raw": 9.864944808322193,
         "pick_market_score": 9.864944808322193,
         "pick_urgency_score_raw": 9.19426536677522,
         "pick_urgency_score": 9.19426536677522,
-        "shell_dependence_score_raw": 14.569050960025768,
-        "shell_dependence_score": 9.608933467050683,
-        "build_around_score_raw": 14.569050960025768,
-        "build_around_score": 9.608933467050683,
-        "core_score_raw": 9301.86576350158,
-        "core_score": 9.316880081530936,
+        "shell_dependence_score_raw": 11.181477400296743,
+        "shell_dependence_score": 9.558178119886174,
+        "build_around_score_raw": 11.181477400296743,
+        "build_around_score": 9.558178119886174,
+        "core_score_raw": 9300.805393119868,
+        "core_score": 9.316809575806538,
+        "win_contribution_logit": 0.10611793038187427,
+        "contribution_score": 2.4318288414216616,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Glassworks%20//%20Shattered%20Yard%22",
-        "community": 2,
-        "x": 995.5811444278992,
-        "y": 763.9703530077207,
-        "analysis_radius": 14.765064170668795,
+        "community": 0,
+        "x": 775.6819127623999,
+        "y": 550.6865099810689,
+        "analysis_radius": 12.038397474839128,
         "pick_radius": 30.0,
-        "radius": 14.765064170668795,
-        "top_synergies": [
-          {
-            "card": "Valgavoth's Onslaught",
-            "quality_score": 0.869608743630256,
-            "pair_win_rate": 0.7508196721311475,
-            "pair_games": 305,
-            "synergy_delta_logit": 0.1731989426938092,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Wary Watchdog",
-            "quality_score": 0.22912414984985466,
-            "pair_win_rate": 0.5917937927406628,
-            "pair_games": 1901,
-            "synergy_delta_logit": 0.06460511676627939,
-            "partner_pick_score": 7.380797209066064,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Say Its Name",
-            "quality_score": 0.21372528688715847,
-            "pair_win_rate": 0.6025538707102953,
-            "pair_games": 1253,
-            "synergy_delta_logit": 0.06278667211922445,
-            "partner_pick_score": 7.426135153684101,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Patchwork Beastie",
-            "quality_score": 0.14028587672034185,
-            "pair_win_rate": 0.5945683802133851,
-            "pair_games": 1031,
-            "synergy_delta_logit": 0.05213468950012201,
-            "partner_pick_score": 8.371607564325087,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 12.038397474839128,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Beastie Beatdown",
@@ -2685,21 +2273,21 @@
             "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
             "color_name": "Izzet Spirit",
             "deck_prevalence": 0.632121980592565,
-            "analysis_score": 9.883130511438388,
+            "analysis_score": 9.884165756925627,
             "pick_priority_score": 9.579655905591212,
-            "build_around_score": 5.022483344113277,
-            "core_score": 9.811128758614341,
-            "role": "engine"
+            "build_around_score": 6.810156715081854,
+            "core_score": 9.812427742817286,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.49913413908258913,
-            "analysis_score": 9.56825057710868,
+            "analysis_score": 9.568194192543915,
             "pick_priority_score": 7.939326954598311,
-            "build_around_score": 9.608933467050683,
-            "core_score": 9.316880081530936,
+            "build_around_score": 9.558178119886174,
+            "core_score": 9.316809575806538,
             "role": "balanced"
           },
           {
@@ -2707,21 +2295,21 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.48387124328927544,
-            "analysis_score": 9.480715787076665,
+            "analysis_score": 9.480699404468822,
             "pick_priority_score": 9.493528545379187,
-            "build_around_score": 6.627024052793511,
-            "core_score": 9.152357845662989,
-            "role": "engine"
+            "build_around_score": 6.281214822895537,
+            "core_score": 9.152333048815784,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.47582151688390867,
-            "analysis_score": 9.448870179192292,
+            "analysis_score": 9.448852043933005,
             "pick_priority_score": 7.73704160548906,
-            "build_around_score": 5.788762056661658,
-            "core_score": 9.162808543829255,
+            "build_around_score": 6.857622396766843,
+            "core_score": 9.162806066419995,
             "role": "balanced"
           }
         ]
@@ -2747,8 +2335,8 @@
         "supported_win_rate": 0.569658072369149,
         "support_delta": 0.09202808446104743,
         "standalone_delta": 0.007799318725135174,
-        "dependency_score": 0.06445687797693306,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8455.403654886717,
         "signpost_lift": 2.543429817928754,
         "deck_prevalence": 0.3921117529622334,
@@ -2761,76 +2349,32 @@
         "alsa": 4.422527042310704,
         "average_taken_at": 7.418798706072637,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8457.65578331182,
-        "analysis_score": 9.508761957399779,
+        "analysis_score_raw": 8456.495559508236,
+        "analysis_score": 9.50871162397508,
         "pick_priority_score_raw": 42.2986394092545,
         "pick_priority_score": 6.138453428172428,
         "pick_market_score_raw": 8.518113239777342,
         "pick_market_score": 8.518113239777342,
         "pick_urgency_score_raw": 6.613395763491921,
         "pick_urgency_score": 6.613395763491921,
-        "shell_dependence_score_raw": 12.501188412381097,
-        "shell_dependence_score": 9.085196150198966,
-        "build_around_score_raw": 12.501188412381097,
-        "build_around_score": 9.085196150198966,
-        "core_score_raw": 8477.358804424066,
-        "core_score": 9.222258573833965,
+        "shell_dependence_score_raw": 9.938714405618853,
+        "shell_dependence_score": 9.124047544853907,
+        "build_around_score_raw": 9.938714405618853,
+        "build_around_score": 9.124047544853907,
+        "core_score_raw": 8476.45640813239,
+        "core_score": 9.222195300347517,
+        "win_contribution_logit": 0.05770832107245288,
+        "contribution_score": 1.3527810896712047,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Ticket%20Booth%20//%20Tunnel%20of%20Hate%22",
         "community": 0,
-        "x": 1164.931085137667,
-        "y": 575.6885068596386,
-        "analysis_radius": 13.749410137052024,
+        "x": 890.0636594911848,
+        "y": 751.0310035327001,
+        "analysis_radius": 11.428962529882435,
         "pick_radius": 30.0,
-        "radius": 13.749410137052024,
-        "top_synergies": [
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.33389197781074564,
-            "pair_win_rate": 0.6035678889990089,
-            "pair_games": 1009,
-            "synergy_delta_logit": 0.106878455585875,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Beastie Beatdown",
-            "quality_score": 0.25038741775902423,
-            "pair_win_rate": 0.615562403697997,
-            "pair_games": 1298,
-            "synergy_delta_logit": 0.060387059399270415,
-            "partner_pick_score": 9.41492612041687,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Spineseeker Centipede",
-            "quality_score": 0.17638685225429365,
-            "pair_win_rate": 0.6005852231163131,
-            "pair_games": 1367,
-            "synergy_delta_logit": 0.05090436968609374,
-            "partner_pick_score": 8.77584238547731,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Monstrous Emergence",
-            "quality_score": 0.1641014132214601,
-            "pair_win_rate": 0.5930851063829787,
-            "pair_games": 1128,
-            "synergy_delta_logit": 0.058958038006235336,
-            "partner_pick_score": 7.50721910665187,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Wary Watchdog",
-            "quality_score": 0.11169806183196315,
-            "pair_win_rate": 0.5773584905660377,
-            "pair_games": 1325,
-            "synergy_delta_logit": 0.050305280318947765,
-            "partner_pick_score": 7.380797209066064,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.428962529882435,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Valgavoth's Onslaught",
@@ -2875,10 +2419,10 @@
             "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
             "color_name": "Izzet Spirit",
             "deck_prevalence": 0.4757055989262796,
-            "analysis_score": 9.756836062129416,
+            "analysis_score": 9.7579555188972,
             "pick_priority_score": 8.738382742213819,
-            "build_around_score": 4.0683342335141495,
-            "core_score": 9.605221056818202,
+            "build_around_score": 6.218091124603311,
+            "core_score": 9.606614834311946,
             "role": "good_alone"
           },
           {
@@ -2886,10 +2430,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.3921117529622334,
-            "analysis_score": 9.508761957399779,
+            "analysis_score": 9.50871162397508,
             "pick_priority_score": 6.138453428172428,
-            "build_around_score": 9.085196150198966,
-            "core_score": 9.222258573833965,
+            "build_around_score": 9.124047544853907,
+            "core_score": 9.222195300347517,
             "role": "balanced"
           }
         ]
@@ -2915,8 +2459,8 @@
         "supported_win_rate": 0.6223521767381417,
         "support_delta": 0.1005476654599462,
         "standalone_delta": 0.060210968841357015,
-        "dependency_score": 0.1145762952396075,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8429.809264202437,
         "signpost_lift": 3.095117727282418,
         "deck_prevalence": 0.33401570185243307,
@@ -2929,58 +2473,32 @@
         "alsa": 2.374514306995221,
         "average_taken_at": 2.998290737424711,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8440.30117315454,
-        "analysis_score": 9.50744086922699,
+        "analysis_score_raw": 8438.238799840226,
+        "analysis_score": 9.507321590656746,
         "pick_priority_score_raw": 380.0844412456884,
         "pick_priority_score": 9.68147133862183,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 9.021806660583069,
-        "shell_dependence_score": 7.989945565839277,
-        "build_around_score_raw": 9.021806660583069,
-        "build_around_score": 7.989945565839277,
-        "core_score_raw": 8453.900081183632,
-        "core_score": 9.219433630423621,
+        "shell_dependence_score_raw": 6.186501137336522,
+        "shell_dependence_score": 7.429197156644286,
+        "build_around_score_raw": 6.186501137336522,
+        "build_around_score": 7.429197156644286,
+        "core_score_raw": 8452.296013050278,
+        "core_score": 9.219285415188105,
+        "win_contribution_logit": 0.2875744536629553,
+        "contribution_score": 6.094494075709791,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fear%20of%20Burning%20Alive%22",
-        "community": 3,
-        "x": 793.6836331953385,
-        "y": 869.5170150608647,
-        "analysis_radius": 18.436349914900504,
+        "community": 0,
+        "x": 981.1031446996552,
+        "y": 638.5098066337829,
+        "analysis_radius": 14.311603286274636,
         "pick_radius": 30.0,
-        "radius": 18.436349914900504,
-        "top_synergies": [
-          {
-            "card": "Patchwork Beastie",
-            "quality_score": 0.6790182302218409,
-            "pair_win_rate": 0.659270998415214,
-            "pair_games": 631,
-            "synergy_delta_logit": 0.15784259787748955,
-            "partner_pick_score": 8.371607564325087,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.5283446003265576,
-            "pair_win_rate": 0.6543942992874109,
-            "pair_games": 842,
-            "synergy_delta_logit": 0.1083335487099748,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Say Its Name",
-            "quality_score": 0.39228325199614444,
-            "pair_win_rate": 0.6476624857468644,
-            "pair_games": 877,
-            "synergy_delta_logit": 0.08399332137348081,
-            "partner_pick_score": 7.426135153684101,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 14.311603286274636,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Under the Skin",
@@ -3025,22 +2543,22 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.33401570185243307,
-            "analysis_score": 9.50744086922699,
+            "analysis_score": 9.507321590656746,
             "pick_priority_score": 9.68147133862183,
-            "build_around_score": 7.989945565839277,
-            "core_score": 9.219433630423621,
-            "role": "engine"
+            "build_around_score": 7.429197156644286,
+            "core_score": 9.219285415188105,
+            "role": "good_alone"
           },
           {
             "cluster_id": 2,
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.26493692334345037,
-            "analysis_score": 9.18829933323379,
+            "analysis_score": 9.188208330960329,
             "pick_priority_score": 9.008587132182939,
-            "build_around_score": 6.580703615704685,
-            "core_score": 8.673704183545523,
-            "role": "engine"
+            "build_around_score": 6.21221339876537,
+            "core_score": 8.673582264276204,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
@@ -3049,7 +2567,7 @@
             "deck_prevalence": 0.010226554304011592,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 4.3902571671600725,
+            "build_around_score": 5.726010803234193,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3076,8 +2594,8 @@
         "supported_win_rate": 0.5756709397768145,
         "support_delta": 0.056123614673933786,
         "standalone_delta": 0.016910647094813824,
-        "dependency_score": 0.08593377391812165,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8312.607830945275,
         "signpost_lift": 2.164565040850212,
         "deck_prevalence": 0.4494405903042579,
@@ -3090,67 +2608,32 @@
         "alsa": 3.012171834818311,
         "average_taken_at": 4.397524668414995,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8316.522129469075,
-        "analysis_score": 9.497938894164704,
+        "analysis_score_raw": 8314.975321538548,
+        "analysis_score": 9.497857118661098,
         "pick_priority_score_raw": 99.31799238164253,
         "pick_priority_score": 7.50721910665187,
         "pick_market_score_raw": 9.711724342917499,
         "pick_market_score": 9.711724342917499,
         "pick_urgency_score_raw": 8.834551827481816,
         "pick_urgency_score": 8.834551827481816,
-        "shell_dependence_score_raw": 7.47626828518722,
-        "shell_dependence_score": 7.374381511446089,
-        "build_around_score_raw": 7.47626828518722,
-        "build_around_score": 7.374381511446089,
-        "core_score_raw": 8338.61921947901,
-        "core_score": 9.20543640011562,
+        "shell_dependence_score_raw": 5.563796249174874,
+        "shell_dependence_score": 7.063541714147867,
+        "build_around_score_raw": 5.563796249174874,
+        "build_around_score": 7.063541714147867,
+        "core_score_raw": 8337.416146644155,
+        "core_score": 9.205334474291435,
+        "win_contribution_logit": 0.09251437511182467,
+        "contribution_score": 2.133452515800083,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Monstrous%20Emergence%22",
-        "community": 2,
-        "x": 1000.8672811014437,
-        "y": 895.690103324976,
-        "analysis_radius": 15.02370145126714,
+        "community": 0,
+        "x": 743.1469433866911,
+        "y": 617.8686633773459,
+        "analysis_radius": 11.93008559021476,
         "pick_radius": 30.0,
-        "radius": 15.02370145126714,
-        "top_synergies": [
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.448701798060832,
-            "pair_win_rate": 0.6161515453639083,
-            "pair_games": 1003,
-            "synergy_delta_logit": 0.1226671724553422,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Valgavoth's Onslaught",
-            "quality_score": 0.4478388054684198,
-            "pair_win_rate": 0.735191637630662,
-            "pair_games": 287,
-            "synergy_delta_logit": 0.099379294827741,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Razorkin Hordecaller",
-            "quality_score": 0.28064403098468993,
-            "pair_win_rate": 0.6301969365426696,
-            "pair_games": 914,
-            "synergy_delta_logit": 0.06988691911587147,
-            "partner_pick_score": 9.124903427035145,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Ticket Booth // Tunnel of Hate",
-            "quality_score": 0.1641014132214601,
-            "pair_win_rate": 0.5930851063829787,
-            "pair_games": 1128,
-            "synergy_delta_logit": 0.058958038006235336,
-            "partner_pick_score": 6.138453428172428,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.93008559021476,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Turn Inside Out",
@@ -3195,21 +2678,21 @@
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.49985170336108253,
-            "analysis_score": 9.810864702713852,
+            "analysis_score": 9.80936569168631,
             "pick_priority_score": 6.6053637282652,
-            "build_around_score": 9.495658009824732,
-            "core_score": 9.702347420134839,
-            "role": "engine"
+            "build_around_score": 7.376181863051151,
+            "core_score": 9.700515857562698,
+            "role": "good_alone"
           },
           {
             "cluster_id": 8,
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.49501100768136386,
-            "analysis_score": 9.728844732728216,
+            "analysis_score": 9.728855020696253,
             "pick_priority_score": 8.93670008889078,
-            "build_around_score": 6.674409778784618,
-            "core_score": 9.566896152256312,
+            "build_around_score": 7.63375704729227,
+            "core_score": 9.566908721073206,
             "role": "good_alone"
           },
           {
@@ -3217,32 +2700,32 @@
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.46042733970038174,
-            "analysis_score": 9.605148338113246,
+            "analysis_score": 9.605262195606274,
             "pick_priority_score": 8.438033745706477,
-            "build_around_score": 7.064555571772151,
-            "core_score": 9.359584252916381,
-            "role": "engine"
+            "build_around_score": 8.329985823235157,
+            "core_score": 9.359721321888118,
+            "role": "good_alone"
           },
           {
             "cluster_id": 10,
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.45215692760561,
-            "analysis_score": 9.31342065885884,
+            "analysis_score": 9.313566092893634,
             "pick_priority_score": 7.252157143447379,
-            "build_around_score": 7.092004040199635,
-            "core_score": 8.96601418541014,
-            "role": "needs_support"
+            "build_around_score": 8.131365010625244,
+            "core_score": 8.96616221998609,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.4494405903042579,
-            "analysis_score": 9.497938894164704,
+            "analysis_score": 9.497857118661098,
             "pick_priority_score": 7.50721910665187,
-            "build_around_score": 7.374381511446089,
-            "core_score": 9.20543640011562,
+            "build_around_score": 7.063541714147867,
+            "core_score": 9.205334474291435,
             "role": "balanced"
           }
         ]
@@ -3268,8 +2751,8 @@
         "supported_win_rate": 0.5688458011266867,
         "support_delta": 0.0820268204588484,
         "standalone_delta": 0.009012229824499118,
-        "dependency_score": 0.09228549577184061,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8275.904758999757,
         "signpost_lift": 3.180871741511995,
         "deck_prevalence": 0.321699825162088,
@@ -3282,58 +2765,32 @@
         "alsa": 2.7099300395899997,
         "average_taken_at": 3.51028790014093,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8278.82761009908,
-        "analysis_score": 9.495017147215684,
+        "analysis_score_raw": 8277.166471175187,
+        "analysis_score": 9.494925931525147,
         "pick_priority_score_raw": 169.53735532761686,
         "pick_priority_score": 8.371607564325087,
         "pick_market_score_raw": 9.898035244085701,
         "pick_market_score": 9.898035244085701,
         "pick_urgency_score_raw": 9.37055784604364,
         "pick_urgency_score": 9.37055784604364,
-        "shell_dependence_score_raw": 11.941658509741142,
-        "shell_dependence_score": 8.929640329604341,
-        "build_around_score_raw": 11.941658509741142,
-        "build_around_score": 8.929640329604341,
-        "core_score_raw": 8294.691186384074,
-        "core_score": 9.200051749744809,
-        "is_build_around": true,
-        "role": "needs_support",
+        "shell_dependence_score_raw": 8.72200155809492,
+        "shell_dependence_score": 8.648328834276716,
+        "build_around_score_raw": 8.72200155809492,
+        "build_around_score": 8.648328834276716,
+        "core_score_raw": 8293.39918944327,
+        "core_score": 9.199938087787483,
+        "win_contribution_logit": 0.04495948584002652,
+        "contribution_score": 1.0603899798462018,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Patchwork%20Beastie%22",
-        "community": 3,
-        "x": 697.330026102356,
-        "y": 936.6717530722832,
-        "analysis_radius": 14.817950488133715,
+        "community": 0,
+        "x": 786.6704414556156,
+        "y": 476.85845996136766,
+        "analysis_radius": 11.495672640347452,
         "pick_radius": 30.0,
-        "radius": 14.817950488133715,
-        "top_synergies": [
-          {
-            "card": "Fear of Burning Alive",
-            "quality_score": 0.6790182302218409,
-            "pair_win_rate": 0.659270998415214,
-            "pair_games": 631,
-            "synergy_delta_logit": 0.15784259787748955,
-            "partner_pick_score": 9.68147133862183,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Under the Skin",
-            "quality_score": 0.2679075254155618,
-            "pair_win_rate": 0.6440366972477064,
-            "pair_games": 545,
-            "synergy_delta_logit": 0.07696905976512036,
-            "partner_pick_score": 9.589387503934311,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Glassworks // Shattered Yard",
-            "quality_score": 0.14028587672034185,
-            "pair_win_rate": 0.5945683802133851,
-            "pair_games": 1031,
-            "synergy_delta_logit": 0.05213468950012201,
-            "partner_pick_score": 7.939326954598311,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.495672640347452,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Grasping Longneck",
@@ -3378,21 +2835,21 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.321699825162088,
-            "analysis_score": 9.495017147215684,
+            "analysis_score": 9.494925931525147,
             "pick_priority_score": 8.371607564325087,
-            "build_around_score": 8.929640329604341,
-            "core_score": 9.200051749744809,
-            "role": "needs_support"
+            "build_around_score": 8.648328834276716,
+            "core_score": 9.199938087787483,
+            "role": "balanced"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.29883871522963734,
-            "analysis_score": 9.483864377469787,
+            "analysis_score": 9.483860803440539,
             "pick_priority_score": 7.771956479614457,
-            "build_around_score": 8.172746274149869,
-            "core_score": 9.161921874718745,
+            "build_around_score": 9.164152408690384,
+            "core_score": 9.161908631871105,
             "role": "balanced"
           },
           {
@@ -3400,7 +2857,7 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.00605034245404905,
-            "analysis_score": 0.24144135446125778,
+            "analysis_score": 0.24144376213682206,
             "pick_priority_score": 0.0,
             "build_around_score": 0.0,
             "core_score": 0.0,
@@ -3429,8 +2886,8 @@
         "supported_win_rate": 0.5758203084566815,
         "support_delta": 0.09665364179001484,
         "standalone_delta": 0.014559557910941656,
-        "dependency_score": 0.06536134950867119,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 7906.680801658459,
         "signpost_lift": 2.4570683185063893,
         "deck_prevalence": 0.3796609014103294,
@@ -3443,67 +2900,32 @@
         "alsa": 3.977883330859433,
         "average_taken_at": 6.114187674118367,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7909.8956440571465,
-        "analysis_score": 9.465697576461203,
+        "analysis_score_raw": 7908.719139765991,
+        "analysis_score": 9.465639637408263,
         "pick_priority_score_raw": 94.44701367926662,
         "pick_priority_score": 7.426135153684101,
         "pick_market_score_raw": 8.992940549647553,
         "pick_market_score": 8.992940549647553,
         "pick_urgency_score_raw": 7.713184884169819,
         "pick_urgency_score": 7.713184884169819,
-        "shell_dependence_score_raw": 12.268861824274376,
-        "shell_dependence_score": 9.021404038652834,
-        "build_around_score_raw": 12.268861824274376,
-        "build_around_score": 9.021404038652834,
-        "core_score_raw": 7928.575789847348,
-        "core_score": 9.154031866029223,
+        "shell_dependence_score_raw": 9.726034787862481,
+        "shell_dependence_score": 9.044835567329478,
+        "build_around_score_raw": 9.726034787862481,
+        "build_around_score": 9.044835567329478,
+        "core_score_raw": 7927.660730954226,
+        "core_score": 9.153959118382891,
+        "win_contribution_logit": 0.06898813709385127,
+        "contribution_score": 1.6085569651436702,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Say%20Its%20Name%22",
-        "community": 3,
-        "x": 912.330026102356,
-        "y": 786.8254875101997,
-        "analysis_radius": 14.153784267413954,
+        "community": 0,
+        "x": 805.0534946303571,
+        "y": 717.3026558378274,
+        "analysis_radius": 11.80077568510179,
         "pick_radius": 30.0,
-        "radius": 14.153784267413954,
-        "top_synergies": [
-          {
-            "card": "Fear of Burning Alive",
-            "quality_score": 0.39228325199614444,
-            "pair_win_rate": 0.6476624857468644,
-            "pair_games": 877,
-            "synergy_delta_logit": 0.08399332137348081,
-            "partner_pick_score": 9.68147133862183,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Glassworks // Shattered Yard",
-            "quality_score": 0.21372528688715847,
-            "pair_win_rate": 0.6025538707102953,
-            "pair_games": 1253,
-            "synergy_delta_logit": 0.06278667211922445,
-            "partner_pick_score": 7.939326954598311,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Most Valuable Slayer",
-            "quality_score": 0.18663482141874155,
-            "pair_win_rate": 0.5867656988521269,
-            "pair_games": 1481,
-            "synergy_delta_logit": 0.06514968183393172,
-            "partner_pick_score": 4.3167303822751055,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Wary Watchdog",
-            "quality_score": 0.14528035416386553,
-            "pair_win_rate": 0.5848275862068966,
-            "pair_games": 1450,
-            "synergy_delta_logit": 0.053478454873094716,
-            "partner_pick_score": 7.380797209066064,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.80077568510179,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Clockwork Percussionist",
@@ -3548,32 +2970,32 @@
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.4965549564889861,
-            "analysis_score": 9.971989686611677,
+            "analysis_score": 9.971999597945885,
             "pick_priority_score": 6.548591309049375,
-            "build_around_score": 5.6983944658692325,
-            "core_score": 9.955804114649691,
-            "role": "engine"
+            "build_around_score": 7.534365389277034,
+            "core_score": 9.955815893780706,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.49116578799920624,
-            "analysis_score": 9.847303246055235,
+            "analysis_score": 9.84745772065355,
             "pick_priority_score": 8.517027765354278,
-            "build_around_score": 8.110118147868159,
-            "core_score": 9.752435961850018,
-            "role": "balanced"
+            "build_around_score": 9.710772246868158,
+            "core_score": 9.752628377992437,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.3796609014103294,
-            "analysis_score": 9.465697576461203,
+            "analysis_score": 9.465639637408263,
             "pick_priority_score": 7.426135153684101,
-            "build_around_score": 9.021404038652834,
-            "core_score": 9.154031866029223,
+            "build_around_score": 9.044835567329478,
+            "core_score": 9.153959118382891,
             "role": "balanced"
           },
           {
@@ -3581,9 +3003,9 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.0084538743819457,
-            "analysis_score": 0.010899995184704437,
+            "analysis_score": 0.010900103880466666,
             "pick_priority_score": 6.991706916648395,
-            "build_around_score": 0.5998343138669745,
+            "build_around_score": 0.6443551604769653,
             "core_score": 0.0,
             "role": "good_alone"
           }
@@ -3610,8 +3032,8 @@
         "supported_win_rate": 0.5508373994461295,
         "support_delta": 0.06151063425729536,
         "standalone_delta": -0.00787844970678897,
-        "dependency_score": 0.07406971389455093,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 7683.470433524927,
         "signpost_lift": 2.7917460629872135,
         "deck_prevalence": 0.33096097764877586,
@@ -3624,67 +3046,32 @@
         "alsa": 4.681175081839534,
         "average_taken_at": 8.420977233156282,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7684.803688375029,
-        "analysis_score": 9.447129803497106,
+        "analysis_score_raw": 7683.470433524927,
+        "analysis_score": 9.447055867430382,
         "pick_priority_score_raw": 11.221843208270977,
         "pick_priority_score": 4.077875379671428,
         "pick_market_score_raw": 8.15992789929485,
         "pick_market_score": 8.15992789929485,
         "pick_urgency_score_raw": 5.4669081748274575,
         "pick_urgency_score": 5.4669081748274575,
-        "shell_dependence_score_raw": 9.182681984230225,
-        "shell_dependence_score": 8.048472677778722,
-        "build_around_score_raw": 9.182681984230225,
-        "build_around_score": 8.048472677778722,
-        "core_score_raw": 7701.717380357187,
-        "core_score": 9.124437548211565,
+        "shell_dependence_score_raw": 7.08387855337986,
+        "shell_dependence_score": 7.9039096737941,
+        "build_around_score_raw": 7.08387855337986,
+        "build_around_score": 7.9039096737941,
+        "core_score_raw": 7700.6804043626635,
+        "core_score": 9.124345050126966,
+        "win_contribution_logit": -0.02534077223659817,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Grasping%20Longneck%22",
-        "community": 1,
-        "x": 1053.6241051987286,
-        "y": 710.7814491378944,
-        "analysis_radius": 13.666509700203834,
+        "community": 0,
+        "x": 1013.0243592427986,
+        "y": 495.2437174478478,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 13.666509700203834,
-        "top_synergies": [
-          {
-            "card": "Razorkin Hordecaller",
-            "quality_score": 0.18617237848477589,
-            "pair_win_rate": 0.6078767123287672,
-            "pair_games": 584,
-            "synergy_delta_logit": 0.07578317859886718,
-            "partner_pick_score": 9.124903427035145,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.15096579618699688,
-            "pair_win_rate": 0.5815085158150851,
-            "pair_games": 822,
-            "synergy_delta_logit": 0.07895336317818535,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Turn Inside Out",
-            "quality_score": 0.1285199382160314,
-            "pair_win_rate": 0.5822784810126582,
-            "pair_games": 1106,
-            "synergy_delta_logit": 0.05681239059098192,
-            "partner_pick_score": 8.37666874694295,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hand That Feeds",
-            "quality_score": 0.12049072498703117,
-            "pair_win_rate": 0.562157935887412,
-            "pair_games": 1279,
-            "synergy_delta_logit": 0.08504456787049705,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Scorching Dragonfire",
@@ -3729,10 +3116,10 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.33096097764877586,
-            "analysis_score": 9.447129803497106,
+            "analysis_score": 9.447055867430382,
             "pick_priority_score": 4.077875379671428,
-            "build_around_score": 8.048472677778722,
-            "core_score": 9.124437548211565,
+            "build_around_score": 7.9039096737941,
+            "core_score": 9.124345050126966,
             "role": "balanced"
           },
           {
@@ -3740,10 +3127,10 @@
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.31732647050146745,
-            "analysis_score": 9.538630566967853,
+            "analysis_score": 9.538386465918913,
             "pick_priority_score": 3.1820753240905337,
-            "build_around_score": 6.218430768767217,
-            "core_score": 9.273617700264735,
+            "build_around_score": 7.737144452999407,
+            "core_score": 9.273314725601235,
             "role": "balanced"
           },
           {
@@ -3753,7 +3140,7 @@
             "deck_prevalence": 0.010319299803255156,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.641737746574594,
+            "build_around_score": 2.5092517784812967,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3780,8 +3167,8 @@
         "supported_win_rate": 0.6990418118466899,
         "support_delta": -0.02644838423174145,
         "standalone_delta": 0.14705690185571108,
-        "dependency_score": 0.13685037759019128,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1258.6831773880538,
         "signpost_lift": 1.747970524527288,
         "deck_prevalence": 0.10058614348210126,
@@ -3794,8 +3181,8 @@
         "alsa": 0.4246413369068264,
         "average_taken_at": 0.40818250377073906,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1281.7344504444768,
-        "analysis_score": 8.295486944370827,
+        "analysis_score_raw": 1279.2711436478533,
+        "analysis_score": 8.29428357003818,
         "pick_priority_score_raw": 493.5895652263864,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
@@ -3806,37 +3193,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 1278.329398793121,
-        "core_score": 7.294073487603818,
+        "core_score_raw": 1276.4134935068585,
+        "core_score": 7.292581236867434,
+        "win_contribution_logit": 0.6810408316887011,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Valgavoth%27s%20Onslaught%22",
-        "community": 2,
-        "x": 998.580881126919,
-        "y": 818.7215315173792,
-        "analysis_radius": 24.01474319531099,
+        "community": 0,
+        "x": 952.6700255645399,
+        "y": 376.77038858614685,
+        "analysis_radius": 19.088129602064107,
         "pick_radius": 30.0,
-        "radius": 24.01474319531099,
-        "top_synergies": [
-          {
-            "card": "Glassworks // Shattered Yard",
-            "quality_score": 0.869608743630256,
-            "pair_win_rate": 0.7508196721311475,
-            "pair_games": 305,
-            "synergy_delta_logit": 0.1731989426938092,
-            "partner_pick_score": 7.939326954598311,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Monstrous Emergence",
-            "quality_score": 0.4478388054684198,
-            "pair_win_rate": 0.735191637630662,
-            "pair_games": 287,
-            "synergy_delta_logit": 0.099379294827741,
-            "partner_pick_score": 7.50721910665187,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 19.088129602064107,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Ticket Booth // Tunnel of Hate",
@@ -3881,21 +3251,21 @@
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.11575918993829745,
-            "analysis_score": 8.582874028440962,
+            "analysis_score": 8.581103469067521,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 7.758312273124441,
-            "role": "engine"
+            "core_score": 7.7561162736498686,
+            "role": "good_alone"
           },
           {
             "cluster_id": 8,
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.10783491017400235,
-            "analysis_score": 8.54070172320331,
+            "analysis_score": 8.540446503972321,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 7.66421347597053,
+            "core_score": 7.663894583610981,
             "role": "good_alone"
           },
           {
@@ -3903,33 +3273,33 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.10058614348210126,
-            "analysis_score": 8.295486944370827,
+            "analysis_score": 8.29428357003818,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 7.294073487603818,
-            "role": "engine"
+            "core_score": 7.292581236867434,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.0976494694458493,
-            "analysis_score": 8.327829115111653,
+            "analysis_score": 8.3271035034289,
             "pick_priority_score": 9.609507371603536,
-            "build_around_score": 0.30349289213627306,
-            "core_score": 7.2776535912219735,
-            "role": "engine"
+            "build_around_score": 0.28589096409410764,
+            "core_score": 7.276703309560996,
+            "role": "good_alone"
           },
           {
             "cluster_id": 10,
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.08717268084844132,
-            "analysis_score": 7.171437563580018,
+            "analysis_score": 7.167535167119393,
             "pick_priority_score": 9.870197930431898,
             "build_around_score": 0.0,
-            "core_score": 5.715159080871749,
-            "role": "engine"
+            "core_score": 5.710447170413391,
+            "role": "good_alone"
           }
         ]
       },
@@ -3954,8 +3324,8 @@
         "supported_win_rate": 0.6196397258090228,
         "support_delta": 0.0310033621726592,
         "standalone_delta": 0.06346452884811382,
-        "dependency_score": 0.07078354410653695,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4594.078343827457,
         "signpost_lift": 2.1165202942007935,
         "deck_prevalence": 0.26572322307275176,
@@ -3968,58 +3338,32 @@
         "alsa": 1.7982135311174903,
         "average_taken_at": 2.1959379615952734,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4604.2374816601105,
-        "analysis_score": 9.117675176427031,
+        "analysis_score_raw": 4602.963377866193,
+        "analysis_score": 9.11753353334661,
         "pick_priority_score_raw": 359.14072057161934,
         "pick_priority_score": 9.589387503934311,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 1.8775164063360013,
-        "shell_dependence_score": 3.403948223370581,
-        "build_around_score_raw": 1.8775164063360013,
-        "build_around_score": 3.403948223370581,
-        "core_score_raw": 4614.281405996821,
-        "core_score": 8.602215131821534,
+        "shell_dependence_score_raw": 1.463226871226638,
+        "shell_dependence_score": 3.1094774742522278,
+        "build_around_score_raw": 1.463226871226638,
+        "build_around_score": 3.1094774742522278,
+        "core_score_raw": 4613.29043637933,
+        "core_score": 8.602038399401327,
+        "win_contribution_logit": 0.2809818568903183,
+        "contribution_score": 5.970720660334663,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Under%20the%20Skin%22",
         "community": 0,
-        "x": 1172.7726925615168,
-        "y": 532.7121693909675,
-        "analysis_radius": 17.03875667448159,
+        "x": 729.6201093212861,
+        "y": 690.6093430175259,
+        "analysis_radius": 14.49054908664626,
         "pick_radius": 30.0,
-        "radius": 17.03875667448159,
-        "top_synergies": [
-          {
-            "card": "Beastie Beatdown",
-            "quality_score": 0.42862731671500964,
-            "pair_win_rate": 0.6710929519918284,
-            "pair_games": 979,
-            "synergy_delta_logit": 0.07240758368800304,
-            "partner_pick_score": 9.41492612041687,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Spineseeker Centipede",
-            "quality_score": 0.34260664285210835,
-            "pair_win_rate": 0.6574358974358975,
-            "pair_games": 975,
-            "synergy_delta_logit": 0.06453160128582713,
-            "partner_pick_score": 8.77584238547731,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Patchwork Beastie",
-            "quality_score": 0.2679075254155618,
-            "pair_win_rate": 0.6440366972477064,
-            "pair_games": 545,
-            "synergy_delta_logit": 0.07696905976512036,
-            "partner_pick_score": 8.371607564325087,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 14.49054908664626,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Wary Watchdog",
@@ -4064,55 +3408,55 @@
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.30994109467054054,
-            "analysis_score": 9.436403342561638,
+            "analysis_score": 9.436337796407011,
             "pick_priority_score": 9.814511924479085,
-            "build_around_score": 6.517768195050139,
-            "core_score": 9.098884787334589,
-            "role": "balanced"
+            "build_around_score": 6.772535333683721,
+            "core_score": 9.098802925643396,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Gruul | Spineseeker Centipede / Moldering Gym // Weight Room",
             "color_name": "Gruul",
             "deck_prevalence": 0.3076528497589409,
-            "analysis_score": 9.456806725487267,
+            "analysis_score": 9.456606770860446,
             "pick_priority_score": 9.214017091151364,
-            "build_around_score": 3.3113059609727435,
-            "core_score": 9.144140819924583,
-            "role": "engine"
+            "build_around_score": 4.198051417969506,
+            "core_score": 9.143890589006256,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.28333822768861594,
-            "analysis_score": 9.286084372685302,
+            "analysis_score": 9.286096836605259,
             "pick_priority_score": 9.357352475754531,
-            "build_around_score": 5.478969804059551,
-            "core_score": 8.8404062078563,
-            "role": "engine"
+            "build_around_score": 6.209677795009284,
+            "core_score": 8.84040973135348,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.26572322307275176,
-            "analysis_score": 9.117675176427031,
+            "analysis_score": 9.11753353334661,
             "pick_priority_score": 9.589387503934311,
-            "build_around_score": 3.403948223370581,
-            "core_score": 8.602215131821534,
-            "role": "engine"
+            "build_around_score": 3.1094774742522278,
+            "core_score": 8.602038399401327,
+            "role": "good_alone"
           },
           {
             "cluster_id": 10,
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.19758899194316323,
-            "analysis_score": 8.017774364393155,
+            "analysis_score": 8.017203740028915,
             "pick_priority_score": 9.170557327060392,
-            "build_around_score": 1.65554757395579,
-            "core_score": 7.01041200579283,
-            "role": "engine"
+            "build_around_score": 1.8219577644770237,
+            "core_score": 7.0096790879379824,
+            "role": "good_alone"
           }
         ]
       },
@@ -4137,8 +3481,8 @@
         "supported_win_rate": 0.6820083682008368,
         "support_delta": -0.014070063171712222,
         "standalone_delta": 0.1289717823491574,
-        "dependency_score": 0.27711213721768013,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 910.3529538168679,
         "signpost_lift": 2.138702365740899,
         "deck_prevalence": 0.05458994434892476,
@@ -4151,8 +3495,8 @@
         "alsa": 0.3779373368146214,
         "average_taken_at": 0.353721749948165,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 933.397021815668,
-        "analysis_score": 8.091677979088708,
+        "analysis_score_raw": 928.4090033457499,
+        "analysis_score": 8.088267268688925,
         "pick_priority_score_raw": 371.6974548227715,
         "pick_priority_score": 9.645218480073968,
         "pick_market_score_raw": 10.0,
@@ -4163,28 +3507,20 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 928.0338023437379,
-        "core_score": 6.967866998274621,
+        "core_score_raw": 924.1542324226904,
+        "core_score": 6.9636346237528794,
+        "win_contribution_logit": 0.5979586969650188,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Overlord%20of%20the%20Boilerbilges%22",
-        "community": 1,
-        "x": 1242.4068524173797,
-        "y": 742.1033597906389,
-        "analysis_radius": 28.0,
+        "community": 0,
+        "x": 938.713906831603,
+        "y": 697.3019534151852,
+        "analysis_radius": 18.093448029203657,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Impossible Inferno",
-            "quality_score": 0.8669707003817408,
-            "pair_win_rate": 0.7520661157024794,
-            "pair_games": 121,
-            "synergy_delta_logit": 0.27711213721768013,
-            "partner_pick_score": 7.872477206258208,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 18.093448029203657,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Ticket Booth // Tunnel of Hate",
@@ -4229,11 +3565,11 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.05458994434892476,
-            "analysis_score": 8.091677979088708,
+            "analysis_score": 8.088267268688925,
             "pick_priority_score": 9.645218480073968,
             "build_around_score": 0.0,
-            "core_score": 6.967866998274621,
-            "role": "engine"
+            "core_score": 6.9636346237528794,
+            "role": "good_alone"
           }
         ]
       },
@@ -4258,8 +3594,8 @@
         "supported_win_rate": 0.6023182006347454,
         "support_delta": 0.06385666217320696,
         "standalone_delta": 0.04320991789032547,
-        "dependency_score": 0.07250628332050393,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 6591.925178963413,
         "signpost_lift": 2.572074915584414,
         "deck_prevalence": 0.30672341634744754,
@@ -4272,49 +3608,32 @@
         "alsa": 2.3043843798624706,
         "average_taken_at": 2.8703682719546744,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6599.279680567827,
-        "analysis_score": 9.349188345544997,
+        "analysis_score_raw": 6597.974567468058,
+        "analysis_score": 9.349098407135704,
         "pick_priority_score_raw": 269.79684917243515,
         "pick_priority_score": 9.124903427035145,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 5.319434663936744,
-        "shell_dependence_score": 6.295205298787606,
-        "build_around_score_raw": 5.319434663936744,
-        "build_around_score": 6.295205298787606,
-        "core_score_raw": 6612.562727600644,
-        "core_score": 8.969003913070157,
+        "shell_dependence_score_raw": 4.123512423671399,
+        "shell_dependence_score": 6.064113993417008,
+        "build_around_score_raw": 4.123512423671399,
+        "build_around_score": 6.064113993417008,
+        "core_score_raw": 6611.547639634157,
+        "core_score": 8.96889141930451,
+        "win_contribution_logit": 0.2022700250662841,
+        "contribution_score": 4.44166338105305,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Razorkin%20Hordecaller%22",
-        "community": 2,
-        "x": 1000.5124461436704,
-        "y": 978.9703530077207,
-        "analysis_radius": 15.986771683506042,
+        "community": 0,
+        "x": 1087.2675663976418,
+        "y": 496.40869852344696,
+        "analysis_radius": 13.3765454839679,
         "pick_radius": 30.0,
-        "radius": 15.986771683506042,
-        "top_synergies": [
-          {
-            "card": "Monstrous Emergence",
-            "quality_score": 0.28064403098468993,
-            "pair_win_rate": 0.6301969365426696,
-            "pair_games": 914,
-            "synergy_delta_logit": 0.06988691911587147,
-            "partner_pick_score": 7.50721910665187,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Grasping Longneck",
-            "quality_score": 0.18617237848477589,
-            "pair_win_rate": 0.6078767123287672,
-            "pair_games": 584,
-            "synergy_delta_logit": 0.07578317859886718,
-            "partner_pick_score": 4.077875379671428,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.3765454839679,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Wildfire Wickerfolk",
@@ -4359,22 +3678,22 @@
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.30672341634744754,
-            "analysis_score": 9.349188345544997,
+            "analysis_score": 9.349098407135704,
             "pick_priority_score": 9.124903427035145,
-            "build_around_score": 6.295205298787606,
-            "core_score": 8.969003913070157,
-            "role": "engine"
+            "build_around_score": 6.064113993417008,
+            "core_score": 8.96889141930451,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.2935257418533361,
-            "analysis_score": 9.195193056809721,
+            "analysis_score": 9.195161961362478,
             "pick_priority_score": 8.962040210909661,
             "build_around_score": 0.0,
-            "core_score": 8.776404802465013,
-            "role": "balanced"
+            "core_score": 8.776395746089076,
+            "role": "good_alone"
           }
         ]
       },
@@ -4416,7 +3735,7 @@
         "average_taken_at": 6.56486076647367,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -216.09330495893823,
-        "analysis_score": 0.23114987705091905,
+        "analysis_score": 0.23115079842280933,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.914236209260727,
@@ -4424,17 +3743,19 @@
         "pick_urgency_score_raw": 5.432651665052745,
         "pick_urgency_score": 5.432651665052745,
         "shell_dependence_score_raw": 0.6869037302955033,
-        "shell_dependence_score": 1.4412916924849082,
+        "shell_dependence_score": 1.582159401721931,
         "build_around_score_raw": 0.6869037302955033,
-        "build_around_score": 1.4412916924849082,
+        "build_around_score": 1.582159401721931,
         "core_score_raw": -215.783786128053,
         "core_score": 0.0,
+        "win_contribution_logit": -0.12706410801080012,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Shrewd%20Storyteller%22",
-        "community": 6,
-        "x": 641.1145618000169,
-        "y": 371.90871926640864,
+        "community": 0,
+        "x": 1032.9291919017073,
+        "y": 670.9074726314167,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4448,18 +3769,18 @@
             "deck_prevalence": 0.4660867331079272,
             "analysis_score": 10.0,
             "pick_priority_score": 4.974896001572893,
-            "build_around_score": 10.0,
-            "core_score": 10.0,
-            "role": "needs_support"
+            "build_around_score": 9.301667431678151,
+            "core_score": 9.999999999999998,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.005952285209331395,
-            "analysis_score": 0.23114987705091905,
+            "analysis_score": 0.23115079842280933,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.4412916924849082,
+            "build_around_score": 1.582159401721931,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4509,17 +3830,19 @@
         "pick_urgency_score_raw": 4.407508804113764,
         "pick_urgency_score": 4.407508804113764,
         "shell_dependence_score_raw": 1.8318427704854525,
-        "shell_dependence_score": 3.3451459888413453,
+        "shell_dependence_score": 3.6720909472897407,
         "build_around_score_raw": 1.8318427704854525,
-        "build_around_score": 3.3451459888413453,
+        "build_around_score": 3.6720909472897407,
         "core_score_raw": -412.0437164762521,
         "core_score": 0.0,
+        "win_contribution_logit": -0.030197705671004015,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Spectral%20Snatcher%22",
-        "community": 7,
-        "x": 801.1145618000168,
-        "y": 255.6619147855509,
+        "community": 0,
+        "x": 716.5579254873993,
+        "y": 565.203067692123,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4531,10 +3854,10 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.518984384130864,
-            "analysis_score": 9.835854443500518,
+            "analysis_score": 9.836359752332697,
             "pick_priority_score": 8.578393630653375,
-            "build_around_score": 8.014600127003682,
-            "core_score": 9.740670376432732,
+            "build_around_score": 9.19602754316419,
+            "core_score": 9.74129417802096,
             "role": "engine"
           },
           {
@@ -4542,11 +3865,11 @@
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.38465490010360415,
-            "analysis_score": 9.695672607776592,
+            "analysis_score": 9.695762972889577,
             "pick_priority_score": 4.596674349130935,
-            "build_around_score": 9.95675952717066,
-            "core_score": 9.506114336115708,
-            "role": "needs_support"
+            "build_around_score": 10.0,
+            "core_score": 9.506223259586676,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
@@ -4555,7 +3878,7 @@
             "deck_prevalence": 0.006457478686330789,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.3451459888413453,
+            "build_around_score": 3.6720909472897407,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4597,7 +3920,7 @@
         "average_taken_at": 0.8485550408118244,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -268.761457361055,
-        "analysis_score": 0.0914313861933409,
+        "analysis_score": 0.09143175064220067,
         "pick_priority_score_raw": 5.977906036799368,
         "pick_priority_score": 3.1648327729100703,
         "pick_market_score_raw": 10.0,
@@ -4605,17 +3928,19 @@
         "pick_urgency_score_raw": 8.011587715755654,
         "pick_urgency_score": 8.011587715755654,
         "shell_dependence_score_raw": 1.7141953863028974,
-        "shell_dependence_score": 3.189201179915455,
+        "shell_dependence_score": 3.5009045407640462,
         "build_around_score_raw": 1.7141953863028974,
-        "build_around_score": 3.189201179915455,
+        "build_around_score": 3.5009045407640462,
         "core_score_raw": -268.8432409148714,
         "core_score": 0.0,
+        "win_contribution_logit": 0.0462756435978257,
+        "contribution_score": 1.0907403602313135,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Toby%2C%20Beastie%20Befriender%22",
-        "community": 8,
-        "x": 998.8854381999831,
-        "y": 255.66191478555083,
+        "community": 0,
+        "x": 787.0079308675079,
+        "y": 418.2777570169133,
         "analysis_radius": 11.406744986679492,
         "pick_radius": 30.0,
         "radius": 11.406744986679492,
@@ -4627,20 +3952,20 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.10607677777963449,
-            "analysis_score": 8.336166677654797,
+            "analysis_score": 8.33580268312778,
             "pick_priority_score": 9.351974490717069,
             "build_around_score": 0.0,
-            "core_score": 7.468869300600807,
-            "role": "engine"
+            "core_score": 7.46849624907,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Gruul | Wildfire Wickerfolk / Beastie Beatdown",
             "color_name": "Gruul",
             "deck_prevalence": 0.006249258324290288,
-            "analysis_score": 0.0914313861933409,
+            "analysis_score": 0.09143175064220067,
             "pick_priority_score": 3.1648327729100703,
-            "build_around_score": 3.189201179915455,
+            "build_around_score": 3.5009045407640462,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4690,17 +4015,19 @@
         "pick_urgency_score_raw": 8.737847462893843,
         "pick_urgency_score": 8.737847462893843,
         "shell_dependence_score_raw": 1.5238870181493647,
-        "shell_dependence_score": 2.9220340024709714,
+        "shell_dependence_score": 3.207625210959176,
         "build_around_score_raw": 1.5238870181493647,
-        "build_around_score": 2.9220340024709714,
+        "build_around_score": 3.207625210959176,
         "core_score_raw": -328.1994941275217,
         "core_score": 0.0,
+        "win_contribution_logit": 0.16534328778326607,
+        "contribution_score": 3.68947887965725,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cursed%20Windbreaker%22",
-        "community": 9,
-        "x": 1158.8854381999831,
-        "y": 371.9087192664085,
+        "community": 0,
+        "x": 905.3029764431565,
+        "y": 416.21167238887256,
         "analysis_radius": 14.43190403815433,
         "pick_radius": 30.0,
         "radius": 14.43190403815433,
@@ -4712,11 +4039,11 @@
             "title": "Simic Humans | Oblivious Bookworm / Growing Dread",
             "color_name": "Simic Humans",
             "deck_prevalence": 0.2989600094662292,
-            "analysis_score": 9.567056558056711,
+            "analysis_score": 9.566997271323295,
             "pick_priority_score": 9.502034146885146,
-            "build_around_score": 6.293418654177567,
-            "core_score": 9.307587010896832,
-            "role": "balanced"
+            "build_around_score": 6.444817172725136,
+            "core_score": 9.307513005710115,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
@@ -4725,627 +4052,14 @@
             "deck_prevalence": 0.005495003360548818,
             "analysis_score": 0.0,
             "pick_priority_score": 6.934343459757468,
-            "build_around_score": 2.9220340024709714,
+            "build_around_score": 3.207625210959176,
             "core_score": 0.0,
             "role": "good_alone"
           }
         ]
       }
     ],
-    "edges": [
-      {
-        "from": "Glassworks // Shattered Yard",
-        "to": "Valgavoth's Onslaught",
-        "pair_games": 305,
-        "pair_win_rate": 0.7508196721311475,
-        "pair_expected_win_rate": 0.7170326224089634,
-        "pair_lift_vs_baseline": 0.19667657398685856,
-        "synergy_delta_logit": 0.1731989426938092,
-        "synergy_delta_prob": 0.03378704972218416,
-        "confidence_probability": 0.9046206024360556,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 689,
-        "quality_score": 0.869608743630256,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.268220886161222,
-        "pick_score": 9.679907463802548
-      },
-      {
-        "from": "Impossible Inferno",
-        "to": "Overlord of the Boilerbilges",
-        "pair_games": 121,
-        "pair_win_rate": 0.7520661157024794,
-        "pair_expected_win_rate": 0.6968938411742998,
-        "pair_lift_vs_baseline": 0.19792301755819042,
-        "synergy_delta_logit": 0.27711213721768013,
-        "synergy_delta_prob": 0.05517227452817963,
-        "confidence_probability": 0.9059578766792298,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 446,
-        "quality_score": 0.8669707003817408,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.274879262424241,
-        "pick_score": 4.57157922540628
-      },
-      {
-        "from": "Fear of Burning Alive",
-        "to": "Patchwork Beastie",
-        "pair_games": 631,
-        "pair_win_rate": 0.659270998415214,
-        "pair_expected_win_rate": 0.6229772883892325,
-        "pair_lift_vs_baseline": 0.105127900270925,
-        "synergy_delta_logit": 0.15784259787748955,
-        "synergy_delta_prob": 0.036293710025981474,
-        "confidence_probability": 0.9698921233714938,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1591,
-        "quality_score": 0.6790182302218409,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.533607793798467,
-        "pick_score": 8.016188852817638
-      },
-      {
-        "from": "Fear of Burning Alive",
-        "to": "Impossible Inferno",
-        "pair_games": 842,
-        "pair_win_rate": 0.6543942992874109,
-        "pair_expected_win_rate": 0.6295013024760048,
-        "pair_lift_vs_baseline": 0.10025120114312192,
-        "synergy_delta_logit": 0.1083335487099748,
-        "synergy_delta_prob": 0.02489299681140611,
-        "confidence_probability": 0.932537399778718,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2845,
-        "quality_score": 0.5283446003265576,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.154549358019557,
-        "pick_score": 9.435646512630283
-      },
-      {
-        "from": "Impossible Inferno",
-        "to": "Monstrous Emergence",
-        "pair_games": 1003,
-        "pair_win_rate": 0.6161515453639083,
-        "pair_expected_win_rate": 0.5867577234404305,
-        "pair_lift_vs_baseline": 0.06200844721961929,
-        "synergy_delta_logit": 0.1226671724553422,
-        "synergy_delta_prob": 0.029393821923477725,
-        "confidence_probability": 0.9705746353501095,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3524,
-        "quality_score": 0.448701798060832,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.870011633530117,
-        "pick_score": 6.3112134903402435
-      },
-      {
-        "from": "Monstrous Emergence",
-        "to": "Valgavoth's Onslaught",
-        "pair_games": 287,
-        "pair_win_rate": 0.735191637630662,
-        "pair_expected_win_rate": 0.7153976294854495,
-        "pair_lift_vs_baseline": 0.181048539486373,
-        "synergy_delta_logit": 0.099379294827741,
-        "synergy_delta_prob": 0.019794008145212483,
-        "confidence_probability": 0.7712147123966292,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 639,
-        "quality_score": 0.4478388054684198,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.726435460705007,
-        "pick_score": 8.473361696210675
-      },
-      {
-        "from": "Beastie Beatdown",
-        "to": "Under the Skin",
-        "pair_games": 979,
-        "pair_win_rate": 0.6710929519918284,
-        "pair_expected_win_rate": 0.6549173044252594,
-        "pair_lift_vs_baseline": 0.11694985384753942,
-        "synergy_delta_logit": 0.07240758368800304,
-        "synergy_delta_prob": 0.016175647566568974,
-        "confidence_probability": 0.8564253806331428,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2057,
-        "quality_score": 0.42862731671500964,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.24657195807678,
-        "pick_score": 10.0
-      },
-      {
-        "from": "Fear of Burning Alive",
-        "to": "Say Its Name",
-        "pair_games": 877,
-        "pair_win_rate": 0.6476624857468644,
-        "pair_expected_win_rate": 0.628266402056874,
-        "pair_lift_vs_baseline": 0.09351938760257539,
-        "synergy_delta_logit": 0.08399332137348081,
-        "synergy_delta_prob": 0.01939608368999035,
-        "confidence_probability": 0.8826274393675979,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2404,
-        "quality_score": 0.39228325199614444,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.93213520896352,
-        "pick_score": 8.944384788385763
-      },
-      {
-        "from": "Spineseeker Centipede",
-        "to": "Under the Skin",
-        "pair_games": 975,
-        "pair_win_rate": 0.6574358974358975,
-        "pair_expected_win_rate": 0.6427584577127353,
-        "pair_lift_vs_baseline": 0.1032927992916085,
-        "synergy_delta_logit": 0.06453160128582713,
-        "synergy_delta_prob": 0.014677439723162156,
-        "confidence_probability": 0.830527547190979,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1960,
-        "quality_score": 0.34260664285210835,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.600992390110155,
-        "pick_score": 10.0
-      },
-      {
-        "from": "Impossible Inferno",
-        "to": "Ticket Booth // Tunnel of Hate",
-        "pair_games": 1009,
-        "pair_win_rate": 0.6035678889990089,
-        "pair_expected_win_rate": 0.5777333064528168,
-        "pair_lift_vs_baseline": 0.04942479085471996,
-        "synergy_delta_logit": 0.106878455585875,
-        "synergy_delta_prob": 0.025834582546192086,
-        "confidence_probability": 0.9516100861758948,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4156,
-        "quality_score": 0.33389197781074564,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.3077889779610454,
-        "pick_score": 4.6739350612027195
-      },
-      {
-        "from": "Beastie Beatdown",
-        "to": "Wary Watchdog",
-        "pair_games": 2090,
-        "pair_win_rate": 0.6119617224880383,
-        "pair_expected_win_rate": 0.5966024518002003,
-        "pair_lift_vs_baseline": 0.05781862434374929,
-        "synergy_delta_logit": 0.06423731343247474,
-        "synergy_delta_prob": 0.015359270687837934,
-        "confidence_probability": 0.9237944734462753,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3946,
-        "quality_score": 0.32315017160134596,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.325162262120935,
-        "pick_score": 9.800604658940827
-      },
-      {
-        "from": "Impossible Inferno",
-        "to": "Turn Inside Out",
-        "pair_games": 1260,
-        "pair_win_rate": 0.6111111111111112,
-        "pair_expected_win_rate": 0.5918414644823287,
-        "pair_lift_vs_baseline": 0.05696801296682219,
-        "synergy_delta_logit": 0.08040198758214079,
-        "synergy_delta_prob": 0.0192696466287825,
-        "confidence_probability": 0.9179347681902312,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4881,
-        "quality_score": 0.3129502072763563,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.124364462286496,
-        "pick_score": 6.990703927458846
-      },
-      {
-        "from": "Monstrous Emergence",
-        "to": "Razorkin Hordecaller",
-        "pair_games": 914,
-        "pair_win_rate": 0.6301969365426696,
-        "pair_expected_win_rate": 0.6137670671098834,
-        "pair_lift_vs_baseline": 0.07605383839838065,
-        "synergy_delta_logit": 0.06988691911587147,
-        "synergy_delta_prob": 0.016429869432786237,
-        "confidence_probability": 0.8461314354022156,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2114,
-        "quality_score": 0.28064403098468993,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.238036814577836,
-        "pick_score": 7.283537280041714
-      },
-      {
-        "from": "Patchwork Beastie",
-        "to": "Under the Skin",
-        "pair_games": 545,
-        "pair_win_rate": 0.6440366972477064,
-        "pair_expected_win_rate": 0.6262023619786472,
-        "pair_lift_vs_baseline": 0.08989359910341743,
-        "synergy_delta_logit": 0.07696905976512036,
-        "synergy_delta_prob": 0.0178343352690592,
-        "confidence_probability": 0.8052003970029815,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1254,
-        "quality_score": 0.2679075254155618,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.66376218499907,
-        "pick_score": 5.733643800016101
-      },
-      {
-        "from": "Beastie Beatdown",
-        "to": "Hand That Feeds",
-        "pair_games": 2093,
-        "pair_win_rate": 0.6024844720496895,
-        "pair_expected_win_rate": 0.5885644918360469,
-        "pair_lift_vs_baseline": 0.0483413739054005,
-        "synergy_delta_logit": 0.05779367169362665,
-        "synergy_delta_prob": 0.013919980213642602,
-        "confidence_probability": 0.9021573076787458,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4777,
-        "quality_score": 0.25723685364698,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.715828061995375,
-        "pick_score": 8.448615653989494
-      },
-      {
-        "from": "Beastie Beatdown",
-        "to": "Ticket Booth // Tunnel of Hate",
-        "pair_games": 1298,
-        "pair_win_rate": 0.615562403697997,
-        "pair_expected_win_rate": 0.6011760648588101,
-        "pair_lift_vs_baseline": 0.061419305553708003,
-        "synergy_delta_logit": 0.060387059399270415,
-        "synergy_delta_prob": 0.01438633883918683,
-        "confidence_probability": 0.8550525380137969,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3906,
-        "quality_score": 0.25038741775902423,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.3889793286402785,
-        "pick_score": 7.6627109083266385
-      },
-      {
-        "from": "Beastie Beatdown",
-        "to": "Most Valuable Slayer",
-        "pair_games": 2076,
-        "pair_win_rate": 0.6078998073217726,
-        "pair_expected_win_rate": 0.5957156188006458,
-        "pair_lift_vs_baseline": 0.05375670917748365,
-        "synergy_delta_logit": 0.05084781775851632,
-        "synergy_delta_prob": 0.012184188521126793,
-        "confidence_probability": 0.8709932358370576,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4607,
-        "quality_score": 0.2429512567641622,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.061491553379221,
-        "pick_score": 9.232298748106679
-      },
-      {
-        "from": "Glassworks // Shattered Yard",
-        "to": "Wary Watchdog",
-        "pair_games": 1901,
-        "pair_win_rate": 0.5917937927406628,
-        "pair_expected_win_rate": 0.5760992672047819,
-        "pair_lift_vs_baseline": 0.037650694596373824,
-        "synergy_delta_logit": 0.06460511676627939,
-        "synergy_delta_prob": 0.01569452553588091,
-        "confidence_probability": 0.9168924278832375,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3709,
-        "quality_score": 0.22912414984985466,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.7531197204396483,
-        "pick_score": 5.986949971468697
-      },
-      {
-        "from": "Glassworks // Shattered Yard",
-        "to": "Say Its Name",
-        "pair_games": 1253,
-        "pair_win_rate": 0.6025538707102953,
-        "pair_expected_win_rate": 0.5874251040292854,
-        "pair_lift_vs_baseline": 0.048410772566006344,
-        "synergy_delta_logit": 0.06278667211922445,
-        "synergy_delta_prob": 0.01512876668100993,
-        "confidence_probability": 0.8616201500591306,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3339,
-        "quality_score": 0.21372528688715847,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.6004722349918343,
-        "pick_score": 5.5512791528379015
-      },
-      {
-        "from": "Most Valuable Slayer",
-        "to": "Say Its Name",
-        "pair_games": 1481,
-        "pair_win_rate": 0.5867656988521269,
-        "pair_expected_win_rate": 0.570884588654752,
-        "pair_lift_vs_baseline": 0.032622600707837957,
-        "synergy_delta_logit": 0.06514968183393172,
-        "synergy_delta_prob": 0.015881110197374926,
-        "confidence_probability": 0.8915071710186546,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3990,
-        "quality_score": 0.18663482141874155,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.032626586070518,
-        "pick_score": 3.792951702480913
-      },
-      {
-        "from": "Grasping Longneck",
-        "to": "Razorkin Hordecaller",
-        "pair_games": 584,
-        "pair_win_rate": 0.6078767123287672,
-        "pair_expected_win_rate": 0.5896727251706764,
-        "pair_lift_vs_baseline": 0.053733614184478196,
-        "synergy_delta_logit": 0.07578317859886718,
-        "synergy_delta_prob": 0.018203987158090795,
-        "confidence_probability": 0.8143725329939632,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1946,
-        "quality_score": 0.18617237848477589,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.5916035252021437,
-        "pick_score": 2.2471311644716367
-      },
-      {
-        "from": "Spineseeker Centipede",
-        "to": "Ticket Booth // Tunnel of Hate",
-        "pair_games": 1367,
-        "pair_win_rate": 0.6005852231163131,
-        "pair_expected_win_rate": 0.5883139680067128,
-        "pair_lift_vs_baseline": 0.04644212497202416,
-        "synergy_delta_logit": 0.05090436968609374,
-        "synergy_delta_prob": 0.012271255109600365,
-        "confidence_probability": 0.8216846553112582,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3679,
-        "quality_score": 0.17638685225429365,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.666763254855504,
-        "pick_score": 5.742229559055334
-      },
-      {
-        "from": "Impossible Inferno",
-        "to": "Manifest Dread",
-        "pair_games": 1360,
-        "pair_win_rate": 0.5963235294117647,
-        "pair_expected_win_rate": 0.5832528098000985,
-        "pair_lift_vs_baseline": 0.042180431267475726,
-        "synergy_delta_logit": 0.054028663663938326,
-        "synergy_delta_prob": 0.01307071961166617,
-        "confidence_probability": 0.8358584317681507,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4017,
-        "quality_score": 0.17529980660439162,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.4348643624634354,
-        "pick_score": 5.061958034095529
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Impossible Inferno",
-        "pair_games": 1420,
-        "pair_win_rate": 0.5816901408450704,
-        "pair_expected_win_rate": 0.5649169256831817,
-        "pair_lift_vs_baseline": 0.027547042700781454,
-        "synergy_delta_logit": 0.06857375630769463,
-        "synergy_delta_prob": 0.016773215161888677,
-        "confidence_probability": 0.8987865750174839,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 5020,
-        "quality_score": 0.17521296070318523,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.7077807583258835,
-        "pick_score": 2.672024729964538
-      },
-      {
-        "from": "Monstrous Emergence",
-        "to": "Ticket Booth // Tunnel of Hate",
-        "pair_games": 1128,
-        "pair_win_rate": 0.5930851063829787,
-        "pair_expected_win_rate": 0.5787821050755093,
-        "pair_lift_vs_baseline": 0.03894200823868976,
-        "synergy_delta_logit": 0.058958038006235336,
-        "synergy_delta_prob": 0.01430300130746942,
-        "confidence_probability": 0.834664909831691,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3361,
-        "quality_score": 0.1641014132214601,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.944109506204087,
-        "pick_score": 3.496722165709566
-      },
-      {
-        "from": "Grasping Longneck",
-        "to": "Impossible Inferno",
-        "pair_games": 822,
-        "pair_win_rate": 0.5815085158150851,
-        "pair_expected_win_rate": 0.5621803681259285,
-        "pair_lift_vs_baseline": 0.027365417670796144,
-        "synergy_delta_logit": 0.07895336317818535,
-        "synergy_delta_prob": 0.019328147689156583,
-        "confidence_probability": 0.8679339504995974,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3499,
-        "quality_score": 0.15096579618699688,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.022907429098059,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Say Its Name",
-        "to": "Wary Watchdog",
-        "pair_games": 1450,
-        "pair_win_rate": 0.5848275862068966,
-        "pair_expected_win_rate": 0.5717867371674326,
-        "pair_lift_vs_baseline": 0.030684488062607596,
-        "synergy_delta_logit": 0.053478454873094716,
-        "synergy_delta_prob": 0.013040849039464009,
-        "confidence_probability": 0.8421754776583008,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3467,
-        "quality_score": 0.14528035416386553,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.8739360233320124,
-        "pick_score": 3.2571175512513375
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Wary Watchdog",
-        "pair_games": 1908,
-        "pair_win_rate": 0.5686582809224319,
-        "pair_expected_win_rate": 0.5521348686282916,
-        "pair_lift_vs_baseline": 0.014515182778142899,
-        "synergy_delta_logit": 0.06707886268449853,
-        "synergy_delta_prob": 0.016523412294140227,
-        "confidence_probability": 0.9266304802276808,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 4523,
-        "quality_score": 0.14369299783305228,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.269051028891919,
-        "pick_score": 0.9912058140526239
-      },
-      {
-        "from": "Glassworks // Shattered Yard",
-        "to": "Patchwork Beastie",
-        "pair_games": 1031,
-        "pair_win_rate": 0.5945683802133851,
-        "pair_expected_win_rate": 0.5819415636389617,
-        "pair_lift_vs_baseline": 0.040425282069096125,
-        "synergy_delta_logit": 0.05213468950012201,
-        "synergy_delta_prob": 0.012626816574423438,
-        "confidence_probability": 0.7944314004019486,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2292,
-        "quality_score": 0.14028587672034185,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.8409613219590373,
-        "pick_score": 3.1430237521504454
-      },
-      {
-        "from": "Grasping Longneck",
-        "to": "Turn Inside Out",
-        "pair_games": 1106,
-        "pair_win_rate": 0.5822784810126582,
-        "pair_expected_win_rate": 0.5683988424731449,
-        "pair_lift_vs_baseline": 0.028135382868369252,
-        "synergy_delta_logit": 0.05681239059098192,
-        "synergy_delta_prob": 0.01387963853951335,
-        "confidence_probability": 0.8242837768114261,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3876,
-        "quality_score": 0.1285199382160314,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.394454158325471,
-        "pick_score": 1.493624277420642
-      },
-      {
-        "from": "Grasping Longneck",
-        "to": "Hand That Feeds",
-        "pair_games": 1279,
-        "pair_win_rate": 0.562157935887412,
-        "pair_expected_win_rate": 0.5411268727876478,
-        "pair_lift_vs_baseline": 0.00801483774312306,
-        "synergy_delta_logit": 0.08504456787049705,
-        "synergy_delta_prob": 0.021031063099764213,
-        "confidence_probability": 0.9343419622433662,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3952,
-        "quality_score": 0.12049072498703117,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.4997745491449763,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Ticket Booth // Tunnel of Hate",
-        "to": "Wary Watchdog",
-        "pair_games": 1325,
-        "pair_win_rate": 0.5773584905660377,
-        "pair_expected_win_rate": 0.5650378661063031,
-        "pair_lift_vs_baseline": 0.02321539242174875,
-        "synergy_delta_logit": 0.050305280318947765,
-        "synergy_delta_prob": 0.012320624459734586,
-        "confidence_probability": 0.8171468616466202,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3752,
-        "quality_score": 0.11169806183196315,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.349872380478803,
-        "pick_score": 1.3171693471806527
-      },
-      {
-        "from": "Hand That Feeds",
-        "to": "Most Valuable Slayer",
-        "pair_games": 2187,
-        "pair_win_rate": 0.5647005029721079,
-        "pair_expected_win_rate": 0.5512238131442218,
-        "pair_lift_vs_baseline": 0.010557404827818972,
-        "synergy_delta_logit": 0.054644586348574165,
-        "synergy_delta_prob": 0.01347668982788619,
-        "confidence_probability": 0.8974213585038016,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 5405,
-        "quality_score": 0.111648303388891,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.166001041204896,
-        "pick_score": 0.5637003357804236
-      },
-      {
-        "from": "Clockwork Percussionist",
-        "to": "Most Valuable Slayer",
-        "pair_games": 2181,
-        "pair_win_rate": 0.5630444750114626,
-        "pair_expected_win_rate": 0.5506498688293149,
-        "pair_lift_vs_baseline": 0.008901376867173627,
-        "synergy_delta_logit": 0.05023043066899596,
-        "synergy_delta_prob": 0.012394606182147716,
-        "confidence_probability": 0.8776965989939733,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 5134,
-        "quality_score": 0.09675994127178025,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.0416397197201572,
-        "pick_score": 0.028858291314443812
-      }
-    ],
+    "edges": [],
     "triplets": [
       {
         "cards": [
@@ -5477,85 +4191,13 @@
     "communities": [
       {
         "community_id": 0,
-        "size": 8,
+        "size": 26,
         "top_cards": [
+          "Wildfire Wickerfolk",
           "Beastie Beatdown",
           "Hand That Feeds",
           "Most Valuable Slayer",
-          "Clockwork Percussionist",
-          "Wary Watchdog"
-        ]
-      },
-      {
-        "community_id": 1,
-        "size": 5,
-        "top_cards": [
-          "Turn Inside Out",
-          "Impossible Inferno",
-          "Manifest Dread",
-          "Grasping Longneck",
-          "Overlord of the Boilerbilges"
-        ]
-      },
-      {
-        "community_id": 2,
-        "size": 4,
-        "top_cards": [
-          "Glassworks // Shattered Yard",
-          "Monstrous Emergence",
-          "Razorkin Hordecaller",
-          "Valgavoth's Onslaught"
-        ]
-      },
-      {
-        "community_id": 3,
-        "size": 3,
-        "top_cards": [
-          "Fear of Burning Alive",
-          "Patchwork Beastie",
-          "Say Its Name"
-        ]
-      },
-      {
-        "community_id": 4,
-        "size": 1,
-        "top_cards": [
-          "Wildfire Wickerfolk"
-        ]
-      },
-      {
-        "community_id": 5,
-        "size": 1,
-        "top_cards": [
-          "Scorching Dragonfire"
-        ]
-      },
-      {
-        "community_id": 6,
-        "size": 1,
-        "top_cards": [
-          "Shrewd Storyteller"
-        ]
-      },
-      {
-        "community_id": 7,
-        "size": 1,
-        "top_cards": [
-          "Spectral Snatcher"
-        ]
-      },
-      {
-        "community_id": 8,
-        "size": 1,
-        "top_cards": [
-          "Toby, Beastie Befriender"
-        ]
-      },
-      {
-        "community_id": 9,
-        "size": 1,
-        "top_cards": [
-          "Cursed Windbreaker"
+          "Turn Inside Out"
         ]
       }
     ],
@@ -5797,19 +4439,7 @@
         }
       ]
     },
-    "build_arounds": [
-      {
-        "card": "Patchwork Beastie",
-        "shell_dependence_score": 8.929640329604341,
-        "shell_dependence_score_raw": 11.941658509741142,
-        "build_around_score": 8.929640329604341,
-        "build_around_score_raw": 11.941658509741142,
-        "support_delta": 0.0820268204588484,
-        "supported_win_rate": 0.5688458011266867,
-        "isolated_win_rate": 0.4868189806678383,
-        "supported_games": 7633
-      }
-    ],
+    "build_arounds": [],
     "core_cards": [
       {
         "card": "Wildfire Wickerfolk",
@@ -5825,61 +4455,61 @@
       },
       {
         "card": "Hand That Feeds",
-        "core_score": 9.780623974758681,
+        "core_score": 9.780608081170072,
         "deck_prevalence": 0.5473612945307564,
         "signpost_score": 14630.262002289515
       },
       {
         "card": "Most Valuable Slayer",
-        "core_score": 9.675565515436157,
+        "core_score": 9.675553857708653,
         "deck_prevalence": 0.5603908021458597,
         "signpost_score": 13194.108757885893
       },
       {
         "card": "Turn Inside Out",
-        "core_score": 9.640316745139861,
+        "core_score": 9.640286962110414,
         "deck_prevalence": 0.525317019068219,
         "signpost_score": 12744.634123239655
       },
       {
         "card": "Scorching Dragonfire",
-        "core_score": 9.608254971973496,
+        "core_score": 9.608302116601822,
         "deck_prevalence": 0.5922772743957804,
         "signpost_score": 12345.924717395743
       },
       {
         "card": "Clockwork Percussionist",
-        "core_score": 9.56259772405446,
+        "core_score": 9.562584076686846,
         "deck_prevalence": 0.5357375736872697,
         "signpost_score": 11808.554717415534
       },
       {
         "card": "Wary Watchdog",
-        "core_score": 9.470908085373098,
+        "core_score": 9.47087474774447,
         "deck_prevalence": 0.5040474131209264,
         "signpost_score": 10791.65951561531
       },
       {
         "card": "Impossible Inferno",
-        "core_score": 9.437397904460337,
+        "core_score": 9.437313795159003,
         "deck_prevalence": 0.3848453683586086,
         "signpost_score": 10446.441469011144
       },
       {
         "card": "Spineseeker Centipede",
-        "core_score": 9.40503960500907,
+        "core_score": 9.40500533286995,
         "deck_prevalence": 0.5093614310021276,
         "signpost_score": 10112.525605098363
       },
       {
         "card": "Manifest Dread",
-        "core_score": 9.339332371707338,
+        "core_score": 9.339297099444632,
         "deck_prevalence": 0.4762643382950811,
         "signpost_score": 9482.341590301647
       },
       {
         "card": "Glassworks // Shattered Yard",
-        "core_score": 9.316880081530936,
+        "core_score": 9.316809575806538,
         "deck_prevalence": 0.49913413908258913,
         "signpost_score": 9273.245621790094
       }
@@ -5960,200 +4590,79 @@
     ],
     "top_dependency": [
       {
-        "card": "Overlord of the Boilerbilges",
-        "dependency_score": 0.27711213721768013,
-        "standalone_delta": 0.1289717823491574,
-        "draw_games": 1297
+        "card": "Scorching Dragonfire",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.030177723757526476,
+        "draw_games": 17131
       },
       {
-        "card": "Valgavoth's Onslaught",
-        "dependency_score": 0.13685037759019128,
-        "standalone_delta": 0.14705690185571108,
-        "draw_games": 2500
+        "card": "Wildfire Wickerfolk",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.0388499553138808,
+        "draw_games": 16555
       },
       {
-        "card": "Fear of Burning Alive",
-        "dependency_score": 0.1145762952396075,
-        "standalone_delta": 0.060210968841357015,
-        "draw_games": 8360
+        "card": "Most Valuable Slayer",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.00219812793420604,
+        "draw_games": 15415
       },
       {
-        "card": "Impossible Inferno",
-        "dependency_score": 0.0956551629323331,
-        "standalone_delta": 0.01585690185571098,
-        "draw_games": 9500
+        "card": "Hand That Feeds",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.005122214662407476,
+        "draw_games": 15371
       },
       {
-        "card": "Patchwork Beastie",
-        "dependency_score": 0.09228549577184061,
-        "standalone_delta": 0.009012229824499118,
-        "draw_games": 8202
+        "card": "Clockwork Percussionist",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.0056966683998234124,
+        "draw_games": 15223
       },
       {
-        "card": "Monstrous Emergence",
-        "dependency_score": 0.08593377391812165,
-        "standalone_delta": 0.016910647094813824,
-        "draw_games": 11815
-      },
-      {
-        "card": "Glassworks // Shattered Yard",
-        "dependency_score": 0.07574074155082411,
-        "standalone_delta": 0.018879954087984152,
-        "draw_games": 13708
-      },
-      {
-        "card": "Grasping Longneck",
-        "dependency_score": 0.07406971389455093,
-        "standalone_delta": -0.00787844970678897,
-        "draw_games": 8192
-      },
-      {
-        "card": "Razorkin Hordecaller",
-        "dependency_score": 0.07250628332050393,
-        "standalone_delta": 0.04320991789032547,
-        "draw_games": 7858
-      },
-      {
-        "card": "Under the Skin",
-        "dependency_score": 0.07078354410653695,
-        "standalone_delta": 0.06346452884811382,
-        "draw_games": 6713
+        "card": "Beastie Beatdown",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.039426959437284914,
+        "draw_games": 14588
       },
       {
         "card": "Turn Inside Out",
-        "dependency_score": 0.06899145089317729,
+        "dependency_score": 0.0,
         "standalone_delta": 0.02204803951371903,
         "draw_games": 14398
       },
       {
-        "card": "Hand That Feeds",
-        "dependency_score": 0.0656123422709421,
-        "standalone_delta": -0.005122214662407476,
-        "draw_games": 15371
+        "card": "Spineseeker Centipede",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.026490679821693064,
+        "draw_games": 14169
+      },
+      {
+        "card": "Glassworks // Shattered Yard",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.018879954087984152,
+        "draw_games": 13708
+      },
+      {
+        "card": "Wary Watchdog",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.0031071390300524415,
+        "draw_games": 13703
+      },
+      {
+        "card": "Manifest Dread",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.013370714010407125,
+        "draw_games": 13575
+      },
+      {
+        "card": "Monstrous Emergence",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.016910647094813824,
+        "draw_games": 11815
       }
     ],
-    "top_pairs": [
-      {
-        "cards": [
-          "Glassworks // Shattered Yard",
-          "Valgavoth's Onslaught"
-        ],
-        "quality_score": 0.869608743630256,
-        "pair_win_rate": 0.7508196721311475,
-        "pair_games": 305,
-        "synergy_delta_logit": 0.1731989426938092
-      },
-      {
-        "cards": [
-          "Impossible Inferno",
-          "Overlord of the Boilerbilges"
-        ],
-        "quality_score": 0.8669707003817408,
-        "pair_win_rate": 0.7520661157024794,
-        "pair_games": 121,
-        "synergy_delta_logit": 0.27711213721768013
-      },
-      {
-        "cards": [
-          "Fear of Burning Alive",
-          "Patchwork Beastie"
-        ],
-        "quality_score": 0.6790182302218409,
-        "pair_win_rate": 0.659270998415214,
-        "pair_games": 631,
-        "synergy_delta_logit": 0.15784259787748955
-      },
-      {
-        "cards": [
-          "Fear of Burning Alive",
-          "Impossible Inferno"
-        ],
-        "quality_score": 0.5283446003265576,
-        "pair_win_rate": 0.6543942992874109,
-        "pair_games": 842,
-        "synergy_delta_logit": 0.1083335487099748
-      },
-      {
-        "cards": [
-          "Impossible Inferno",
-          "Monstrous Emergence"
-        ],
-        "quality_score": 0.448701798060832,
-        "pair_win_rate": 0.6161515453639083,
-        "pair_games": 1003,
-        "synergy_delta_logit": 0.1226671724553422
-      },
-      {
-        "cards": [
-          "Monstrous Emergence",
-          "Valgavoth's Onslaught"
-        ],
-        "quality_score": 0.4478388054684198,
-        "pair_win_rate": 0.735191637630662,
-        "pair_games": 287,
-        "synergy_delta_logit": 0.099379294827741
-      },
-      {
-        "cards": [
-          "Beastie Beatdown",
-          "Under the Skin"
-        ],
-        "quality_score": 0.42862731671500964,
-        "pair_win_rate": 0.6710929519918284,
-        "pair_games": 979,
-        "synergy_delta_logit": 0.07240758368800304
-      },
-      {
-        "cards": [
-          "Fear of Burning Alive",
-          "Say Its Name"
-        ],
-        "quality_score": 0.39228325199614444,
-        "pair_win_rate": 0.6476624857468644,
-        "pair_games": 877,
-        "synergy_delta_logit": 0.08399332137348081
-      },
-      {
-        "cards": [
-          "Spineseeker Centipede",
-          "Under the Skin"
-        ],
-        "quality_score": 0.34260664285210835,
-        "pair_win_rate": 0.6574358974358975,
-        "pair_games": 975,
-        "synergy_delta_logit": 0.06453160128582713
-      },
-      {
-        "cards": [
-          "Impossible Inferno",
-          "Ticket Booth // Tunnel of Hate"
-        ],
-        "quality_score": 0.33389197781074564,
-        "pair_win_rate": 0.6035678889990089,
-        "pair_games": 1009,
-        "synergy_delta_logit": 0.106878455585875
-      },
-      {
-        "cards": [
-          "Beastie Beatdown",
-          "Wary Watchdog"
-        ],
-        "quality_score": 0.32315017160134596,
-        "pair_win_rate": 0.6119617224880383,
-        "pair_games": 2090,
-        "synergy_delta_logit": 0.06423731343247474
-      },
-      {
-        "cards": [
-          "Impossible Inferno",
-          "Turn Inside Out"
-        ],
-        "quality_score": 0.3129502072763563,
-        "pair_win_rate": 0.6111111111111112,
-        "pair_games": 1260,
-        "synergy_delta_logit": 0.08040198758214079
-      }
-    ],
+    "top_pairs": [],
     "top_anti_pairs": [
       {
         "cards": [
@@ -6410,140 +4919,7 @@
         "pick_urgency_score": 8.168732577876474
       }
     ],
-    "top_pick_pairs": [
-      {
-        "cards": [
-          "Beastie Beatdown",
-          "Under the Skin"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 6.24657195807678,
-        "pair_win_rate": 0.6710929519918284,
-        "pair_games": 979,
-        "draft_pair_events": 2057
-      },
-      {
-        "cards": [
-          "Spineseeker Centipede",
-          "Under the Skin"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 5.600992390110155,
-        "pair_win_rate": 0.6574358974358975,
-        "pair_games": 975,
-        "draft_pair_events": 1960
-      },
-      {
-        "cards": [
-          "Beastie Beatdown",
-          "Wary Watchdog"
-        ],
-        "pick_score": 9.800604658940827,
-        "pick_score_raw": 5.325162262120935,
-        "pair_win_rate": 0.6119617224880383,
-        "pair_games": 2090,
-        "draft_pair_events": 3946
-      },
-      {
-        "cards": [
-          "Glassworks // Shattered Yard",
-          "Valgavoth's Onslaught"
-        ],
-        "pick_score": 9.679907463802548,
-        "pick_score_raw": 5.268220886161222,
-        "pair_win_rate": 0.7508196721311475,
-        "pair_games": 305,
-        "draft_pair_events": 689
-      },
-      {
-        "cards": [
-          "Fear of Burning Alive",
-          "Impossible Inferno"
-        ],
-        "pick_score": 9.435646512630283,
-        "pick_score_raw": 5.154549358019557,
-        "pair_win_rate": 0.6543942992874109,
-        "pair_games": 842,
-        "draft_pair_events": 2845
-      },
-      {
-        "cards": [
-          "Beastie Beatdown",
-          "Most Valuable Slayer"
-        ],
-        "pick_score": 9.232298748106679,
-        "pick_score_raw": 5.061491553379221,
-        "pair_win_rate": 0.6078998073217726,
-        "pair_games": 2076,
-        "draft_pair_events": 4607
-      },
-      {
-        "cards": [
-          "Fear of Burning Alive",
-          "Say Its Name"
-        ],
-        "pick_score": 8.944384788385763,
-        "pick_score_raw": 4.93213520896352,
-        "pair_win_rate": 0.6476624857468644,
-        "pair_games": 877,
-        "draft_pair_events": 2404
-      },
-      {
-        "cards": [
-          "Monstrous Emergence",
-          "Valgavoth's Onslaught"
-        ],
-        "pick_score": 8.473361696210675,
-        "pick_score_raw": 4.726435460705007,
-        "pair_win_rate": 0.735191637630662,
-        "pair_games": 287,
-        "draft_pair_events": 639
-      },
-      {
-        "cards": [
-          "Beastie Beatdown",
-          "Hand That Feeds"
-        ],
-        "pick_score": 8.448615653989494,
-        "pick_score_raw": 4.715828061995375,
-        "pair_win_rate": 0.6024844720496895,
-        "pair_games": 2093,
-        "draft_pair_events": 4777
-      },
-      {
-        "cards": [
-          "Fear of Burning Alive",
-          "Patchwork Beastie"
-        ],
-        "pick_score": 8.016188852817638,
-        "pick_score_raw": 4.533607793798467,
-        "pair_win_rate": 0.659270998415214,
-        "pair_games": 631,
-        "draft_pair_events": 1591
-      },
-      {
-        "cards": [
-          "Beastie Beatdown",
-          "Ticket Booth // Tunnel of Hate"
-        ],
-        "pick_score": 7.6627109083266385,
-        "pick_score_raw": 4.3889793286402785,
-        "pair_win_rate": 0.615562403697997,
-        "pair_games": 1298,
-        "draft_pair_events": 3906
-      },
-      {
-        "cards": [
-          "Monstrous Emergence",
-          "Razorkin Hordecaller"
-        ],
-        "pick_score": 7.283537280041714,
-        "pick_score_raw": 4.238036814577836,
-        "pair_win_rate": 0.6301969365426696,
-        "pair_games": 914,
-        "draft_pair_events": 2114
-      }
-    ]
+    "top_pick_pairs": []
   },
   "overview": [
     {
@@ -6565,11 +4941,7 @@
         "Arabella, Abandoned Doll",
         "Overlord of the Mistmoors"
       ],
-      "build_arounds": [
-        "Turn Inside Out",
-        "Hand That Feeds",
-        "Ragged Playmate"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Ragged Playmate",
         "Vicious Clown",
@@ -6598,8 +4970,7 @@
       ],
       "build_arounds": [
         "Erratic Apparition",
-        "Stalked Researcher",
-        "Inquisitive Glimmer"
+        "Fear of Surveillance"
       ],
       "core_cards": [
         "Tunnel Surveyor",
@@ -6627,9 +4998,7 @@
         "Fear of Burning Alive",
         "Overlord of the Boilerbilges"
       ],
-      "build_arounds": [
-        "Patchwork Beastie"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Wildfire Wickerfolk",
         "Beastie Beatdown",
@@ -6656,9 +5025,7 @@
         "Oblivious Bookworm",
         "Under the Skin"
       ],
-      "build_arounds": [
-        "Moldering Gym // Weight Room"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Oblivious Bookworm",
         "Growing Dread",
@@ -6685,9 +5052,7 @@
         "Unholy Annex // Ritual Chamber",
         "Vengeful Possession"
       ],
-      "build_arounds": [
-        "Diversion Specialist"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Disturbing Mirth",
         "Final Vengeance",
@@ -6714,11 +5079,7 @@
         "Valgavoth's Onslaught",
         "Unholy Annex // Ritual Chamber"
       ],
-      "build_arounds": [
-        "Innocuous Rat",
-        "Spectral Snatcher",
-        "Flesh Burrower"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Broodspinner",
         "Drag to the Roots",
@@ -6745,10 +5106,7 @@
         "Beastie Beatdown",
         "Under the Skin"
       ],
-      "build_arounds": [
-        "Moldering Gym // Weight Room",
-        "Overgrown Zealot"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Spineseeker Centipede",
         "Moldering Gym // Weight Room",
@@ -6775,11 +5133,7 @@
         "Overlord of the Mistmoors",
         "Ghostly Dancers"
       ],
-      "build_arounds": [
-        "Baseball Bat",
-        "Shrewd Storyteller",
-        "Hardened Escort"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Shrewd Storyteller",
         "Baseball Bat",
@@ -6806,9 +5160,7 @@
         "Unholy Annex // Ritual Chamber",
         "Emerge from the Cocoon"
       ],
-      "build_arounds": [
-        "Balemurk Leech"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Emerge from the Cocoon",
         "Shroudstomper",
@@ -6835,10 +5187,7 @@
         "Floodpits Drowner",
         "Unnerving Grasp"
       ],
-      "build_arounds": [
-        "Rampaging Soulrager",
-        "Creeping Peeper"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Smoky Lounge // Misty Salon",
         "Rampaging Soulrager",
@@ -6865,11 +5214,7 @@
         "Unnerving Grasp",
         "Glimmerburst"
       ],
-      "build_arounds": [
-        "Balemurk Leech",
-        "Appendage Amalgam",
-        "Stalked Researcher"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Fear of Infinity",
         "Skullsnap Nuisance",
@@ -6881,6 +5226,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -6986,6 +5332,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -7008,28 +5356,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -7097,16 +5436,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -7234,7 +5564,7 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
     if (filters.topSynergies) {
@@ -7569,22 +5899,27 @@
       ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
       : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
     var edgeText = mode === 'analysis'
-      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\\'s own baseline.'
       : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -7762,8 +6097,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -7880,6 +6216,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

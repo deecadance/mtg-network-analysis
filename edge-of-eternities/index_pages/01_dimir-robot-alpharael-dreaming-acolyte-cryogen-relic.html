@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic | Edge of Eternities Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -766,17 +646,19 @@
         "pick_urgency_score_raw": 8.694693090246728,
         "pick_urgency_score": 8.694693090246728,
         "shell_dependence_score_raw": 20.1707071544472,
-        "shell_dependence_score": 9.407430357045918,
+        "shell_dependence_score": 10.0,
         "build_around_score_raw": 20.1707071544472,
-        "build_around_score": 9.407430357045918,
+        "build_around_score": 10.0,
         "core_score_raw": 11235.878313167075,
         "core_score": 10.0,
+        "win_contribution_logit": 0.08634796817916537,
+        "contribution_score": 1.9574426716946065,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Alpharael%2C%20Dreaming%20Acolyte%22",
-        "community": 5,
-        "x": 700.4832634052053,
-        "y": 810.1860743897696,
+        "community": 0,
+        "x": 978.4557227413494,
+        "y": 558.3589895685444,
         "analysis_radius": 13.66515367227032,
         "pick_radius": 30.0,
         "radius": 13.66515367227032,
@@ -827,7 +709,7 @@
             "deck_prevalence": 0.4556105168098338,
             "analysis_score": 10.0,
             "pick_priority_score": 9.849943269079887,
-            "build_around_score": 9.407430357045918,
+            "build_around_score": 10.0,
             "core_score": 10.0,
             "role": "good_alone"
           },
@@ -865,8 +747,8 @@
         "supported_win_rate": 0.6142280894756142,
         "support_delta": 0.1985237014848521,
         "standalone_delta": 0.06099039333528633,
-        "dependency_score": 0.10482322873833572,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9892.362626340278,
         "signpost_lift": 2.386610578531178,
         "deck_prevalence": 0.6165159749731299,
@@ -879,7 +761,7 @@
         "alsa": 2.7573828034346715,
         "average_taken_at": 3.5367916676039863,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9902.788099524509,
+        "analysis_score_raw": 9900.90128140722,
         "analysis_score": 10.0,
         "pick_priority_score_raw": 464.91140945165046,
         "pick_priority_score": 10.0,
@@ -887,32 +769,24 @@
         "pick_market_score": 9.892687098842764,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 22.793811065865828,
-        "shell_dependence_score": 9.980740039134842,
-        "build_around_score_raw": 22.793811065865828,
-        "build_around_score": 9.980740039134842,
-        "core_score_raw": 9931.073165674718,
+        "shell_dependence_score_raw": 16.05997664450762,
+        "shell_dependence_score": 9.276350762761824,
+        "build_around_score_raw": 16.05997664450762,
+        "build_around_score": 9.276350762761824,
+        "core_score_raw": 9929.60564047238,
         "core_score": 10.0,
+        "win_contribution_logit": 0.18980522885861525,
+        "contribution_score": 4.294414266744369,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cryogen%20Relic%22",
         "community": 0,
-        "x": 1243.7047552216764,
-        "y": 655.1036381697611,
-        "analysis_radius": 18.128107868020834,
+        "x": 965.9896274079226,
+        "y": 641.0654496662314,
+        "analysis_radius": 14.354471633440749,
         "pick_radius": 30.0,
-        "radius": 18.128107868020834,
-        "top_synergies": [
-          {
-            "card": "Singularity Rupture",
-            "quality_score": 0.9234646928962149,
-            "pair_win_rate": 0.7002141327623126,
-            "pair_games": 1401,
-            "synergy_delta_logit": 0.10482322873833572,
-            "partner_pick_score": 9.57594903202448,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 14.354471633440749,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Codecracker Hound",
@@ -959,30 +833,30 @@
             "deck_prevalence": 0.6165159749731299,
             "analysis_score": 10.0,
             "pick_priority_score": 10.0,
-            "build_around_score": 9.980740039134842,
+            "build_around_score": 9.276350762761824,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.548508139186934,
-            "analysis_score": 9.737813719328608,
+            "analysis_score": 9.737435759928884,
             "pick_priority_score": 9.726973096021352,
-            "build_around_score": 9.731631764944288,
-            "core_score": 9.566186792679307,
-            "role": "engine"
+            "build_around_score": 8.407378721764264,
+            "core_score": 9.565698549859489,
+            "role": "good_alone"
           },
           {
             "cluster_id": 4,
             "title": "Simic Insect | Biomechan Engineer / Galactic Wayfarer",
             "color_name": "Simic Insect",
             "deck_prevalence": 0.49770482370912666,
-            "analysis_score": 9.706065864743254,
+            "analysis_score": 9.706065119186022,
             "pick_priority_score": 9.41948872031882,
-            "build_around_score": 7.561629537032923,
-            "core_score": 9.511975944028487,
+            "build_around_score": 7.729149494608733,
+            "core_score": 9.511973088333054,
             "role": "good_alone"
           },
           {
@@ -990,11 +864,11 @@
             "title": "Red Base Robot | Oreplate Pangolin / Zookeeper Mechan",
             "color_name": "Red Base Robot",
             "deck_prevalence": 0.3944317776544588,
-            "analysis_score": 4.5767990658072915,
+            "analysis_score": 4.578786020587708,
             "pick_priority_score": 9.549377038612935,
-            "build_around_score": 5.887404178821779,
-            "core_score": 4.58563861156976,
-            "role": "engine"
+            "build_around_score": 6.540100162665694,
+            "core_score": 4.5871752761607345,
+            "role": "good_alone"
           }
         ]
       },
@@ -1034,7 +908,7 @@
         "average_taken_at": 6.023440594059406,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 9608.160787195542,
-        "analysis_score": 9.98716841954603,
+        "analysis_score": 9.987249270102273,
         "pick_priority_score_raw": 276.2949635123208,
         "pick_priority_score": 8.575593605147988,
         "pick_market_score_raw": 9.040209010543371,
@@ -1042,17 +916,19 @@
         "pick_urgency_score_raw": 8.11976462850929,
         "pick_urgency_score": 8.11976462850929,
         "shell_dependence_score_raw": 18.176721765040536,
-        "shell_dependence_score": 8.921906716342756,
+        "shell_dependence_score": 9.872685396586592,
         "build_around_score_raw": 18.176721765040536,
-        "build_around_score": 8.921906716342756,
+        "build_around_score": 9.872685396586592,
         "core_score_raw": 9634.060683830234,
-        "core_score": 9.978532981024347,
+        "core_score": 9.978637239142351,
+        "win_contribution_logit": 0.14210238007925638,
+        "contribution_score": 3.243207445656936,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Selfcraft%20Mechan%22",
-        "community": 6,
-        "x": 611.6899622712259,
-        "y": 698.8427965176186,
+        "community": 0,
+        "x": 952.7501657741303,
+        "y": 353.48201237377793,
         "analysis_radius": 13.333453829091946,
         "pick_radius": 30.0,
         "radius": 13.333453829091946,
@@ -1101,10 +977,10 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.5429490473804273,
-            "analysis_score": 9.98716841954603,
+            "analysis_score": 9.987249270102273,
             "pick_priority_score": 8.575593605147988,
-            "build_around_score": 8.921906716342756,
-            "core_score": 9.978532981024347,
+            "build_around_score": 9.872685396586592,
+            "core_score": 9.978637239142351,
             "role": "good_alone"
           },
           {
@@ -1112,11 +988,11 @@
             "title": "Red Base Robot | Oreplate Pangolin / Zookeeper Mechan",
             "color_name": "Red Base Robot",
             "deck_prevalence": 0.3857734323510341,
-            "analysis_score": 6.096530711633901,
+            "analysis_score": 6.09830789365962,
             "pick_priority_score": 9.464985711326065,
-            "build_around_score": 7.924273399426081,
-            "core_score": 6.0986817997950356,
-            "role": "engine"
+            "build_around_score": 9.101351414404343,
+            "core_score": 6.100056944184897,
+            "role": "good_alone"
           }
         ]
       },
@@ -1141,8 +1017,8 @@
         "supported_win_rate": 0.5937858057558806,
         "support_delta": 0.1922590881986287,
         "standalone_delta": 0.03753765256086061,
-        "dependency_score": 0.052778123298963364,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9510.37536153742,
         "signpost_lift": 2.556774269483003,
         "deck_prevalence": 0.5607423437927403,
@@ -1155,40 +1031,32 @@
         "alsa": 3.0803208314505195,
         "average_taken_at": 4.405227909874364,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9516.580639115324,
-        "analysis_score": 9.980908808270774,
+        "analysis_score_raw": 9515.630632895942,
+        "analysis_score": 9.980924358415056,
         "pick_priority_score_raw": 257.1444631655344,
         "pick_priority_score": 8.376724162738725,
         "pick_market_score_raw": 9.686340886239584,
         "pick_market_score": 9.686340886239584,
         "pick_urgency_score_raw": 9.048731291780811,
         "pick_urgency_score": 9.048731291780811,
-        "shell_dependence_score_raw": 22.685341909459382,
-        "shell_dependence_score": 9.958313906553366,
-        "build_around_score_raw": 22.685341909459382,
-        "build_around_score": 9.958313906553366,
-        "core_score_raw": 9543.463557608502,
-        "core_score": 9.968256193854911,
+        "shell_dependence_score_raw": 18.73099488025086,
+        "shell_dependence_score": 10.0,
+        "build_around_score_raw": 18.73099488025086,
+        "build_around_score": 10.0,
+        "core_score_raw": 9542.724663882316,
+        "core_score": 9.968276127679664,
+        "win_contribution_logit": 0.14759310812627974,
+        "contribution_score": 3.36641792331536,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Virus%20Beetle%22",
-        "community": 3,
-        "x": 1078.7066988660206,
-        "y": 766.1003166362128,
-        "analysis_radius": 14.964583329610015,
+        "community": 0,
+        "x": 833.3461242052249,
+        "y": 743.3187668953277,
+        "analysis_radius": 13.064570890847333,
         "pick_radius": 30.0,
-        "radius": 14.964583329610015,
-        "top_synergies": [
-          {
-            "card": "Perigee Beckoner",
-            "quality_score": 0.3681585104477054,
-            "pair_win_rate": 0.6298482293423272,
-            "pair_games": 2372,
-            "synergy_delta_logit": 0.052778123298963364,
-            "partner_pick_score": 7.312040912617693,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.064570890847333,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Gravpack Monoist",
@@ -1235,7 +1103,7 @@
             "deck_prevalence": 0.5809183404016723,
             "analysis_score": 10.0,
             "pick_priority_score": 8.069712802690432,
-            "build_around_score": 9.250093906273602,
+            "build_around_score": 7.173762824468605,
             "core_score": 10.0,
             "role": "balanced"
           },
@@ -1244,10 +1112,10 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.5607423437927403,
-            "analysis_score": 9.980908808270774,
+            "analysis_score": 9.980924358415056,
             "pick_priority_score": 8.376724162738725,
-            "build_around_score": 9.958313906553366,
-            "core_score": 9.968256193854911,
+            "build_around_score": 10.0,
+            "core_score": 9.968276127679664,
             "role": "good_alone"
           },
           {
@@ -1255,10 +1123,10 @@
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.4577916076561491,
-            "analysis_score": 9.623856228888346,
+            "analysis_score": 9.623723774066958,
             "pick_priority_score": 8.041118624463143,
-            "build_around_score": 7.051686096127322,
-            "core_score": 9.402621809058632,
+            "build_around_score": 9.688376110124985,
+            "core_score": 9.402456715364064,
             "role": "balanced"
           },
           {
@@ -1266,11 +1134,11 @@
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.44361640754966286,
-            "analysis_score": 9.701031228823995,
+            "analysis_score": 9.70145809636604,
             "pick_priority_score": 5.923920975029387,
-            "build_around_score": 7.417759145258494,
-            "core_score": 9.546508355474623,
-            "role": "needs_support"
+            "build_around_score": 7.575035924886073,
+            "core_score": 9.546990392521021,
+            "role": "balanced"
           }
         ]
       },
@@ -1295,8 +1163,8 @@
         "supported_win_rate": 0.6010474430067776,
         "support_delta": 0.18563390917219114,
         "standalone_delta": 0.04562129091372236,
-        "dependency_score": 0.09951857365861794,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8204.2916581393,
         "signpost_lift": 2.379282498071197,
         "deck_prevalence": 0.5188506394528564,
@@ -1309,40 +1177,32 @@
         "alsa": 2.5997296133773404,
         "average_taken_at": 3.650252305550722,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8212.469973193076,
-        "analysis_score": 9.88458167843163,
+        "analysis_score_raw": 8210.67863886722,
+        "analysis_score": 9.884519119836263,
         "pick_priority_score_raw": 258.381386892024,
         "pick_priority_score": 8.390008035011748,
         "pick_market_score_raw": 9.869731647131708,
         "pick_market_score": 9.869731647131708,
         "pick_urgency_score_raw": 9.332683398531842,
         "pick_urgency_score": 9.332683398531842,
-        "shell_dependence_score_raw": 21.33877274488551,
-        "shell_dependence_score": 9.671025883742415,
-        "build_around_score_raw": 21.33877274488551,
-        "build_around_score": 9.671025883742415,
-        "core_score_raw": 8236.542961149735,
-        "core_score": 9.808068259212412,
+        "shell_dependence_score_raw": 15.26297481241121,
+        "shell_dependence_score": 9.032415787013583,
+        "build_around_score_raw": 15.26297481241121,
+        "build_around_score": 9.032415787013583,
+        "core_score_raw": 8235.149701118515,
+        "core_score": 9.807986733954156,
+        "win_contribution_logit": 0.20726142730514602,
+        "contribution_score": 4.668586744904652,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Depressurize%22",
-        "community": 1,
-        "x": 1296.1430113626952,
-        "y": 625.6175737359807,
-        "analysis_radius": 17.091839651964975,
+        "community": 0,
+        "x": 1008.2392654197395,
+        "y": 488.61960189518425,
+        "analysis_radius": 13.50917100025473,
         "pick_radius": 30.0,
-        "radius": 17.091839651964975,
-        "top_synergies": [
-          {
-            "card": "Codecracker Hound",
-            "quality_score": 0.895634519559849,
-            "pair_win_rate": 0.69125,
-            "pair_games": 1600,
-            "synergy_delta_logit": 0.09951857365861794,
-            "partner_pick_score": 9.858222406716457,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 13.50917100025473,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Hullcarver",
@@ -1387,44 +1247,44 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.5188506394528564,
-            "analysis_score": 9.88458167843163,
+            "analysis_score": 9.884519119836263,
             "pick_priority_score": 8.390008035011748,
-            "build_around_score": 9.671025883742415,
-            "core_score": 9.808068259212412,
-            "role": "engine"
+            "build_around_score": 9.032415787013583,
+            "core_score": 9.807986733954156,
+            "role": "good_alone"
           },
           {
             "cluster_id": 8,
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.5138584777423396,
-            "analysis_score": 9.826070658161951,
+            "analysis_score": 9.826178043179647,
             "pick_priority_score": 8.191182951994108,
-            "build_around_score": 6.4954486066136905,
-            "core_score": 9.72499109897238,
-            "role": "engine"
+            "build_around_score": 5.568758595469866,
+            "core_score": 9.725123693152128,
+            "role": "balanced"
           },
           {
             "cluster_id": 0,
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.5069846214398088,
-            "analysis_score": 9.953665275455938,
+            "analysis_score": 9.954598894429768,
             "pick_priority_score": 8.480755556594339,
-            "build_around_score": 5.769145959593829,
-            "core_score": 9.92969223516594,
-            "role": "engine"
+            "build_around_score": 6.442554614932784,
+            "core_score": 9.930788463566916,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.44399511247913254,
-            "analysis_score": 9.580690757722508,
+            "analysis_score": 9.580517799597072,
             "pick_priority_score": 8.605142020843356,
-            "build_around_score": 5.714127402581792,
-            "core_score": 9.333879898182486,
-            "role": "engine"
+            "build_around_score": 7.547810309270279,
+            "core_score": 9.3336646188843,
+            "role": "balanced"
           },
           {
             "cluster_id": 3,
@@ -1442,9 +1302,9 @@
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.008674973440336882,
-            "analysis_score": 0.05605464394979844,
+            "analysis_score": 0.056055231921013415,
             "pick_priority_score": 7.094872726464327,
-            "build_around_score": 3.071112800821051,
+            "build_around_score": 3.625827577556347,
             "core_score": 0.0,
             "role": "good_alone"
           }
@@ -1471,8 +1331,8 @@
         "supported_win_rate": 0.5748574857485749,
         "support_delta": 0.15904115921796264,
         "standalone_delta": 0.020738204499303192,
-        "dependency_score": 0.1162100274288442,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 7558.147968558009,
         "signpost_lift": 2.729713356759056,
         "deck_prevalence": 0.428341836209317,
@@ -1485,67 +1345,32 @@
         "alsa": 3.986274723246359,
         "average_taken_at": 6.799366714221093,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7563.14309768163,
-        "analysis_score": 9.830748361378987,
+        "analysis_score_raw": 7561.051317187911,
+        "analysis_score": 9.830647155963904,
         "pick_priority_score_raw": 104.25265474924578,
         "pick_priority_score": 5.883560430282418,
         "pick_market_score_raw": 8.83084671180544,
         "pick_market_score": 8.83084671180544,
         "pick_urgency_score_raw": 7.016874375930464,
         "pick_urgency_score": 7.016874375930464,
-        "shell_dependence_score_raw": 22.93788894181484,
-        "shell_dependence_score": 10.0,
-        "build_around_score_raw": 22.93788894181484,
-        "build_around_score": 10.0,
-        "core_score_raw": 7583.811431807338,
-        "core_score": 9.718265934969207,
+        "shell_dependence_score_raw": 15.658971098403185,
+        "shell_dependence_score": 9.155075500008317,
+        "build_around_score_raw": 15.658971098403185,
+        "build_around_score": 9.155075500008317,
+        "core_score_raw": 7582.184491423333,
+        "core_score": 9.718134114238119,
+        "win_contribution_logit": 0.047046749327892205,
+        "contribution_score": 1.0108164225888114,
         "is_build_around": false,
-        "role": "engine",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Hullcarver%22",
-        "community": 1,
-        "x": 1151.912511376912,
-        "y": 723.5608433413287,
-        "analysis_radius": 16.32416223490007,
+        "community": 0,
+        "x": 851.702783583738,
+        "y": 375.2777915503715,
+        "analysis_radius": 12.140601247461676,
         "pick_radius": 30.0,
-        "radius": 16.32416223490007,
-        "top_synergies": [
-          {
-            "card": "Codecracker Hound",
-            "quality_score": 1.160709140575991,
-            "pair_win_rate": 0.6820083682008368,
-            "pair_games": 1195,
-            "synergy_delta_logit": 0.158825074588697,
-            "partner_pick_score": 9.858222406716457,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Elegy Acolyte",
-            "quality_score": 0.94606238323695,
-            "pair_win_rate": 0.7253012048192771,
-            "pair_games": 415,
-            "synergy_delta_logit": 0.1783338316136286,
-            "partner_pick_score": 9.96724669569123,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Monoist Circuit-Feeder",
-            "quality_score": 0.48213420190469836,
-            "pair_win_rate": 0.6609281437125748,
-            "pair_games": 1336,
-            "synergy_delta_logit": 0.07182465960420792,
-            "partner_pick_score": 9.891997987447304,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Tractor Beam",
-            "quality_score": 0.48090184199306324,
-            "pair_win_rate": 0.6506849315068494,
-            "pair_games": 1168,
-            "synergy_delta_logit": 0.08354490935379733,
-            "partner_pick_score": 9.226309831899519,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 12.140601247461676,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Embrace Oblivion",
@@ -1590,11 +1415,11 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.428341836209317,
-            "analysis_score": 9.830748361378987,
+            "analysis_score": 9.830647155963904,
             "pick_priority_score": 5.883560430282418,
-            "build_around_score": 10.0,
-            "core_score": 9.718265934969207,
-            "role": "engine"
+            "build_around_score": 9.155075500008317,
+            "core_score": 9.718134114238119,
+            "role": "balanced"
           }
         ]
       },
@@ -1634,7 +1459,7 @@
         "average_taken_at": 5.631953651928288,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 7066.852636588613,
-        "analysis_score": 9.786389266167342,
+        "analysis_score": 9.78646849132732,
         "pick_priority_score_raw": 218.07427283616227,
         "pick_priority_score": 7.920672344628233,
         "pick_market_score_raw": 9.229004302876634,
@@ -1642,17 +1467,19 @@
         "pick_urgency_score_raw": 8.217583981012526,
         "pick_urgency_score": 8.217583981012526,
         "shell_dependence_score_raw": 14.698277143183375,
-        "shell_dependence_score": 7.939553644553314,
+        "shell_dependence_score": 8.852233211011216,
         "build_around_score_raw": 14.698277143183375,
-        "build_around_score": 7.939553644553314,
+        "build_around_score": 8.852233211011216,
         "core_score_raw": 7088.652473583091,
-        "core_score": 9.644827257897045,
+        "core_score": 9.64492802937721,
+        "win_contribution_logit": 0.1538574468079604,
+        "contribution_score": 3.5062701085766514,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Gravpack%20Monoist%22",
-        "community": 7,
-        "x": 580.0,
-        "y": 560.0,
+        "community": 0,
+        "x": 783.2988055485137,
+        "y": 686.5718459051104,
         "analysis_radius": 12.943913276006723,
         "pick_radius": 30.0,
         "radius": 12.943913276006723,
@@ -1701,32 +1528,32 @@
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.518277791083317,
-            "analysis_score": 9.925442094277388,
+            "analysis_score": 9.925519620453414,
             "pick_priority_score": 8.909145088157851,
-            "build_around_score": 7.658123817243958,
-            "core_score": 9.8818482895625,
-            "role": "engine"
+            "build_around_score": 6.349510205705398,
+            "core_score": 9.881943741715522,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.45816072342308867,
-            "analysis_score": 9.713955332111762,
+            "analysis_score": 9.713868170714376,
             "pick_priority_score": 8.614247849225624,
-            "build_around_score": 5.559164371062613,
-            "core_score": 9.545609459370144,
-            "role": "engine"
+            "build_around_score": 7.5832413306510595,
+            "core_score": 9.545500597029955,
+            "role": "balanced"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.4566105821247145,
-            "analysis_score": 9.786389266167342,
+            "analysis_score": 9.78646849132732,
             "pick_priority_score": 7.920672344628233,
-            "build_around_score": 7.939553644553314,
-            "core_score": 9.644827257897045,
+            "build_around_score": 8.852233211011216,
+            "core_score": 9.64492802937721,
             "role": "good_alone"
           },
           {
@@ -1734,11 +1561,11 @@
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.3790619591686896,
-            "analysis_score": 9.515551397748713,
+            "analysis_score": 9.515988411114384,
             "pick_priority_score": 5.267163609154502,
-            "build_around_score": 8.481393108990618,
-            "core_score": 9.26476528413397,
-            "role": "needs_support"
+            "build_around_score": 9.230670470192543,
+            "core_score": 9.265246085288776,
+            "role": "balanced"
           }
         ]
       },
@@ -1763,8 +1590,8 @@
         "supported_win_rate": 0.5914006179196705,
         "support_delta": 0.1282858638213098,
         "standalone_delta": 0.03812436128781793,
-        "dependency_score": 0.06870800292922366,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 6738.243625221518,
         "signpost_lift": 2.1665980719762796,
         "deck_prevalence": 0.4728871421605561,
@@ -1777,58 +1604,32 @@
         "alsa": 2.1606334230592643,
         "average_taken_at": 2.9346978856599257,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6744.8177798545385,
-        "analysis_score": 9.7559063733797,
+        "analysis_score_raw": 6743.5810358018125,
+        "analysis_score": 9.75586550060507,
         "pick_priority_score_raw": 182.6186209037498,
         "pick_priority_score": 7.430046378073872,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.252377128166941,
         "pick_urgency_score": 9.252377128166941,
-        "shell_dependence_score_raw": 13.267522123631482,
-        "shell_dependence_score": 7.470502619097942,
-        "build_around_score_raw": 13.267522123631482,
-        "build_around_score": 7.470502619097942,
-        "core_score_raw": 6767.036239364341,
-        "core_score": 9.594325941939776,
+        "shell_dependence_score_raw": 10.40727092016092,
+        "shell_dependence_score": 7.224270961180352,
+        "build_around_score_raw": 10.40727092016092,
+        "build_around_score": 7.224270961180352,
+        "core_score_raw": 6766.074327323332,
+        "core_score": 9.594271569343329,
+        "win_contribution_logit": 0.1713376887269437,
+        "contribution_score": 3.892539965009426,
         "is_build_around": false,
-        "role": "balanced",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Gravkill%22",
         "community": 0,
-        "x": 1169.5939711170236,
-        "y": 540.5538978675446,
-        "analysis_radius": 15.570327976282037,
+        "x": 1065.3912844625902,
+        "y": 537.9228520700672,
+        "analysis_radius": 13.096839870829985,
         "pick_radius": 30.0,
-        "radius": 15.570327976282037,
-        "top_synergies": [
-          {
-            "card": "Singularity Rupture",
-            "quality_score": 0.45568799397688636,
-            "pair_win_rate": 0.6730769230769231,
-            "pair_games": 988,
-            "synergy_delta_logit": 0.07375334654313359,
-            "partner_pick_score": 9.57594903202448,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Beamsaw Prospector",
-            "quality_score": 0.35276279934847726,
-            "pair_win_rate": 0.6162343900096061,
-            "pair_games": 2082,
-            "synergy_delta_logit": 0.06271702770641091,
-            "partner_pick_score": 5.838152443308487,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Quantum Riddler",
-            "quality_score": 0.34067633439108147,
-            "pair_win_rate": 0.7531380753138075,
-            "pair_games": 239,
-            "synergy_delta_logit": 0.07613213134340002,
-            "partner_pick_score": 9.50788025736614,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.096839870829985,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Embrace Oblivion",
@@ -1873,33 +1674,33 @@
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.5124430189062072,
-            "analysis_score": 9.97180486529002,
+            "analysis_score": 9.972749177087476,
             "pick_priority_score": 8.90787323938005,
-            "build_around_score": 5.549266573507705,
-            "core_score": 9.957044043898426,
-            "role": "engine"
+            "build_around_score": 6.186786747571264,
+            "core_score": 9.958154100204856,
+            "role": "good_alone"
           },
           {
             "cluster_id": 8,
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.49780972919252076,
-            "analysis_score": 9.77106230821096,
+            "analysis_score": 9.771192651676195,
             "pick_priority_score": 7.794551660480559,
-            "build_around_score": 6.6094774339896825,
-            "core_score": 9.638061313471116,
-            "role": "engine"
+            "build_around_score": 5.839946858783398,
+            "core_score": 9.638222328387542,
+            "role": "balanced"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.4728871421605561,
-            "analysis_score": 9.7559063733797,
+            "analysis_score": 9.75586550060507,
             "pick_priority_score": 7.430046378073872,
-            "build_around_score": 7.470502619097942,
-            "core_score": 9.594325941939776,
-            "role": "balanced"
+            "build_around_score": 7.224270961180352,
+            "core_score": 9.594271569343329,
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
@@ -1908,7 +1709,7 @@
             "deck_prevalence": 0.014054933432308315,
             "analysis_score": 0.0,
             "pick_priority_score": 3.1416701719460915,
-            "build_around_score": 4.090703895182149,
+            "build_around_score": 4.760069702098398,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -1935,8 +1736,8 @@
         "supported_win_rate": 0.5987952996938877,
         "support_delta": 0.16228736318595116,
         "standalone_delta": 0.044836274576147694,
-        "dependency_score": 0.0832571894911273,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 6493.795545238534,
         "signpost_lift": 2.371377750259989,
         "deck_prevalence": 0.41908251655386763,
@@ -1949,58 +1750,32 @@
         "alsa": 3.792141374246797,
         "average_taken_at": 6.132874603324222,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6501.571253090035,
-        "analysis_score": 9.731900579421465,
+        "analysis_score_raw": 6500.072623679194,
+        "analysis_score": 9.731828697077926,
         "pick_priority_score_raw": 257.26063351281795,
         "pick_priority_score": 8.37797447291652,
         "pick_market_score_raw": 9.056592248971008,
         "pick_market_score": 9.056592248971008,
         "pick_urgency_score_raw": 8.087297099640526,
         "pick_urgency_score": 8.087297099640526,
-        "shell_dependence_score_raw": 15.80562371885737,
-        "shell_dependence_score": 8.27410786733501,
-        "build_around_score_raw": 15.80562371885737,
-        "build_around_score": 8.27410786733501,
-        "core_score_raw": 6520.564520091183,
-        "core_score": 9.553972321778422,
+        "shell_dependence_score_raw": 11.85692628491529,
+        "shell_dependence_score": 7.8342174702513265,
+        "build_around_score_raw": 11.85692628491529,
+        "build_around_score": 7.8342174702513265,
+        "core_score_raw": 6519.3989194383075,
+        "core_score": 9.553877702520088,
+        "win_contribution_logit": 0.18033079504530905,
+        "contribution_score": 4.08902539389086,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Embrace%20Oblivion%22",
-        "community": 4,
-        "x": 721.2933011339794,
-        "y": 977.8535471601543,
-        "analysis_radius": 16.463253923368704,
+        "community": 0,
+        "x": 962.7827692416078,
+        "y": 428.4065784668725,
+        "analysis_radius": 13.465995101688122,
         "pick_radius": 30.0,
-        "radius": 16.463253923368704,
-        "top_synergies": [
-          {
-            "card": "Elegy Acolyte",
-            "quality_score": 0.48691961107643505,
-            "pair_win_rate": 0.7272727272727273,
-            "pair_games": 429,
-            "synergy_delta_logit": 0.08924543057710366,
-            "partner_pick_score": 9.96724669569123,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Desculpting Blast",
-            "quality_score": 0.44569772180017264,
-            "pair_win_rate": 0.6770114942528735,
-            "pair_games": 870,
-            "synergy_delta_logit": 0.07434246608436057,
-            "partner_pick_score": 9.195548047674912,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Quantum Riddler",
-            "quality_score": 0.41315593001875434,
-            "pair_win_rate": 0.7612612612612613,
-            "pair_games": 222,
-            "synergy_delta_logit": 0.09258063616987777,
-            "partner_pick_score": 9.50788025736614,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.465995101688122,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Hullcarver",
@@ -2045,22 +1820,22 @@
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.4930533926472788,
-            "analysis_score": 9.912232004350363,
+            "analysis_score": 9.912413260510181,
             "pick_priority_score": 8.526186557530842,
-            "build_around_score": 7.36182522328208,
-            "core_score": 9.860830903774506,
-            "role": "engine"
+            "build_around_score": 6.638147806473417,
+            "core_score": 9.861053771888692,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.41908251655386763,
-            "analysis_score": 9.731900579421465,
+            "analysis_score": 9.731828697077926,
             "pick_priority_score": 8.37797447291652,
-            "build_around_score": 8.27410786733501,
-            "core_score": 9.553972321778422,
-            "role": "engine"
+            "build_around_score": 7.8342174702513265,
+            "core_score": 9.553877702520088,
+            "role": "good_alone"
           }
         ]
       },
@@ -2100,7 +1875,7 @@
         "average_taken_at": 6.775317361840221,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 6405.30813224139,
-        "analysis_score": 9.722151510618724,
+        "analysis_score": 9.722230215745592,
         "pick_priority_score_raw": 208.75063346143673,
         "pick_priority_score": 7.799811143609008,
         "pick_market_score_raw": 8.833865131926409,
@@ -2108,17 +1883,19 @@
         "pick_urgency_score_raw": 7.578939079628407,
         "pick_urgency_score": 7.578939079628407,
         "shell_dependence_score_raw": 7.147385191957965,
-        "shell_dependence_score": 4.72050559519675,
+        "shell_dependence_score": 5.508339134867752,
         "build_around_score_raw": 7.147385191957965,
-        "build_around_score": 4.72050559519675,
+        "build_around_score": 5.508339134867752,
         "core_score_raw": 6424.064499638896,
-        "core_score": 9.537755853190303,
+        "core_score": 9.537855505962622,
+        "win_contribution_logit": 0.23730792497238604,
+        "contribution_score": 5.300137077494001,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Mechanozoa%22",
-        "community": 8,
-        "x": 611.6899622712258,
-        "y": 421.1572034823814,
+        "community": 0,
+        "x": 1034.151970129399,
+        "y": 404.68099298176105,
         "analysis_radius": 13.336574558643072,
         "pick_radius": 30.0,
         "radius": 13.336574558643072,
@@ -2167,10 +1944,10 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.405633499156721,
-            "analysis_score": 9.722151510618724,
+            "analysis_score": 9.722230215745592,
             "pick_priority_score": 7.799811143609008,
-            "build_around_score": 4.72050559519675,
-            "core_score": 9.537755853190303,
+            "build_around_score": 5.508339134867752,
+            "core_score": 9.537855505962622,
             "role": "good_alone"
           },
           {
@@ -2178,11 +1955,11 @@
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.36765473735458554,
-            "analysis_score": 9.474869488571619,
+            "analysis_score": 9.474743967470944,
             "pick_priority_score": 8.347520950289617,
-            "build_around_score": 7.292400553655426,
-            "core_score": 9.129750910328932,
-            "role": "engine"
+            "build_around_score": 7.326883226475131,
+            "core_score": 9.129584992072981,
+            "role": "good_alone"
           }
         ]
       },
@@ -2207,8 +1984,8 @@
         "supported_win_rate": 0.5943330427201395,
         "support_delta": 0.17362819690516157,
         "standalone_delta": 0.03960278007080764,
-        "dependency_score": 0.11574713162727712,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 6295.171690771759,
         "signpost_lift": 2.0692309037841037,
         "deck_prevalence": 0.4662152099777494,
@@ -2221,40 +1998,32 @@
         "alsa": 3.526924233724332,
         "average_taken_at": 5.4206736475615225,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6302.799528350963,
-        "analysis_score": 9.711607539765774,
+        "analysis_score_raw": 6300.716079981672,
+        "analysis_score": 9.711470082138064,
         "pick_priority_score_raw": 192.29522855639055,
         "pick_priority_score": 7.5727679013769436,
         "pick_market_score_raw": 9.311226276867153,
         "pick_market_score": 9.311226276867153,
         "pick_urgency_score_raw": 8.241950794161308,
         "pick_urgency_score": 8.241950794161308,
-        "shell_dependence_score_raw": 19.85773558037653,
-        "shell_dependence_score": 9.334329923413705,
-        "build_around_score_raw": 19.85773558037653,
-        "build_around_score": 9.334329923413705,
-        "core_score_raw": 6324.401577839402,
-        "core_score": 9.520750175629018,
+        "shell_dependence_score_raw": 13.573404863098833,
+        "shell_dependence_score": 8.473143448126608,
+        "build_around_score_raw": 13.573404863098833,
+        "build_around_score": 8.473143448126608,
+        "core_score_raw": 6322.78111799662,
+        "core_score": 9.520570937296876,
+        "win_contribution_logit": 0.13551063734280916,
+        "contribution_score": 3.0945056787786016,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cryoshatter%22",
         "community": 0,
-        "x": 1312.8024431170445,
-        "y": 489.2587808171498,
-        "analysis_radius": 17.345049642476397,
+        "x": 782.396208759802,
+        "y": 537.0230032003104,
+        "analysis_radius": 13.178152903894421,
         "pick_radius": 30.0,
-        "radius": 17.345049642476397,
-        "top_synergies": [
-          {
-            "card": "Quantum Riddler",
-            "quality_score": 0.5618303661975402,
-            "pair_win_rate": 0.7615384615384615,
-            "pair_games": 260,
-            "synergy_delta_logit": 0.11574713162727712,
-            "partner_pick_score": 9.50788025736614,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.178152903894421,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Cryogen Relic",
@@ -2299,21 +2068,21 @@
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.5329728420749019,
-            "analysis_score": 9.788874428375632,
+            "analysis_score": 9.788838264204578,
             "pick_priority_score": 8.616134597868935,
-            "build_around_score": 7.922323846864853,
-            "core_score": 9.65073802388611,
-            "role": "engine"
+            "build_around_score": 8.008750640828845,
+            "core_score": 9.650689782720717,
+            "role": "good_alone"
           },
           {
             "cluster_id": 4,
             "title": "Simic Insect | Biomechan Engineer / Galactic Wayfarer",
             "color_name": "Simic Insect",
             "deck_prevalence": 0.48687242797378993,
-            "analysis_score": 9.777277729183595,
+            "analysis_score": 9.777257026870995,
             "pick_priority_score": 7.265981895679152,
-            "build_around_score": 8.73869858746526,
-            "core_score": 9.63008257771254,
+            "build_around_score": 8.761053072192183,
+            "core_score": 9.63005443618398,
             "role": "balanced"
           },
           {
@@ -2321,11 +2090,11 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.4662152099777494,
-            "analysis_score": 9.711607539765774,
+            "analysis_score": 9.711470082138064,
             "pick_priority_score": 7.5727679013769436,
-            "build_around_score": 9.334329923413705,
-            "core_score": 9.520750175629018,
-            "role": "engine"
+            "build_around_score": 8.473143448126608,
+            "core_score": 9.520570937296876,
+            "role": "good_alone"
           }
         ]
       },
@@ -2350,8 +2119,8 @@
         "supported_win_rate": 0.570902210714997,
         "support_delta": 0.18797538144670434,
         "standalone_delta": 0.015409050501740684,
-        "dependency_score": 0.07816489459048297,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 6226.314141082093,
         "signpost_lift": 2.2580866108948774,
         "deck_prevalence": 0.42228394033796124,
@@ -2364,67 +2133,32 @@
         "alsa": 3.597130511035277,
         "average_taken_at": 5.803707951070336,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6229.878376254965,
-        "analysis_score": 9.70400201941159,
+        "analysis_score_raw": 6228.471408152336,
+        "analysis_score": 9.703932958961417,
         "pick_priority_score_raw": 102.54681205235792,
         "pick_priority_score": 5.838152443308487,
         "pick_market_score_raw": 9.201311614193436,
         "pick_market_score": 9.201311614193436,
         "pick_urgency_score_raw": 7.569465721548806,
         "pick_urgency_score": 7.569465721548806,
-        "shell_dependence_score_raw": 24.328040383206556,
-        "shell_dependence_score": 10.0,
-        "build_around_score_raw": 24.328040383206556,
-        "build_around_score": 10.0,
-        "core_score_raw": 6250.676983796581,
-        "core_score": 9.507997094251364,
+        "shell_dependence_score_raw": 18.533396460311153,
+        "shell_dependence_score": 9.966643766648078,
+        "build_around_score_raw": 18.533396460311153,
+        "build_around_score": 9.966643766648078,
+        "core_score_raw": 6249.582675272314,
+        "core_score": 9.507906006982946,
+        "win_contribution_logit": 0.03569057581563076,
+        "contribution_score": 0.7306626813199262,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Beamsaw%20Prospector%22",
-        "community": 2,
-        "x": 1161.5950061838723,
-        "y": 722.5599122689703,
-        "analysis_radius": 14.661433982853124,
+        "community": 0,
+        "x": 834.5701129624252,
+        "y": 625.1280184313694,
+        "analysis_radius": 11.847497777595738,
         "pick_radius": 30.0,
-        "radius": 14.661433982853124,
-        "top_synergies": [
-          {
-            "card": "Tractor Beam",
-            "quality_score": 0.5903713602766598,
-            "pair_win_rate": 0.6499582289055973,
-            "pair_games": 1197,
-            "synergy_delta_logit": 0.10204635634787518,
-            "partner_pick_score": 9.226309831899519,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Singularity Rupture",
-            "quality_score": 0.37223348951194923,
-            "pair_win_rate": 0.6525229357798165,
-            "pair_games": 872,
-            "synergy_delta_logit": 0.07473030747482479,
-            "partner_pick_score": 9.57594903202448,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Gravkill",
-            "quality_score": 0.35276279934847726,
-            "pair_win_rate": 0.6162343900096061,
-            "pair_games": 2082,
-            "synergy_delta_logit": 0.06271702770641091,
-            "partner_pick_score": 7.430046378073872,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Quantum Riddler",
-            "quality_score": 0.2949358059317496,
-            "pair_win_rate": 0.7355769230769231,
-            "pair_games": 208,
-            "synergy_delta_logit": 0.07678151026680147,
-            "partner_pick_score": 9.50788025736614,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 11.847497777595738,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Alpharael, Dreaming Acolyte",
@@ -2469,32 +2203,32 @@
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.48958454642583876,
-            "analysis_score": 9.862261608156771,
+            "analysis_score": 9.862415741365844,
             "pick_priority_score": 7.049658106675876,
-            "build_around_score": 7.943477807952671,
-            "core_score": 9.78209035671496,
-            "role": "needs_support"
+            "build_around_score": 7.079063461848431,
+            "core_score": 9.782280165200637,
+            "role": "balanced"
           },
           {
             "cluster_id": 0,
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.4410992656992819,
-            "analysis_score": 9.839010283962919,
+            "analysis_score": 9.839859604775716,
             "pick_priority_score": 0.0,
-            "build_around_score": 8.85073943920381,
-            "core_score": 9.755486117515575,
-            "role": "needs_support"
+            "build_around_score": 10.0,
+            "core_score": 9.756474804411209,
+            "role": "balanced"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.42228394033796124,
-            "analysis_score": 9.70400201941159,
+            "analysis_score": 9.703932958961417,
             "pick_priority_score": 5.838152443308487,
-            "build_around_score": 10.0,
-            "core_score": 9.507997094251364,
+            "build_around_score": 9.966643766648078,
+            "core_score": 9.507906006982946,
             "role": "balanced"
           },
           {
@@ -2502,20 +2236,20 @@
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.4129327110790508,
-            "analysis_score": 9.58995918002851,
+            "analysis_score": 9.589791687558996,
             "pick_priority_score": 3.732656552552724,
-            "build_around_score": 7.335157490065836,
-            "core_score": 9.348547202520885,
-            "role": "needs_support"
+            "build_around_score": 9.98053882258872,
+            "core_score": 9.348338686195756,
+            "role": "balanced"
           },
           {
             "cluster_id": 4,
             "title": "Simic Insect | Biomechan Engineer / Galactic Wayfarer",
             "color_name": "Simic Insect",
             "deck_prevalence": 0.007115473366967125,
-            "analysis_score": 0.031924215845657716,
+            "analysis_score": 0.03192446486182301,
             "pick_priority_score": 0.0,
-            "build_around_score": 0.15762328963001576,
+            "build_around_score": 0.17501313440466457,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2542,8 +2276,8 @@
         "supported_win_rate": 0.6296970484982447,
         "support_delta": 0.11541133421253047,
         "standalone_delta": 0.0770366721123602,
-        "dependency_score": 0.07501066177506856,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 5717.763740071684,
         "signpost_lift": 2.824545534143061,
         "deck_prevalence": 0.32002799735135,
@@ -2556,49 +2290,32 @@
         "alsa": 2.0705243311186927,
         "average_taken_at": 2.5066180108857004,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5729.899066079365,
-        "analysis_score": 9.64932647536889,
+        "analysis_score_raw": 5728.548874167414,
+        "analysis_score": 9.64925056952667,
         "pick_priority_score_raw": 444.31637984642464,
         "pick_priority_score": 9.891997987447304,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 7.829318104444201,
-        "shell_dependence_score": 5.115028632946077,
-        "build_around_score_raw": 7.829318104444201,
-        "build_around_score": 5.115028632946077,
-        "core_score_raw": 5742.003462328355,
-        "core_score": 9.415678635245477,
+        "shell_dependence_score_raw": 6.0223548219032494,
+        "shell_dependence_score": 4.750704850224088,
+        "build_around_score_raw": 6.0223548219032494,
+        "build_around_score": 4.750704850224088,
+        "core_score_raw": 5740.9533130635045,
+        "core_score": 9.415578080938754,
+        "win_contribution_logit": 0.38636512773508513,
+        "contribution_score": 8.222308979658521,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Monoist%20Circuit-Feeder%22",
         "community": 0,
-        "x": 1147.6552338941603,
-        "y": 664.3329338716283,
-        "analysis_radius": 17.93740079008228,
+        "x": 913.2561037705153,
+        "y": 749.2708600124415,
+        "analysis_radius": 15.237016966179812,
         "pick_radius": 30.0,
-        "radius": 17.93740079008228,
-        "top_synergies": [
-          {
-            "card": "Hullcarver",
-            "quality_score": 0.48213420190469836,
-            "pair_win_rate": 0.6609281437125748,
-            "pair_games": 1336,
-            "synergy_delta_logit": 0.07182465960420792,
-            "partner_pick_score": 5.883560430282418,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Singularity Rupture",
-            "quality_score": 0.4457239823021729,
-            "pair_win_rate": 0.7091932457786116,
-            "pair_games": 533,
-            "synergy_delta_logit": 0.0800547850505493,
-            "partner_pick_score": 9.57594903202448,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 15.237016966179812,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Dubious Delicacy",
@@ -2643,33 +2360,33 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.32002799735135,
-            "analysis_score": 9.64932647536889,
+            "analysis_score": 9.64925056952667,
             "pick_priority_score": 9.891997987447304,
-            "build_around_score": 5.115028632946077,
-            "core_score": 9.415678635245477,
-            "role": "engine"
+            "build_around_score": 4.750704850224088,
+            "core_score": 9.415578080938754,
+            "role": "good_alone"
           },
           {
             "cluster_id": 8,
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.29997869612176603,
-            "analysis_score": 9.444781995418674,
+            "analysis_score": 9.444808687593637,
             "pick_priority_score": 9.481395182049708,
             "build_around_score": 0.0,
-            "core_score": 9.120034725319934,
-            "role": "engine"
+            "core_score": 9.12006937309898,
+            "role": "good_alone"
           },
           {
             "cluster_id": 0,
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.22144479110075158,
-            "analysis_score": 9.035319699514933,
+            "analysis_score": 9.035173687675659,
             "pick_priority_score": 10.0,
-            "build_around_score": 2.6818183345002398,
-            "core_score": 8.530335683697913,
-            "role": "engine"
+            "build_around_score": 2.5386527160871566,
+            "core_score": 8.530091325025507,
+            "role": "good_alone"
           },
           {
             "cluster_id": 4,
@@ -2678,7 +2395,7 @@
             "deck_prevalence": 0.01083223477945065,
             "analysis_score": 0.0,
             "pick_priority_score": 7.439302934143668,
-            "build_around_score": 0.8391145771714139,
+            "build_around_score": 0.931690187535894,
             "core_score": 0.0,
             "role": "good_alone"
           }
@@ -2705,8 +2422,8 @@
         "supported_win_rate": 0.5871242351689279,
         "support_delta": 0.1878846914426921,
         "standalone_delta": 0.03265421868768126,
-        "dependency_score": 0.1373317129050481,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 5488.203651317933,
         "signpost_lift": 2.6457565510800567,
         "deck_prevalence": 0.32476679650071555,
@@ -2719,40 +2436,32 @@
         "alsa": 4.602816743035448,
         "average_taken_at": 7.992429114294066,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5495.247212766499,
-        "analysis_score": 9.621998871903708,
+        "analysis_score_raw": 5492.775241934208,
+        "analysis_score": 9.62178270894332,
         "pick_priority_score_raw": 208.2990777872359,
         "pick_priority_score": 7.793822080110592,
         "pick_market_score_raw": 8.303923504808603,
         "pick_market_score": 8.303923504808603,
         "pick_urgency_score_raw": 6.767831412467129,
         "pick_urgency_score": 6.767831412467129,
-        "shell_dependence_score_raw": 21.489272492575196,
-        "shell_dependence_score": 9.703982144603854,
-        "build_around_score_raw": 21.489272492575196,
-        "build_around_score": 9.703982144603854,
-        "core_score_raw": 5509.789777305094,
-        "core_score": 9.370780524448767,
+        "shell_dependence_score_raw": 13.870070392250037,
+        "shell_dependence_score": 8.575890199042446,
+        "build_around_score_raw": 13.870070392250037,
+        "build_around_score": 8.575890199042446,
+        "core_score_raw": 5507.867133324423,
+        "core_score": 9.370498844266601,
+        "win_contribution_logit": 0.09553473623902455,
+        "contribution_score": 2.1737785353886214,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Divert%20Disaster%22",
-        "community": 2,
-        "x": 1006.0274035277392,
-        "y": 782.3448605075587,
-        "analysis_radius": 17.739923692404197,
+        "community": 0,
+        "x": 822.0472547697877,
+        "y": 473.32131236242145,
+        "analysis_radius": 12.795982027822468,
         "pick_radius": 30.0,
-        "radius": 17.739923692404197,
-        "top_synergies": [
-          {
-            "card": "Tractor Beam",
-            "quality_score": 0.8529770185135588,
-            "pair_win_rate": 0.6736183524504692,
-            "pair_games": 959,
-            "synergy_delta_logit": 0.1373317129050481,
-            "partner_pick_score": 9.226309831899519,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 12.795982027822468,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Hullcarver",
@@ -2797,11 +2506,11 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.32476679650071555,
-            "analysis_score": 9.621998871903708,
+            "analysis_score": 9.62178270894332,
             "pick_priority_score": 7.793822080110592,
-            "build_around_score": 9.703982144603854,
-            "core_score": 9.370780524448767,
-            "role": "engine"
+            "build_around_score": 8.575890199042446,
+            "core_score": 9.370498844266601,
+            "role": "good_alone"
           }
         ]
       },
@@ -2828,8 +2537,8 @@
         "supported_win_rate": 0.6263689070216878,
         "support_delta": 0.22300756248387266,
         "standalone_delta": 0.07269293452191816,
-        "dependency_score": 0.09804645333258957,
-        "degree": 6,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 5029.338101949997,
         "signpost_lift": 5.224610632057078,
         "deck_prevalence": 0.20281997765663876,
@@ -2842,76 +2551,32 @@
         "alsa": 1.9324766943814562,
         "average_taken_at": 2.0390504042662996,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5041.279948943052,
-        "analysis_score": 9.565648452507473,
+        "analysis_score_raw": 5039.515112783065,
+        "analysis_score": 9.56549706188261,
         "pick_priority_score_raw": 396.44476085126183,
         "pick_priority_score": 9.57594903202448,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 17.243073348647872,
-        "shell_dependence_score": 8.676931339178717,
-        "build_around_score_raw": 17.243073348647872,
-        "build_around_score": 8.676931339178717,
-        "core_score_raw": 5047.436290569161,
-        "core_score": 9.275457596384935,
+        "shell_dependence_score_raw": 12.385612023584228,
+        "shell_dependence_score": 8.039676817316117,
+        "build_around_score_raw": 12.385612023584228,
+        "build_around_score": 8.039676817316117,
+        "core_score_raw": 5046.0636402225055,
+        "core_score": 9.275258697700536,
+        "win_contribution_logit": 0.26309444847787455,
+        "contribution_score": 5.830035825628652,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Singularity%20Rupture%22",
         "community": 0,
-        "x": 1211.870381435868,
-        "y": 597.1427034921071,
-        "analysis_radius": 18.527783718678723,
+        "x": 985.9326261175042,
+        "y": 731.3116998661568,
+        "analysis_radius": 14.998111398705499,
         "pick_radius": 30.0,
-        "radius": 18.527783718678723,
-        "top_synergies": [
-          {
-            "card": "Quantum Riddler",
-            "quality_score": 1.0849449877440875,
-            "pair_win_rate": 0.8172043010752689,
-            "pair_games": 93,
-            "synergy_delta_logit": 0.3136937905898385,
-            "partner_pick_score": 9.50788025736614,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Cryogen Relic",
-            "quality_score": 0.9234646928962149,
-            "pair_win_rate": 0.7002141327623126,
-            "pair_games": 1401,
-            "synergy_delta_logit": 0.10482322873833572,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Gravkill",
-            "quality_score": 0.45568799397688636,
-            "pair_win_rate": 0.6730769230769231,
-            "pair_games": 988,
-            "synergy_delta_logit": 0.07375334654313359,
-            "partner_pick_score": 7.430046378073872,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Monoist Circuit-Feeder",
-            "quality_score": 0.4457239823021729,
-            "pair_win_rate": 0.7091932457786116,
-            "pair_games": 533,
-            "synergy_delta_logit": 0.0800547850505493,
-            "partner_pick_score": 9.891997987447304,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Desculpting Blast",
-            "quality_score": 0.37681734815560347,
-            "pair_win_rate": 0.7024070021881839,
-            "pair_games": 457,
-            "synergy_delta_logit": 0.07625714872128064,
-            "partner_pick_score": 9.195548047674912,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 14.998111398705499,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Alpharael, Dreaming Acolyte",
@@ -2956,11 +2621,11 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.20281997765663876,
-            "analysis_score": 9.565648452507473,
+            "analysis_score": 9.56549706188261,
             "pick_priority_score": 9.57594903202448,
-            "build_around_score": 8.676931339178717,
-            "core_score": 9.275457596384935,
-            "role": "engine"
+            "build_around_score": 8.039676817316117,
+            "core_score": 9.275258697700536,
+            "role": "good_alone"
           }
         ]
       },
@@ -2985,8 +2650,8 @@
         "supported_win_rate": 0.593362991463268,
         "support_delta": 0.15679582728416352,
         "standalone_delta": 0.04034879780260037,
-        "dependency_score": 0.14367315847583217,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4856.889863762429,
         "signpost_lift": 2.1775970220400658,
         "deck_prevalence": 0.34838805069489304,
@@ -2999,40 +2664,32 @@
         "alsa": 4.629835619339731,
         "average_taken_at": 7.84168599374811,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4865.124812307358,
-        "analysis_score": 9.542403908823111,
+        "analysis_score_raw": 4862.538695454793,
+        "analysis_score": 9.542133672630733,
         "pick_priority_score_raw": 202.88726887700602,
         "pick_priority_score": 7.721021587359773,
         "pick_market_score_raw": 8.33256882588942,
         "pick_market_score": 8.33256882588942,
         "pick_urgency_score_raw": 6.790402304953957,
         "pick_urgency_score": 6.790402304953957,
-        "shell_dependence_score_raw": 16.583851735677104,
-        "shell_dependence_score": 8.49628829163512,
-        "build_around_score_raw": 16.583851735677104,
-        "build_around_score": 8.49628829163512,
-        "core_score_raw": 4880.447114430446,
-        "core_score": 9.238867575380267,
+        "shell_dependence_score_raw": 10.53148492513695,
+        "shell_dependence_score": 7.279488918059731,
+        "build_around_score_raw": 10.53148492513695,
+        "build_around_score": 7.279488918059731,
+        "core_score_raw": 4878.435690211784,
+        "core_score": 9.238515776472493,
+        "win_contribution_logit": 0.1289453059181575,
+        "contribution_score": 2.9455391838664995,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Lost%20in%20Space%22",
         "community": 0,
-        "x": 1216.8583200749165,
-        "y": 449.3329338716283,
-        "analysis_radius": 18.39141758427298,
+        "x": 1042.8279562486546,
+        "y": 682.8975732455183,
+        "analysis_radius": 13.21918387914302,
         "pick_radius": 30.0,
-        "radius": 18.39141758427298,
-        "top_synergies": [
-          {
-            "card": "Quantum Riddler",
-            "quality_score": 0.6586866386271003,
-            "pair_win_rate": 0.7671232876712328,
-            "pair_games": 219,
-            "synergy_delta_logit": 0.14367315847583217,
-            "partner_pick_score": 9.50788025736614,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.21918387914302,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Cryoshatter",
@@ -3077,22 +2734,22 @@
             "title": "Simic Insect | Biomechan Engineer / Galactic Wayfarer",
             "color_name": "Simic Insect",
             "deck_prevalence": 0.36814846789627104,
-            "analysis_score": 9.625460534866786,
+            "analysis_score": 9.625413814771584,
             "pick_priority_score": 9.248503519743217,
-            "build_around_score": 6.621763687007763,
-            "core_score": 9.377339787337448,
-            "role": "engine"
+            "build_around_score": 6.486606360596967,
+            "core_score": 9.377277031440435,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.34838805069489304,
-            "analysis_score": 9.542403908823111,
+            "analysis_score": 9.542133672630733,
             "pick_priority_score": 7.721021587359773,
-            "build_around_score": 8.49628829163512,
-            "core_score": 9.238867575380267,
-            "role": "engine"
+            "build_around_score": 7.279488918059731,
+            "core_score": 9.238515776472493,
+            "role": "good_alone"
           }
         ]
       },
@@ -3117,8 +2774,8 @@
         "supported_win_rate": 0.5871366872884324,
         "support_delta": 0.15247002062176573,
         "standalone_delta": 0.032623102397005166,
-        "dependency_score": 0.052778123298963364,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4820.84352830747,
         "signpost_lift": 2.1535793370352887,
         "deck_prevalence": 0.35011152714749133,
@@ -3131,40 +2788,32 @@
         "alsa": 4.1375211293343686,
         "average_taken_at": 6.715866831946166,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4826.3607688624315,
-        "analysis_score": 9.537175914484049,
+        "analysis_score_raw": 4825.4107626430505,
+        "analysis_score": 9.53712447012251,
         "pick_priority_score_raw": 174.98470143702392,
         "pick_priority_score": 7.312040912617693,
         "pick_market_score_raw": 8.794714433931217,
         "pick_market_score": 8.794714433931217,
         "pick_urgency_score_raw": 7.3772484918564585,
         "pick_urgency_score": 7.3772484918564585,
-        "shell_dependence_score_raw": 13.561769749344457,
-        "shell_dependence_score": 7.570697239287101,
-        "build_around_score_raw": 13.561769749344457,
-        "build_around_score": 7.570697239287101,
-        "core_score_raw": 4842.56118514907,
-        "core_score": 9.2303920290705,
+        "shell_dependence_score_raw": 11.197778757576843,
+        "shell_dependence_score": 7.565887649052409,
+        "build_around_score_raw": 11.197778757576843,
+        "build_around_score": 7.565887649052409,
+        "core_score_raw": 4841.8222914228845,
+        "core_score": 9.230322510823804,
+        "win_contribution_logit": 0.17109602032877425,
+        "contribution_score": 3.8872390949419713,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Perigee%20Beckoner%22",
-        "community": 3,
-        "x": 863.7066988660206,
-        "y": 977.8535471601543,
-        "analysis_radius": 14.694283070597965,
+        "community": 0,
+        "x": 775.2089571974935,
+        "y": 415.02616254645477,
+        "analysis_radius": 12.794270631835284,
         "pick_radius": 30.0,
-        "radius": 14.694283070597965,
-        "top_synergies": [
-          {
-            "card": "Virus Beetle",
-            "quality_score": 0.3681585104477054,
-            "pair_win_rate": 0.6298482293423272,
-            "pair_games": 2372,
-            "synergy_delta_logit": 0.052778123298963364,
-            "partner_pick_score": 8.376724162738725,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 12.794270631835284,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Mechan Shieldmate",
@@ -3209,32 +2858,32 @@
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.449483767248119,
-            "analysis_score": 9.82620457756371,
+            "analysis_score": 9.826387220533512,
             "pick_priority_score": 9.026731657990554,
-            "build_around_score": 6.115694913588521,
-            "core_score": 9.72449615166173,
-            "role": "engine"
+            "build_around_score": 5.5834410882408365,
+            "core_score": 9.724721030101003,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.3875262552900093,
-            "analysis_score": 9.598523545429483,
+            "analysis_score": 9.598344889407963,
             "pick_priority_score": 8.935658176061517,
-            "build_around_score": 3.648620381051134,
-            "core_score": 9.36155347066169,
-            "role": "engine"
+            "build_around_score": 4.511807978152609,
+            "core_score": 9.361331037468563,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.35011152714749133,
-            "analysis_score": 9.537175914484049,
+            "analysis_score": 9.53712447012251,
             "pick_priority_score": 7.312040912617693,
-            "build_around_score": 7.570697239287101,
-            "core_score": 9.2303920290705,
+            "build_around_score": 7.565887649052409,
+            "core_score": 9.230322510823804,
             "role": "good_alone"
           },
           {
@@ -3242,10 +2891,10 @@
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.3304580420894273,
-            "analysis_score": 9.434940504612907,
+            "analysis_score": 9.435476600881865,
             "pick_priority_score": 7.351310607432416,
             "build_around_score": 0.0,
-            "core_score": 9.141342089336062,
+            "core_score": 9.141932981701267,
             "role": "balanced"
           }
         ]
@@ -3271,8 +2920,8 @@
         "supported_win_rate": 0.5599425699928212,
         "support_delta": 0.1814565142159288,
         "standalone_delta": 0.00400143909182249,
-        "dependency_score": 0.0633942661137531,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4734.53960269685,
         "signpost_lift": 2.952295956813944,
         "deck_prevalence": 0.25811356051026574,
@@ -3285,40 +2934,32 @@
         "alsa": 4.832479515870519,
         "average_taken_at": 8.879670825945874,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4736.240900959752,
-        "analysis_score": 9.524857630797582,
+        "analysis_score_raw": 4735.099804169705,
+        "analysis_score": 9.52477726558563,
         "pick_priority_score_raw": 19.96372046736289,
         "pick_priority_score": 1.3995057463010327,
         "pick_market_score_raw": 7.97343244824034,
         "pick_market_score": 7.97343244824034,
         "pick_urgency_score_raw": 4.40291668350918,
         "pick_urgency_score": 4.40291668350918,
-        "shell_dependence_score_raw": 21.56583653196529,
-        "shell_dependence_score": 9.720663507906034,
-        "build_around_score_raw": 21.56583653196529,
-        "build_around_score": 9.720663507906034,
-        "core_score_raw": 4749.189149891781,
-        "core_score": 9.209217212022791,
+        "shell_dependence_score_raw": 17.203438977515873,
+        "shell_dependence_score": 9.60712003232992,
+        "build_around_score_raw": 17.203438977515873,
+        "build_around_score": 9.60712003232992,
+        "core_score_raw": 4748.301630166188,
+        "core_score": 9.209110168471677,
+        "win_contribution_logit": 0.001801422642632805,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Mechan%20Shieldmate%22",
-        "community": 2,
-        "x": 1137.6306973673898,
-        "y": 937.5599122689703,
-        "analysis_radius": 13.502272730145348,
+        "community": 0,
+        "x": 709.6335667586566,
+        "y": 554.7587060060513,
+        "analysis_radius": 11.220079150050237,
         "pick_radius": 30.0,
-        "radius": 13.502272730145348,
-        "top_synergies": [
-          {
-            "card": "Tractor Beam",
-            "quality_score": 0.23870558289287017,
-            "pair_win_rate": 0.6304044630404463,
-            "pair_games": 717,
-            "synergy_delta_logit": 0.0633942661137531,
-            "partner_pick_score": 9.226309831899519,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.220079150050237,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Perigee Beckoner",
@@ -3363,10 +3004,10 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.25811356051026574,
-            "analysis_score": 9.524857630797582,
+            "analysis_score": 9.52477726558563,
             "pick_priority_score": 1.3995057463010327,
-            "build_around_score": 9.720663507906034,
-            "core_score": 9.209217212022791,
+            "build_around_score": 9.60712003232992,
+            "core_score": 9.209110168471677,
             "role": "balanced"
           }
         ]
@@ -3407,7 +3048,7 @@
         "average_taken_at": 1.801369025791468,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 4511.341361662598,
-        "analysis_score": 9.493064320862578,
+        "analysis_score": 9.493141171427077,
         "pick_priority_score_raw": 504.886129713183,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
@@ -3415,17 +3056,19 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 2.7815705976634693,
-        "shell_dependence_score": 0.9531959378181376,
+        "shell_dependence_score": 1.5949199335531128,
         "build_around_score_raw": 2.7815705976634693,
-        "build_around_score": 0.9531959378181376,
+        "build_around_score": 1.5949199335531128,
         "core_score_raw": 4521.9564438821835,
-        "core_score": 9.155894988499114,
+        "core_score": 9.155990651497067,
+        "win_contribution_logit": 0.3951300947123736,
+        "contribution_score": 8.38421686727328,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Dubious%20Delicacy%22",
-        "community": 9,
-        "x": 700.4832634052052,
-        "y": 309.8139256102305,
+        "community": 0,
+        "x": 1034.33332158825,
+        "y": 608.7819646166964,
         "analysis_radius": 15.729557395456165,
         "pick_radius": 30.0,
         "radius": 15.729557395456165,
@@ -3474,10 +3117,10 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.2950892233662012,
-            "analysis_score": 9.493064320862578,
+            "analysis_score": 9.493141171427077,
             "pick_priority_score": 10.0,
-            "build_around_score": 0.9531959378181376,
-            "core_score": 9.155894988499114,
+            "build_around_score": 1.5949199335531128,
+            "core_score": 9.155990651497067,
             "role": "good_alone"
           },
           {
@@ -3485,33 +3128,33 @@
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.2829710536444774,
-            "analysis_score": 9.276733106320673,
+            "analysis_score": 9.276339955351988,
             "pick_priority_score": 9.79638398723056,
-            "build_around_score": 4.952954188668363,
-            "core_score": 8.854100195681152,
-            "role": "engine"
+            "build_around_score": 3.6139400842929597,
+            "core_score": 8.853619848426769,
+            "role": "good_alone"
           },
           {
             "cluster_id": 0,
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.27645607118332116,
-            "analysis_score": 9.374855951339141,
+            "analysis_score": 9.375421247745093,
             "pick_priority_score": 9.797563688448067,
-            "build_around_score": 0.6060959190647567,
-            "core_score": 9.047616385255628,
-            "role": "engine"
+            "build_around_score": 0.5880823488651508,
+            "core_score": 9.048235757593135,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.2302663784407734,
-            "analysis_score": 9.014853089874018,
+            "analysis_score": 9.014514683779097,
             "pick_priority_score": 9.899506315755115,
-            "build_around_score": 1.6931959910329375,
-            "core_score": 8.43176917831911,
-            "role": "engine"
+            "build_around_score": 2.071515000938983,
+            "core_score": 8.431346719288058,
+            "role": "good_alone"
           }
         ]
       },
@@ -3536,8 +3179,8 @@
         "supported_win_rate": 0.6329628625643806,
         "support_delta": 0.18254963942388475,
         "standalone_delta": 0.07904589354274405,
-        "dependency_score": 0.1270120250712221,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4059.490225469704,
         "signpost_lift": 2.1196598012669505,
         "deck_prevalence": 0.30371711444526056,
@@ -3550,49 +3193,32 @@
         "alsa": 1.9208402592084026,
         "average_taken_at": 2.220722793027654,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4072.84286701697,
-        "analysis_score": 9.426240763240253,
+        "analysis_score_raw": 4070.556650565688,
+        "analysis_score": 9.425950135275018,
         "pick_priority_score_raw": 438.93675536888253,
         "pick_priority_score": 9.858222406716457,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 12.545443775916354,
-        "shell_dependence_score": 7.215593746575718,
-        "build_around_score_raw": 12.545443775916354,
-        "build_around_score": 7.215593746575718,
-        "core_score_raw": 4083.7805847229874,
-        "core_score": 9.045050896828133,
+        "shell_dependence_score_raw": 8.31899444954466,
+        "shell_dependence_score": 6.193366495111227,
+        "build_around_score_raw": 8.31899444954466,
+        "build_around_score": 6.193366495111227,
+        "core_score_raw": 4082.0024163719904,
+        "core_score": 9.04467175908551,
+        "win_contribution_logit": 0.33837432909189985,
+        "contribution_score": 7.317259101124537,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Codecracker%20Hound%22",
-        "community": 1,
-        "x": 1224.0416168127942,
-        "y": 674.583363828224,
-        "analysis_radius": 19.91995704741492,
+        "community": 0,
+        "x": 888.9533522778258,
+        "y": 440.2829753069277,
+        "analysis_radius": 15.347524144850922,
         "pick_radius": 30.0,
-        "radius": 19.91995704741492,
-        "top_synergies": [
-          {
-            "card": "Hullcarver",
-            "quality_score": 1.160709140575991,
-            "pair_win_rate": 0.6820083682008368,
-            "pair_games": 1195,
-            "synergy_delta_logit": 0.158825074588697,
-            "partner_pick_score": 5.883560430282418,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Depressurize",
-            "quality_score": 0.895634519559849,
-            "pair_win_rate": 0.69125,
-            "pair_games": 1600,
-            "synergy_delta_logit": 0.09951857365861794,
-            "partner_pick_score": 8.390008035011748,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 15.347524144850922,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Cryogen Relic",
@@ -3637,21 +3263,21 @@
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.308711150370216,
-            "analysis_score": 9.338772610561753,
+            "analysis_score": 9.338607957930995,
             "pick_priority_score": 9.83604716629463,
-            "build_around_score": 6.300056668063078,
-            "core_score": 8.903418645795247,
-            "role": "engine"
+            "build_around_score": 6.307465149660688,
+            "core_score": 8.903201054913112,
+            "role": "good_alone"
           },
           {
             "cluster_id": 4,
             "title": "Simic Insect | Biomechan Engineer / Galactic Wayfarer",
             "color_name": "Simic Insect",
             "deck_prevalence": 0.3037687795037169,
-            "analysis_score": 9.434858339422401,
+            "analysis_score": 9.434817979890477,
             "pick_priority_score": 9.619828622521318,
-            "build_around_score": 5.341541602154373,
-            "core_score": 9.060587736723651,
+            "build_around_score": 5.349113093591236,
+            "core_score": 9.06053193180052,
             "role": "good_alone"
           },
           {
@@ -3659,11 +3285,11 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.30371711444526056,
-            "analysis_score": 9.426240763240253,
+            "analysis_score": 9.425950135275018,
             "pick_priority_score": 9.858222406716457,
-            "build_around_score": 7.215593746575718,
-            "core_score": 9.045050896828133,
-            "role": "engine"
+            "build_around_score": 6.193366495111227,
+            "core_score": 9.04467175908551,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
@@ -3672,7 +3298,7 @@
             "deck_prevalence": 0.007084661331257181,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.4236064596384046,
+            "build_around_score": 2.273261665762019,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3699,8 +3325,8 @@
         "supported_win_rate": 0.6731418918918919,
         "support_delta": 0.0869349953401678,
         "standalone_delta": 0.1219416390083694,
-        "dependency_score": 0.13342016325739156,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1264.3182927165124,
         "signpost_lift": 2.0770829695104696,
         "deck_prevalence": 0.10192911031261173,
@@ -3713,49 +3339,32 @@
         "alsa": 0.526423544465771,
         "average_taken_at": 0.4927859841978702,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1283.7916851163172,
-        "analysis_score": 8.671920457718613,
+        "analysis_score_raw": 1281.3901221776841,
+        "analysis_score": 8.670767665765148,
         "pick_priority_score_raw": 456.539382242446,
         "pick_priority_score": 9.96724669569123,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 2.624824687184864,
-        "shell_dependence_score": 0.7454155683929509,
-        "build_around_score_raw": 2.624824687184864,
-        "build_around_score": 0.7454155683929509,
-        "core_score_raw": 1281.8515280540828,
-        "core_score": 7.785184180929799,
+        "shell_dependence_score_raw": 1.7114545208612357,
+        "shell_dependence_score": 0.0,
+        "build_around_score_raw": 1.7114545208612357,
+        "build_around_score": 0.0,
+        "core_score_raw": 1279.9836457684794,
+        "core_score": 7.783680477555362,
+        "win_contribution_logit": 0.536872840479496,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Elegy%20Acolyte%22",
-        "community": 1,
-        "x": 1081.1430113626952,
-        "y": 771.6094051649409,
-        "analysis_radius": 22.509916022726415,
+        "community": 0,
+        "x": 762.9478460430629,
+        "y": 608.0496927172549,
+        "analysis_radius": 17.706790145460317,
         "pick_radius": 30.0,
-        "radius": 22.509916022726415,
-        "top_synergies": [
-          {
-            "card": "Hullcarver",
-            "quality_score": 0.94606238323695,
-            "pair_win_rate": 0.7253012048192771,
-            "pair_games": 415,
-            "synergy_delta_logit": 0.1783338316136286,
-            "partner_pick_score": 5.883560430282418,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Embrace Oblivion",
-            "quality_score": 0.48691961107643505,
-            "pair_win_rate": 0.7272727272727273,
-            "pair_games": 429,
-            "synergy_delta_logit": 0.08924543057710366,
-            "partner_pick_score": 8.37797447291652,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 17.706790145460317,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Cryogen Relic",
@@ -3800,44 +3409,44 @@
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.12038690558693534,
-            "analysis_score": 8.740189474336328,
+            "analysis_score": 8.738650103559994,
             "pick_priority_score": 10.0,
-            "build_around_score": 4.310381218632175,
-            "core_score": 8.076278628617144,
-            "role": "engine"
+            "build_around_score": 3.8908693391785114,
+            "core_score": 8.074358234679964,
+            "role": "good_alone"
           },
           {
             "cluster_id": 8,
             "title": "Rakdos Robot | Interceptor Mechan / Virus Beetle",
             "color_name": "Rakdos Robot",
             "deck_prevalence": 0.11214189880165046,
-            "analysis_score": 8.490094198938273,
+            "analysis_score": 8.48853633858122,
             "pick_priority_score": 10.0,
-            "build_around_score": 1.128007634750103,
-            "core_score": 7.602808088105808,
-            "role": "engine"
+            "build_around_score": 0.4980947728161745,
+            "core_score": 7.600890601788432,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.10192911031261173,
-            "analysis_score": 8.671920457718613,
+            "analysis_score": 8.670767665765148,
             "pick_priority_score": 9.96724669569123,
-            "build_around_score": 0.7454155683929509,
-            "core_score": 7.785184180929799,
-            "role": "engine"
+            "build_around_score": 0.0,
+            "core_score": 7.783680477555362,
+            "role": "good_alone"
           },
           {
             "cluster_id": 7,
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.09496310152097462,
-            "analysis_score": 8.429750238373506,
+            "analysis_score": 8.428240354005025,
             "pick_priority_score": 9.728864574190833,
-            "build_around_score": 3.4396491363845896,
-            "core_score": 7.495373000776913,
-            "role": "engine"
+            "build_around_score": 4.064691766804524,
+            "core_score": 7.493493943917881,
+            "role": "good_alone"
           }
         ]
       },
@@ -3862,8 +3471,8 @@
         "supported_win_rate": 0.7105478331970564,
         "support_delta": 0.16509328774251097,
         "standalone_delta": 0.15951106130038883,
-        "dependency_score": 0.13164093841540414,
-        "degree": 7,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 669.1510303424143,
         "signpost_lift": 2.092052529119636,
         "deck_prevalence": 0.054082760967318934,
@@ -3876,76 +3485,32 @@
         "alsa": 0.4320754716981132,
         "average_taken_at": 0.4039690548267743,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 693.852115815946,
-        "analysis_score": 8.270144836247026,
+        "analysis_score_raw": 691.4825789244687,
+        "analysis_score": 8.267978883742337,
         "pick_priority_score_raw": 386.82789181640356,
         "pick_priority_score": 9.50788025736614,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 2.968936494313602,
-        "shell_dependence_score": 1.1905492965154596,
-        "build_around_score_raw": 2.968936494313602,
-        "build_around_score": 1.1905492965154596,
-        "core_score_raw": 687.3647472610636,
-        "core_score": 7.1080073403333275,
+        "shell_dependence_score_raw": 1.9448493305257044,
+        "shell_dependence_score": 0.3198693261997297,
+        "build_around_score_raw": 1.9448493305257044,
+        "build_around_score": 0.3198693261997297,
+        "core_score_raw": 685.521774123248,
+        "core_score": 7.105165291122255,
+        "win_contribution_logit": 0.6423165917319954,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Quantum%20Riddler%22",
         "community": 0,
-        "x": 1237.5148951393107,
-        "y": 524.275111910181,
-        "analysis_radius": 24.512182154475937,
+        "x": 1106.3902725042888,
+        "y": 598.4537970161967,
+        "analysis_radius": 19.77310837152139,
         "pick_radius": 30.0,
-        "radius": 24.512182154475937,
-        "top_synergies": [
-          {
-            "card": "Singularity Rupture",
-            "quality_score": 1.0849449877440875,
-            "pair_win_rate": 0.8172043010752689,
-            "pair_games": 93,
-            "synergy_delta_logit": 0.3136937905898385,
-            "partner_pick_score": 9.57594903202448,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Tractor Beam",
-            "quality_score": 0.741869731842009,
-            "pair_win_rate": 0.7891566265060241,
-            "pair_games": 166,
-            "synergy_delta_logit": 0.1746311293052194,
-            "partner_pick_score": 9.226309831899519,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Lost in Space",
-            "quality_score": 0.6586866386271003,
-            "pair_win_rate": 0.7671232876712328,
-            "pair_games": 219,
-            "synergy_delta_logit": 0.14367315847583217,
-            "partner_pick_score": 7.721021587359773,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Cryoshatter",
-            "quality_score": 0.5618303661975402,
-            "pair_win_rate": 0.7615384615384615,
-            "pair_games": 260,
-            "synergy_delta_logit": 0.11574713162727712,
-            "partner_pick_score": 7.5727679013769436,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Embrace Oblivion",
-            "quality_score": 0.41315593001875434,
-            "pair_win_rate": 0.7612612612612613,
-            "pair_games": 222,
-            "synergy_delta_logit": 0.09258063616987777,
-            "partner_pick_score": 8.37797447291652,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 19.77310837152139,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Mechan Shieldmate",
@@ -3990,22 +3555,22 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.054082760967318934,
-            "analysis_score": 8.270144836247026,
+            "analysis_score": 8.267978883742337,
             "pick_priority_score": 9.50788025736614,
-            "build_around_score": 1.1905492965154596,
-            "core_score": 7.1080073403333275,
-            "role": "engine"
+            "build_around_score": 0.3198693261997297,
+            "core_score": 7.105165291122255,
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.0522662612967718,
-            "analysis_score": 8.105440466649467,
+            "analysis_score": 8.1023895878332,
             "pick_priority_score": 9.61790948578315,
-            "build_around_score": 1.975764045024803,
-            "core_score": 6.842305459350362,
-            "role": "engine"
+            "build_around_score": 1.5698124643432674,
+            "core_score": 6.838314016297128,
+            "role": "good_alone"
           }
         ]
       },
@@ -4030,8 +3595,8 @@
         "supported_win_rate": 0.6179903216623968,
         "support_delta": 0.1722974377672657,
         "standalone_delta": 0.06356297442388237,
-        "dependency_score": 0.10463318037852413,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4218.289329733118,
         "signpost_lift": 2.3013349883120626,
         "deck_prevalence": 0.28834405424507464,
@@ -4044,76 +3609,32 @@
         "alsa": 2.2168025719091315,
         "average_taken_at": 2.7435312891827195,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4229.0715433992755,
-        "analysis_score": 9.45083950134356,
+        "analysis_score_raw": 4227.188146152462,
+        "analysis_score": 9.450624906108377,
         "pick_priority_score_raw": 349.45755346105994,
         "pick_priority_score": 9.226309831899519,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 12.536157487674899,
-        "shell_dependence_score": 7.2122277151431735,
-        "build_around_score_raw": 12.536157487674899,
-        "build_around_score": 7.2122277151431735,
-        "core_score_raw": 4240.150937905191,
-        "core_score": 9.085915773603743,
+        "shell_dependence_score_raw": 8.837411571510458,
+        "shell_dependence_score": 6.469390428850332,
+        "build_around_score_raw": 8.837411571510458,
+        "build_around_score": 6.469390428850332,
+        "core_score_raw": 4238.686073379892,
+        "core_score": 9.08563491924206,
+        "win_contribution_logit": 0.261076213626082,
+        "contribution_score": 5.788954194134583,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Tractor%20Beam%22",
-        "community": 2,
-        "x": 1092.813839300178,
-        "y": 798.2796125135791,
-        "analysis_radius": 18.262758086940398,
+        "community": 0,
+        "x": 1079.2455274998765,
+        "y": 464.36096558850244,
+        "analysis_radius": 14.49596359331353,
         "pick_radius": 30.0,
-        "radius": 18.262758086940398,
-        "top_synergies": [
-          {
-            "card": "Divert Disaster",
-            "quality_score": 0.8529770185135588,
-            "pair_win_rate": 0.6736183524504692,
-            "pair_games": 959,
-            "synergy_delta_logit": 0.1373317129050481,
-            "partner_pick_score": 7.793822080110592,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Quantum Riddler",
-            "quality_score": 0.741869731842009,
-            "pair_win_rate": 0.7891566265060241,
-            "pair_games": 166,
-            "synergy_delta_logit": 0.1746311293052194,
-            "partner_pick_score": 9.50788025736614,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Beamsaw Prospector",
-            "quality_score": 0.5903713602766598,
-            "pair_win_rate": 0.6499582289055973,
-            "pair_games": 1197,
-            "synergy_delta_logit": 0.10204635634787518,
-            "partner_pick_score": 5.838152443308487,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Hullcarver",
-            "quality_score": 0.48090184199306324,
-            "pair_win_rate": 0.6506849315068494,
-            "pair_games": 1168,
-            "synergy_delta_logit": 0.08354490935379733,
-            "partner_pick_score": 5.883560430282418,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Mechan Shieldmate",
-            "quality_score": 0.23870558289287017,
-            "pair_win_rate": 0.6304044630404463,
-            "pair_games": 717,
-            "synergy_delta_logit": 0.0633942661137531,
-            "partner_pick_score": 1.3995057463010327,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 14.49596359331353,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Codecracker Hound",
@@ -4158,22 +3679,22 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.28834405424507464,
-            "analysis_score": 9.45083950134356,
+            "analysis_score": 9.450624906108377,
             "pick_priority_score": 9.226309831899519,
-            "build_around_score": 7.2122277151431735,
-            "core_score": 9.085915773603743,
-            "role": "engine"
+            "build_around_score": 6.469390428850332,
+            "core_score": 9.08563491924206,
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.274380191655506,
-            "analysis_score": 9.269072935104147,
+            "analysis_score": 9.26880013923088,
             "pick_priority_score": 9.051544047448653,
-            "build_around_score": 5.725295119610011,
-            "core_score": 8.78759862537915,
-            "role": "engine"
+            "build_around_score": 5.504407320938148,
+            "core_score": 8.787241233660948,
+            "role": "good_alone"
           },
           {
             "cluster_id": 2,
@@ -4182,9 +3703,9 @@
             "deck_prevalence": 0.17223549246200218,
             "analysis_score": 0.0,
             "pick_priority_score": 9.19800928342531,
-            "build_around_score": 4.380127244210817,
+            "build_around_score": 4.709167908551784,
             "core_score": 0.0,
-            "role": "engine"
+            "role": "good_alone"
           },
           {
             "cluster_id": 6,
@@ -4193,7 +3714,7 @@
             "deck_prevalence": 0.012052921200661763,
             "analysis_score": 0.0,
             "pick_priority_score": 7.8034369004241935,
-            "build_around_score": 2.6434270570058285,
+            "build_around_score": 3.208709949356964,
             "core_score": 0.0,
             "role": "good_alone"
           }
@@ -4220,8 +3741,8 @@
         "supported_win_rate": 0.6237970253718286,
         "support_delta": 0.16148546758288385,
         "standalone_delta": 0.07024374516401377,
-        "dependency_score": 0.0751470378944343,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3387.4086246952784,
         "signpost_lift": 2.1814474588209065,
         "deck_prevalence": 0.24815339219796168,
@@ -4234,49 +3755,32 @@
         "alsa": 2.8487306521598343,
         "average_taken_at": 3.9599828410344404,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3398.5953957003403,
-        "analysis_score": 9.307973361427969,
+        "analysis_score_raw": 3397.2427490182404,
+        "analysis_score": 9.30778857741593,
         "pick_priority_score_raw": 345.5995514143209,
         "pick_priority_score": 9.195548047674912,
         "pick_market_score_raw": 9.806554531480558,
         "pick_market_score": 9.806554531480558,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 9.065391275953592,
-        "shell_dependence_score": 5.7581234182563525,
-        "build_around_score_raw": 9.065391275953592,
-        "build_around_score": 5.7581234182563525,
-        "core_score_raw": 3407.3353779590357,
-        "core_score": 8.848111916811593,
+        "shell_dependence_score_raw": 6.970224405747821,
+        "shell_dependence_score": 5.396250948910546,
+        "build_around_score_raw": 6.970224405747821,
+        "build_around_score": 5.396250948910546,
+        "core_score_raw": 3406.2833194285136,
+        "core_score": 8.847868536176367,
+        "win_contribution_logit": 0.27866488132780054,
+        "contribution_score": 6.144786229001644,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Desculpting%20Blast%22",
-        "community": 4,
-        "x": 936.2933011339794,
-        "y": 766.1003166362128,
-        "analysis_radius": 17.56869934822039,
+        "community": 0,
+        "x": 884.3951906754673,
+        "y": 680.6032056885409,
+        "analysis_radius": 14.863405984020758,
         "pick_radius": 30.0,
-        "radius": 17.56869934822039,
-        "top_synergies": [
-          {
-            "card": "Embrace Oblivion",
-            "quality_score": 0.44569772180017264,
-            "pair_win_rate": 0.6770114942528735,
-            "pair_games": 870,
-            "synergy_delta_logit": 0.07434246608436057,
-            "partner_pick_score": 8.37797447291652,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Singularity Rupture",
-            "quality_score": 0.37681734815560347,
-            "pair_win_rate": 0.7024070021881839,
-            "pair_games": 457,
-            "synergy_delta_logit": 0.07625714872128064,
-            "partner_pick_score": 9.57594903202448,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 14.863405984020758,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Cryogen Relic",
@@ -4321,11 +3825,11 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.24815339219796168,
-            "analysis_score": 9.307973361427969,
+            "analysis_score": 9.30778857741593,
             "pick_priority_score": 9.195548047674912,
-            "build_around_score": 5.7581234182563525,
-            "core_score": 8.848111916811593,
-            "role": "engine"
+            "build_around_score": 5.396250948910546,
+            "core_score": 8.847868536176367,
+            "role": "good_alone"
           }
         ]
       },
@@ -4373,17 +3877,19 @@
         "pick_urgency_score_raw": 8.3918470458427,
         "pick_urgency_score": 8.3918470458427,
         "shell_dependence_score_raw": 1.8695535845228446,
-        "shell_dependence_score": 0.0,
+        "shell_dependence_score": 0.18781124634514654,
         "build_around_score_raw": 1.8695535845228446,
-        "build_around_score": 0.0,
+        "build_around_score": 0.18781124634514654,
         "core_score_raw": -512.5953156335593,
         "core_score": 0.0,
+        "win_contribution_logit": 0.3771928461403431,
+        "contribution_score": 8.051777328251257,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Gene%20Pollinator%22",
-        "community": 10,
-        "x": 828.7933011339793,
-        "y": 248.02306810181642,
+        "community": 0,
+        "x": 763.6057875057875,
+        "y": 472.21684730937653,
         "analysis_radius": 15.331041596960457,
         "pick_radius": 30.0,
         "radius": 15.331041596960457,
@@ -4395,44 +3901,44 @@
             "title": "Simic Insect | Biomechan Engineer / Galactic Wayfarer",
             "color_name": "Simic Insect",
             "deck_prevalence": 0.598945107821295,
-            "analysis_score": 9.999238144664636,
+            "analysis_score": 9.999234346441037,
             "pick_priority_score": 7.23325930944769,
-            "build_around_score": 9.478524514756593,
-            "core_score": 9.998765106203766,
-            "role": "needs_support"
+            "build_around_score": 9.407613770867794,
+            "core_score": 9.998760205530417,
+            "role": "balanced"
           },
           {
             "cluster_id": 6,
             "title": "Gruul Kavu | Tannuk, Memorial Ensign / Kav Landseeker",
             "color_name": "Gruul Kavu",
             "deck_prevalence": 0.5483983627101475,
-            "analysis_score": 9.787063868719613,
+            "analysis_score": 9.787071298363252,
             "pick_priority_score": 6.986207482448902,
-            "build_around_score": 3.9668364356921932,
-            "core_score": 9.656243613484028,
-            "role": "needs_support"
+            "build_around_score": 3.769634360996429,
+            "core_score": 9.656250219325432,
+            "role": "balanced"
           },
           {
             "cluster_id": 0,
             "title": "Golgari Insect | Seedship Broodtender / Galactic Wayfarer",
             "color_name": "Golgari Insect",
             "deck_prevalence": 0.5350570340154958,
-            "analysis_score": 9.949189998667999,
+            "analysis_score": 9.95009096569591,
             "pick_priority_score": 5.9580834022254745,
-            "build_around_score": 8.424780745464973,
-            "core_score": 9.923652284370583,
-            "role": "needs_support"
+            "build_around_score": 9.604854939759722,
+            "core_score": 9.924710039319272,
+            "role": "balanced"
           },
           {
             "cluster_id": 3,
             "title": "Selesnya Drix | Haliya, Ascendant Cadet / Dockworker Drone",
             "color_name": "Selesnya Drix",
             "deck_prevalence": 0.45250242539852886,
-            "analysis_score": 9.39233539829068,
+            "analysis_score": 9.391925694707258,
             "pick_priority_score": 7.4916384210775995,
-            "build_around_score": 6.952931036420295,
-            "core_score": 9.064852616239751,
-            "role": "needs_support"
+            "build_around_score": 6.34250101780364,
+            "core_score": 9.064368387400458,
+            "role": "balanced"
           },
           {
             "cluster_id": 1,
@@ -4441,7 +3947,7 @@
             "deck_prevalence": 0.009221689237924283,
             "analysis_score": 0.0,
             "pick_priority_score": 6.788635918665232,
-            "build_around_score": 0.0,
+            "build_around_score": 0.18781124634514654,
             "core_score": 0.0,
             "role": "good_alone"
           }
@@ -4491,17 +3997,19 @@
         "pick_urgency_score_raw": 7.038353359098321,
         "pick_urgency_score": 7.038353359098321,
         "shell_dependence_score_raw": 3.2463690358766124,
-        "shell_dependence_score": 1.5221757648755587,
+        "shell_dependence_score": 2.1859668033016852,
         "build_around_score_raw": 3.2463690358766124,
-        "build_around_score": 1.5221757648755587,
+        "build_around_score": 2.1859668033016852,
         "core_score_raw": -534.9976110567484,
         "core_score": 0.0,
+        "win_contribution_logit": 0.015713805275715656,
+        "contribution_score": 0.23030296863849878,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Galactic%20Wayfarer%22",
-        "community": 11,
-        "x": 971.2066988660202,
-        "y": 248.02306810181636,
+        "community": 0,
+        "x": 940.7284886337635,
+        "y": 694.3840661883494,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4513,21 +4021,21 @@
             "title": "Simic Insect | Biomechan Engineer / Galactic Wayfarer",
             "color_name": "Simic Insect",
             "deck_prevalence": 0.6133773317151874,
-            "analysis_score": 10.0,
+            "analysis_score": 10.000000000000002,
             "pick_priority_score": 9.261169457752528,
-            "build_around_score": 6.548300751629979,
+            "build_around_score": 6.318715783204522,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "balanced"
           },
           {
             "cluster_id": 6,
             "title": "Gruul Kavu | Tannuk, Memorial Ensign / Kav Landseeker",
             "color_name": "Gruul Kavu",
             "deck_prevalence": 0.5996948150822178,
-            "analysis_score": 9.876159391310164,
+            "analysis_score": 9.876244535551649,
             "pick_priority_score": 9.02215517466786,
-            "build_around_score": 5.212627053092637,
-            "core_score": 9.800257997753114,
+            "build_around_score": 5.519074397449203,
+            "core_score": 9.800363323212027,
             "role": "balanced"
           },
           {
@@ -4537,19 +4045,19 @@
             "deck_prevalence": 0.5657174648060258,
             "analysis_score": 10.0,
             "pick_priority_score": 9.574890324671669,
-            "build_around_score": 9.255449363116485,
-            "core_score": 10.000000000000002,
-            "role": "engine"
+            "build_around_score": 7.7353891720908505,
+            "core_score": 9.999999999999998,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Selesnya Drix | Haliya, Ascendant Cadet / Dockworker Drone",
             "color_name": "Selesnya Drix",
             "deck_prevalence": 0.46931181606459826,
-            "analysis_score": 9.411091120044775,
+            "analysis_score": 9.410254547878678,
             "pick_priority_score": 8.383516915818115,
-            "build_around_score": 5.1713122866779155,
-            "core_score": 9.093510308100791,
+            "build_around_score": 3.802457369261767,
+            "core_score": 9.092515866692287,
             "role": "balanced"
           },
           {
@@ -4559,7 +4067,7 @@
             "deck_prevalence": 0.009371568423148626,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.5221757648755587,
+            "build_around_score": 2.1859668033016852,
             "core_score": 0.0,
             "role": "balanced"
           },
@@ -4570,7 +4078,7 @@
             "deck_prevalence": 0.007969338970819804,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 4.664334991067106,
+            "build_around_score": 5.0924434768964515,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4612,7 +4120,7 @@
         "average_taken_at": 6.488626405029529,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -355.0424736806864,
-        "analysis_score": 0.15247194776389386,
+        "analysis_score": 0.1524731820919106,
         "pick_priority_score_raw": 8.660191458907091,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.966713828576376,
@@ -4620,17 +4128,19 @@
         "pick_urgency_score_raw": 5.512799301825737,
         "pick_urgency_score": 5.512799301825737,
         "shell_dependence_score_raw": 5.875880024358255,
-        "shell_dependence_score": 3.887698649029123,
+        "shell_dependence_score": 4.643233000643474,
         "build_around_score_raw": 5.875880024358255,
-        "build_around_score": 3.887698649029123,
+        "build_around_score": 4.643233000643474,
         "core_score_raw": -354.9806439288558,
         "core_score": 0.0,
+        "win_contribution_logit": -0.0013662439559793162,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Radiant%20Strike%22",
-        "community": 12,
-        "x": 1099.5167365947946,
-        "y": 309.8139256102304,
+        "community": 0,
+        "x": 732.1926296055876,
+        "y": 656.6859921084781,
         "analysis_radius": 11.314968118200412,
         "pick_radius": 30.0,
         "radius": 11.314968118200412,
@@ -4642,32 +4152,32 @@
             "title": "Azorius Jellyfish | Station Monitor / Illvoi Galeblade",
             "color_name": "Azorius Jellyfish",
             "deck_prevalence": 0.39075178879265576,
-            "analysis_score": 9.683480001398856,
+            "analysis_score": 9.683323689811598,
             "pick_priority_score": 8.630672730848355,
-            "build_around_score": 8.440618082935007,
-            "core_score": 9.47507720915395,
-            "role": "engine"
+            "build_around_score": 8.094376491591007,
+            "core_score": 9.474873245567139,
+            "role": "good_alone"
           },
           {
             "cluster_id": 3,
             "title": "Selesnya Drix | Haliya, Ascendant Cadet / Dockworker Drone",
             "color_name": "Selesnya Drix",
             "deck_prevalence": 0.3820903151423377,
-            "analysis_score": 9.612364762673693,
+            "analysis_score": 9.612376696333042,
             "pick_priority_score": 8.272737050945167,
-            "build_around_score": 5.276834707964249,
-            "core_score": 9.401950633543866,
-            "role": "engine"
+            "build_around_score": 5.260056154719142,
+            "core_score": 9.401967774822735,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.37214866526410095,
-            "analysis_score": 9.653755061646105,
+            "analysis_score": 9.653665028842425,
             "pick_priority_score": 7.296554573942682,
-            "build_around_score": 6.095074522447877,
-            "core_score": 9.44930872960008,
+            "build_around_score": 8.453702620467196,
+            "core_score": 9.449195962177615,
             "role": "balanced"
           },
           {
@@ -4675,9 +4185,9 @@
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.00724611288521165,
-            "analysis_score": 0.15247194776389386,
+            "analysis_score": 0.1524731820919106,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.887698649029123,
+            "build_around_score": 4.643233000643474,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4721,7 +4231,7 @@
         "average_taken_at": 1.696036147052783,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -179.29704115437042,
-        "analysis_score": 0.5972530054407863,
+        "analysis_score": 0.597257840468662,
         "pick_priority_score_raw": 95.35565071868591,
         "pick_priority_score": 5.638128805395659,
         "pick_market_score_raw": 10.0,
@@ -4734,12 +4244,14 @@
         "build_around_score": 0.0,
         "core_score_raw": -183.79242243200116,
         "core_score": 0.0,
+        "win_contribution_logit": 0.32922896379580807,
+        "contribution_score": 7.141111749792037,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Syr%20Vondam%2C%20Sunstar%20Exemplar%22",
-        "community": 13,
-        "x": 1188.3100377287742,
-        "y": 421.1572034823816,
+        "community": 0,
+        "x": 723.845184976604,
+        "y": 489.98344120342625,
         "analysis_radius": 15.984319709017969,
         "pick_radius": 30.0,
         "radius": 15.984319709017969,
@@ -4751,18 +4263,18 @@
             "title": "Orzhov Humans | Knight Luminary / Syr Vondam, the Lucent",
             "color_name": "Orzhov Humans",
             "deck_prevalence": 0.21824843014223408,
-            "analysis_score": 9.560836177567827,
+            "analysis_score": 9.560519069024245,
             "pick_priority_score": 9.98383544488498,
-            "build_around_score": 4.949042861151227,
-            "core_score": 9.299583523204317,
-            "role": "engine"
+            "build_around_score": 5.866016885656987,
+            "core_score": 9.299189088191563,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Dimir Robot | Alpharael, Dreaming Acolyte / Cryogen Relic",
             "color_name": "Dimir Robot",
             "deck_prevalence": 0.009402662142062035,
-            "analysis_score": 0.5972530054407863,
+            "analysis_score": 0.597257840468662,
             "pick_priority_score": 5.638128805395659,
             "build_around_score": 0.0,
             "core_score": 0.0,
@@ -4771,440 +4283,7 @@
         ]
       }
     ],
-    "edges": [
-      {
-        "from": "Codecracker Hound",
-        "to": "Hullcarver",
-        "pair_games": 1195,
-        "pair_win_rate": 0.6820083682008368,
-        "pair_expected_win_rate": 0.6466147342051207,
-        "pair_lift_vs_baseline": 0.13388890741287218,
-        "synergy_delta_logit": 0.158825074588697,
-        "synergy_delta_prob": 0.035393633995716045,
-        "confidence_probability": 0.9947188041258219,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1763,
-        "quality_score": 1.160709140575991,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.705766964023844,
-        "pick_score": 7.979907374664869
-      },
-      {
-        "from": "Quantum Riddler",
-        "to": "Singularity Rupture",
-        "pair_games": 93,
-        "pair_win_rate": 0.8172043010752689,
-        "pair_expected_win_rate": 0.7656350681713338,
-        "pair_lift_vs_baseline": 0.2690848402873043,
-        "synergy_delta_logit": 0.3136937905898385,
-        "synergy_delta_prob": 0.051569232903935114,
-        "confidence_probability": 0.878842209567901,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 122,
-        "quality_score": 1.0849449877440875,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.5927672902112398,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Elegy Acolyte",
-        "to": "Hullcarver",
-        "pair_games": 415,
-        "pair_win_rate": 0.7253012048192771,
-        "pair_expected_win_rate": 0.6883846056802523,
-        "pair_lift_vs_baseline": 0.17718174403131248,
-        "synergy_delta_logit": 0.1783338316136286,
-        "synergy_delta_prob": 0.036916599139024786,
-        "confidence_probability": 0.9475561407425205,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 609,
-        "quality_score": 0.94606238323695,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.562629960745751,
-        "pick_score": 3.9472804206261727
-      },
-      {
-        "from": "Cryogen Relic",
-        "to": "Singularity Rupture",
-        "pair_games": 1401,
-        "pair_win_rate": 0.7002141327623126,
-        "pair_expected_win_rate": 0.6777595383226346,
-        "pair_lift_vs_baseline": 0.152094671974348,
-        "synergy_delta_logit": 0.10482322873833572,
-        "synergy_delta_prob": 0.02245459443967801,
-        "confidence_probability": 0.9638812855636003,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1560,
-        "quality_score": 0.9234646928962149,
-        "anti_quality": 0.0,
-        "pick_score_raw": 9.28338154506474,
-        "pick_score": 10.0
-      },
-      {
-        "from": "Codecracker Hound",
-        "to": "Depressurize",
-        "pair_games": 1600,
-        "pair_win_rate": 0.69125,
-        "pair_expected_win_rate": 0.6696165070173139,
-        "pair_lift_vs_baseline": 0.14313053921203545,
-        "synergy_delta_logit": 0.09951857365861794,
-        "synergy_delta_prob": 0.02163349298268613,
-        "confidence_probability": 0.9670434845216592,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1966,
-        "quality_score": 0.895634519559849,
-        "anti_quality": 0.0,
-        "pick_score_raw": 9.494562070923044,
-        "pick_score": 10.0
-      },
-      {
-        "from": "Divert Disaster",
-        "to": "Tractor Beam",
-        "pair_games": 959,
-        "pair_win_rate": 0.6736183524504692,
-        "pair_expected_win_rate": 0.6427372721575226,
-        "pair_lift_vs_baseline": 0.1254988916625046,
-        "synergy_delta_logit": 0.1373317129050481,
-        "synergy_delta_prob": 0.03088108029294656,
-        "confidence_probability": 0.9769301958245639,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1937,
-        "quality_score": 0.8529770185135588,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.55213125533878,
-        "pick_score": 5.951339592451889
-      },
-      {
-        "from": "Quantum Riddler",
-        "to": "Tractor Beam",
-        "pair_games": 166,
-        "pair_win_rate": 0.7891566265060241,
-        "pair_expected_win_rate": 0.7586364057485748,
-        "pair_lift_vs_baseline": 0.24103716571805955,
-        "synergy_delta_logit": 0.1746311293052194,
-        "synergy_delta_prob": 0.030520220757449312,
-        "confidence_probability": 0.8206322527105792,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 192,
-        "quality_score": 0.741869731842009,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.425206428396488,
-        "pick_score": 1.2311883286499141
-      },
-      {
-        "from": "Lost in Space",
-        "to": "Quantum Riddler",
-        "pair_games": 219,
-        "pair_win_rate": 0.7671232876712328,
-        "pair_expected_win_rate": 0.7404800642931192,
-        "pair_lift_vs_baseline": 0.21900382688326825,
-        "synergy_delta_logit": 0.14367315847583217,
-        "synergy_delta_prob": 0.026643223378113645,
-        "confidence_probability": 0.8155819474750958,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 373,
-        "quality_score": 0.6586866386271003,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.79415562406252,
-        "pick_score": 2.170067626219978
-      },
-      {
-        "from": "Beamsaw Prospector",
-        "to": "Tractor Beam",
-        "pair_games": 1197,
-        "pair_win_rate": 0.6499582289055973,
-        "pair_expected_win_rate": 0.6264013595760891,
-        "pair_lift_vs_baseline": 0.1018387681176327,
-        "synergy_delta_logit": 0.10204635634787518,
-        "synergy_delta_prob": 0.02355686932950818,
-        "confidence_probability": 0.9539110952843874,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1717,
-        "quality_score": 0.5903713602766598,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.09932234728379,
-        "pick_score": 5.069017185232817
-      },
-      {
-        "from": "Cryoshatter",
-        "to": "Quantum Riddler",
-        "pair_games": 260,
-        "pair_win_rate": 0.7615384615384615,
-        "pair_expected_win_rate": 0.739887807184767,
-        "pair_lift_vs_baseline": 0.2134190007504969,
-        "synergy_delta_logit": 0.11574713162727712,
-        "synergy_delta_prob": 0.02165065435369451,
-        "confidence_probability": 0.7867916866921019,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 327,
-        "quality_score": 0.5618303661975402,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.071981951837023,
-        "pick_score": 2.8384086637102657
-      },
-      {
-        "from": "Elegy Acolyte",
-        "to": "Embrace Oblivion",
-        "pair_games": 429,
-        "pair_win_rate": 0.7272727272727273,
-        "pair_expected_win_rate": 0.7092169097501688,
-        "pair_lift_vs_baseline": 0.1791532664847627,
-        "synergy_delta_logit": 0.08924543057710366,
-        "synergy_delta_prob": 0.01805581752255847,
-        "confidence_probability": 0.7948148334219561,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 634,
-        "quality_score": 0.48691961107643505,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.722168456654182,
-        "pick_score": 4.290037264973688
-      },
-      {
-        "from": "Hullcarver",
-        "to": "Monoist Circuit-Feeder",
-        "pair_games": 1336,
-        "pair_win_rate": 0.6609281437125748,
-        "pair_expected_win_rate": 0.6446509394262673,
-        "pair_lift_vs_baseline": 0.11280868292461022,
-        "synergy_delta_logit": 0.07182465960420792,
-        "synergy_delta_prob": 0.016277204286307523,
-        "confidence_probability": 0.8930284669585263,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2113,
-        "quality_score": 0.48213420190469836,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.084319793881636,
-        "pick_score": 6.923079050978347
-      },
-      {
-        "from": "Hullcarver",
-        "to": "Tractor Beam",
-        "pair_games": 1168,
-        "pair_win_rate": 0.6506849315068494,
-        "pair_expected_win_rate": 0.6314648882094615,
-        "pair_lift_vs_baseline": 0.10256547071888478,
-        "synergy_delta_logit": 0.08354490935379733,
-        "synergy_delta_prob": 0.019220043297387912,
-        "confidence_probability": 0.913281440795315,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1778,
-        "quality_score": 0.48090184199306324,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.069689244854921,
-        "pick_score": 5.00932837365982
-      },
-      {
-        "from": "Gravkill",
-        "to": "Singularity Rupture",
-        "pair_games": 988,
-        "pair_win_rate": 0.6730769230769231,
-        "pair_expected_win_rate": 0.6566456156595866,
-        "pair_lift_vs_baseline": 0.12495746228895854,
-        "synergy_delta_logit": 0.07375334654313359,
-        "synergy_delta_prob": 0.01643130741733656,
-        "confidence_probability": 0.861584350940255,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1236,
-        "quality_score": 0.45568799397688636,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.5029737351210795,
-        "pick_score": 5.858151064041856
-      },
-      {
-        "from": "Monoist Circuit-Feeder",
-        "to": "Singularity Rupture",
-        "pair_games": 533,
-        "pair_win_rate": 0.7091932457786116,
-        "pair_expected_win_rate": 0.6924107997936341,
-        "pair_lift_vs_baseline": 0.16107378499064706,
-        "synergy_delta_logit": 0.0800547850505493,
-        "synergy_delta_prob": 0.01678244598497758,
-        "confidence_probability": 0.7993593839513111,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 762,
-        "quality_score": 0.4457239823021729,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.8452017135898275,
-        "pick_score": 4.548854673083761
-      },
-      {
-        "from": "Desculpting Blast",
-        "to": "Embrace Oblivion",
-        "pair_games": 870,
-        "pair_win_rate": 0.6770114942528735,
-        "pair_expected_win_rate": 0.6605461629965873,
-        "pair_lift_vs_baseline": 0.12889203346490896,
-        "synergy_delta_logit": 0.07434246608436057,
-        "synergy_delta_prob": 0.016465331256286242,
-        "confidence_probability": 0.8474098779760839,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1483,
-        "quality_score": 0.44569772180017264,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.315899464737873,
-        "pick_score": 5.497840759540649
-      },
-      {
-        "from": "Embrace Oblivion",
-        "to": "Quantum Riddler",
-        "pair_games": 222,
-        "pair_win_rate": 0.7612612612612613,
-        "pair_expected_win_rate": 0.7440309634274291,
-        "pair_lift_vs_baseline": 0.21314180047329667,
-        "synergy_delta_logit": 0.09258063616987777,
-        "synergy_delta_prob": 0.01723029783383212,
-        "confidence_probability": 0.7217554988654643,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 296,
-        "quality_score": 0.41315593001875434,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.660445447500878,
-        "pick_score": 1.8369029472404015
-      },
-      {
-        "from": "Desculpting Blast",
-        "to": "Singularity Rupture",
-        "pair_games": 457,
-        "pair_win_rate": 0.7024070021881839,
-        "pair_expected_win_rate": 0.6862249343125777,
-        "pair_lift_vs_baseline": 0.15428754140021927,
-        "synergy_delta_logit": 0.07625714872128064,
-        "synergy_delta_prob": 0.016182067875606165,
-        "confidence_probability": 0.7719617131450497,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 681,
-        "quality_score": 0.37681734815560347,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.184515886925772,
-        "pick_score": 3.1004585943657488
-      },
-      {
-        "from": "Beamsaw Prospector",
-        "to": "Singularity Rupture",
-        "pair_games": 872,
-        "pair_win_rate": 0.6525229357798165,
-        "pair_expected_win_rate": 0.6353915352111704,
-        "pair_lift_vs_baseline": 0.10440347499185187,
-        "synergy_delta_logit": 0.07473030747482479,
-        "synergy_delta_prob": 0.017131400568646038,
-        "confidence_probability": 0.8533224991061117,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1233,
-        "quality_score": 0.37223348951194923,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.242511234695691,
-        "pick_score": 3.2336523289160195
-      },
-      {
-        "from": "Perigee Beckoner",
-        "to": "Virus Beetle",
-        "pair_games": 2372,
-        "pair_win_rate": 0.6298482293423272,
-        "pair_expected_win_rate": 0.6174615548402752,
-        "pair_lift_vs_baseline": 0.08172876855436262,
-        "synergy_delta_logit": 0.052778123298963364,
-        "synergy_delta_prob": 0.012386674502051997,
-        "confidence_probability": 0.8927221302172351,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3492,
-        "quality_score": 0.3681585104477054,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.3798041620234995,
-        "pick_score": 7.435347078671899
-      },
-      {
-        "from": "Beamsaw Prospector",
-        "to": "Gravkill",
-        "pair_games": 2082,
-        "pair_win_rate": 0.6162343900096061,
-        "pair_expected_win_rate": 0.601298481852519,
-        "pair_lift_vs_baseline": 0.06811492922164153,
-        "synergy_delta_logit": 0.06271702770641091,
-        "synergy_delta_prob": 0.014935908157087119,
-        "confidence_probability": 0.9179866683821888,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2919,
-        "quality_score": 0.35276279934847726,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.945489984246258,
-        "pick_score": 4.756406462091734
-      },
-      {
-        "from": "Gravkill",
-        "to": "Quantum Riddler",
-        "pair_games": 239,
-        "pair_win_rate": 0.7531380753138075,
-        "pair_expected_win_rate": 0.7387124620295161,
-        "pair_lift_vs_baseline": 0.2050186145258429,
-        "synergy_delta_logit": 0.07613213134340002,
-        "synergy_delta_prob": 0.014425613284291372,
-        "confidence_probability": 0.6940960347740712,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 306,
-        "quality_score": 0.34067633439108147,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.674023631686581,
-        "pick_score": 1.871092660102633
-      },
-      {
-        "from": "Beamsaw Prospector",
-        "to": "Quantum Riddler",
-        "pair_games": 208,
-        "pair_win_rate": 0.7355769230769231,
-        "pair_expected_win_rate": 0.7203751482452813,
-        "pair_lift_vs_baseline": 0.18745746228895854,
-        "synergy_delta_logit": 0.07678151026680147,
-        "synergy_delta_prob": 0.015201774831641868,
-        "confidence_probability": 0.6873573267716112,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 291,
-        "quality_score": 0.2949358059317496,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.011082894190986,
-        "pick_score": 0.09809251632899992
-      },
-      {
-        "from": "Mechan Shieldmate",
-        "to": "Tractor Beam",
-        "pair_games": 717,
-        "pair_win_rate": 0.6304044630404463,
-        "pair_expected_win_rate": 0.6155158397639201,
-        "pair_lift_vs_baseline": 0.0822850022524817,
-        "synergy_delta_logit": 0.0633942661137531,
-        "synergy_delta_prob": 0.01488862327652618,
-        "confidence_probability": 0.7937136702301177,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1800,
-        "quality_score": 0.23870558289287017,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.9707212458126246,
-        "pick_score": 0.0
-      }
-    ],
+    "edges": [],
     "triplets": [
       {
         "cards": [
@@ -5336,112 +4415,13 @@
     "communities": [
       {
         "community_id": 0,
-        "size": 7,
+        "size": 28,
         "top_cards": [
+          "Alpharael, Dreaming Acolyte",
           "Cryogen Relic",
-          "Gravkill",
-          "Cryoshatter",
-          "Monoist Circuit-Feeder",
-          "Singularity Rupture"
-        ]
-      },
-      {
-        "community_id": 1,
-        "size": 4,
-        "top_cards": [
-          "Depressurize",
-          "Hullcarver",
-          "Codecracker Hound",
-          "Elegy Acolyte"
-        ]
-      },
-      {
-        "community_id": 2,
-        "size": 4,
-        "top_cards": [
-          "Beamsaw Prospector",
-          "Divert Disaster",
-          "Mechan Shieldmate",
-          "Tractor Beam"
-        ]
-      },
-      {
-        "community_id": 3,
-        "size": 2,
-        "top_cards": [
+          "Selfcraft Mechan",
           "Virus Beetle",
-          "Perigee Beckoner"
-        ]
-      },
-      {
-        "community_id": 4,
-        "size": 2,
-        "top_cards": [
-          "Embrace Oblivion",
-          "Desculpting Blast"
-        ]
-      },
-      {
-        "community_id": 5,
-        "size": 1,
-        "top_cards": [
-          "Alpharael, Dreaming Acolyte"
-        ]
-      },
-      {
-        "community_id": 6,
-        "size": 1,
-        "top_cards": [
-          "Selfcraft Mechan"
-        ]
-      },
-      {
-        "community_id": 7,
-        "size": 1,
-        "top_cards": [
-          "Gravpack Monoist"
-        ]
-      },
-      {
-        "community_id": 8,
-        "size": 1,
-        "top_cards": [
-          "Mechanozoa"
-        ]
-      },
-      {
-        "community_id": 9,
-        "size": 1,
-        "top_cards": [
-          "Dubious Delicacy"
-        ]
-      },
-      {
-        "community_id": 10,
-        "size": 1,
-        "top_cards": [
-          "Gene Pollinator"
-        ]
-      },
-      {
-        "community_id": 11,
-        "size": 1,
-        "top_cards": [
-          "Galactic Wayfarer"
-        ]
-      },
-      {
-        "community_id": 12,
-        "size": 1,
-        "top_cards": [
-          "Radiant Strike"
-        ]
-      },
-      {
-        "community_id": 13,
-        "size": 1,
-        "top_cards": [
-          "Syr Vondam, Sunstar Exemplar"
+          "Depressurize"
         ]
       }
     ],
@@ -5687,61 +4667,61 @@
       },
       {
         "card": "Selfcraft Mechan",
-        "core_score": 9.978532981024347,
+        "core_score": 9.978637239142351,
         "deck_prevalence": 0.5429490473804273,
         "signpost_score": 9602.221086539672
       },
       {
         "card": "Virus Beetle",
-        "core_score": 9.968256193854911,
+        "core_score": 9.968276127679664,
         "deck_prevalence": 0.5607423437927403,
         "signpost_score": 9510.37536153742
       },
       {
         "card": "Depressurize",
-        "core_score": 9.808068259212412,
+        "core_score": 9.807986733954156,
         "deck_prevalence": 0.5188506394528564,
         "signpost_score": 8204.2916581393
       },
       {
         "card": "Hullcarver",
-        "core_score": 9.718265934969207,
+        "core_score": 9.718134114238119,
         "deck_prevalence": 0.428341836209317,
         "signpost_score": 7558.147968558009
       },
       {
         "card": "Gravpack Monoist",
-        "core_score": 9.644827257897045,
+        "core_score": 9.64492802937721,
         "deck_prevalence": 0.4566105821247145,
         "signpost_score": 7061.904493704232
       },
       {
         "card": "Gravkill",
-        "core_score": 9.594325941939776,
+        "core_score": 9.594271569343329,
         "deck_prevalence": 0.4728871421605561,
         "signpost_score": 6738.243625221518
       },
       {
         "card": "Embrace Oblivion",
-        "core_score": 9.553972321778422,
+        "core_score": 9.553877702520088,
         "deck_prevalence": 0.41908251655386763,
         "signpost_score": 6493.795545238534
       },
       {
         "card": "Mechanozoa",
-        "core_score": 9.537755853190303,
+        "core_score": 9.537855505962622,
         "deck_prevalence": 0.405633499156721,
         "signpost_score": 6399.360487910299
       },
       {
         "card": "Cryoshatter",
-        "core_score": 9.520750175629018,
+        "core_score": 9.520570937296876,
         "deck_prevalence": 0.4662152099777494,
         "signpost_score": 6295.171690771759
       },
       {
         "card": "Beamsaw Prospector",
-        "core_score": 9.507997094251364,
+        "core_score": 9.507906006982946,
         "deck_prevalence": 0.42228394033796124,
         "signpost_score": 6226.314141082093
       }
@@ -5822,200 +4802,79 @@
     ],
     "top_dependency": [
       {
-        "card": "Lost in Space",
-        "dependency_score": 0.14367315847583217,
-        "standalone_delta": 0.04034879780260037,
-        "draw_games": 8585
-      },
-      {
-        "card": "Divert Disaster",
-        "dependency_score": 0.1373317129050481,
-        "standalone_delta": 0.03265421868768126,
-        "draw_games": 7781
-      },
-      {
-        "card": "Elegy Acolyte",
-        "dependency_score": 0.13342016325739156,
-        "standalone_delta": 0.1219416390083694,
-        "draw_games": 2455
-      },
-      {
-        "card": "Quantum Riddler",
-        "dependency_score": 0.13164093841540414,
-        "standalone_delta": 0.15951106130038883,
-        "draw_games": 1245
-      },
-      {
-        "card": "Codecracker Hound",
-        "dependency_score": 0.1270120250712221,
-        "standalone_delta": 0.07904589354274405,
-        "draw_games": 7620
-      },
-      {
-        "card": "Hullcarver",
-        "dependency_score": 0.1162100274288442,
-        "standalone_delta": 0.020738204499303192,
-        "draw_games": 10391
-      },
-      {
-        "card": "Cryoshatter",
-        "dependency_score": 0.11574713162727712,
-        "standalone_delta": 0.03960278007080764,
-        "draw_games": 11924
-      },
-      {
         "card": "Cryogen Relic",
-        "dependency_score": 0.10482322873833572,
+        "dependency_score": 0.0,
         "standalone_delta": 0.06099039333528633,
         "draw_games": 16795
       },
       {
-        "card": "Tractor Beam",
-        "dependency_score": 0.10463318037852413,
-        "standalone_delta": 0.06356297442388237,
-        "draw_games": 7293
+        "card": "Virus Beetle",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.03753765256086061,
+        "draw_games": 15492
+      },
+      {
+        "card": "Selfcraft Mechan",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.0424264332562172,
+        "draw_games": 14893
       },
       {
         "card": "Depressurize",
-        "dependency_score": 0.09951857365861794,
+        "dependency_score": 0.0,
         "standalone_delta": 0.04562129091372236,
         "draw_games": 13516
       },
       {
-        "card": "Singularity Rupture",
-        "dependency_score": 0.09804645333258957,
-        "standalone_delta": 0.07269293452191816,
-        "draw_games": 4776
+        "card": "Gravpack Monoist",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.03534387774557679,
+        "draw_games": 12179
+      },
+      {
+        "card": "Gravkill",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.03812436128781793,
+        "draw_games": 12140
+      },
+      {
+        "card": "Cryoshatter",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.03960278007080764,
+        "draw_games": 11924
+      },
+      {
+        "card": "Alpharael, Dreaming Acolyte",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.04845733949582398,
+        "draw_games": 11276
       },
       {
         "card": "Embrace Oblivion",
-        "dependency_score": 0.0832571894911273,
+        "dependency_score": 0.0,
         "standalone_delta": 0.044836274576147694,
         "draw_games": 10505
+      },
+      {
+        "card": "Beamsaw Prospector",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.015409050501740684,
+        "draw_games": 10452
+      },
+      {
+        "card": "Hullcarver",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.020738204499303192,
+        "draw_games": 10391
+      },
+      {
+        "card": "Mechanozoa",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.04248317379351041,
+        "draw_games": 9641
       }
     ],
-    "top_pairs": [
-      {
-        "cards": [
-          "Codecracker Hound",
-          "Hullcarver"
-        ],
-        "quality_score": 1.160709140575991,
-        "pair_win_rate": 0.6820083682008368,
-        "pair_games": 1195,
-        "synergy_delta_logit": 0.158825074588697
-      },
-      {
-        "cards": [
-          "Quantum Riddler",
-          "Singularity Rupture"
-        ],
-        "quality_score": 1.0849449877440875,
-        "pair_win_rate": 0.8172043010752689,
-        "pair_games": 93,
-        "synergy_delta_logit": 0.3136937905898385
-      },
-      {
-        "cards": [
-          "Elegy Acolyte",
-          "Hullcarver"
-        ],
-        "quality_score": 0.94606238323695,
-        "pair_win_rate": 0.7253012048192771,
-        "pair_games": 415,
-        "synergy_delta_logit": 0.1783338316136286
-      },
-      {
-        "cards": [
-          "Cryogen Relic",
-          "Singularity Rupture"
-        ],
-        "quality_score": 0.9234646928962149,
-        "pair_win_rate": 0.7002141327623126,
-        "pair_games": 1401,
-        "synergy_delta_logit": 0.10482322873833572
-      },
-      {
-        "cards": [
-          "Codecracker Hound",
-          "Depressurize"
-        ],
-        "quality_score": 0.895634519559849,
-        "pair_win_rate": 0.69125,
-        "pair_games": 1600,
-        "synergy_delta_logit": 0.09951857365861794
-      },
-      {
-        "cards": [
-          "Divert Disaster",
-          "Tractor Beam"
-        ],
-        "quality_score": 0.8529770185135588,
-        "pair_win_rate": 0.6736183524504692,
-        "pair_games": 959,
-        "synergy_delta_logit": 0.1373317129050481
-      },
-      {
-        "cards": [
-          "Quantum Riddler",
-          "Tractor Beam"
-        ],
-        "quality_score": 0.741869731842009,
-        "pair_win_rate": 0.7891566265060241,
-        "pair_games": 166,
-        "synergy_delta_logit": 0.1746311293052194
-      },
-      {
-        "cards": [
-          "Lost in Space",
-          "Quantum Riddler"
-        ],
-        "quality_score": 0.6586866386271003,
-        "pair_win_rate": 0.7671232876712328,
-        "pair_games": 219,
-        "synergy_delta_logit": 0.14367315847583217
-      },
-      {
-        "cards": [
-          "Beamsaw Prospector",
-          "Tractor Beam"
-        ],
-        "quality_score": 0.5903713602766598,
-        "pair_win_rate": 0.6499582289055973,
-        "pair_games": 1197,
-        "synergy_delta_logit": 0.10204635634787518
-      },
-      {
-        "cards": [
-          "Cryoshatter",
-          "Quantum Riddler"
-        ],
-        "quality_score": 0.5618303661975402,
-        "pair_win_rate": 0.7615384615384615,
-        "pair_games": 260,
-        "synergy_delta_logit": 0.11574713162727712
-      },
-      {
-        "cards": [
-          "Elegy Acolyte",
-          "Embrace Oblivion"
-        ],
-        "quality_score": 0.48691961107643505,
-        "pair_win_rate": 0.7272727272727273,
-        "pair_games": 429,
-        "synergy_delta_logit": 0.08924543057710366
-      },
-      {
-        "cards": [
-          "Hullcarver",
-          "Monoist Circuit-Feeder"
-        ],
-        "quality_score": 0.48213420190469836,
-        "pair_win_rate": 0.6609281437125748,
-        "pair_games": 1336,
-        "synergy_delta_logit": 0.07182465960420792
-      }
-    ],
+    "top_pairs": [],
     "top_anti_pairs": [
       {
         "cards": [
@@ -6272,140 +5131,7 @@
         "pick_urgency_score": 9.332683398531842
       }
     ],
-    "top_pick_pairs": [
-      {
-        "cards": [
-          "Codecracker Hound",
-          "Depressurize"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 9.494562070923044,
-        "pair_win_rate": 0.69125,
-        "pair_games": 1600,
-        "draft_pair_events": 1966
-      },
-      {
-        "cards": [
-          "Cryogen Relic",
-          "Singularity Rupture"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 9.28338154506474,
-        "pair_win_rate": 0.7002141327623126,
-        "pair_games": 1401,
-        "draft_pair_events": 1560
-      },
-      {
-        "cards": [
-          "Codecracker Hound",
-          "Hullcarver"
-        ],
-        "pick_score": 7.979907374664869,
-        "pick_score_raw": 7.705766964023844,
-        "pair_win_rate": 0.6820083682008368,
-        "pair_games": 1195,
-        "draft_pair_events": 1763
-      },
-      {
-        "cards": [
-          "Perigee Beckoner",
-          "Virus Beetle"
-        ],
-        "pick_score": 7.435347078671899,
-        "pick_score_raw": 7.3798041620234995,
-        "pair_win_rate": 0.6298482293423272,
-        "pair_games": 2372,
-        "draft_pair_events": 3492
-      },
-      {
-        "cards": [
-          "Hullcarver",
-          "Monoist Circuit-Feeder"
-        ],
-        "pick_score": 6.923079050978347,
-        "pick_score_raw": 7.084319793881636,
-        "pair_win_rate": 0.6609281437125748,
-        "pair_games": 1336,
-        "draft_pair_events": 2113
-      },
-      {
-        "cards": [
-          "Divert Disaster",
-          "Tractor Beam"
-        ],
-        "pick_score": 5.951339592451889,
-        "pick_score_raw": 6.55213125533878,
-        "pair_win_rate": 0.6736183524504692,
-        "pair_games": 959,
-        "draft_pair_events": 1937
-      },
-      {
-        "cards": [
-          "Gravkill",
-          "Singularity Rupture"
-        ],
-        "pick_score": 5.858151064041856,
-        "pick_score_raw": 6.5029737351210795,
-        "pair_win_rate": 0.6730769230769231,
-        "pair_games": 988,
-        "draft_pair_events": 1236
-      },
-      {
-        "cards": [
-          "Desculpting Blast",
-          "Embrace Oblivion"
-        ],
-        "pick_score": 5.497840759540649,
-        "pick_score_raw": 6.315899464737873,
-        "pair_win_rate": 0.6770114942528735,
-        "pair_games": 870,
-        "draft_pair_events": 1483
-      },
-      {
-        "cards": [
-          "Beamsaw Prospector",
-          "Tractor Beam"
-        ],
-        "pick_score": 5.069017185232817,
-        "pick_score_raw": 6.09932234728379,
-        "pair_win_rate": 0.6499582289055973,
-        "pair_games": 1197,
-        "draft_pair_events": 1717
-      },
-      {
-        "cards": [
-          "Hullcarver",
-          "Tractor Beam"
-        ],
-        "pick_score": 5.00932837365982,
-        "pick_score_raw": 6.069689244854921,
-        "pair_win_rate": 0.6506849315068494,
-        "pair_games": 1168,
-        "draft_pair_events": 1778
-      },
-      {
-        "cards": [
-          "Beamsaw Prospector",
-          "Gravkill"
-        ],
-        "pick_score": 4.756406462091734,
-        "pick_score_raw": 5.945489984246258,
-        "pair_win_rate": 0.6162343900096061,
-        "pair_games": 2082,
-        "draft_pair_events": 2919
-      },
-      {
-        "cards": [
-          "Monoist Circuit-Feeder",
-          "Singularity Rupture"
-        ],
-        "pick_score": 4.548854673083761,
-        "pick_score_raw": 5.8452017135898275,
-        "pair_win_rate": 0.7091932457786116,
-        "pair_games": 533,
-        "draft_pair_events": 762
-      }
-    ]
+    "top_pick_pairs": []
   },
   "overview": [
     {
@@ -6428,9 +5154,7 @@
         "Ouroboroid"
       ],
       "build_arounds": [
-        "Sami's Curiosity",
-        "Intrepid Tenderfoot",
-        "Gene Pollinator"
+        "Intrepid Tenderfoot"
       ],
       "core_cards": [
         "Biomechan Engineer",
@@ -6459,9 +5183,7 @@
         "Nebula Dragon"
       ],
       "build_arounds": [
-        "Tannuk, Memorial Ensign",
-        "Sami's Curiosity",
-        "Blooming Stinger"
+        "Icecave Crasher"
       ],
       "core_cards": [
         "Tannuk, Memorial Ensign",
@@ -6489,11 +5211,7 @@
         "Syr Vondam, Sunstar Exemplar",
         "Syr Vondam, the Lucent"
       ],
-      "build_arounds": [
-        "Starfighter Pilot",
-        "Exosuit Savior",
-        "Weftblade Enhancer"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Knight Luminary",
         "Syr Vondam, the Lucent",
@@ -6520,11 +5238,7 @@
         "Sunstar Chaplain",
         "Biosynthic Burst"
       ],
-      "build_arounds": [
-        "Haliya, Ascendant Cadet",
-        "Dockworker Drone",
-        "Intrepid Tenderfoot"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Haliya, Ascendant Cadet",
         "Dockworker Drone",
@@ -6552,9 +5266,8 @@
         "Nova Hellkite"
       ],
       "build_arounds": [
-        "Slagdrill Scrapper",
-        "Zookeeper Mechan",
-        "Swarm Culler"
+        "Swarm Culler",
+        "Slagdrill Scrapper"
       ],
       "core_cards": [
         "Interceptor Mechan",
@@ -6582,11 +5295,7 @@
         "Codecracker Hound",
         "All-Fates Stalker"
       ],
-      "build_arounds": [
-        "Illvoi Infiltrator",
-        "Exosuit Savior",
-        "Starfighter Pilot"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Station Monitor",
         "Illvoi Galeblade",
@@ -6640,11 +5349,7 @@
         "Dubious Delicacy",
         "Glacier Godmaw"
       ],
-      "build_arounds": [
-        "Sami's Curiosity",
-        "Beamsaw Prospector",
-        "Gravpack Monoist"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Seedship Broodtender",
         "Galactic Wayfarer",
@@ -6671,11 +5376,7 @@
         "Nova Hellkite",
         "Cryogen Relic"
       ],
-      "build_arounds": [
-        "Mm'menon, Uthros Exile",
-        "Oreplate Pangolin",
-        "Slagdrill Scrapper"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Oreplate Pangolin",
         "Zookeeper Mechan",
@@ -6687,6 +5388,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -6792,6 +5494,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -6814,28 +5518,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -6903,16 +5598,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -7040,7 +5726,7 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
     if (filters.topSynergies) {
@@ -7375,22 +6061,27 @@
       ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
       : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
     var edgeText = mode === 'analysis'
-      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\\'s own baseline.'
       : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -7568,8 +6259,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -7686,6 +6378,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

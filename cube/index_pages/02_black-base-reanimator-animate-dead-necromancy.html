@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Black Base Reanimator | Animate Dead / Necromancy | Cube - Powered Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -513,7 +393,8 @@
       }
     },
     "deck_count": 57913,
-    "game_count": 266117
+    "game_count": 266117,
+    "has_game_data": true
   },
   "segment": {
     "cluster_id": 2,
@@ -738,8 +619,8 @@
         "supported_win_rate": 0.6076555023923444,
         "support_delta": 0.05456908263925808,
         "standalone_delta": 0.07322273268211432,
-        "dependency_score": 0.481465344228877,
-        "degree": 10,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4569.058764715607,
         "signpost_lift": 5.160014084569223,
         "deck_prevalence": 0.3819422696152421,
@@ -752,74 +633,32 @@
         "alsa": 2.828406128806663,
         "average_taken_at": 3.6166666666666667,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4587.976323487223,
-        "analysis_score": 10.0,
+        "analysis_score_raw": 4579.3099472911035,
+        "analysis_score": 10.000000000000002,
         "pick_priority_score_raw": 351.28115256368096,
         "pick_priority_score": 10.0,
+        "pick_market_score_raw": 9.876536995043203,
+        "pick_market_score": 9.876536995043203,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 5.5765165186131975,
-        "shell_dependence_score": 6.2712296418683895,
-        "build_around_score_raw": 5.5765165186131975,
-        "build_around_score": 6.2712296418683895,
-        "core_score_raw": 4601.884209832784,
+        "shell_dependence_score_raw": 1.9059400977130552,
+        "shell_dependence_score": 4.554390307509337,
+        "build_around_score_raw": 1.9059400977130552,
+        "build_around_score": 4.554390307509337,
+        "core_score_raw": 4595.143695013579,
         "core_score": 10.0,
+        "win_contribution_logit": 0.3099818456409863,
+        "contribution_score": 9.2160053071158,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Animate%20Dead%22",
-        "community": 1,
-        "x": 1273.610694073703,
-        "y": 764.582210298926,
-        "analysis_radius": 28.0,
+        "community": 0,
+        "x": 909.7046171291229,
+        "y": 667.547166428461,
+        "analysis_radius": 15.027250297516288,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Life // Death",
-            "quality_score": 0.9064342995762602,
-            "pair_win_rate": 0.6888888888888889,
-            "pair_games": 180,
-            "synergy_delta_logit": 0.24439408429318388,
-            "partner_pick_score": 7.941532193096458,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.7942035385223088,
-            "pair_win_rate": 0.6923076923076923,
-            "pair_games": 234,
-            "synergy_delta_logit": 0.17125499791731003,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Entomb",
-            "quality_score": 0.6265758210812513,
-            "pair_win_rate": 0.6727941176470589,
-            "pair_games": 272,
-            "synergy_delta_logit": 0.16288025126882888,
-            "partner_pick_score": 8.622459471720758,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.5352530323354177,
-            "pair_win_rate": 0.6721311475409836,
-            "pair_games": 183,
-            "synergy_delta_logit": 0.17132685717612728,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Griselbrand",
-            "quality_score": 0.37401937811287295,
-            "pair_win_rate": 0.6206896551724138,
-            "pair_games": 203,
-            "synergy_delta_logit": 0.1611027087512385,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 15.027250297516288,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Reanimate",
@@ -864,15 +703,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.3819422696152421,
-            "analysis_score": 10.0,
+            "analysis_score": 10.000000000000002,
             "pick_priority_score": 10.0,
-            "build_around_score": 6.2712296418683895,
+            "build_around_score": 4.554390307509337,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.876536995043203,
-        "pick_market_score": 9.876536995043203
+        ]
       },
       {
         "id": "Necromancy",
@@ -895,8 +732,8 @@
         "supported_win_rate": 0.6052904564315352,
         "support_delta": 0.06682891796999679,
         "standalone_delta": 0.06872931213969313,
-        "dependency_score": 0.15690253148419,
-        "degree": 8,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4402.397865395654,
         "signpost_lift": 5.765750117407229,
         "deck_prevalence": 0.3663505144116877,
@@ -909,74 +746,32 @@
         "alsa": 3.6988531261561226,
         "average_taken_at": 5.081686429512517,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4414.844214661925,
-        "analysis_score": 10.0,
+        "analysis_score_raw": 4412.01996909521,
+        "analysis_score": 10.000000000000002,
         "pick_priority_score_raw": 340.95479705484126,
         "pick_priority_score": 9.919472854691882,
+        "pick_market_score_raw": 9.322987279087977,
+        "pick_market_score": 9.322987279087977,
         "pick_urgency_score_raw": 8.942590856699276,
         "pick_urgency_score": 8.942590856699276,
-        "shell_dependence_score_raw": 4.225952756456541,
-        "shell_dependence_score": 5.2998163139176135,
-        "build_around_score_raw": 4.225952756456541,
-        "build_around_score": 5.2998163139176135,
-        "core_score_raw": 4429.486719117714,
+        "shell_dependence_score_raw": 2.5964158671133375,
+        "shell_dependence_score": 6.0095253437850165,
+        "build_around_score_raw": 2.5964158671133375,
+        "build_around_score": 6.0095253437850165,
+        "core_score_raw": 4427.290083676935,
         "core_score": 10.0,
+        "win_contribution_logit": 0.27208797281581415,
+        "contribution_score": 8.214115903594895,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Necromancy%22",
         "community": 0,
-        "x": 1152.660618998837,
-        "y": 536.5788359764863,
-        "analysis_radius": 20.428603301113963,
+        "x": 993.1409996528259,
+        "y": 603.5149096997536,
+        "analysis_radius": 14.780112167683122,
         "pick_radius": 30.0,
-        "radius": 20.428603301113963,
-        "top_synergies": [
-          {
-            "card": "Entomb",
-            "quality_score": 0.6964089939207675,
-            "pair_win_rate": 0.6728624535315985,
-            "pair_games": 269,
-            "synergy_delta_logit": 0.1817523972012457,
-            "partner_pick_score": 8.622459471720758,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Crabomination",
-            "quality_score": 0.5355815312964253,
-            "pair_win_rate": 0.6845637583892618,
-            "pair_games": 149,
-            "synergy_delta_logit": 0.17846057805867976,
-            "partner_pick_score": 8.278365979222308,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Persist",
-            "quality_score": 0.22887759955029474,
-            "pair_win_rate": 0.653179190751445,
-            "pair_games": 173,
-            "synergy_delta_logit": 0.07666784142308591,
-            "partner_pick_score": 7.808839599085339,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Grief",
-            "quality_score": 0.21113635648742027,
-            "pair_win_rate": 0.6524822695035462,
-            "pair_games": 141,
-            "synergy_delta_logit": 0.08743374277450033,
-            "partner_pick_score": 7.0527128563979895,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.18394637361413865,
-            "pair_win_rate": 0.6442307692307693,
-            "pair_games": 208,
-            "synergy_delta_logit": 0.06582348302663144,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 14.780112167683122,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Recurring Nightmare",
@@ -1021,11 +816,11 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.3663505144116877,
-            "analysis_score": 10.0,
+            "analysis_score": 10.000000000000002,
             "pick_priority_score": 9.919472854691882,
-            "build_around_score": 5.2998163139176135,
+            "build_around_score": 6.0095253437850165,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
@@ -1034,13 +829,11 @@
             "deck_prevalence": 0.03513675251957171,
             "analysis_score": 0.0,
             "pick_priority_score": 3.1845124971714425,
-            "build_around_score": 0.615668768518218,
+            "build_around_score": 1.252534507925336,
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 9.322987279087977,
-        "pick_market_score": 9.322987279087977
+        ]
       },
       {
         "id": "Archon of Cruelty",
@@ -1063,8 +856,8 @@
         "supported_win_rate": 0.615608619685498,
         "support_delta": 0.11104934916878062,
         "standalone_delta": 0.06683481193263752,
-        "dependency_score": 0.6165901810034278,
-        "degree": 10,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4106.42091839329,
         "signpost_lift": 5.725043540211814,
         "deck_prevalence": 0.342776890846377,
@@ -1077,74 +870,32 @@
         "alsa": 2.837994521246098,
         "average_taken_at": 3.610964526531809,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4126.876415321921,
-        "analysis_score": 9.9637412768721,
+        "analysis_score_raw": 4115.777792063859,
+        "analysis_score": 9.962634582720213,
         "pick_priority_score_raw": 398.33738164163185,
         "pick_priority_score": 10.0,
+        "pick_market_score_raw": 9.877691539434505,
+        "pick_market_score": 9.877691539434505,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 14.263642018603568,
-        "shell_dependence_score": 9.829354837569296,
-        "build_around_score_raw": 14.263642018603568,
-        "build_around_score": 9.829354837569296,
-        "core_score_raw": 4138.558538265624,
-        "core_score": 9.939206954256147,
+        "shell_dependence_score_raw": 4.114875269555803,
+        "shell_dependence_score": 8.413685321729007,
+        "build_around_score_raw": 4.114875269555803,
+        "build_around_score": 8.413685321729007,
+        "core_score_raw": 4129.9262757315755,
+        "core_score": 9.937775764220554,
+        "win_contribution_logit": 0.25303844443908363,
+        "contribution_score": 7.699128115363594,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Archon%20of%20Cruelty%22",
-        "community": 2,
-        "x": 977.4678509389893,
-        "y": 801.5529445260709,
-        "analysis_radius": 28.0,
+        "community": 0,
+        "x": 837.1285449105176,
+        "y": 469.2901923643109,
+        "analysis_radius": 14.675914656295063,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Emperor of Bones",
-            "quality_score": 1.1572674673257821,
-            "pair_win_rate": 0.7176470588235294,
-            "pair_games": 170,
-            "synergy_delta_logit": 0.30552244113893956,
-            "partner_pick_score": 9.768765141547725,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.7942035385223088,
-            "pair_win_rate": 0.6923076923076923,
-            "pair_games": 234,
-            "synergy_delta_logit": 0.17125499791731003,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Life // Death",
-            "quality_score": 0.6498153471113107,
-            "pair_win_rate": 0.6683673469387755,
-            "pair_games": 196,
-            "synergy_delta_logit": 0.17664384412842737,
-            "partner_pick_score": 7.941532193096458,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Overlord of the Balemurk",
-            "quality_score": 0.6418391927519919,
-            "pair_win_rate": 0.6754385964912281,
-            "pair_games": 114,
-            "synergy_delta_logit": 0.25796439694903567,
-            "partner_pick_score": 6.927075470085673,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Bitter Triumph",
-            "quality_score": 0.5722547169788239,
-            "pair_win_rate": 0.6645569620253164,
-            "pair_games": 158,
-            "synergy_delta_logit": 0.18476323901557906,
-            "partner_pick_score": 6.5867063000181165,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 14.675914656295063,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Necromancy",
@@ -1189,15 +940,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.342776890846377,
-            "analysis_score": 9.9637412768721,
+            "analysis_score": 9.962634582720213,
             "pick_priority_score": 10.0,
-            "build_around_score": 9.829354837569296,
-            "core_score": 9.939206954256147,
-            "role": "engine"
+            "build_around_score": 8.413685321729007,
+            "core_score": 9.937775764220554,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.877691539434505,
-        "pick_market_score": 9.877691539434505
+        ]
       },
       {
         "id": "Entomb",
@@ -1220,8 +969,8 @@
         "supported_win_rate": 0.5957219251336898,
         "support_delta": 0.11554571367994532,
         "standalone_delta": 0.046869225681631654,
-        "dependency_score": 0.11814003797705101,
-        "degree": 10,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4051.058354370644,
         "signpost_lift": 6.298303092179135,
         "deck_prevalence": 0.3474238958834525,
@@ -1234,74 +983,32 @@
         "alsa": 3.496126046487442,
         "average_taken_at": 4.510848126232742,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4059.746566649659,
-        "analysis_score": 9.951986772114441,
+        "analysis_score_raw": 4057.620045966072,
+        "analysis_score": 9.952433842003462,
         "pick_priority_score_raw": 237.71945355825707,
         "pick_priority_score": 8.622459471720758,
+        "pick_market_score_raw": 9.517257921302846,
+        "pick_market_score": 9.517257921302846,
         "pick_urgency_score_raw": 8.861982126126748,
         "pick_urgency_score": 8.861982126126748,
-        "shell_dependence_score_raw": 8.214653195342281,
-        "shell_dependence_score": 7.696602717861802,
-        "build_around_score_raw": 8.214653195342281,
-        "build_around_score": 7.696602717861802,
-        "core_score_raw": 4074.762241671201,
-        "core_score": 9.920671521749552,
+        "shell_dependence_score_raw": 5.578483965288206,
+        "shell_dependence_score": 10.0,
+        "build_around_score_raw": 5.578483965288206,
+        "build_around_score": 10.0,
+        "core_score_raw": 4073.108281139522,
+        "core_score": 9.921245423370529,
+        "win_contribution_logit": 0.17433251345366468,
+        "contribution_score": 5.48495708474259,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Entomb%22",
         "community": 0,
-        "x": 1168.3077513522555,
-        "y": 583.0745391391633,
-        "analysis_radius": 17.830848779663576,
+        "x": 796.3594682967549,
+        "y": 588.4997827789315,
+        "analysis_radius": 13.57780741248974,
         "pick_radius": 30.0,
-        "radius": 17.830848779663576,
-        "top_synergies": [
-          {
-            "card": "Necromancy",
-            "quality_score": 0.6964089939207675,
-            "pair_win_rate": 0.6728624535315985,
-            "pair_games": 269,
-            "synergy_delta_logit": 0.1817523972012457,
-            "partner_pick_score": 9.919472854691882,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.6265758210812513,
-            "pair_win_rate": 0.6727941176470589,
-            "pair_games": 272,
-            "synergy_delta_logit": 0.16288025126882888,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Bone Shards",
-            "quality_score": 0.5490779403264877,
-            "pair_win_rate": 0.6518518518518519,
-            "pair_games": 135,
-            "synergy_delta_logit": 0.23270558440466266,
-            "partner_pick_score": 6.593691480246407,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Emperor of Bones",
-            "quality_score": 0.3686713495716375,
-            "pair_win_rate": 0.6613756613756614,
-            "pair_games": 189,
-            "synergy_delta_logit": 0.12383874771476966,
-            "partner_pick_score": 9.768765141547725,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Recurring Nightmare",
-            "quality_score": 0.3537669025934924,
-            "pair_win_rate": 0.626984126984127,
-            "pair_games": 126,
-            "synergy_delta_logit": 0.18546202348596813,
-            "partner_pick_score": 3.396497875776208,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 13.57780741248974,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Reanimate",
@@ -1346,11 +1053,11 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.3474238958834525,
-            "analysis_score": 9.951986772114441,
+            "analysis_score": 9.952433842003462,
             "pick_priority_score": 8.622459471720758,
-            "build_around_score": 7.696602717861802,
-            "core_score": 9.920671521749552,
-            "role": "engine"
+            "build_around_score": 10.0,
+            "core_score": 9.921245423370529,
+            "role": "good_alone"
           },
           {
             "cluster_id": 6,
@@ -1363,9 +1070,7 @@
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 9.517257921302846,
-        "pick_market_score": 9.517257921302846
+        ]
       },
       {
         "id": "Reanimate",
@@ -1388,8 +1093,8 @@
         "supported_win_rate": 0.6024811218985976,
         "support_delta": 0.05568309234194735,
         "standalone_delta": 0.06751408701456585,
-        "dependency_score": 0.14531472071306079,
-        "degree": 6,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 4040.6025578827007,
         "signpost_lift": 4.659892321318909,
         "deck_prevalence": 0.3486831630972886,
@@ -1402,74 +1107,32 @@
         "alsa": 2.2219887366563,
         "average_taken_at": 2.6118696015603233,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4052.670195037575,
-        "analysis_score": 9.950736388578626,
+        "analysis_score_raw": 4050.05453006474,
+        "analysis_score": 9.95109613512989,
         "pick_priority_score_raw": 313.3760886551772,
         "pick_priority_score": 9.616002750346437,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 3.0231503586616073,
-        "shell_dependence_score": 4.194424047668061,
-        "build_around_score_raw": 3.0231503586616073,
-        "build_around_score": 4.194424047668061,
-        "core_score_raw": 4066.5071858499805,
-        "core_score": 9.918251917098326,
+        "shell_dependence_score_raw": 1.9118630044996232,
+        "shell_dependence_score": 4.5682885928440715,
+        "build_around_score_raw": 1.9118630044996232,
+        "build_around_score": 4.5682885928440715,
+        "core_score_raw": 4064.4727797599976,
+        "core_score": 9.918712890748393,
+        "win_contribution_logit": 0.2900013481817728,
+        "contribution_score": 8.691400948121617,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Reanimate%22",
-        "community": 4,
-        "x": 797.9445651375088,
-        "y": 695.9632485313916,
-        "analysis_radius": 19.94460473147131,
+        "community": 0,
+        "x": 960.2483087884233,
+        "y": 641.7174652564371,
+        "analysis_radius": 14.713274785801122,
         "pick_radius": 30.0,
-        "radius": 19.94460473147131,
-        "top_synergies": [
-          {
-            "card": "Liliana of the Veil",
-            "quality_score": 1.2671066808354372,
-            "pair_win_rate": 0.7099236641221374,
-            "pair_games": 131,
-            "synergy_delta_logit": 0.40058850704255483,
-            "partner_pick_score": 6.3209917740088795,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Barrowgoyf",
-            "quality_score": 0.4658009435893666,
-            "pair_win_rate": 0.6893939393939394,
-            "pair_games": 132,
-            "synergy_delta_logit": 0.16205283896921796,
-            "partner_pick_score": 9.770738023162433,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Grief",
-            "quality_score": 0.27308421761356994,
-            "pair_win_rate": 0.6547619047619048,
-            "pair_games": 168,
-            "synergy_delta_logit": 0.10251236981575029,
-            "partner_pick_score": 7.0527128563979895,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Griselbrand",
-            "quality_score": 0.25350944669368136,
-            "pair_win_rate": 0.6077348066298343,
-            "pair_games": 181,
-            "synergy_delta_logit": 0.12999797539229113,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Atraxa, Grand Unifier",
-            "quality_score": 0.125228560905227,
-            "pair_win_rate": 0.6432748538011696,
-            "pair_games": 171,
-            "synergy_delta_logit": 0.05026816716204474,
-            "partner_pick_score": 8.038916384051149,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 14.713274785801122,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Animate Dead",
@@ -1514,15 +1177,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.3486831630972886,
-            "analysis_score": 9.950736388578626,
+            "analysis_score": 9.95109613512989,
             "pick_priority_score": 9.616002750346437,
-            "build_around_score": 4.194424047668061,
-            "core_score": 9.918251917098326,
-            "role": "engine"
+            "build_around_score": 4.5682885928440715,
+            "core_score": 9.918712890748393,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Life // Death",
@@ -1547,8 +1208,8 @@
         "supported_win_rate": 0.5897106109324759,
         "support_delta": 0.09462864371936114,
         "standalone_delta": 0.04504120551474522,
-        "dependency_score": 0.3755517782290158,
-        "degree": 11,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3596.84362519723,
         "signpost_lift": 5.75110447029813,
         "deck_prevalence": 0.3023650075364856,
@@ -1561,74 +1222,32 @@
         "alsa": 4.520591085271318,
         "average_taken_at": 6.870032223415682,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3609.9093259774163,
-        "analysis_score": 9.867817304226515,
+        "analysis_score_raw": 3603.149393969294,
+        "analysis_score": 9.867289500405603,
         "pick_priority_score_raw": 196.67234588886808,
         "pick_priority_score": 7.941532193096458,
+        "pick_market_score_raw": 8.614280276674375,
+        "pick_market_score": 8.614280276674375,
         "pick_urgency_score_raw": 7.284801060548922,
         "pick_urgency_score": 7.284801060548922,
-        "shell_dependence_score_raw": 10.067152307193496,
-        "shell_dependence_score": 8.470741632307918,
-        "build_around_score_raw": 10.067152307193496,
-        "build_around_score": 8.470741632307918,
-        "core_score_raw": 3621.6528329530865,
-        "core_score": 9.780025627689616,
+        "shell_dependence_score_raw": 4.023308964005491,
+        "shell_dependence_score": 8.290382641512933,
+        "build_around_score_raw": 4.023308964005491,
+        "build_around_score": 8.290382641512933,
+        "core_score_raw": 3616.3951080578804,
+        "core_score": 9.779335461258432,
+        "win_contribution_logit": 0.18783102568929325,
+        "contribution_score": 5.875050176550998,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Life%20//%20Death%22",
-        "community": 1,
-        "x": 1162.929206071236,
-        "y": 769.9704780179152,
-        "analysis_radius": 26.997130319555556,
+        "community": 0,
+        "x": 829.8370404166162,
+        "y": 651.2986958526111,
+        "analysis_radius": 13.477266303310987,
         "pick_radius": 30.0,
-        "radius": 26.997130319555556,
-        "top_synergies": [
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.9117161996291562,
-            "pair_win_rate": 0.6776315789473685,
-            "pair_games": 152,
-            "synergy_delta_logit": 0.31190476326675126,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.9064342995762602,
-            "pair_win_rate": 0.6888888888888889,
-            "pair_games": 180,
-            "synergy_delta_logit": 0.24439408429318388,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Atraxa, Grand Unifier",
-            "quality_score": 0.7865624639732989,
-            "pair_win_rate": 0.673202614379085,
-            "pair_games": 153,
-            "synergy_delta_logit": 0.2753053944786152,
-            "partner_pick_score": 8.038916384051149,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.6498153471113107,
-            "pair_win_rate": 0.6683673469387755,
-            "pair_games": 196,
-            "synergy_delta_logit": 0.17664384412842737,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Persist",
-            "quality_score": 0.5478487646982804,
-            "pair_win_rate": 0.6587301587301587,
-            "pair_games": 126,
-            "synergy_delta_logit": 0.19821237390373408,
-            "partner_pick_score": 7.808839599085339,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.477266303310987,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Necromancy",
@@ -1673,15 +1292,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.3023650075364856,
-            "analysis_score": 9.867817304226515,
+            "analysis_score": 9.867289500405603,
             "pick_priority_score": 7.941532193096458,
-            "build_around_score": 8.470741632307918,
-            "core_score": 9.780025627689616,
-            "role": "engine"
+            "build_around_score": 8.290382641512933,
+            "core_score": 9.779335461258432,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.614280276674375,
-        "pick_market_score": 8.614280276674375
+        ]
       },
       {
         "id": "Griselbrand",
@@ -1704,8 +1321,8 @@
         "supported_win_rate": 0.5500695410292072,
         "support_delta": 0.1519213928810591,
         "standalone_delta": -0.009412753391187745,
-        "dependency_score": 0.15532910581417436,
-        "degree": 14,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3557.136426735025,
         "signpost_lift": 6.141819231463093,
         "deck_prevalence": 0.30379084907609544,
@@ -1718,74 +1335,32 @@
         "alsa": 3.762530001411831,
         "average_taken_at": 5.243805445090242,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3559.93235063968,
-        "analysis_score": 9.857825679379236,
+        "analysis_score_raw": 3557.136426735025,
+        "analysis_score": 9.858077365725167,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
+        "pick_market_score_raw": 9.264856544185706,
+        "pick_market_score": 9.264856544185706,
         "pick_urgency_score_raw": 5.968144540210897,
         "pick_urgency_score": 5.968144540210897,
-        "shell_dependence_score_raw": 17.985225002064954,
+        "shell_dependence_score_raw": 11.092976512221155,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 17.985225002064954,
+        "build_around_score_raw": 11.092976512221155,
         "build_around_score": 10.0,
-        "core_score_raw": 3575.108158368381,
-        "core_score": 9.7645929478258,
-        "is_build_around": true,
-        "role": "needs_support",
+        "core_score_raw": 3572.933550886982,
+        "core_score": 9.764908634628759,
+        "win_contribution_logit": -0.10076930377799714,
+        "contribution_score": 0.0,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Griselbrand%22",
         "community": 0,
-        "x": 1285.2419420206252,
-        "y": 555.8586585444324,
-        "analysis_radius": 16.591847809310277,
+        "x": 1000.0342716549038,
+        "y": 511.0673989177757,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 16.591847809310277,
-        "top_synergies": [
-          {
-            "card": "Bone Shards",
-            "quality_score": 0.950256618919954,
-            "pair_win_rate": 0.6428571428571429,
-            "pair_games": 140,
-            "synergy_delta_logit": 0.41989879203253044,
-            "partner_pick_score": 6.593691480246407,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Barrowgoyf",
-            "quality_score": 0.6273834403074822,
-            "pair_win_rate": 0.6513761467889908,
-            "pair_games": 109,
-            "synergy_delta_logit": 0.3009588768359384,
-            "partner_pick_score": 9.770738023162433,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.43730511471177097,
-            "pair_win_rate": 0.625,
-            "pair_games": 160,
-            "synergy_delta_logit": 0.20582142881905152,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.37401937811287295,
-            "pair_win_rate": 0.6206896551724138,
-            "pair_games": 203,
-            "synergy_delta_logit": 0.1611027087512385,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Persist",
-            "quality_score": 0.37225480959672796,
-            "pair_win_rate": 0.6124031007751938,
-            "pair_games": 129,
-            "synergy_delta_logit": 0.217158743069722,
-            "partner_pick_score": 7.808839599085339,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Entomb",
@@ -1812,15 +1387,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.30379084907609544,
-            "analysis_score": 9.857825679379236,
+            "analysis_score": 9.858077365725167,
             "pick_priority_score": 0.0,
             "build_around_score": 10.0,
-            "core_score": 9.7645929478258,
-            "role": "needs_support"
+            "core_score": 9.764908634628759,
+            "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 9.264856544185706,
-        "pick_market_score": 9.264856544185706
+        ]
       },
       {
         "id": "Emperor of Bones",
@@ -1843,8 +1416,8 @@
         "supported_win_rate": 0.6058201058201058,
         "support_delta": 0.054771154771154795,
         "standalone_delta": 0.07022800078712665,
-        "dependency_score": 0.1265475235490041,
-        "degree": 8,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3345.224353689462,
         "signpost_lift": 4.094981850805866,
         "deck_prevalence": 0.3062715217369361,
@@ -1857,74 +1430,32 @@
         "alsa": 3.723433955679637,
         "average_taken_at": 5.109997613934622,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3357.334129223542,
-        "analysis_score": 9.815831456937353,
+        "analysis_score_raw": 3355.0562737996597,
+        "analysis_score": 9.816156369063489,
         "pick_priority_score_raw": 326.96895198204965,
         "pick_priority_score": 9.768765141547725,
+        "pick_market_score_raw": 9.307988763218237,
+        "pick_market_score": 9.307988763218237,
         "pick_urgency_score_raw": 8.875841788638096,
         "pick_urgency_score": 8.875841788638096,
-        "shell_dependence_score_raw": 2.3520179839477144,
-        "shell_dependence_score": 3.4231748218538844,
-        "build_around_score_raw": 2.3520179839477144,
-        "build_around_score": 3.4231748218538844,
-        "core_score_raw": 3368.8915182163746,
-        "core_score": 9.69371034680691,
+        "shell_dependence_score_raw": 1.5615678213600184,
+        "shell_dependence_score": 3.6933980477054216,
+        "build_around_score_raw": 1.5615678213600184,
+        "build_around_score": 3.6933980477054216,
+        "core_score_raw": 3367.1198528866885,
+        "core_score": 9.694116827669772,
+        "win_contribution_logit": 0.2876761084210516,
+        "contribution_score": 8.629822764507798,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Emperor%20of%20Bones%22",
-        "community": 2,
-        "x": 953.1652807714108,
-        "y": 950.3253481543037,
-        "analysis_radius": 19.418250891056115,
+        "community": 0,
+        "x": 806.1862352593702,
+        "y": 508.7664344953724,
+        "analysis_radius": 14.862540043291967,
         "pick_radius": 30.0,
-        "radius": 19.418250891056115,
-        "top_synergies": [
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 1.1572674673257821,
-            "pair_win_rate": 0.7176470588235294,
-            "pair_games": 170,
-            "synergy_delta_logit": 0.30552244113893956,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Entomb",
-            "quality_score": 0.3686713495716375,
-            "pair_win_rate": 0.6613756613756614,
-            "pair_games": 189,
-            "synergy_delta_logit": 0.12383874771476966,
-            "partner_pick_score": 8.622459471720758,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.3195427370370473,
-            "pair_win_rate": 0.6802325581395349,
-            "pair_games": 172,
-            "synergy_delta_logit": 0.10117357547924244,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.3050963662262195,
-            "pair_win_rate": 0.6577181208053692,
-            "pair_games": 149,
-            "synergy_delta_logit": 0.11900653558464946,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Bitter Triumph",
-            "quality_score": 0.2224146410027593,
-            "pair_win_rate": 0.6484375,
-            "pair_games": 128,
-            "synergy_delta_logit": 0.09928096464943181,
-            "partner_pick_score": 6.5867063000181165,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 14.862540043291967,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Atraxa, Grand Unifier",
@@ -1969,15 +1500,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.3062715217369361,
-            "analysis_score": 9.815831456937353,
+            "analysis_score": 9.816156369063489,
             "pick_priority_score": 9.768765141547725,
-            "build_around_score": 3.4231748218538844,
-            "core_score": 9.69371034680691,
-            "role": "engine"
+            "build_around_score": 3.6933980477054216,
+            "core_score": 9.694116827669772,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.307988763218237,
-        "pick_market_score": 9.307988763218237
+        ]
       },
       {
         "id": "Bone Shards",
@@ -2000,8 +1529,8 @@
         "supported_win_rate": 0.5854406130268199,
         "support_delta": 0.12164413553171233,
         "standalone_delta": 0.033204160413973005,
-        "dependency_score": 0.1912656404535413,
-        "degree": 10,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3144.770606642289,
         "signpost_lift": 5.299882080364414,
         "deck_prevalence": 0.2662065901389928,
@@ -2014,74 +1543,32 @@
         "alsa": 5.160508749278906,
         "average_taken_at": 8.642435622317597,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3152.861970628409,
-        "analysis_score": 9.770797583320713,
+        "analysis_score_raw": 3149.419189100245,
+        "analysis_score": 9.770822162611736,
         "pick_priority_score_raw": 135.06566020673066,
         "pick_priority_score": 6.593691480246407,
+        "pick_market_score_raw": 7.911746961137693,
+        "pick_market_score": 7.911746961137693,
         "pick_urgency_score_raw": 5.8197419712637934,
         "pick_urgency_score": 5.8197419712637934,
-        "shell_dependence_score_raw": 8.985746336911141,
-        "shell_dependence_score": 8.036216743919399,
-        "build_around_score_raw": 8.985746336911141,
-        "build_around_score": 8.036216743919399,
-        "core_score_raw": 3164.1134219310534,
-        "core_score": 9.61889290743463,
+        "shell_dependence_score_raw": 5.09089396110437,
+        "shell_dependence_score": 9.605760153888717,
+        "build_around_score_raw": 5.09089396110437,
+        "build_around_score": 9.605760153888717,
+        "core_score_raw": 3161.435702964704,
+        "core_score": 9.618908879060518,
+        "win_contribution_logit": 0.10475969635961975,
+        "contribution_score": 3.4004650595139942,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Bone%20Shards%22",
         "community": 0,
-        "x": 1228.4485789477194,
-        "y": 560.7063314372195,
-        "analysis_radius": 19.711791879096,
+        "x": 829.2826280668473,
+        "y": 624.4976472447679,
+        "analysis_radius": 12.826228822768515,
         "pick_radius": 30.0,
-        "radius": 19.711791879096,
-        "top_synergies": [
-          {
-            "card": "Griselbrand",
-            "quality_score": 0.950256618919954,
-            "pair_win_rate": 0.6428571428571429,
-            "pair_games": 140,
-            "synergy_delta_logit": 0.41989879203253044,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Grief",
-            "quality_score": 0.7831773644880552,
-            "pair_win_rate": 0.672566371681416,
-            "pair_games": 113,
-            "synergy_delta_logit": 0.322205082701081,
-            "partner_pick_score": 7.0527128563979895,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Crabomination",
-            "quality_score": 0.631288087456116,
-            "pair_win_rate": 0.6730769230769231,
-            "pair_games": 104,
-            "synergy_delta_logit": 0.27069427514055294,
-            "partner_pick_score": 8.278365979222308,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.5657458858318271,
-            "pair_win_rate": 0.6627218934911243,
-            "pair_games": 169,
-            "synergy_delta_logit": 0.19925828863849288,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Entomb",
-            "quality_score": 0.5490779403264877,
-            "pair_win_rate": 0.6518518518518519,
-            "pair_games": 135,
-            "synergy_delta_logit": 0.23270558440466266,
-            "partner_pick_score": 8.622459471720758,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 12.826228822768515,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Animate Dead",
@@ -2126,11 +1613,11 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.2662065901389928,
-            "analysis_score": 9.770797583320713,
+            "analysis_score": 9.770822162611736,
             "pick_priority_score": 6.593691480246407,
-            "build_around_score": 8.036216743919399,
-            "core_score": 9.61889290743463,
-            "role": "engine"
+            "build_around_score": 9.605760153888717,
+            "core_score": 9.618908879060518,
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
@@ -2143,9 +1630,7 @@
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.911746961137693,
-        "pick_market_score": 7.911746961137693
+        ]
       },
       {
         "id": "Persist",
@@ -2168,8 +1653,8 @@
         "supported_win_rate": 0.6035411855273287,
         "support_delta": 0.12466794609070903,
         "standalone_delta": 0.051035022927831464,
-        "dependency_score": 0.5623694244952281,
-        "degree": 9,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3068.2514280086725,
         "signpost_lift": 5.887086513994585,
         "deck_prevalence": 0.26069968617791045,
@@ -2182,74 +1667,32 @@
         "alsa": 4.012966449845943,
         "average_taken_at": 5.714825306893296,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3085.518980859483,
-        "analysis_score": 9.7553241044923,
+        "analysis_score_raw": 3075.396331218569,
+        "analysis_score": 9.753775238812187,
         "pick_priority_score_raw": 189.5363597479263,
         "pick_priority_score": 7.808839599085339,
+        "pick_market_score_raw": 9.069807710463184,
+        "pick_market_score": 9.069807710463184,
         "pick_urgency_score_raw": 7.941914204804962,
         "pick_urgency_score": 7.941914204804962,
-        "shell_dependence_score_raw": 15.107966166863932,
-        "shell_dependence_score": 10.0,
-        "build_around_score_raw": 15.107966166863932,
-        "build_around_score": 10.0,
-        "core_score_raw": 3094.0189605817227,
-        "core_score": 9.592166450602727,
+        "shell_dependence_score_raw": 4.649352163965114,
+        "shell_dependence_score": 9.092089561760384,
+        "build_around_score_raw": 4.649352163965114,
+        "build_around_score": 9.092089561760384,
+        "core_score_raw": 3086.1457886387893,
+        "core_score": 9.590149714930831,
+        "win_contribution_logit": 0.1928232558782414,
+        "contribution_score": 6.018198575918204,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Persist%22",
-        "community": 3,
-        "x": 749.9261209289277,
-        "y": 948.5665261018571,
-        "analysis_radius": 28.0,
+        "community": 0,
+        "x": 887.9827616070544,
+        "y": 459.7892208855843,
+        "analysis_radius": 13.80692626103073,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Barrowgoyf",
-            "quality_score": 1.4864692872755338,
-            "pair_win_rate": 0.7326732673267327,
-            "pair_games": 101,
-            "synergy_delta_logit": 0.44053003574617233,
-            "partner_pick_score": 9.770738023162433,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Life // Death",
-            "quality_score": 0.5478487646982804,
-            "pair_win_rate": 0.6587301587301587,
-            "pair_games": 126,
-            "synergy_delta_logit": 0.19821237390373408,
-            "partner_pick_score": 7.941532193096458,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Griselbrand",
-            "quality_score": 0.37225480959672796,
-            "pair_win_rate": 0.6124031007751938,
-            "pair_games": 129,
-            "synergy_delta_logit": 0.217158743069722,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Necromancy",
-            "quality_score": 0.22887759955029474,
-            "pair_win_rate": 0.653179190751445,
-            "pair_games": 173,
-            "synergy_delta_logit": 0.07666784142308591,
-            "partner_pick_score": 9.919472854691882,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.18486391024653057,
-            "pair_win_rate": 0.6481481481481481,
-            "pair_games": 162,
-            "synergy_delta_logit": 0.06234153640135687,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.80692626103073,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Reanimate",
@@ -2294,15 +1737,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.26069968617791045,
-            "analysis_score": 9.7553241044923,
+            "analysis_score": 9.753775238812187,
             "pick_priority_score": 7.808839599085339,
-            "build_around_score": 10.0,
-            "core_score": 9.592166450602727,
-            "role": "engine"
+            "build_around_score": 9.092089561760384,
+            "core_score": 9.590149714930831,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.069807710463184,
-        "pick_market_score": 9.069807710463184
+        ]
       },
       {
         "id": "Collective Brutality",
@@ -2325,8 +1766,8 @@
         "supported_win_rate": 0.5946317962835512,
         "support_delta": 0.12204200422305972,
         "standalone_delta": 0.04405123341014561,
-        "dependency_score": 0.1282101501935667,
-        "degree": 11,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3049.4152484086553,
         "signpost_lift": 4.863417143510355,
         "deck_prevalence": 0.26273159236519755,
@@ -2339,74 +1780,32 @@
         "alsa": 4.814484512943289,
         "average_taken_at": 7.8672756582482535,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3057.8902037895596,
-        "analysis_score": 9.7488779071376,
+        "analysis_score_raw": 3055.5824210860756,
+        "analysis_score": 9.749142626561934,
         "pick_priority_score_raw": 151.63623172093955,
         "pick_priority_score": 7.008430108407834,
+        "pick_market_score_raw": 8.254842212269093,
+        "pick_market_score": 8.254842212269093,
         "pick_urgency_score_raw": 6.464393228456893,
         "pick_urgency_score": 6.464393228456893,
-        "shell_dependence_score_raw": 6.998949966290658,
-        "shell_dependence_score": 7.098694106708349,
-        "build_around_score_raw": 6.998949966290658,
-        "build_around_score": 7.098694106708349,
-        "core_score_raw": 3068.616588154218,
-        "core_score": 9.582331042556985,
+        "shell_dependence_score_raw": 4.62636312292823,
+        "shell_dependence_score": 9.064256399560032,
+        "build_around_score_raw": 4.62636312292823,
+        "build_around_score": 9.064256399560032,
+        "core_score_raw": 3066.8216460515077,
+        "core_score": 9.582655169769689,
+        "win_contribution_logit": 0.15490404232516508,
+        "contribution_score": 4.915550230937619,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Collective%20Brutality%22",
-        "community": 1,
-        "x": 1181.6539278052699,
-        "y": 677.7456190651284,
-        "analysis_radius": 18.03838324452641,
+        "community": 0,
+        "x": 962.366861064405,
+        "y": 471.095038499755,
+        "analysis_radius": 13.422817837558009,
         "pick_radius": 30.0,
-        "radius": 18.03838324452641,
-        "top_synergies": [
-          {
-            "card": "Life // Death",
-            "quality_score": 0.9117161996291562,
-            "pair_win_rate": 0.6776315789473685,
-            "pair_games": 152,
-            "synergy_delta_logit": 0.31190476326675126,
-            "partner_pick_score": 7.941532193096458,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.5352530323354177,
-            "pair_win_rate": 0.6721311475409836,
-            "pair_games": 183,
-            "synergy_delta_logit": 0.17132685717612728,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Barrowgoyf",
-            "quality_score": 0.5214897921393095,
-            "pair_win_rate": 0.6782608695652174,
-            "pair_games": 115,
-            "synergy_delta_logit": 0.20651691393874227,
-            "partner_pick_score": 9.770738023162433,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Atraxa, Grand Unifier",
-            "quality_score": 0.48393075779622713,
-            "pair_win_rate": 0.660377358490566,
-            "pair_games": 106,
-            "synergy_delta_logit": 0.22159856987288834,
-            "partner_pick_score": 8.038916384051149,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Emperor of Bones",
-            "quality_score": 0.3050963662262195,
-            "pair_win_rate": 0.6577181208053692,
-            "pair_games": 149,
-            "synergy_delta_logit": 0.11900653558464946,
-            "partner_pick_score": 9.768765141547725,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 13.422817837558009,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Demonic Tutor",
@@ -2451,15 +1850,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.26273159236519755,
-            "analysis_score": 9.7488779071376,
+            "analysis_score": 9.749142626561934,
             "pick_priority_score": 7.008430108407834,
-            "build_around_score": 7.098694106708349,
-            "core_score": 9.582331042556985,
-            "role": "engine"
+            "build_around_score": 9.064256399560032,
+            "core_score": 9.582655169769689,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.254842212269093,
-        "pick_market_score": 8.254842212269093
+        ]
       },
       {
         "id": "Bitter Triumph",
@@ -2482,8 +1879,8 @@
         "supported_win_rate": 0.5903083700440529,
         "support_delta": 0.1142021753537874,
         "standalone_delta": 0.03881678554856627,
-        "dependency_score": 0.34040291800685385,
-        "degree": 7,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 3018.8861313401317,
         "signpost_lift": 4.062816127657713,
         "deck_prevalence": 0.2784908514143832,
@@ -2496,74 +1893,32 @@
         "alsa": 3.923533315117686,
         "average_taken_at": 5.9754993342210385,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 3030.4477338410543,
-        "analysis_score": 9.742417281748928,
+        "analysis_score_raw": 3024.320481316931,
+        "analysis_score": 9.741771973386577,
         "pick_priority_score_raw": 134.8025565498068,
         "pick_priority_score": 6.5867063000181165,
+        "pick_market_score_raw": 9.044288717457379,
+        "pick_market_score": 9.044288717457379,
         "pick_urgency_score_raw": 7.547410055758355,
         "pick_urgency_score": 7.547410055758355,
-        "shell_dependence_score_raw": 9.525060803937942,
-        "shell_dependence_score": 8.25850413778938,
-        "build_around_score_raw": 9.525060803937942,
-        "build_around_score": 8.25850413778938,
-        "core_score_raw": 3041.432723237404,
-        "core_score": 9.571715302655276,
+        "shell_dependence_score_raw": 4.0332883330309715,
+        "shell_dependence_score": 8.303929461505462,
+        "build_around_score_raw": 4.0332883330309715,
+        "build_around_score": 8.303929461505462,
+        "core_score_raw": 3036.667082385308,
+        "core_score": 9.570865394518409,
+        "win_contribution_logit": 0.1269972308128804,
+        "contribution_score": 4.0806730121775425,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Bitter%20Triumph%22",
-        "community": 2,
-        "x": 1168.1652807714108,
-        "y": 801.3684228599631,
-        "analysis_radius": 25.389428253417883,
+        "community": 0,
+        "x": 825.7846439669898,
+        "y": 491.7495933514914,
+        "analysis_radius": 13.134923205171145,
         "pick_radius": 30.0,
-        "radius": 25.389428253417883,
-        "top_synergies": [
-          {
-            "card": "Barrowgoyf",
-            "quality_score": 0.6237499225617676,
-            "pair_win_rate": 0.680327868852459,
-            "pair_games": 122,
-            "synergy_delta_logit": 0.23724311854507707,
-            "partner_pick_score": 9.770738023162433,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.5722547169788239,
-            "pair_win_rate": 0.6645569620253164,
-            "pair_games": 158,
-            "synergy_delta_logit": 0.18476323901557906,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Grief",
-            "quality_score": 0.37113673566961686,
-            "pair_win_rate": 0.6460176991150443,
-            "pair_games": 113,
-            "synergy_delta_logit": 0.1812537593256583,
-            "partner_pick_score": 7.0527128563979895,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.24397884569831155,
-            "pair_win_rate": 0.6477272727272727,
-            "pair_games": 176,
-            "synergy_delta_logit": 0.08378928435996491,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Emperor of Bones",
-            "quality_score": 0.2224146410027593,
-            "pair_win_rate": 0.6484375,
-            "pair_games": 128,
-            "synergy_delta_logit": 0.09928096464943181,
-            "partner_pick_score": 9.768765141547725,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 13.134923205171145,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Liliana of the Veil",
@@ -2608,15 +1963,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.2784908514143832,
-            "analysis_score": 9.742417281748928,
+            "analysis_score": 9.741771973386577,
             "pick_priority_score": 6.5867063000181165,
-            "build_around_score": 8.25850413778938,
-            "core_score": 9.571715302655276,
-            "role": "engine"
+            "build_around_score": 8.303929461505462,
+            "core_score": 9.570865394518409,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.044288717457379,
-        "pick_market_score": 9.044288717457379
+        ]
       },
       {
         "id": "Atraxa, Grand Unifier",
@@ -2639,8 +1992,8 @@
         "supported_win_rate": 0.6,
         "support_delta": 0.12332657200811359,
         "standalone_delta": 0.04808305803590451,
-        "dependency_score": 0.13831568514455625,
-        "degree": 7,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2906.3432873744687,
         "signpost_lift": 4.15925204216059,
         "deck_prevalence": 0.26554371932942283,
@@ -2653,74 +2006,32 @@
         "alsa": 2.9719070109795744,
         "average_taken_at": 3.7055401662049863,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2915.564597832097,
-        "analysis_score": 9.714720567532522,
+        "analysis_score_raw": 2913.074915499495,
+        "analysis_score": 9.714911295030147,
         "pick_priority_score_raw": 202.0789934071358,
         "pick_priority_score": 8.038916384051149,
+        "pick_market_score_raw": 9.858509847871499,
+        "pick_market_score": 9.858509847871499,
         "pick_urgency_score_raw": 9.213408897564078,
         "pick_urgency_score": 9.213408897564078,
-        "shell_dependence_score_raw": 6.123433289917622,
-        "shell_dependence_score": 6.6088188324280415,
-        "build_around_score_raw": 6.123433289917622,
-        "build_around_score": 6.6088188324280415,
-        "core_score_raw": 2926.1750403046744,
-        "core_score": 9.525625896409212,
+        "shell_dependence_score_raw": 3.9423035974184786,
+        "shell_dependence_score": 8.179412905551642,
+        "build_around_score_raw": 3.9423035974184786,
+        "build_around_score": 8.179412905551642,
+        "core_score_raw": 2924.2386207126506,
+        "core_score": 9.525852268077468,
+        "win_contribution_logit": 0.19364558917373964,
+        "contribution_score": 6.041720871992041,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Atraxa%2C%20Grand%20Unifier%22",
-        "community": 1,
-        "x": 1058.610694073703,
-        "y": 719.7219389611954,
-        "analysis_radius": 18.623932857178772,
+        "community": 0,
+        "x": 935.5731085044487,
+        "y": 655.3154630179381,
+        "analysis_radius": 13.644568191974749,
         "pick_radius": 30.0,
-        "radius": 18.623932857178772,
-        "top_synergies": [
-          {
-            "card": "Life // Death",
-            "quality_score": 0.7865624639732989,
-            "pair_win_rate": 0.673202614379085,
-            "pair_games": 153,
-            "synergy_delta_logit": 0.2753053944786152,
-            "partner_pick_score": 7.941532193096458,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.48393075779622713,
-            "pair_win_rate": 0.660377358490566,
-            "pair_games": 106,
-            "synergy_delta_logit": 0.22159856987288834,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Bone Shards",
-            "quality_score": 0.30707997288234545,
-            "pair_win_rate": 0.635593220338983,
-            "pair_games": 118,
-            "synergy_delta_logit": 0.15686430387490852,
-            "partner_pick_score": 6.593691480246407,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Entomb",
-            "quality_score": 0.2731683063649524,
-            "pair_win_rate": 0.6385542168674698,
-            "pair_games": 166,
-            "synergy_delta_logit": 0.11426020230334272,
-            "partner_pick_score": 8.622459471720758,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Griselbrand",
-            "quality_score": 0.14072903463307893,
-            "pair_win_rate": 0.5847457627118644,
-            "pair_games": 118,
-            "synergy_delta_logit": 0.11404763239390608,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 13.644568191974749,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Emperor of Bones",
@@ -2765,15 +2076,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.26554371932942283,
-            "analysis_score": 9.714720567532522,
+            "analysis_score": 9.714911295030147,
             "pick_priority_score": 8.038916384051149,
-            "build_around_score": 6.6088188324280415,
-            "core_score": 9.525625896409212,
-            "role": "engine"
+            "build_around_score": 8.179412905551642,
+            "core_score": 9.525852268077468,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.858509847871499,
-        "pick_market_score": 9.858509847871499
+        ]
       },
       {
         "id": "Grief",
@@ -2796,8 +2105,8 @@
         "supported_win_rate": 0.5973207249802994,
         "support_delta": 0.11905985541508202,
         "standalone_delta": 0.04763758810383467,
-        "dependency_score": 0.14026189501063835,
-        "degree": 9,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2717.5869125180475,
         "signpost_lift": 4.223390784511274,
         "deck_prevalence": 0.24718068900190684,
@@ -2810,74 +2119,32 @@
         "alsa": 3.7255789193505455,
         "average_taken_at": 5.25642523364486,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2726.780888962776,
-        "analysis_score": 9.666746917537747,
+        "analysis_score_raw": 2724.2561748525845,
+        "analysis_score": 9.666882069217124,
         "pick_priority_score_raw": 153.52066319171533,
         "pick_priority_score": 7.0527128563979895,
+        "pick_market_score_raw": 9.275512908117456,
+        "pick_market_score": 9.275512908117456,
         "pick_urgency_score_raw": 8.036117999713348,
         "pick_urgency_score": 8.036117999713348,
-        "shell_dependence_score_raw": 5.937063001490722,
-        "shell_dependence_score": 6.496783021998847,
-        "build_around_score_raw": 5.937063001490722,
-        "build_around_score": 6.496783021998847,
-        "core_score_raw": 2736.4531698651217,
-        "core_score": 9.445655084387738,
+        "shell_dependence_score_raw": 3.803255632559823,
+        "shell_dependence_score": 7.984620267790439,
+        "build_around_score_raw": 3.803255632559823,
+        "build_around_score": 7.984620267790439,
+        "core_score_raw": 2734.4895033349726,
+        "core_score": 9.44580627705547,
+        "win_contribution_logit": 0.1500725187017892,
+        "contribution_score": 4.772461372413684,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Grief%22",
         "community": 0,
-        "x": 1228.409912351527,
-        "y": 518.5731185536013,
-        "analysis_radius": 18.669495566093886,
+        "x": 798.592232187648,
+        "y": 561.6213660576315,
+        "analysis_radius": 13.620067345710908,
         "pick_radius": 30.0,
-        "radius": 18.669495566093886,
-        "top_synergies": [
-          {
-            "card": "Bone Shards",
-            "quality_score": 0.7831773644880552,
-            "pair_win_rate": 0.672566371681416,
-            "pair_games": 113,
-            "synergy_delta_logit": 0.322205082701081,
-            "partner_pick_score": 6.593691480246407,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Crabomination",
-            "quality_score": 0.7263252786923934,
-            "pair_win_rate": 0.6880733944954128,
-            "pair_games": 109,
-            "synergy_delta_logit": 0.2811497944311796,
-            "partner_pick_score": 8.278365979222308,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Bitter Triumph",
-            "quality_score": 0.37113673566961686,
-            "pair_win_rate": 0.6460176991150443,
-            "pair_games": 113,
-            "synergy_delta_logit": 0.1812537593256583,
-            "partner_pick_score": 6.5867063000181165,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Reanimate",
-            "quality_score": 0.27308421761356994,
-            "pair_win_rate": 0.6547619047619048,
-            "pair_games": 168,
-            "synergy_delta_logit": 0.10251236981575029,
-            "partner_pick_score": 9.616002750346437,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Emperor of Bones",
-            "quality_score": 0.21466587623353206,
-            "pair_win_rate": 0.6544117647058824,
-            "pair_games": 136,
-            "synergy_delta_logit": 0.08977014521668114,
-            "partner_pick_score": 9.768765141547725,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 13.620067345710908,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Life // Death",
@@ -2922,15 +2189,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.24718068900190684,
-            "analysis_score": 9.666746917537747,
+            "analysis_score": 9.666882069217124,
             "pick_priority_score": 7.0527128563979895,
-            "build_around_score": 6.496783021998847,
-            "core_score": 9.445655084387738,
-            "role": "engine"
+            "build_around_score": 7.984620267790439,
+            "core_score": 9.44580627705547,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 9.275512908117456,
-        "pick_market_score": 9.275512908117456
+        ]
       },
       {
         "id": "Crabomination",
@@ -2953,8 +2218,8 @@
         "supported_win_rate": 0.6025423728813559,
         "support_delta": 0.08179548491455091,
         "standalone_delta": 0.06081340462375151,
-        "dependency_score": 0.1621761998934937,
-        "degree": 8,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2620.362379624746,
         "signpost_lift": 4.353027868581701,
         "deck_prevalence": 0.23561026684263053,
@@ -2967,74 +2232,32 @@
         "alsa": 4.397863818424566,
         "average_taken_at": 6.851317614424411,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2631.795427870154,
-        "analysis_score": 9.641338306512768,
+        "analysis_score_raw": 2628.8762562720713,
+        "analysis_score": 9.64133986496274,
         "pick_priority_score_raw": 216.01015253567482,
         "pick_priority_score": 8.278365979222308,
+        "pick_market_score_raw": 8.66521564068762,
+        "pick_market_score": 8.66521564068762,
         "pick_urgency_score_raw": 7.460581263369397,
         "pick_urgency_score": 7.460581263369397,
-        "shell_dependence_score_raw": 3.7649925609911823,
-        "shell_dependence_score": 4.909586285979572,
-        "build_around_score_raw": 3.7649925609911823,
-        "build_around_score": 4.909586285979572,
-        "core_score_raw": 2640.0537196920905,
-        "core_score": 9.402870985484643,
+        "shell_dependence_score_raw": 2.283606235612377,
+        "shell_dependence_score": 5.388406074604815,
+        "build_around_score_raw": 2.283606235612377,
+        "build_around_score": 5.388406074604815,
+        "core_score_raw": 2637.7832528935814,
+        "core_score": 9.402847579913285,
+        "win_contribution_logit": 0.2187511867470126,
+        "contribution_score": 6.752157087708015,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Crabomination%22",
         "community": 0,
-        "x": 1192.3119015684451,
-        "y": 524.2705078019683,
-        "analysis_radius": 20.183080450472104,
+        "x": 938.8812358247419,
+        "y": 455.1066001497072,
+        "analysis_radius": 14.344737254306333,
         "pick_radius": 30.0,
-        "radius": 20.183080450472104,
-        "top_synergies": [
-          {
-            "card": "Grief",
-            "quality_score": 0.7263252786923934,
-            "pair_win_rate": 0.6880733944954128,
-            "pair_games": 109,
-            "synergy_delta_logit": 0.2811497944311796,
-            "partner_pick_score": 7.0527128563979895,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Bone Shards",
-            "quality_score": 0.631288087456116,
-            "pair_win_rate": 0.6730769230769231,
-            "pair_games": 104,
-            "synergy_delta_logit": 0.27069427514055294,
-            "partner_pick_score": 6.593691480246407,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Necromancy",
-            "quality_score": 0.5355815312964253,
-            "pair_win_rate": 0.6845637583892618,
-            "pair_games": 149,
-            "synergy_delta_logit": 0.17846057805867976,
-            "partner_pick_score": 9.919472854691882,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.48166153413860774,
-            "pair_win_rate": 0.6851851851851852,
-            "pair_games": 108,
-            "synergy_delta_logit": 0.18914780421801314,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Barrowgoyf",
-            "quality_score": 0.3920755031261296,
-            "pair_win_rate": 0.6847826086956522,
-            "pair_games": 92,
-            "synergy_delta_logit": 0.16815148650301148,
-            "partner_pick_score": 9.770738023162433,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 14.344737254306333,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Animate Dead",
@@ -3079,15 +2302,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.23561026684263053,
-            "analysis_score": 9.641338306512768,
+            "analysis_score": 9.64133986496274,
             "pick_priority_score": 8.278365979222308,
-            "build_around_score": 4.909586285979572,
-            "core_score": 9.402870985484643,
-            "role": "engine"
+            "build_around_score": 5.388406074604815,
+            "core_score": 9.402847579913285,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.66521564068762,
-        "pick_market_score": 8.66521564068762
+        ]
       },
       {
         "id": "Overlord of the Balemurk",
@@ -3110,8 +2331,8 @@
         "supported_win_rate": 0.5730442978322338,
         "support_delta": 0.07530674127114778,
         "standalone_delta": 0.03289091026229396,
-        "dependency_score": 0.12408836653023188,
-        "degree": 7,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2518.7824365884494,
         "signpost_lift": 4.6578643726217965,
         "deck_prevalence": 0.22122303316850583,
@@ -3124,74 +2345,32 @@
         "alsa": 4.49525289142068,
         "average_taken_at": 7.164124466137889,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2525.6207546227147,
-        "analysis_score": 9.611828150639926,
+        "analysis_score_raw": 2523.3871640251705,
+        "analysis_score": 9.611988567403019,
         "pick_priority_score_raw": 148.23391252293,
         "pick_priority_score": 6.927075470085673,
+        "pick_market_score_raw": 8.553112995007062,
+        "pick_market_score": 8.553112995007062,
         "pick_urgency_score_raw": 6.896267256399343,
         "pick_urgency_score": 6.896267256399343,
-        "shell_dependence_score_raw": 3.988339650010023,
-        "shell_dependence_score": 5.1031654485933915,
-        "build_around_score_raw": 3.988339650010023,
-        "build_around_score": 5.1031654485933915,
-        "core_score_raw": 2534.8189988169297,
-        "core_score": 9.354344990555827,
+        "shell_dependence_score_raw": 2.6653726811949032,
+        "shell_dependence_score": 6.139163199234856,
+        "build_around_score_raw": 2.6653726811949032,
+        "build_around_score": 6.139163199234856,
+        "core_score_raw": 2533.0817616855065,
+        "core_score": 9.354524965929476,
+        "win_contribution_logit": 0.10980249690971544,
+        "contribution_score": 3.555908446273626,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Overlord%20of%20the%20Balemurk%22",
-        "community": 3,
-        "x": 964.9261209289277,
-        "y": 800.8422170690949,
-        "analysis_radius": 17.276181259514516,
+        "community": 0,
+        "x": 979.4381059400155,
+        "y": 492.3363934132076,
+        "analysis_radius": 12.809000064426169,
         "pick_radius": 30.0,
-        "radius": 17.276181259514516,
-        "top_synergies": [
-          {
-            "card": "Barrowgoyf",
-            "quality_score": 0.9354129104516927,
-            "pair_win_rate": 0.7021276595744681,
-            "pair_games": 94,
-            "synergy_delta_logit": 0.3633964740587459,
-            "partner_pick_score": 9.770738023162433,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Archon of Cruelty",
-            "quality_score": 0.6418391927519919,
-            "pair_win_rate": 0.6754385964912281,
-            "pair_games": 114,
-            "synergy_delta_logit": 0.25796439694903567,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Emperor of Bones",
-            "quality_score": 0.13002436892620287,
-            "pair_win_rate": 0.6349206349206349,
-            "pair_games": 126,
-            "synergy_delta_logit": 0.06447017013733886,
-            "partner_pick_score": 9.768765141547725,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.11230854398004522,
-            "pair_win_rate": 0.6129032258064516,
-            "pair_games": 93,
-            "synergy_delta_logit": 0.07777149944284573,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Liliana of the Veil",
-            "quality_score": 0.10831597046013065,
-            "pair_win_rate": 0.6060606060606061,
-            "pair_games": 99,
-            "synergy_delta_logit": 0.07753893275898821,
-            "partner_pick_score": 6.3209917740088795,
-            "partner_rarity": "mythic"
-          }
-        ],
+        "radius": 12.809000064426169,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Animate Dead",
@@ -3236,15 +2415,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.22122303316850583,
-            "analysis_score": 9.611828150639926,
+            "analysis_score": 9.611988567403019,
             "pick_priority_score": 6.927075470085673,
-            "build_around_score": 5.1031654485933915,
-            "core_score": 9.354344990555827,
-            "role": "engine"
+            "build_around_score": 6.139163199234856,
+            "core_score": 9.354524965929476,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.553112995007062,
-        "pick_market_score": 8.553112995007062
+        ]
       },
       {
         "id": "Liliana of the Veil",
@@ -3267,8 +2444,8 @@
         "supported_win_rate": 0.5761278195488722,
         "support_delta": 0.07612781954887216,
         "standalone_delta": 0.037019880582523035,
-        "dependency_score": 0.12126213207816268,
-        "degree": 6,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2451.3789910112478,
         "signpost_lift": 4.882068069361233,
         "deck_prevalence": 0.2125698121989138,
@@ -3281,74 +2458,32 @@
         "alsa": 4.142706831378356,
         "average_taken_at": 6.549834497977198,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2458.7444926702083,
-        "analysis_score": 9.592597066875054,
+        "analysis_score_raw": 2456.561774292801,
+        "analysis_score": 9.592753487789613,
         "pick_priority_score_raw": 125.16305837564597,
         "pick_priority_score": 6.3209917740088795,
+        "pick_market_score_raw": 8.831736697057483,
+        "pick_market_score": 8.831736697057483,
         "pick_urgency_score_raw": 7.145486380672191,
         "pick_urgency_score": 7.145486380672191,
-        "shell_dependence_score_raw": 3.934233937886517,
-        "shell_dependence_score": 5.0570784431411875,
-        "build_around_score_raw": 3.934233937886517,
-        "build_around_score": 5.0570784431411875,
-        "core_score_raw": 2467.2769809442,
-        "core_score": 9.322127046195279,
+        "shell_dependence_score_raw": 2.649229208931436,
+        "shell_dependence_score": 6.10903368306265,
+        "build_around_score_raw": 2.649229208931436,
+        "build_around_score": 6.10903368306265,
+        "core_score_raw": 2465.579311095106,
+        "core_score": 9.322300340381314,
+        "win_contribution_logit": 0.11276509465076931,
+        "contribution_score": 3.646900937700365,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Liliana%20of%20the%20Veil%22",
-        "community": 4,
-        "x": 582.9445651375088,
-        "y": 907.7164790553335,
-        "analysis_radius": 17.401530186852625,
+        "community": 0,
+        "x": 860.5462028480918,
+        "y": 663.8888076479639,
+        "analysis_radius": 13.036093432038767,
         "pick_radius": 30.0,
-        "radius": 17.401530186852625,
-        "top_synergies": [
-          {
-            "card": "Reanimate",
-            "quality_score": 1.2671066808354372,
-            "pair_win_rate": 0.7099236641221374,
-            "pair_games": 131,
-            "synergy_delta_logit": 0.40058850704255483,
-            "partner_pick_score": 9.616002750346437,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Life // Death",
-            "quality_score": 0.29639738215800554,
-            "pair_win_rate": 0.6372549019607843,
-            "pair_games": 102,
-            "synergy_delta_logit": 0.16098227700128281,
-            "partner_pick_score": 7.941532193096458,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Animate Dead",
-            "quality_score": 0.12714443492259717,
-            "pair_win_rate": 0.640625,
-            "pair_games": 128,
-            "synergy_delta_logit": 0.060081761403096956,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Overlord of the Balemurk",
-            "quality_score": 0.10831597046013065,
-            "pair_win_rate": 0.6060606060606061,
-            "pair_games": 99,
-            "synergy_delta_logit": 0.07753893275898821,
-            "partner_pick_score": 6.927075470085673,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.009570714029335294,
-            "pair_win_rate": 0.6,
-            "pair_games": 105,
-            "synergy_delta_logit": 0.007000882460548752,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 13.036093432038767,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Bitter Triumph",
@@ -3393,15 +2528,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.2125698121989138,
-            "analysis_score": 9.592597066875054,
+            "analysis_score": 9.592753487789613,
             "pick_priority_score": 6.3209917740088795,
-            "build_around_score": 5.0570784431411875,
-            "core_score": 9.322127046195279,
-            "role": "engine"
+            "build_around_score": 6.10903368306265,
+            "core_score": 9.322300340381314,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 8.831736697057483,
-        "pick_market_score": 8.831736697057483
+        ]
       },
       {
         "id": "Recurring Nightmare",
@@ -3424,8 +2557,8 @@
         "supported_win_rate": 0.5573770491803278,
         "support_delta": 0.0779249943858073,
         "standalone_delta": 0.018159746192223825,
-        "dependency_score": 0.09749795453328182,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2367.2050209346303,
         "signpost_lift": 5.259639346655849,
         "deck_prevalence": 0.2025909366924236,
@@ -3438,56 +2571,32 @@
         "alsa": 4.364868982327849,
         "average_taken_at": 6.766624445851805,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2371.5023485831407,
-        "analysis_score": 9.56670812937071,
+        "analysis_score_raw": 2369.7473854015416,
+        "analysis_score": 9.56696836753534,
         "pick_priority_score_raw": 55.105114045806936,
         "pick_priority_score": 3.396497875776208,
+        "pick_market_score_raw": 8.697746364694481,
+        "pick_market_score": 8.697746364694481,
         "pick_urgency_score_raw": 6.09008473903192,
         "pick_urgency_score": 6.09008473903192,
-        "shell_dependence_score_raw": 4.632426438845696,
-        "shell_dependence_score": 5.616354281037629,
-        "build_around_score_raw": 4.632426438845696,
-        "build_around_score": 5.616354281037629,
-        "core_score_raw": 2380.6482994324415,
-        "core_score": 9.27948913689762,
+        "shell_dependence_score_raw": 3.332700508314807,
+        "shell_dependence_score": 7.280857677253202,
+        "build_around_score_raw": 3.332700508314807,
+        "build_around_score": 7.280857677253202,
+        "core_score_raw": 2379.2833280689756,
+        "core_score": 9.279794838811577,
+        "win_contribution_logit": 0.08077119981631768,
+        "contribution_score": 2.6511730350405958,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Recurring%20Nightmare%22",
         "community": 0,
-        "x": 1144.8096473802952,
-        "y": 643.3520508877501,
-        "analysis_radius": 15.508712403770456,
+        "x": 987.5478797965702,
+        "y": 633.3858089369063,
+        "analysis_radius": 11.99878604057231,
         "pick_radius": 30.0,
-        "radius": 15.508712403770456,
-        "top_synergies": [
-          {
-            "card": "Entomb",
-            "quality_score": 0.3537669025934924,
-            "pair_win_rate": 0.626984126984127,
-            "pair_games": 126,
-            "synergy_delta_logit": 0.18546202348596813,
-            "partner_pick_score": 8.622459471720758,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Bone Shards",
-            "quality_score": 0.06966572564214457,
-            "pair_win_rate": 0.5841584158415841,
-            "pair_games": 101,
-            "synergy_delta_logit": 0.06144023397014042,
-            "partner_pick_score": 6.593691480246407,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Reanimate",
-            "quality_score": 0.05402150986170144,
-            "pair_win_rate": 0.6116504854368932,
-            "pair_games": 103,
-            "synergy_delta_logit": 0.03591304013616464,
-            "partner_pick_score": 9.616002750346437,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 11.99878604057231,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Necromancy",
@@ -3532,15 +2641,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.2025909366924236,
-            "analysis_score": 9.56670812937071,
+            "analysis_score": 9.56696836753534,
             "pick_priority_score": 3.396497875776208,
-            "build_around_score": 5.616354281037629,
-            "core_score": 9.27948913689762,
+            "build_around_score": 7.280857677253202,
+            "core_score": 9.279794838811577,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 8.697746364694481,
-        "pick_market_score": 8.697746364694481
+        ]
       },
       {
         "id": "Demonic Tutor",
@@ -3563,8 +2670,8 @@
         "supported_win_rate": 0.6081349206349206,
         "support_delta": 0.01678876678876673,
         "standalone_delta": 0.08522304374813128,
-        "dependency_score": 0.10931163096422152,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1803.8492106768094,
         "signpost_lift": 2.9439359383745436,
         "deck_prevalence": 0.20706354918673145,
@@ -3577,47 +2684,32 @@
         "alsa": 1.90246267209618,
         "average_taken_at": 2.258769230769231,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1817.748046158904,
-        "analysis_score": 9.376157814379846,
+        "analysis_score_raw": 1815.780436801548,
+        "analysis_score": 9.37615677813005,
         "pick_priority_score_raw": 223.53500759071747,
         "pick_priority_score": 8.401385518025766,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.534948514334769,
         "pick_urgency_score": 9.534948514334769,
-        "shell_dependence_score_raw": 0.4375386487663597,
+        "shell_dependence_score_raw": 0.3044283924181734,
         "shell_dependence_score": 0.0,
-        "build_around_score_raw": 0.4375386487663597,
+        "build_around_score_raw": 0.3044283924181734,
         "build_around_score": 0.0,
-        "core_score_raw": 1823.3908367866097,
-        "core_score": 8.961387200280946,
+        "core_score_raw": 1821.8604739531106,
+        "core_score": 8.96134160009092,
+        "win_contribution_logit": 0.35072239945249933,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Demonic%20Tutor%22",
         "community": 0,
-        "x": 1359.8096473802952,
-        "y": 557.5859576593786,
-        "analysis_radius": 19.622486120859197,
+        "x": 863.5546541294792,
+        "y": 456.4579123316321,
+        "analysis_radius": 15.687267406147221,
         "pick_radius": 30.0,
-        "radius": 19.622486120859197,
-        "top_synergies": [
-          {
-            "card": "Griselbrand",
-            "quality_score": 0.36823273599649714,
-            "pair_win_rate": 0.6421052631578947,
-            "pair_games": 95,
-            "synergy_delta_logit": 0.20324894192410464,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Life // Death",
-            "quality_score": 0.03158350711743931,
-            "pair_win_rate": 0.6494845360824743,
-            "pair_games": 97,
-            "synergy_delta_logit": 0.016347789912178223,
-            "partner_pick_score": 7.941532193096458,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 15.687267406147221,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Collective Brutality",
@@ -3662,15 +2754,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.20706354918673145,
-            "analysis_score": 9.376157814379846,
+            "analysis_score": 9.37615677813005,
             "pick_priority_score": 8.401385518025766,
             "build_around_score": 0.0,
-            "core_score": 8.961387200280946,
-            "role": "engine"
+            "core_score": 8.96134160009092,
+            "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Barrowgoyf",
@@ -3693,8 +2783,8 @@
         "supported_win_rate": 0.6193853427895981,
         "support_delta": 0.09590708192003294,
         "standalone_delta": 0.07147209929420839,
-        "dependency_score": 0.31045078326097103,
-        "degree": 12,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 2296.2745775892818,
         "signpost_lift": 3.124034863136668,
         "deck_prevalence": 0.2500493506514162,
@@ -3707,74 +2797,32 @@
         "alsa": 3.402697400686611,
         "average_taken_at": 4.409608378870674,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2311.8687855891685,
-        "analysis_score": 9.54845824876135,
+        "analysis_score_raw": 2306.280671490471,
+        "analysis_score": 9.547513174249287,
         "pick_priority_score_raw": 327.1482904400155,
         "pick_priority_score": 9.770738023162433,
+        "pick_market_score_raw": 9.57177964728561,
+        "pick_market_score": 9.57177964728561,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 4.939183689785553,
-        "shell_dependence_score": 5.840462717604503,
-        "build_around_score_raw": 4.939183689785553,
-        "build_around_score": 5.840462717604503,
-        "core_score_raw": 2319.6985832288165,
-        "core_score": 9.248550270366128,
+        "shell_dependence_score_raw": 2.203219193060547,
+        "shell_dependence_score": 5.219221303407737,
+        "build_around_score_raw": 2.203219193060547,
+        "build_around_score": 5.219221303407737,
+        "core_score_raw": 2315.352272263163,
+        "core_score": 9.2472994889896,
+        "win_contribution_logit": 0.27710511968486695,
+        "contribution_score": 8.348467314467229,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Barrowgoyf%22",
-        "community": 3,
-        "x": 848.5255133997908,
-        "y": 880.8198410347436,
-        "analysis_radius": 26.10719365857642,
+        "community": 0,
+        "x": 1000.5286505395268,
+        "y": 540.1065808826811,
+        "analysis_radius": 14.930965461181462,
         "pick_radius": 30.0,
-        "radius": 26.10719365857642,
-        "top_synergies": [
-          {
-            "card": "Persist",
-            "quality_score": 1.4864692872755338,
-            "pair_win_rate": 0.7326732673267327,
-            "pair_games": 101,
-            "synergy_delta_logit": 0.44053003574617233,
-            "partner_pick_score": 7.808839599085339,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Overlord of the Balemurk",
-            "quality_score": 0.9354129104516927,
-            "pair_win_rate": 0.7021276595744681,
-            "pair_games": 94,
-            "synergy_delta_logit": 0.3633964740587459,
-            "partner_pick_score": 6.927075470085673,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Griselbrand",
-            "quality_score": 0.6273834403074822,
-            "pair_win_rate": 0.6513761467889908,
-            "pair_games": 109,
-            "synergy_delta_logit": 0.3009588768359384,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "mythic"
-          },
-          {
-            "card": "Bitter Triumph",
-            "quality_score": 0.6237499225617676,
-            "pair_win_rate": 0.680327868852459,
-            "pair_games": 122,
-            "synergy_delta_logit": 0.23724311854507707,
-            "partner_pick_score": 6.5867063000181165,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Collective Brutality",
-            "quality_score": 0.5214897921393095,
-            "pair_win_rate": 0.6782608695652174,
-            "pair_games": 115,
-            "synergy_delta_logit": 0.20651691393874227,
-            "partner_pick_score": 7.008430108407834,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 14.930965461181462,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Emperor of Bones",
@@ -3819,26 +2867,24 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.2500493506514162,
-            "analysis_score": 9.54845824876135,
+            "analysis_score": 9.547513174249287,
             "pick_priority_score": 9.770738023162433,
-            "build_around_score": 5.840462717604503,
-            "core_score": 9.248550270366128,
-            "role": "engine"
+            "build_around_score": 5.219221303407737,
+            "core_score": 9.2472994889896,
+            "role": "good_alone"
           },
           {
             "cluster_id": 1,
             "title": "Boros Tokens | Guide of Souls / Sanguine Evangelist",
             "color_name": "Boros Tokens",
             "deck_prevalence": 0.009827137231698192,
-            "analysis_score": 0.0604036999988522,
+            "analysis_score": 0.060407425460279884,
             "pick_priority_score": 5.744532562180207,
-            "build_around_score": 1.4937198499122073,
+            "build_around_score": 1.9543798685242688,
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 9.57177964728561,
-        "pick_market_score": 9.57177964728561
+        ]
       },
       {
         "id": "Force of Will",
@@ -3876,23 +2922,27 @@
         "average_taken_at": 1.9904109589041097,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -41.253559659874234,
-        "analysis_score": 1.3113021265340108,
+        "analysis_score": 1.3114105178908904,
         "pick_priority_score_raw": 180.97328557512233,
         "pick_priority_score": 7.642889417035046,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.314295103137466,
         "pick_urgency_score": 9.314295103137466,
         "shell_dependence_score_raw": 0.6626443482509626,
-        "shell_dependence_score": 0.46012917826970395,
+        "shell_dependence_score": 0.7432066240560347,
         "build_around_score_raw": 0.6626443482509626,
-        "build_around_score": 0.46012917826970395,
+        "build_around_score": 0.7432066240560347,
         "core_score_raw": -43.62974718592629,
         "core_score": 0.0,
+        "win_contribution_logit": 0.38679583284919006,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Force%20of%20Will%22",
-        "community": 5,
-        "x": 592.9622484433609,
-        "y": 650.1544181892575,
+        "community": 0,
+        "x": 798.5976030157772,
+        "y": 534.9933505105179,
         "analysis_radius": 17.037376644599153,
         "pick_radius": 30.0,
         "radius": 17.037376644599153,
@@ -3904,26 +2954,24 @@
             "title": "Blue Base Storm | Brain Freeze / Snapcaster Mage",
             "color_name": "Blue Base Storm",
             "deck_prevalence": 0.20585215683513697,
-            "analysis_score": 9.897403583459221,
+            "analysis_score": 9.87710477941609,
             "pick_priority_score": 9.598187520822023,
-            "build_around_score": 3.465448183277827,
-            "core_score": 9.851728962345705,
-            "role": "engine"
+            "build_around_score": 2.612799786614877,
+            "core_score": 9.827210463679753,
+            "role": "good_alone"
           },
           {
             "cluster_id": 2,
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.07040748304898271,
-            "analysis_score": 1.3113021265340108,
+            "analysis_score": 1.3114105178908904,
             "pick_priority_score": 7.642889417035046,
-            "build_around_score": 0.46012917826970395,
+            "build_around_score": 0.7432066240560347,
             "core_score": 0.0,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Swords to Plowshares",
@@ -3964,20 +3012,24 @@
         "analysis_score": 0.0,
         "pick_priority_score_raw": 26.31861666356781,
         "pick_priority_score": 0.7992970048608999,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 7.323431855959534,
         "pick_urgency_score": 7.323431855959534,
         "shell_dependence_score_raw": 1.5342088102226286,
-        "shell_dependence_score": 2.2412537724144697,
+        "shell_dependence_score": 3.6201021985018618,
         "build_around_score_raw": 1.5342088102226286,
-        "build_around_score": 2.2412537724144697,
+        "build_around_score": 3.6201021985018618,
         "core_score_raw": -308.57042756039584,
         "core_score": 0.0,
+        "win_contribution_logit": 0.14796105751510652,
+        "contribution_score": 4.709740160083426,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Swords%20to%20Plowshares%22",
-        "community": 6,
-        "x": 592.9622484433607,
-        "y": 469.8455818107426,
+        "community": 0,
+        "x": 803.7200552306427,
+        "y": 618.4414868247936,
         "analysis_radius": 12.864790123651975,
         "pick_radius": 30.0,
         "radius": 12.864790123651975,
@@ -3989,11 +3041,11 @@
             "title": "White Base Control | No More Lies / The Wandering Emperor",
             "color_name": "White Base Control",
             "deck_prevalence": 0.24708417385245543,
-            "analysis_score": 9.748967235124606,
+            "analysis_score": 9.749142809108664,
             "pick_priority_score": 8.261565982059627,
-            "build_around_score": 3.45431327722736,
-            "core_score": 9.617654759258423,
-            "role": "engine"
+            "build_around_score": 5.965229032700928,
+            "core_score": 9.617843319544772,
+            "role": "good_alone"
           },
           {
             "cluster_id": 2,
@@ -4002,13 +3054,11 @@
             "deck_prevalence": 0.031545937791763685,
             "analysis_score": 0.0,
             "pick_priority_score": 0.7992970048608999,
-            "build_around_score": 2.2412537724144697,
+            "build_around_score": 3.6201021985018618,
             "core_score": 0.0,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       },
       {
         "id": "Pyrokinesis",
@@ -4046,9 +3096,11 @@
         "average_taken_at": 7.5720058780308594,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -209.8213639230048,
-        "analysis_score": 0.15900930043633626,
+        "analysis_score": 0.15902244403877694,
         "pick_priority_score_raw": 59.598094527558246,
         "pick_priority_score": 3.674517515869616,
+        "pick_market_score_raw": 8.272287773017656,
+        "pick_market_score": 8.272287773017656,
         "pick_urgency_score_raw": 5.5211718761344875,
         "pick_urgency_score": 5.5211718761344875,
         "shell_dependence_score_raw": 0.4476437674217186,
@@ -4057,12 +3109,14 @@
         "build_around_score": 0.0,
         "core_score_raw": -210.07750517856576,
         "core_score": 0.0,
+        "win_contribution_logit": -0.008578973589022331,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Pyrokinesis%22",
-        "community": 7,
-        "x": 690.4445651375088,
-        "y": 318.1601362066374,
+        "community": 0,
+        "x": 885.0288344869601,
+        "y": 656.8367700732438,
         "analysis_radius": 12.258026539777351,
         "pick_radius": 30.0,
         "radius": 12.258026539777351,
@@ -4074,10 +3128,10 @@
             "title": "Red Base Midrange | Fire Covenant / Fury",
             "color_name": "Red Base Midrange",
             "deck_prevalence": 0.2151507400643179,
-            "analysis_score": 9.89155896118439,
+            "analysis_score": 9.900300298252882,
             "pick_priority_score": 7.765482398653279,
-            "build_around_score": 3.971037780839125,
-            "core_score": 9.836014875000183,
+            "build_around_score": 7.891419259931019,
+            "core_score": 9.84432746086971,
             "role": "good_alone"
           },
           {
@@ -4085,15 +3139,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.0192670246964693,
-            "analysis_score": 0.15900930043633626,
+            "analysis_score": 0.15902244403877694,
             "pick_priority_score": 3.674517515869616,
             "build_around_score": 0.0,
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 8.272287773017656,
-        "pick_market_score": 8.272287773017656
+        ]
       },
       {
         "id": "Mishra's Bauble",
@@ -4131,23 +3183,27 @@
         "average_taken_at": 6.048894062863795,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -217.20117545352076,
-        "analysis_score": 0.13434335218554763,
+        "analysis_score": 0.1343544569172006,
         "pick_priority_score_raw": 19.333410739526137,
         "pick_priority_score": 0.0,
+        "pick_market_score_raw": 9.005270892001695,
+        "pick_market_score": 9.005270892001695,
         "pick_urgency_score_raw": 5.571686453238952,
         "pick_urgency_score": 5.571686453238952,
         "shell_dependence_score_raw": 1.0135421220907614,
-        "shell_dependence_score": 1.2693418350264762,
+        "shell_dependence_score": 2.0502574158210787,
         "build_around_score_raw": 1.0135421220907614,
-        "build_around_score": 1.2693418350264762,
+        "build_around_score": 2.0502574158210787,
         "core_score_raw": -216.334400039815,
         "core_score": 0.0,
+        "win_contribution_logit": 0.045923819261400656,
+        "contribution_score": 1.5325303526082519,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Mishra%27s%20Bauble%22",
-        "community": 8,
-        "x": 854.4592517525488,
-        "y": 243.25713859810156,
+        "community": 0,
+        "x": 985.355115954404,
+        "y": 566.1714580680162,
         "analysis_radius": 12.082463188429417,
         "pick_radius": 30.0,
         "radius": 12.082463188429417,
@@ -4159,15 +3215,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.03748535773336867,
-            "analysis_score": 0.13434335218554763,
+            "analysis_score": 0.1343544569172006,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.2693418350264762,
+            "build_around_score": 2.0502574158210787,
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 9.005270892001695,
-        "pick_market_score": 9.005270892001695
+        ]
       },
       {
         "id": "Voldaren Epicure",
@@ -4205,23 +3259,27 @@
         "average_taken_at": 10.262316619224874,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -8.112801593316581,
-        "analysis_score": 2.4110358909562306,
+        "analysis_score": 2.4112351855706584,
         "pick_priority_score_raw": 41.311188302158705,
         "pick_priority_score": 2.3781451837153105,
+        "pick_market_score_raw": 7.120636800985453,
+        "pick_market_score": 7.120636800985453,
         "pick_urgency_score_raw": 3.385160258585873,
         "pick_urgency_score": 3.385160258585873,
         "shell_dependence_score_raw": 1.2097242676526287,
-        "shell_dependence_score": 1.6622391623292923,
+        "shell_dependence_score": 2.6848702811112846,
         "build_around_score_raw": 1.2097242676526287,
-        "build_around_score": 1.6622391623292923,
+        "build_around_score": 2.6848702811112846,
         "core_score_raw": -6.336257820299786,
         "core_score": 0.0,
+        "win_contribution_logit": -0.03478710434743767,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Voldaren%20Epicure%22",
-        "community": 9,
-        "x": 1032.9328041606036,
-        "y": 268.91776148655407,
+        "community": 0,
+        "x": 913.2204724311077,
+        "y": 455.6965409572293,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4233,15 +3291,13 @@
             "title": "Black Base Reanimator | Animate Dead / Necromancy",
             "color_name": "Black Base Reanimator",
             "deck_prevalence": 0.03416430332724605,
-            "analysis_score": 2.4110358909562306,
+            "analysis_score": 2.4112351855706584,
             "pick_priority_score": 2.3781451837153105,
-            "build_around_score": 1.6622391623292923,
+            "build_around_score": 2.6848702811112846,
             "core_score": 0.0,
             "role": "balanced"
           }
-        ],
-        "pick_market_score_raw": 7.120636800985453,
-        "pick_market_score": 7.120636800985453
+        ]
       },
       {
         "id": "Ragavan, Nimble Pilferer",
@@ -4282,20 +3338,24 @@
         "analysis_score": 0.0,
         "pick_priority_score_raw": 69.471118992212,
         "pick_priority_score": 4.2192483952827295,
+        "pick_market_score_raw": 10.0,
+        "pick_market_score": 10.0,
         "pick_urgency_score_raw": 8.31832680590043,
         "pick_urgency_score": 8.31832680590043,
         "shell_dependence_score_raw": 0.6295424088267161,
-        "shell_dependence_score": 0.37514481814071754,
+        "shell_dependence_score": 0.6059387819545182,
         "build_around_score_raw": 0.6295424088267161,
-        "build_around_score": 0.37514481814071754,
+        "build_around_score": 0.6059387819545182,
         "core_score_raw": -279.10053596123606,
         "core_score": 0.0,
+        "win_contribution_logit": 0.0804274808778872,
+        "contribution_score": 2.6403163719459606,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Ragavan%2C%20Nimble%20Pilferer%22",
-        "community": 10,
-        "x": 1169.201130505978,
-        "y": 386.9949384142088,
+        "community": 0,
+        "x": 1011.3594682967549,
+        "y": 580.8079153532796,
         "analysis_radius": 12.664039021261532,
         "pick_radius": 30.0,
         "radius": 12.664039021261532,
@@ -4309,1259 +3369,14 @@
             "deck_prevalence": 0.03268985726786933,
             "analysis_score": 0.0,
             "pick_priority_score": 4.2192483952827295,
-            "build_around_score": 0.37514481814071754,
+            "build_around_score": 0.6059387819545182,
             "core_score": 0.0,
             "role": "good_alone"
           }
-        ],
-        "pick_market_score_raw": 10.0,
-        "pick_market_score": 10.0
+        ]
       }
     ],
-    "edges": [
-      {
-        "from": "Barrowgoyf",
-        "to": "Persist",
-        "pair_games": 101,
-        "pair_win_rate": 0.7326732673267327,
-        "pair_expected_win_rate": 0.6382318753735099,
-        "pair_lift_vs_baseline": 0.21466597399621223,
-        "synergy_delta_logit": 0.44053003574617233,
-        "synergy_delta_prob": 0.09444139195322276,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.5311958329501129,
-        "draft_pair_events": 453,
-        "quality_score": 1.4864692872755338,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.39534790195416,
-        "pick_score": 8.98576209209521,
-        "confidence_probability": 0.9749642413884559
-      },
-      {
-        "from": "Liliana of the Veil",
-        "to": "Reanimate",
-        "pair_games": 131,
-        "pair_win_rate": 0.7099236641221374,
-        "pair_expected_win_rate": 0.6211482529868766,
-        "pair_lift_vs_baseline": 0.19191637079161694,
-        "synergy_delta_logit": 0.40058850704255483,
-        "synergy_delta_prob": 0.08877541113526077,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 437,
-        "quality_score": 1.2671066808354372,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.310636754599185,
-        "pick_score": 8.715459713133054,
-        "confidence_probability": 0.9812663822199802
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Emperor of Bones",
-        "pair_games": 170,
-        "pair_win_rate": 0.7176470588235294,
-        "pair_expected_win_rate": 0.6518764472957128,
-        "pair_lift_vs_baseline": 0.199639765493009,
-        "synergy_delta_logit": 0.30552244113893956,
-        "synergy_delta_prob": 0.0657706115278166,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 634,
-        "quality_score": 1.1572674673257821,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.9726471325777815,
-        "pick_score": 10.0,
-        "confidence_probability": 0.9635263762748635
-      },
-      {
-        "from": "Bone Shards",
-        "to": "Griselbrand",
-        "pair_games": 140,
-        "pair_win_rate": 0.6428571428571429,
-        "pair_expected_win_rate": 0.5418736589661552,
-        "pair_lift_vs_baseline": 0.12484984952662248,
-        "synergy_delta_logit": 0.41989879203253044,
-        "synergy_delta_prob": 0.10098348389098766,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 606,
-        "quality_score": 0.950256618919954,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.3728960041189455,
-        "pick_score": 5.308196605105918,
-        "confidence_probability": 0.991357821445344
-      },
-      {
-        "from": "Barrowgoyf",
-        "to": "Overlord of the Balemurk",
-        "pair_games": 94,
-        "pair_win_rate": 0.7021276595744681,
-        "pair_expected_win_rate": 0.6210609280506058,
-        "pair_lift_vs_baseline": 0.18412036624394768,
-        "synergy_delta_logit": 0.3633964740587459,
-        "synergy_delta_prob": 0.08106673152386235,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 408,
-        "quality_score": 0.9354129104516927,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.6930962655635104,
-        "pick_score": 6.567874650372598,
-        "confidence_probability": 0.9464393323097943
-      },
-      {
-        "from": "Collective Brutality",
-        "to": "Life // Death",
-        "pair_games": 152,
-        "pair_win_rate": 0.6776315789473685,
-        "pair_expected_win_rate": 0.6061133713961322,
-        "pair_lift_vs_baseline": 0.15962428561684805,
-        "synergy_delta_logit": 0.31190476326675126,
-        "synergy_delta_prob": 0.07151820755123628,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 600,
-        "quality_score": 0.9117161996291562,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.064760085667333,
-        "pick_score": 7.899722580765227,
-        "confidence_probability": 0.9638547792124956
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Life // Death",
-        "pair_games": 180,
-        "pair_win_rate": 0.6888888888888889,
-        "pair_expected_win_rate": 0.6342598895836273,
-        "pair_lift_vs_baseline": 0.17088159555836846,
-        "synergy_delta_logit": 0.24439408429318388,
-        "synergy_delta_prob": 0.05462899930526155,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.508069586900681,
-        "draft_pair_events": 690,
-        "quality_score": 0.9064342995762602,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.746730457178173,
-        "pick_score": 10.0,
-        "confidence_probability": 0.9354873027646285
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Archon of Cruelty",
-        "pair_games": 234,
-        "pair_win_rate": 0.6923076923076923,
-        "pair_expected_win_rate": 0.6546800395694446,
-        "pair_lift_vs_baseline": 0.17430039897717187,
-        "synergy_delta_logit": 0.17125499791731003,
-        "synergy_delta_prob": 0.03762765273824764,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.9522150515181769,
-        "draft_pair_events": 764,
-        "quality_score": 0.7942035385223088,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.552109343502421,
-        "pick_score": 10.0,
-        "confidence_probability": 0.8866861065626157
-      },
-      {
-        "from": "Atraxa, Grand Unifier",
-        "to": "Life // Death",
-        "pair_games": 153,
-        "pair_win_rate": 0.673202614379085,
-        "pair_expected_win_rate": 0.6100210230850506,
-        "pair_lift_vs_baseline": 0.1551953210485646,
-        "synergy_delta_logit": 0.2753053944786152,
-        "synergy_delta_prob": 0.06318159129403444,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 582,
-        "quality_score": 0.7865624639732989,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.995055884209504,
-        "pick_score": 7.6594754811240335,
-        "confidence_probability": 0.9448948910728381
-      },
-      {
-        "from": "Bone Shards",
-        "to": "Grief",
-        "pair_games": 113,
-        "pair_win_rate": 0.672566371681416,
-        "pair_expected_win_rate": 0.5981133846481226,
-        "pair_lift_vs_baseline": 0.15455907835089555,
-        "synergy_delta_logit": 0.322205082701081,
-        "synergy_delta_prob": 0.0744529870332934,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 491,
-        "quality_score": 0.7831773644880552,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.5456979887997506,
-        "pick_score": 6.0021570356126155,
-        "confidence_probability": 0.9460072865731336
-      },
-      {
-        "from": "Crabomination",
-        "to": "Grief",
-        "pair_games": 109,
-        "pair_win_rate": 0.6880733944954128,
-        "pair_expected_win_rate": 0.6248012689638536,
-        "pair_lift_vs_baseline": 0.1700661011648924,
-        "synergy_delta_logit": 0.2811497944311796,
-        "synergy_delta_prob": 0.06327212553155925,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 418,
-        "quality_score": 0.7263252786923934,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.703222706091212,
-        "pick_score": 6.6059071570836405,
-        "confidence_probability": 0.9130630887612489
-      },
-      {
-        "from": "Entomb",
-        "to": "Necromancy",
-        "pair_games": 269,
-        "pair_win_rate": 0.6728624535315985,
-        "pair_expected_win_rate": 0.6316746507296516,
-        "pair_lift_vs_baseline": 0.15485516020107803,
-        "synergy_delta_logit": 0.1817523972012457,
-        "synergy_delta_prob": 0.04118780280194689,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 829,
-        "quality_score": 0.6964089939207675,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.024395402184007,
-        "pick_score": 10.0,
-        "confidence_probability": 0.9190292204500488
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Life // Death",
-        "pair_games": 196,
-        "pair_win_rate": 0.6683673469387755,
-        "pair_expected_win_rate": 0.6281214481686309,
-        "pair_lift_vs_baseline": 0.1503600536082551,
-        "synergy_delta_logit": 0.17664384412842737,
-        "synergy_delta_prob": 0.04024589877014462,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.885914871102985,
-        "draft_pair_events": 738,
-        "quality_score": 0.6498153471113107,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.6253090508350376,
-        "pick_score": 9.694072956810711,
-        "confidence_probability": 0.8778476315021759
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Overlord of the Balemurk",
-        "pair_games": 114,
-        "pair_win_rate": 0.6754385964912281,
-        "pair_expected_win_rate": 0.6165483271549005,
-        "pair_lift_vs_baseline": 0.15743130316070764,
-        "synergy_delta_logit": 0.25796439694903567,
-        "synergy_delta_prob": 0.05889026933632757,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 526,
-        "quality_score": 0.6418391927519919,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.6068210063765545,
-        "pick_score": 6.239551088020149,
-        "confidence_probability": 0.9014044618415645
-      },
-      {
-        "from": "Bone Shards",
-        "to": "Crabomination",
-        "pair_games": 104,
-        "pair_win_rate": 0.6730769230769231,
-        "pair_expected_win_rate": 0.6109816573794986,
-        "pair_lift_vs_baseline": 0.1550696297464027,
-        "synergy_delta_logit": 0.27069427514055294,
-        "synergy_delta_prob": 0.06209526569742452,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 456,
-        "quality_score": 0.631288087456116,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.4414553426844257,
-        "pick_score": 5.5876891617122775,
-        "confidence_probability": 0.9023301703764829
-      },
-      {
-        "from": "Barrowgoyf",
-        "to": "Griselbrand",
-        "pair_games": 109,
-        "pair_win_rate": 0.6513761467889908,
-        "pair_expected_win_rate": 0.5803316126163092,
-        "pair_lift_vs_baseline": 0.13336885345847038,
-        "synergy_delta_logit": 0.3009588768359384,
-        "synergy_delta_prob": 0.07104453417268164,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 418,
-        "quality_score": 0.6273834403074822,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.1812946366297794,
-        "pick_score": 4.495895974130052,
-        "confidence_probability": 0.9328451079464233
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Entomb",
-        "pair_games": 272,
-        "pair_win_rate": 0.6727941176470589,
-        "pair_expected_win_rate": 0.6359825990872076,
-        "pair_lift_vs_baseline": 0.15478682431653845,
-        "synergy_delta_logit": 0.16288025126882888,
-        "synergy_delta_prob": 0.03681151855985132,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 803,
-        "quality_score": 0.6265758210812513,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.039687827508996,
-        "pick_score": 10.0,
-        "confidence_probability": 0.8962354255537381
-      },
-      {
-        "from": "Barrowgoyf",
-        "to": "Bitter Triumph",
-        "pair_games": 122,
-        "pair_win_rate": 0.680327868852459,
-        "pair_expected_win_rate": 0.6266883661607837,
-        "pair_lift_vs_baseline": 0.16232057552193857,
-        "synergy_delta_logit": 0.23724311854507707,
-        "synergy_delta_prob": 0.05363950269167528,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 450,
-        "quality_score": 0.6237499225617676,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.752231698209205,
-        "pick_score": 6.788515831263608,
-        "confidence_probability": 0.8891535564344001
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Bitter Triumph",
-        "pair_games": 158,
-        "pair_win_rate": 0.6645569620253164,
-        "pair_expected_win_rate": 0.6222020140988493,
-        "pair_lift_vs_baseline": 0.14654966869479602,
-        "synergy_delta_logit": 0.18476323901557906,
-        "synergy_delta_prob": 0.0423549479264671,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.6881463681945484,
-        "draft_pair_events": 559,
-        "quality_score": 0.5722547169788239,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.08710843218632,
-        "pick_score": 7.975878350716489,
-        "confidence_probability": 0.8635760464517922
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Bone Shards",
-        "pair_games": 169,
-        "pair_win_rate": 0.6627218934911243,
-        "pair_expected_win_rate": 0.6168476341070543,
-        "pair_lift_vs_baseline": 0.1447146001606039,
-        "synergy_delta_logit": 0.19925828863849288,
-        "synergy_delta_prob": 0.04587425938406997,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 677,
-        "quality_score": 0.5657458858318271,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.9788528184463763,
-        "pick_score": 7.603028589899628,
-        "confidence_probability": 0.8896504235622277
-      },
-      {
-        "from": "Bone Shards",
-        "to": "Entomb",
-        "pair_games": 135,
-        "pair_win_rate": 0.6518518518518519,
-        "pair_expected_win_rate": 0.5973615739936688,
-        "pair_lift_vs_baseline": 0.13384455852133148,
-        "synergy_delta_logit": 0.23270558440466266,
-        "synergy_delta_prob": 0.054490277858183056,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 601,
-        "quality_score": 0.5490779403264877,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.473944550214201,
-        "pick_score": 5.718197575003381,
-        "confidence_probability": 0.9011344118012552
-      },
-      {
-        "from": "Life // Death",
-        "to": "Persist",
-        "pair_games": 126,
-        "pair_win_rate": 0.6587301587301587,
-        "pair_expected_win_rate": 0.6128785011151071,
-        "pair_lift_vs_baseline": 0.1407228653996383,
-        "synergy_delta_logit": 0.19821237390373408,
-        "synergy_delta_prob": 0.04585165761505161,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.885914871102985,
-        "draft_pair_events": 617,
-        "quality_score": 0.5478487646982804,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.7212121167401353,
-        "pick_score": 6.673215342346852,
-        "confidence_probability": 0.8542686196411657
-      },
-      {
-        "from": "Crabomination",
-        "to": "Necromancy",
-        "pair_games": 149,
-        "pair_win_rate": 0.6845637583892618,
-        "pair_expected_win_rate": 0.6448241519449497,
-        "pair_lift_vs_baseline": 0.16655646505874133,
-        "synergy_delta_logit": 0.17846057805867976,
-        "synergy_delta_prob": 0.03973960644431207,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 576,
-        "quality_score": 0.5355815312964253,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.1459010973828354,
-        "pick_score": 8.174252650779312,
-        "confidence_probability": 0.844296520868999
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Collective Brutality",
-        "pair_games": 183,
-        "pair_win_rate": 0.6721311475409836,
-        "pair_expected_win_rate": 0.633326187734772,
-        "pair_lift_vs_baseline": 0.15412385421046315,
-        "synergy_delta_logit": 0.17132685717612728,
-        "synergy_delta_prob": 0.03880495980621157,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 682,
-        "quality_score": 0.5352530323354177,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.2778948617584924,
-        "pick_score": 8.609558615142797,
-        "confidence_probability": 0.8617019977309276
-      },
-      {
-        "from": "Barrowgoyf",
-        "to": "Collective Brutality",
-        "pair_games": 115,
-        "pair_win_rate": 0.6782608695652174,
-        "pair_expected_win_rate": 0.6316435155018681,
-        "pair_lift_vs_baseline": 0.16025357623469694,
-        "synergy_delta_logit": 0.20651691393874227,
-        "synergy_delta_prob": 0.046617354063349214,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 457,
-        "quality_score": 0.5214897921393095,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.6436001074719613,
-        "pick_score": 6.380465398200191,
-        "confidence_probability": 0.8495623262193062
-      },
-      {
-        "from": "Atraxa, Grand Unifier",
-        "to": "Collective Brutality",
-        "pair_games": 106,
-        "pair_win_rate": 0.660377358490566,
-        "pair_expected_win_rate": 0.6090635821121128,
-        "pair_lift_vs_baseline": 0.14237006516004558,
-        "synergy_delta_logit": 0.22159856987288834,
-        "synergy_delta_prob": 0.051313776378453246,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 457,
-        "quality_score": 0.48393075779622713,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.2862401552949625,
-        "pick_score": 4.946688534829925,
-        "confidence_probability": 0.8600344042302055
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Crabomination",
-        "pair_games": 108,
-        "pair_win_rate": 0.6851851851851852,
-        "pair_expected_win_rate": 0.6430339319503915,
-        "pair_lift_vs_baseline": 0.1671778918546648,
-        "synergy_delta_logit": 0.18914780421801314,
-        "synergy_delta_prob": 0.04215125323479374,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 483,
-        "quality_score": 0.48166153413860774,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.666736808709066,
-        "pick_score": 6.468383639219915,
-        "confidence_probability": 0.8193643376213365
-      },
-      {
-        "from": "Barrowgoyf",
-        "to": "Reanimate",
-        "pair_games": 132,
-        "pair_win_rate": 0.6893939393939394,
-        "pair_expected_win_rate": 0.653675442658144,
-        "pair_lift_vs_baseline": 0.17138664606341902,
-        "synergy_delta_logit": 0.16205283896921796,
-        "synergy_delta_prob": 0.03571849673579541,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 465,
-        "quality_score": 0.4658009435893666,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.0094792982330043,
-        "pick_score": 7.7095303026523805,
-        "confidence_probability": 0.8055333938058604
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Griselbrand",
-        "pair_games": 160,
-        "pair_win_rate": 0.625,
-        "pair_expected_win_rate": 0.5756653757624933,
-        "pair_lift_vs_baseline": 0.10699270666947958,
-        "synergy_delta_logit": 0.20582142881905152,
-        "synergy_delta_prob": 0.049334624237506675,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 634,
-        "quality_score": 0.43730511471177097,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.228349613631984,
-        "pick_score": 4.699831523305481,
-        "confidence_probability": 0.8962363128244023
-      },
-      {
-        "from": "Barrowgoyf",
-        "to": "Crabomination",
-        "pair_games": 92,
-        "pair_win_rate": 0.6847826086956522,
-        "pair_expected_win_rate": 0.6474130887057096,
-        "pair_lift_vs_baseline": 0.1667753153651318,
-        "synergy_delta_logit": 0.16815148650301148,
-        "synergy_delta_prob": 0.037369519989942646,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 415,
-        "quality_score": 0.3920755031261296,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.4397191436050796,
-        "pick_score": 5.5806802521644645,
-        "confidence_probability": 0.7731723687532468
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Griselbrand",
-        "pair_games": 203,
-        "pair_win_rate": 0.6206896551724138,
-        "pair_expected_win_rate": 0.5820936001967845,
-        "pair_lift_vs_baseline": 0.10268236184189339,
-        "synergy_delta_logit": 0.1611027087512385,
-        "synergy_delta_prob": 0.038596054975629346,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 708,
-        "quality_score": 0.37401937811287295,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.4363538810941345,
-        "pick_score": 5.567084851945718,
-        "confidence_probability": 0.8673055311450976
-      },
-      {
-        "from": "Griselbrand",
-        "to": "Persist",
-        "pair_games": 129,
-        "pair_win_rate": 0.6124031007751938,
-        "pair_expected_win_rate": 0.5597792253648669,
-        "pair_lift_vs_baseline": 0.09439580744467335,
-        "synergy_delta_logit": 0.217158743069722,
-        "synergy_delta_prob": 0.05262387541032687,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 593,
-        "quality_score": 0.37225480959672796,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.797189818481067,
-        "pick_score": 2.7087057695414436,
-        "confidence_probability": 0.8852520396512934
-      },
-      {
-        "from": "Bitter Triumph",
-        "to": "Grief",
-        "pair_games": 113,
-        "pair_win_rate": 0.6460176991150443,
-        "pair_expected_win_rate": 0.6035613106542279,
-        "pair_lift_vs_baseline": 0.12801040578452383,
-        "synergy_delta_logit": 0.1812537593256583,
-        "synergy_delta_prob": 0.04245638846081634,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 414,
-        "quality_score": 0.37113673566961686,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.1424557438437546,
-        "pick_score": 4.3252833833905004,
-        "confidence_probability": 0.8215742134371926
-      },
-      {
-        "from": "Emperor of Bones",
-        "to": "Entomb",
-        "pair_games": 189,
-        "pair_win_rate": 0.6613756613756614,
-        "pair_expected_win_rate": 0.6331122761527166,
-        "pair_lift_vs_baseline": 0.14336836804514097,
-        "synergy_delta_logit": 0.12383874771476966,
-        "synergy_delta_prob": 0.028263385222944803,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 671,
-        "quality_score": 0.3686713495716375,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.123244175416586,
-        "pick_score": 8.098140346745417,
-        "confidence_probability": 0.7897906197993855
-      },
-      {
-        "from": "Demonic Tutor",
-        "to": "Griselbrand",
-        "pair_games": 95,
-        "pair_win_rate": 0.6421052631578947,
-        "pair_expected_win_rate": 0.5941780240362459,
-        "pair_lift_vs_baseline": 0.12409796982737431,
-        "synergy_delta_logit": 0.20324894192410464,
-        "synergy_delta_prob": 0.04792723912164887,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 329,
-        "quality_score": 0.36823273599649714,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.8931804763086182,
-        "pick_score": 3.1773498480445,
-        "confidence_probability": 0.8288589918082345
-      },
-      {
-        "from": "Entomb",
-        "to": "Recurring Nightmare",
-        "pair_games": 126,
-        "pair_win_rate": 0.626984126984127,
-        "pair_expected_win_rate": 0.5826929825401092,
-        "pair_lift_vs_baseline": 0.10897683365360655,
-        "synergy_delta_logit": 0.18546202348596813,
-        "synergy_delta_prob": 0.04429114444401783,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 572,
-        "quality_score": 0.3537669025934924,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.9994353863353005,
-        "pick_score": 3.6783080009423395,
-        "confidence_probability": 0.8429784181032745
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Emperor of Bones",
-        "pair_games": 172,
-        "pair_win_rate": 0.6802325581395349,
-        "pair_expected_win_rate": 0.6578363754993166,
-        "pair_lift_vs_baseline": 0.16222526480901445,
-        "synergy_delta_logit": 0.10117357547924244,
-        "synergy_delta_prob": 0.022396182640218254,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 620,
-        "quality_score": 0.3195427370370473,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.312061546898404,
-        "pick_score": 8.72004981017327,
-        "confidence_probability": 0.7319885399033398
-      },
-      {
-        "from": "Atraxa, Grand Unifier",
-        "to": "Bone Shards",
-        "pair_games": 118,
-        "pair_win_rate": 0.635593220338983,
-        "pair_expected_win_rate": 0.5985491885237484,
-        "pair_lift_vs_baseline": 0.1175859270084626,
-        "synergy_delta_logit": 0.15686430387490852,
-        "synergy_delta_prob": 0.037044031815234635,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 490,
-        "quality_score": 0.30707997288234545,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.0502253039311342,
-        "pick_score": 3.9115303633617353,
-        "confidence_probability": 0.7939103148256623
-      },
-      {
-        "from": "Collective Brutality",
-        "to": "Emperor of Bones",
-        "pair_games": 149,
-        "pair_win_rate": 0.6577181208053692,
-        "pair_expected_win_rate": 0.6304470899173956,
-        "pair_lift_vs_baseline": 0.13971082747484875,
-        "synergy_delta_logit": 0.11900653558464946,
-        "synergy_delta_prob": 0.027271030887973557,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 544,
-        "quality_score": 0.3050963662262195,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.686529232355269,
-        "pick_score": 6.543154648504358,
-        "confidence_probability": 0.7546665370169371
-      },
-      {
-        "from": "Life // Death",
-        "to": "Liliana of the Veil",
-        "pair_games": 102,
-        "pair_win_rate": 0.6372549019607843,
-        "pair_expected_win_rate": 0.599285060931604,
-        "pair_lift_vs_baseline": 0.11924760863026385,
-        "synergy_delta_logit": 0.16098227700128281,
-        "synergy_delta_prob": 0.03796984102918022,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 484,
-        "quality_score": 0.29639738215800554,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.928149866684605,
-        "pick_score": 3.3442222569489033,
-        "confidence_probability": 0.7828021201208619
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Barrowgoyf",
-        "pair_games": 150,
-        "pair_win_rate": 0.6733333333333333,
-        "pair_expected_win_rate": 0.6530416764125233,
-        "pair_lift_vs_baseline": 0.15532604000281292,
-        "synergy_delta_logit": 0.09086393629917866,
-        "synergy_delta_prob": 0.02029165692081003,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.579916062593493,
-        "draft_pair_events": 532,
-        "quality_score": 0.28312289263496765,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.127642802720143,
-        "pick_score": 8.112949494411854,
-        "confidence_probability": 0.6991372786784034
-      },
-      {
-        "from": "Atraxa, Grand Unifier",
-        "to": "Entomb",
-        "pair_games": 166,
-        "pair_win_rate": 0.6385542168674698,
-        "pair_expected_win_rate": 0.6117880224377658,
-        "pair_lift_vs_baseline": 0.1205469235369494,
-        "synergy_delta_logit": 0.11426020230334272,
-        "synergy_delta_prob": 0.02676619442970407,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 604,
-        "quality_score": 0.2731683063649524,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.5067435549250328,
-        "pick_score": 5.848718193078977,
-        "confidence_probability": 0.7602926869769274
-      },
-      {
-        "from": "Grief",
-        "to": "Reanimate",
-        "pair_games": 168,
-        "pair_win_rate": 0.6547619047619048,
-        "pair_expected_win_rate": 0.6312364786686344,
-        "pair_lift_vs_baseline": 0.13675461143138434,
-        "synergy_delta_logit": 0.10251236981575029,
-        "synergy_delta_prob": 0.023525426093270352,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 503,
-        "quality_score": 0.27308421761356994,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.7903433462007596,
-        "pick_score": 6.928879683813737,
-        "confidence_probability": 0.7362185629692113
-      },
-      {
-        "from": "Griselbrand",
-        "to": "Reanimate",
-        "pair_games": 181,
-        "pair_win_rate": 0.6077348066298343,
-        "pair_expected_win_rate": 0.5763487891464721,
-        "pair_lift_vs_baseline": 0.08972751329931383,
-        "synergy_delta_logit": 0.12999797539229113,
-        "synergy_delta_prob": 0.031386017483362116,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 613,
-        "quality_score": 0.25350944669368136,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.0448771028039134,
-        "pick_score": 3.8871556043409456,
-        "confidence_probability": 0.8034284098503196
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Bitter Triumph",
-        "pair_games": 176,
-        "pair_win_rate": 0.6477272727272727,
-        "pair_expected_win_rate": 0.62838035653164,
-        "pair_lift_vs_baseline": 0.12971997939675228,
-        "synergy_delta_logit": 0.08378928435996491,
-        "synergy_delta_prob": 0.01934691619563267,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.6066987567023541,
-        "draft_pair_events": 621,
-        "quality_score": 0.24397884569831155,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.919928144366454,
-        "pick_score": 7.39579570650559,
-        "confidence_probability": 0.7022846357654219
-      },
-      {
-        "from": "Bone Shards",
-        "to": "Life // Death",
-        "pair_games": 167,
-        "pair_win_rate": 0.6227544910179641,
-        "pair_expected_win_rate": 0.5955723184101833,
-        "pair_lift_vs_baseline": 0.10474719768744367,
-        "synergy_delta_logit": 0.11420628565010321,
-        "synergy_delta_prob": 0.027182172607780775,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 664,
-        "quality_score": 0.2439447237959019,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.2407832115975297,
-        "pick_score": 4.753222120914295,
-        "confidence_probability": 0.7628036684120117
-      },
-      {
-        "from": "Necromancy",
-        "to": "Persist",
-        "pair_games": 173,
-        "pair_win_rate": 0.653179190751445,
-        "pair_expected_win_rate": 0.6356134671938317,
-        "pair_lift_vs_baseline": 0.1351718974209246,
-        "synergy_delta_logit": 0.07666784142308591,
-        "synergy_delta_prob": 0.017565723557613322,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.5746226978799867,
-        "draft_pair_events": 672,
-        "quality_score": 0.22887759955029474,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.00148330125428,
-        "pick_score": 7.6818033873150116,
-        "confidence_probability": 0.6843720767850808
-      },
-      {
-        "from": "Bitter Triumph",
-        "to": "Emperor of Bones",
-        "pair_games": 128,
-        "pair_win_rate": 0.6484375,
-        "pair_expected_win_rate": 0.6254853888917851,
-        "pair_lift_vs_baseline": 0.13043020666947958,
-        "synergy_delta_logit": 0.09928096464943181,
-        "synergy_delta_prob": 0.022952111108214934,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 558,
-        "quality_score": 0.2224146410027593,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.3479208577959225,
-        "pick_score": 5.2049676636288975,
-        "confidence_probability": 0.7041237487897543
-      },
-      {
-        "from": "Emperor of Bones",
-        "to": "Grief",
-        "pair_games": 136,
-        "pair_win_rate": 0.6544117647058824,
-        "pair_expected_win_rate": 0.6338382506421313,
-        "pair_lift_vs_baseline": 0.13640447137536194,
-        "synergy_delta_logit": 0.08977014521668114,
-        "synergy_delta_prob": 0.020573514063751075,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 502,
-        "quality_score": 0.21466587623353206,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.5047455432792183,
-        "pick_score": 5.840802275587909,
-        "confidence_probability": 0.6907083039088218
-      },
-      {
-        "from": "Grief",
-        "to": "Necromancy",
-        "pair_games": 141,
-        "pair_win_rate": 0.6524822695035462,
-        "pair_expected_win_rate": 0.6324018182199599,
-        "pair_lift_vs_baseline": 0.13447497617302573,
-        "synergy_delta_logit": 0.08743374277450033,
-        "synergy_delta_prob": 0.020080451283586265,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 560,
-        "quality_score": 0.21113635648742027,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.5309208469993094,
-        "pick_score": 5.944150254974843,
-        "confidence_probability": 0.6894813126352008
-      },
-      {
-        "from": "Grief",
-        "to": "Griselbrand",
-        "pair_games": 123,
-        "pair_win_rate": 0.5934959349593496,
-        "pair_expected_win_rate": 0.556365696942635,
-        "pair_lift_vs_baseline": 0.07548864162882918,
-        "synergy_delta_logit": 0.15201121065433187,
-        "synergy_delta_prob": 0.037130238016714556,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 490,
-        "quality_score": 0.21085904633828897,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.4527498604149511,
-        "pick_score": 0.883562301023294,
-        "confidence_probability": 0.7961858900709264
-      },
-      {
-        "from": "Collective Brutality",
-        "to": "Crabomination",
-        "pair_games": 110,
-        "pair_win_rate": 0.6454545454545455,
-        "pair_expected_win_rate": 0.6213764085439081,
-        "pair_lift_vs_baseline": 0.12744725212402508,
-        "synergy_delta_logit": 0.10372374886650298,
-        "synergy_delta_prob": 0.024078136910637427,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 476,
-        "quality_score": 0.20986680058284224,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.118701414646245,
-        "pick_score": 4.2198923301997056,
-        "confidence_probability": 0.6986101218467213
-      },
-      {
-        "from": "Griselbrand",
-        "to": "Life // Death",
-        "pair_games": 181,
-        "pair_win_rate": 0.585635359116022,
-        "pair_expected_win_rate": 0.5537576058048619,
-        "pair_lift_vs_baseline": 0.06762806578550162,
-        "synergy_delta_logit": 0.13008621335113235,
-        "synergy_delta_prob": 0.03187775331116016,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 717,
-        "quality_score": 0.20378915945688209,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.644100991303104,
-        "pick_score": 1.926952542593756,
-        "confidence_probability": 0.8056935322089426
-      },
-      {
-        "from": "Bone Shards",
-        "to": "Emperor of Bones",
-        "pair_games": 128,
-        "pair_win_rate": 0.640625,
-        "pair_expected_win_rate": 0.6201491341363913,
-        "pair_lift_vs_baseline": 0.12261770666947958,
-        "synergy_delta_logit": 0.08789658016608232,
-        "synergy_delta_prob": 0.020475865863608722,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 550,
-        "quality_score": 0.1865820666576545,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.2245875221818245,
-        "pick_score": 4.683636355280197,
-        "confidence_probability": 0.6833715251433307
-      },
-      {
-        "from": "Archon of Cruelty",
-        "to": "Persist",
-        "pair_games": 162,
-        "pair_win_rate": 0.6481481481481481,
-        "pair_expected_win_rate": 0.6338031869037399,
-        "pair_lift_vs_baseline": 0.13014085481762772,
-        "synergy_delta_logit": 0.06234153640135687,
-        "synergy_delta_prob": 0.014344961244408205,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.9522150515181769,
-        "draft_pair_events": 660,
-        "quality_score": 0.18486391024653057,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.908412783683594,
-        "pick_score": 7.3549335180461375,
-        "confidence_probability": 0.6476278357157427
-      },
-      {
-        "from": "Collective Brutality",
-        "to": "Necromancy",
-        "pair_games": 208,
-        "pair_win_rate": 0.6442307692307693,
-        "pair_expected_win_rate": 0.6290051407971422,
-        "pair_lift_vs_baseline": 0.12622347590024885,
-        "synergy_delta_logit": 0.06582348302663144,
-        "synergy_delta_prob": 0.01522562843362707,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 666,
-        "quality_score": 0.18394637361413865,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.931675324398274,
-        "pick_score": 7.437357002861154,
-        "confidence_probability": 0.6752593150906209
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Persist",
-        "pair_games": 136,
-        "pair_win_rate": 0.6544117647058824,
-        "pair_expected_win_rate": 0.6399016092684863,
-        "pair_lift_vs_baseline": 0.13640447137536194,
-        "synergy_delta_logit": 0.0635516407008484,
-        "synergy_delta_prob": 0.014510155437396088,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.9522150515181769,
-        "draft_pair_events": 646,
-        "quality_score": 0.1797266862205862,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.7734265033800445,
-        "pick_score": 6.8667505601961984,
-        "confidence_probability": 0.6377507300596178
-      },
-      {
-        "from": "Entomb",
-        "to": "Life // Death",
-        "pair_games": 224,
-        "pair_win_rate": 0.625,
-        "pair_expected_win_rate": 0.6088451676290125,
-        "pair_lift_vs_baseline": 0.10699270666947958,
-        "synergy_delta_logit": 0.06836510104746979,
-        "synergy_delta_prob": 0.01615483237098747,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 794,
-        "quality_score": 0.17332694833604392,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.6622453726388096,
-        "pick_score": 6.451359894196943,
-        "confidence_probability": 0.6898242414194602
-      },
-      {
-        "from": "Crabomination",
-        "to": "Entomb",
-        "pair_games": 136,
-        "pair_win_rate": 0.6397058823529411,
-        "pair_expected_win_rate": 0.6240680040096329,
-        "pair_lift_vs_baseline": 0.1216985890224207,
-        "synergy_delta_logit": 0.06723674263252777,
-        "synergy_delta_prob": 0.01563787834330821,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 567,
-        "quality_score": 0.14633977966823425,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.281287256642596,
-        "pick_score": 4.9257391572399944,
-        "confidence_probability": 0.6467048074446484
-      },
-      {
-        "from": "Bitter Triumph",
-        "to": "Griselbrand",
-        "pair_games": 130,
-        "pair_win_rate": 0.5769230769230769,
-        "pair_expected_win_rate": 0.5475071987016831,
-        "pair_lift_vs_baseline": 0.05891578359255645,
-        "synergy_delta_logit": 0.1195511726664798,
-        "synergy_delta_prob": 0.0294158782213938,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 548,
-        "quality_score": 0.1414975278983739,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.2403318034529842,
-        "pick_score": 0.0,
-        "confidence_probability": 0.7496639449301792
-      },
-      {
-        "from": "Atraxa, Grand Unifier",
-        "to": "Griselbrand",
-        "pair_games": 118,
-        "pair_win_rate": 0.5847457627118644,
-        "pair_expected_win_rate": 0.5568132271580293,
-        "pair_lift_vs_baseline": 0.06673846938134398,
-        "synergy_delta_logit": 0.11404763239390608,
-        "synergy_delta_prob": 0.027932535553835125,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 488,
-        "quality_score": 0.14072903463307893,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.2922953742134735,
-        "pick_score": 0.0,
-        "confidence_probability": 0.7292263873748556
-      },
-      {
-        "from": "Emperor of Bones",
-        "to": "Overlord of the Balemurk",
-        "pair_games": 126,
-        "pair_win_rate": 0.6349206349206349,
-        "pair_expected_win_rate": 0.6198508168171054,
-        "pair_lift_vs_baseline": 0.11691334159011446,
-        "synergy_delta_logit": 0.06447017013733886,
-        "synergy_delta_prob": 0.015069818103529475,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 515,
-        "quality_score": 0.13002436892620287,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.1128076169372147,
-        "pick_score": 4.19361896991968,
-        "confidence_probability": 0.6362359139281074
-      },
-      {
-        "from": "Animate Dead",
-        "to": "Liliana of the Veil",
-        "pair_games": 128,
-        "pair_win_rate": 0.640625,
-        "pair_expected_win_rate": 0.626679065721875,
-        "pair_lift_vs_baseline": 0.12261770666947958,
-        "synergy_delta_logit": 0.060081761403096956,
-        "synergy_delta_prob": 0.01394593427812496,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 507,
-        "quality_score": 0.12714443492259717,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.2167212128354574,
-        "pick_score": 4.649712077046178,
-        "confidence_probability": 0.6278463071685512
-      },
-      {
-        "from": "Atraxa, Grand Unifier",
-        "to": "Reanimate",
-        "pair_games": 171,
-        "pair_win_rate": 0.6432748538011696,
-        "pair_expected_win_rate": 0.631658484047431,
-        "pair_lift_vs_baseline": 0.12526756047064913,
-        "synergy_delta_logit": 0.05026816716204474,
-        "synergy_delta_prob": 0.011616369753738587,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 506,
-        "quality_score": 0.125228560905227,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.609528035003264,
-        "pick_score": 6.249971594612305,
-        "confidence_probability": 0.6235766933639026
-      },
-      {
-        "from": "Collective Brutality",
-        "to": "Overlord of the Balemurk",
-        "pair_games": 93,
-        "pair_win_rate": 0.6129032258064516,
-        "pair_expected_win_rate": 0.5942977234067063,
-        "pair_lift_vs_baseline": 0.0948959324759312,
-        "synergy_delta_logit": 0.07777149944284573,
-        "synergy_delta_prob": 0.018605502399745344,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 430,
-        "quality_score": 0.11230854398004522,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.5112970257250753,
-        "pick_score": 1.2112073662536063,
-        "confidence_probability": 0.6425619124499158
-      },
-      {
-        "from": "Liliana of the Veil",
-        "to": "Overlord of the Balemurk",
-        "pair_games": 99,
-        "pair_win_rate": 0.6060606060606061,
-        "pair_expected_win_rate": 0.5874040147580781,
-        "pair_lift_vs_baseline": 0.08805331273008565,
-        "synergy_delta_logit": 0.07753893275898821,
-        "synergy_delta_prob": 0.018656591302527947,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 397,
-        "quality_score": 0.10831597046013065,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.461285025702702,
-        "pick_score": 0.9318112249782585,
-        "confidence_probability": 0.6469031342282666
-      },
-      {
-        "from": "Crabomination",
-        "to": "Persist",
-        "pair_games": 114,
-        "pair_win_rate": 0.6403508771929824,
-        "pair_expected_win_rate": 0.6280402654449898,
-        "pair_lift_vs_baseline": 0.12234358386246202,
-        "synergy_delta_logit": 0.05306870105187378,
-        "synergy_delta_prob": 0.012310611747992639,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 542,
-        "quality_score": 0.10604905320597167,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.0940395204752833,
-        "pick_score": 4.1096219272742465,
-        "confidence_probability": 0.6071578097073155
-      },
-      {
-        "from": "Collective Brutality",
-        "to": "Griselbrand",
-        "pair_games": 170,
-        "pair_win_rate": 0.5705882352941176,
-        "pair_expected_win_rate": 0.552763304036214,
-        "pair_lift_vs_baseline": 0.052580941963597194,
-        "synergy_delta_logit": 0.07240962473288154,
-        "synergy_delta_prob": 0.01782493125790363,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 630,
-        "quality_score": 0.0906138952227234,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.3124201936872042,
-        "pick_score": 0.06526677118688094,
-        "confidence_probability": 0.6798663593028604
-      },
-      {
-        "from": "Bone Shards",
-        "to": "Recurring Nightmare",
-        "pair_games": 101,
-        "pair_win_rate": 0.5841584158415841,
-        "pair_expected_win_rate": 0.5691606850027888,
-        "pair_lift_vs_baseline": 0.0661511225110637,
-        "synergy_delta_logit": 0.06144023397014042,
-        "synergy_delta_prob": 0.014997730838795298,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 488,
-        "quality_score": 0.06966572564214457,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.1874919092616787,
-        "pick_score": 0.0,
-        "confidence_probability": 0.61956123608041
-      }
-    ],
+    "edges": [],
     "triplets": [
       {
         "cards": [
@@ -5581,91 +3396,13 @@
     "communities": [
       {
         "community_id": 0,
-        "size": 8,
-        "top_cards": [
-          "Necromancy",
-          "Entomb",
-          "Griselbrand",
-          "Bone Shards",
-          "Grief"
-        ]
-      },
-      {
-        "community_id": 1,
-        "size": 4,
+        "size": 26,
         "top_cards": [
           "Animate Dead",
-          "Life // Death",
-          "Collective Brutality",
-          "Atraxa, Grand Unifier"
-        ]
-      },
-      {
-        "community_id": 2,
-        "size": 3,
-        "top_cards": [
+          "Necromancy",
           "Archon of Cruelty",
-          "Emperor of Bones",
-          "Bitter Triumph"
-        ]
-      },
-      {
-        "community_id": 3,
-        "size": 3,
-        "top_cards": [
-          "Persist",
-          "Overlord of the Balemurk",
-          "Barrowgoyf"
-        ]
-      },
-      {
-        "community_id": 4,
-        "size": 2,
-        "top_cards": [
-          "Reanimate",
-          "Liliana of the Veil"
-        ]
-      },
-      {
-        "community_id": 5,
-        "size": 1,
-        "top_cards": [
-          "Force of Will"
-        ]
-      },
-      {
-        "community_id": 6,
-        "size": 1,
-        "top_cards": [
-          "Swords to Plowshares"
-        ]
-      },
-      {
-        "community_id": 7,
-        "size": 1,
-        "top_cards": [
-          "Pyrokinesis"
-        ]
-      },
-      {
-        "community_id": 8,
-        "size": 1,
-        "top_cards": [
-          "Mishra's Bauble"
-        ]
-      },
-      {
-        "community_id": 9,
-        "size": 1,
-        "top_cards": [
-          "Voldaren Epicure"
-        ]
-      },
-      {
-        "community_id": 10,
-        "size": 1,
-        "top_cards": [
-          "Ragavan, Nimble Pilferer"
+          "Entomb",
+          "Reanimate"
         ]
       }
     ],
@@ -5967,19 +3704,7 @@
         }
       ]
     },
-    "build_arounds": [
-      {
-        "card": "Griselbrand",
-        "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 17.985225002064954,
-        "build_around_score": 10.0,
-        "build_around_score_raw": 17.985225002064954,
-        "support_delta": 0.1519213928810591,
-        "supported_win_rate": 0.5500695410292072,
-        "isolated_win_rate": 0.39814814814814814,
-        "supported_games": 1438
-      }
-    ],
+    "build_arounds": [],
     "core_cards": [
       {
         "card": "Animate Dead",
@@ -5995,61 +3720,61 @@
       },
       {
         "card": "Archon of Cruelty",
-        "core_score": 9.939206954256147,
+        "core_score": 9.937775764220554,
         "deck_prevalence": 0.342776890846377,
         "signpost_score": 4106.42091839329
       },
       {
         "card": "Entomb",
-        "core_score": 9.920671521749552,
+        "core_score": 9.921245423370529,
         "deck_prevalence": 0.3474238958834525,
         "signpost_score": 4051.058354370644
       },
       {
         "card": "Reanimate",
-        "core_score": 9.918251917098326,
+        "core_score": 9.918712890748393,
         "deck_prevalence": 0.3486831630972886,
         "signpost_score": 4040.6025578827007
       },
       {
         "card": "Life // Death",
-        "core_score": 9.780025627689616,
+        "core_score": 9.779335461258432,
         "deck_prevalence": 0.3023650075364856,
         "signpost_score": 3596.84362519723
       },
       {
         "card": "Griselbrand",
-        "core_score": 9.7645929478258,
+        "core_score": 9.764908634628759,
         "deck_prevalence": 0.30379084907609544,
         "signpost_score": 3557.136426735025
       },
       {
         "card": "Emperor of Bones",
-        "core_score": 9.69371034680691,
+        "core_score": 9.694116827669772,
         "deck_prevalence": 0.3062715217369361,
         "signpost_score": 3345.224353689462
       },
       {
         "card": "Bone Shards",
-        "core_score": 9.61889290743463,
+        "core_score": 9.618908879060518,
         "deck_prevalence": 0.2662065901389928,
         "signpost_score": 3144.770606642289
       },
       {
         "card": "Persist",
-        "core_score": 9.592166450602727,
+        "core_score": 9.590149714930831,
         "deck_prevalence": 0.26069968617791045,
         "signpost_score": 3068.2514280086725
       },
       {
         "card": "Collective Brutality",
-        "core_score": 9.582331042556985,
+        "core_score": 9.582655169769689,
         "deck_prevalence": 0.26273159236519755,
         "signpost_score": 3049.4152484086553
       },
       {
         "card": "Bitter Triumph",
-        "core_score": 9.571715302655276,
+        "core_score": 9.570865394518409,
         "deck_prevalence": 0.2784908514143832,
         "signpost_score": 3018.8861313401317
       }
@@ -6130,200 +3855,79 @@
     ],
     "top_dependency": [
       {
-        "card": "Archon of Cruelty",
-        "dependency_score": 0.6165901810034278,
-        "standalone_delta": 0.06683481193263752,
-        "draw_games": 2375
-      },
-      {
-        "card": "Persist",
-        "dependency_score": 0.5623694244952281,
-        "standalone_delta": 0.051035022927831464,
-        "draw_games": 1796
-      },
-      {
         "card": "Animate Dead",
-        "dependency_score": 0.481465344228877,
+        "dependency_score": 0.0,
         "standalone_delta": 0.07322273268211432,
         "draw_games": 2691
       },
       {
+        "card": "Necromancy",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.06872931213969313,
+        "draw_games": 2669
+      },
+      {
+        "card": "Reanimate",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.06751408701456585,
+        "draw_games": 2666
+      },
+      {
+        "card": "Entomb",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.046869225681631654,
+        "draw_games": 2551
+      },
+      {
+        "card": "Archon of Cruelty",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.06683481193263752,
+        "draw_games": 2375
+      },
+      {
+        "card": "Emperor of Bones",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.07022800078712665,
+        "draw_games": 2227
+      },
+      {
         "card": "Life // Death",
-        "dependency_score": 0.3755517782290158,
+        "dependency_score": 0.0,
         "standalone_delta": 0.04504120551474522,
         "draw_games": 2165
       },
       {
+        "card": "Collective Brutality",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.04405123341014561,
+        "draw_games": 1982
+      },
+      {
+        "card": "Griselbrand",
+        "dependency_score": 0.0,
+        "standalone_delta": -0.009412753391187745,
+        "draw_games": 1978
+      },
+      {
         "card": "Bitter Triumph",
-        "dependency_score": 0.34040291800685385,
+        "dependency_score": 0.0,
         "standalone_delta": 0.03881678554856627,
         "draw_games": 1927
       },
       {
         "card": "Barrowgoyf",
-        "dependency_score": 0.31045078326097103,
+        "dependency_score": 0.0,
         "standalone_delta": 0.07147209929420839,
         "draw_games": 1844
       },
       {
         "card": "Bone Shards",
-        "dependency_score": 0.1912656404535413,
+        "dependency_score": 0.0,
         "standalone_delta": 0.033204160413973005,
         "draw_games": 1816
-      },
-      {
-        "card": "Crabomination",
-        "dependency_score": 0.1621761998934937,
-        "standalone_delta": 0.06081340462375151,
-        "draw_games": 1662
-      },
-      {
-        "card": "Necromancy",
-        "dependency_score": 0.15690253148419,
-        "standalone_delta": 0.06872931213969313,
-        "draw_games": 2669
-      },
-      {
-        "card": "Griselbrand",
-        "dependency_score": 0.15532910581417436,
-        "standalone_delta": -0.009412753391187745,
-        "draw_games": 1978
-      },
-      {
-        "card": "Reanimate",
-        "dependency_score": 0.14531472071306079,
-        "standalone_delta": 0.06751408701456585,
-        "draw_games": 2666
-      },
-      {
-        "card": "Grief",
-        "dependency_score": 0.14026189501063835,
-        "standalone_delta": 0.04763758810383467,
-        "draw_games": 1729
       }
     ],
-    "top_pairs": [
-      {
-        "cards": [
-          "Barrowgoyf",
-          "Persist"
-        ],
-        "quality_score": 1.4864692872755338,
-        "pair_win_rate": 0.7326732673267327,
-        "pair_games": 101,
-        "synergy_delta_logit": 0.44053003574617233
-      },
-      {
-        "cards": [
-          "Liliana of the Veil",
-          "Reanimate"
-        ],
-        "quality_score": 1.2671066808354372,
-        "pair_win_rate": 0.7099236641221374,
-        "pair_games": 131,
-        "synergy_delta_logit": 0.40058850704255483
-      },
-      {
-        "cards": [
-          "Archon of Cruelty",
-          "Emperor of Bones"
-        ],
-        "quality_score": 1.1572674673257821,
-        "pair_win_rate": 0.7176470588235294,
-        "pair_games": 170,
-        "synergy_delta_logit": 0.30552244113893956
-      },
-      {
-        "cards": [
-          "Bone Shards",
-          "Griselbrand"
-        ],
-        "quality_score": 0.950256618919954,
-        "pair_win_rate": 0.6428571428571429,
-        "pair_games": 140,
-        "synergy_delta_logit": 0.41989879203253044
-      },
-      {
-        "cards": [
-          "Barrowgoyf",
-          "Overlord of the Balemurk"
-        ],
-        "quality_score": 0.9354129104516927,
-        "pair_win_rate": 0.7021276595744681,
-        "pair_games": 94,
-        "synergy_delta_logit": 0.3633964740587459
-      },
-      {
-        "cards": [
-          "Collective Brutality",
-          "Life // Death"
-        ],
-        "quality_score": 0.9117161996291562,
-        "pair_win_rate": 0.6776315789473685,
-        "pair_games": 152,
-        "synergy_delta_logit": 0.31190476326675126
-      },
-      {
-        "cards": [
-          "Animate Dead",
-          "Life // Death"
-        ],
-        "quality_score": 0.9064342995762602,
-        "pair_win_rate": 0.6888888888888889,
-        "pair_games": 180,
-        "synergy_delta_logit": 0.24439408429318388
-      },
-      {
-        "cards": [
-          "Animate Dead",
-          "Archon of Cruelty"
-        ],
-        "quality_score": 0.7942035385223088,
-        "pair_win_rate": 0.6923076923076923,
-        "pair_games": 234,
-        "synergy_delta_logit": 0.17125499791731003
-      },
-      {
-        "cards": [
-          "Atraxa, Grand Unifier",
-          "Life // Death"
-        ],
-        "quality_score": 0.7865624639732989,
-        "pair_win_rate": 0.673202614379085,
-        "pair_games": 153,
-        "synergy_delta_logit": 0.2753053944786152
-      },
-      {
-        "cards": [
-          "Bone Shards",
-          "Grief"
-        ],
-        "quality_score": 0.7831773644880552,
-        "pair_win_rate": 0.672566371681416,
-        "pair_games": 113,
-        "synergy_delta_logit": 0.322205082701081
-      },
-      {
-        "cards": [
-          "Crabomination",
-          "Grief"
-        ],
-        "quality_score": 0.7263252786923934,
-        "pair_win_rate": 0.6880733944954128,
-        "pair_games": 109,
-        "synergy_delta_logit": 0.2811497944311796
-      },
-      {
-        "cards": [
-          "Entomb",
-          "Necromancy"
-        ],
-        "quality_score": 0.6964089939207675,
-        "pair_win_rate": 0.6728624535315985,
-        "pair_games": 269,
-        "synergy_delta_logit": 0.1817523972012457
-      }
-    ],
+    "top_pairs": [],
     "top_anti_pairs": [
       {
         "cards": [
@@ -6580,140 +4184,7 @@
         "pick_urgency_score": 7.941914204804962
       }
     ],
-    "top_pick_pairs": [
-      {
-        "cards": [
-          "Animate Dead",
-          "Archon of Cruelty"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 4.552109343502421,
-        "pair_win_rate": 0.6923076923076923,
-        "pair_games": 234,
-        "draft_pair_events": 764
-      },
-      {
-        "cards": [
-          "Animate Dead",
-          "Entomb"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 4.039687827508996,
-        "pair_win_rate": 0.6727941176470589,
-        "pair_games": 272,
-        "draft_pair_events": 803
-      },
-      {
-        "cards": [
-          "Entomb",
-          "Necromancy"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 4.024395402184007,
-        "pair_win_rate": 0.6728624535315985,
-        "pair_games": 269,
-        "draft_pair_events": 829
-      },
-      {
-        "cards": [
-          "Archon of Cruelty",
-          "Emperor of Bones"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 3.9726471325777815,
-        "pair_win_rate": 0.7176470588235294,
-        "pair_games": 170,
-        "draft_pair_events": 634
-      },
-      {
-        "cards": [
-          "Animate Dead",
-          "Life // Death"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 3.746730457178173,
-        "pair_win_rate": 0.6888888888888889,
-        "pair_games": 180,
-        "draft_pair_events": 690
-      },
-      {
-        "cards": [
-          "Archon of Cruelty",
-          "Life // Death"
-        ],
-        "pick_score": 9.694072956810711,
-        "pick_score_raw": 3.6253090508350376,
-        "pair_win_rate": 0.6683673469387755,
-        "pair_games": 196,
-        "draft_pair_events": 738
-      },
-      {
-        "cards": [
-          "Barrowgoyf",
-          "Persist"
-        ],
-        "pick_score": 8.98576209209521,
-        "pick_score_raw": 3.39534790195416,
-        "pair_win_rate": 0.7326732673267327,
-        "pair_games": 101,
-        "draft_pair_events": 453
-      },
-      {
-        "cards": [
-          "Animate Dead",
-          "Emperor of Bones"
-        ],
-        "pick_score": 8.72004981017327,
-        "pick_score_raw": 3.312061546898404,
-        "pair_win_rate": 0.6802325581395349,
-        "pair_games": 172,
-        "draft_pair_events": 620
-      },
-      {
-        "cards": [
-          "Liliana of the Veil",
-          "Reanimate"
-        ],
-        "pick_score": 8.715459713133054,
-        "pick_score_raw": 3.310636754599185,
-        "pair_win_rate": 0.7099236641221374,
-        "pair_games": 131,
-        "draft_pair_events": 437
-      },
-      {
-        "cards": [
-          "Animate Dead",
-          "Collective Brutality"
-        ],
-        "pick_score": 8.609558615142797,
-        "pick_score_raw": 3.2778948617584924,
-        "pair_win_rate": 0.6721311475409836,
-        "pair_games": 183,
-        "draft_pair_events": 682
-      },
-      {
-        "cards": [
-          "Crabomination",
-          "Necromancy"
-        ],
-        "pick_score": 8.174252650779312,
-        "pick_score_raw": 3.1459010973828354,
-        "pair_win_rate": 0.6845637583892618,
-        "pair_games": 149,
-        "draft_pair_events": 576
-      },
-      {
-        "cards": [
-          "Archon of Cruelty",
-          "Barrowgoyf"
-        ],
-        "pick_score": 8.112949494411854,
-        "pick_score_raw": 3.127642802720143,
-        "pair_win_rate": 0.6733333333333333,
-        "pair_games": 150,
-        "draft_pair_events": 532
-      }
-    ]
+    "top_pick_pairs": []
   },
   "overview": [
     {
@@ -6736,9 +4207,8 @@
         "Broadside Bombardiers"
       ],
       "build_arounds": [
-        "Guide of Souls",
-        "Adeline, Resplendent Cathar",
-        "Luminarch Aspirant"
+        "Showdown of the Skalds",
+        "Ocelot Pride"
       ],
       "core_cards": [
         "Guide of Souls",
@@ -6766,14 +4236,12 @@
         "Laelia, the Blade Reforged",
         "Fury"
       ],
-      "build_arounds": [
-        "Kolaghan's Command"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Fire Covenant",
-        "Kolaghan's Command",
         "Fury",
-        "Pyrogoyf"
+        "Pyrogoyf",
+        "Fiery Confluence"
       ]
     },
     {
@@ -6795,9 +4263,7 @@
         "Phelia, Exuberant Shepherd",
         "Solitude"
       ],
-      "build_arounds": [
-        "Path to Exile"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "No More Lies",
         "The Wandering Emperor",
@@ -6824,9 +4290,7 @@
         "Necromancy",
         "Barrowgoyf"
       ],
-      "build_arounds": [
-        "Griselbrand"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Animate Dead",
         "Necromancy",
@@ -6853,11 +4317,7 @@
         "Oko, Thief of Crowns",
         "Nadu, Winged Wisdom"
       ],
-      "build_arounds": [
-        "Fastbond",
-        "Lotus Cobra",
-        "Llanowar Elves"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Birds of Paradise",
         "Titania, Protector of Argoth",
@@ -6923,6 +4383,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -7028,6 +4489,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -7050,28 +4513,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -7139,16 +4593,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -7276,7 +4721,7 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
     if (filters.topSynergies) {
@@ -7611,22 +5056,27 @@
       ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
       : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
     var edgeText = mode === 'analysis'
-      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\\'s own baseline.'
       : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -7804,8 +5254,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -7922,6 +5373,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

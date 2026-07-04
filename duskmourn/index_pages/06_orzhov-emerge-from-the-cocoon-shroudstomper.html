@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Orzhov | Emerge from the Cocoon / Shroudstomper | Duskmourn Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -743,8 +623,8 @@
         "supported_win_rate": 0.5761589403973509,
         "support_delta": 0.12855073994177008,
         "standalone_delta": 0.052613820304830416,
-        "dependency_score": 0.9086715780449233,
-        "degree": 4,
+        "dependency_score": 1.6271868795032365,
+        "degree": 1,
         "signpost_score": 16495.214499243753,
         "signpost_lift": 7.894784098205391,
         "deck_prevalence": 0.5701458001494248,
@@ -757,7 +637,7 @@
         "alsa": 4.623565761290387,
         "average_taken_at": 8.308811881188118,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 16518.93652249124,
+        "analysis_score_raw": 16531.86979791749,
         "analysis_score": 10.0,
         "pick_priority_score_raw": 499.9144859371126,
         "pick_priority_score": 9.786734401862507,
@@ -765,18 +645,20 @@
         "pick_market_score": 8.212331278153526,
         "pick_urgency_score_raw": 7.207701414449021,
         "pick_urgency_score": 7.207701414449021,
-        "shell_dependence_score_raw": 79.6773071683393,
+        "shell_dependence_score_raw": 129.086790808255,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 79.6773071683393,
+        "build_around_score_raw": 129.086790808255,
         "build_around_score": 10.0,
-        "core_score_raw": 16542.055657670062,
+        "core_score_raw": 16552.114871890477,
         "core_score": 10.0,
+        "win_contribution_logit": 0.22733567073427466,
+        "contribution_score": 7.687514187639846,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Emerge%20from%20the%20Cocoon%22",
         "community": 0,
-        "x": 1193.5669554700282,
-        "y": 497.19894407089885,
+        "x": 1240.5098888793123,
+        "y": 590.783988991867,
         "analysis_radius": 28.0,
         "pick_radius": 30.0,
         "radius": 28.0,
@@ -788,33 +670,6 @@
             "pair_games": 2773,
             "synergy_delta_logit": 0.13162901835048613,
             "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Vile Mutilator",
-            "quality_score": 0.6157718992147618,
-            "pair_win_rate": 0.6331034482758621,
-            "pair_games": 1450,
-            "synergy_delta_logit": 0.0661604299998495,
-            "partner_pick_score": 9.151450026649327,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Final Vengeance",
-            "quality_score": 0.5129358184894781,
-            "pair_win_rate": 0.622508038585209,
-            "pair_games": 1555,
-            "synergy_delta_logit": 0.0721193963244593,
-            "partner_pick_score": 8.499105361363615,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Live or Die",
-            "quality_score": 0.4595721503665069,
-            "pair_win_rate": 0.6431064572425829,
-            "pair_games": 1146,
-            "synergy_delta_logit": 0.06564128805867653,
-            "partner_pick_score": 9.063573891519047,
             "partner_rarity": "uncommon"
           }
         ],
@@ -893,8 +748,8 @@
         "supported_win_rate": 0.5826466311197286,
         "support_delta": 0.21629656327712343,
         "standalone_delta": 0.05338808602603318,
-        "dependency_score": 0.43239771466169163,
-        "degree": 15,
+        "dependency_score": 0.7478355384211604,
+        "degree": 6,
         "signpost_score": 15451.212937626568,
         "signpost_lift": 11.039797491912472,
         "deck_prevalence": 0.5275122864896523,
@@ -907,7 +762,7 @@
         "alsa": 3.639151464558423,
         "average_taken_at": 5.528357380688124,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 15466.470428534123,
+        "analysis_score_raw": 15472.148309361794,
         "analysis_score": 10.0,
         "pick_priority_score_raw": 598.3060342265763,
         "pick_priority_score": 10.0,
@@ -915,18 +770,20 @@
         "pick_market_score": 9.247260425726875,
         "pick_urgency_score_raw": 8.850361377473773,
         "pick_urgency_score": 8.850361377473773,
-        "shell_dependence_score_raw": 90.78011596345654,
+        "shell_dependence_score_raw": 132.74315541229376,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 90.78011596345654,
+        "build_around_score_raw": 132.74315541229376,
         "build_around_score": 10.0,
-        "core_score_raw": 15489.235131841506,
+        "core_score_raw": 15493.651261374138,
         "core_score": 10.0,
+        "win_contribution_logit": 0.16924058033564518,
+        "contribution_score": 5.867719697307635,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Shroudstomper%22",
         "community": 0,
-        "x": 1200.9048119991392,
-        "y": 555.156393839936,
+        "x": 1339.3983771882843,
+        "y": 537.9753032503922,
         "analysis_radius": 28.0,
         "pick_radius": 30.0,
         "radius": 28.0,
@@ -1025,8 +882,8 @@
         "supported_win_rate": 0.5817223198594025,
         "support_delta": 0.13524712403694816,
         "standalone_delta": 0.05696320490167406,
-        "dependency_score": 0.5562982149330838,
-        "degree": 6,
+        "dependency_score": 0.8753397952640536,
+        "degree": 1,
         "signpost_score": 14887.14094483328,
         "signpost_lift": 10.46274444459761,
         "deck_prevalence": 0.5010030933592496,
@@ -1039,26 +896,28 @@
         "alsa": 3.6601341865552253,
         "average_taken_at": 5.586591529657817,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 14905.12916138831,
-        "analysis_score": 9.98303948460161,
+        "analysis_score_raw": 14910.871909834266,
+        "analysis_score": 9.983048234376023,
         "pick_priority_score_raw": 607.6231816741326,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 9.226850484211335,
         "pick_market_score": 9.226850484211335,
         "pick_urgency_score_raw": 8.819189830431856,
         "pick_urgency_score": 8.819189830431856,
-        "shell_dependence_score_raw": 60.674116144864584,
-        "shell_dependence_score": 9.36743795911946,
-        "build_around_score_raw": 60.674116144864584,
-        "build_around_score": 9.36743795911946,
-        "core_score_raw": 14925.823153113666,
-        "core_score": 9.97308765918413,
+        "shell_dependence_score_raw": 84.68206449639221,
+        "shell_dependence_score": 9.183088809609302,
+        "build_around_score_raw": 84.68206449639221,
+        "build_around_score": 9.183088809609302,
+        "core_score_raw": 14930.289735238299,
+        "core_score": 9.973098735272549,
+        "win_contribution_logit": 0.2683981476287024,
+        "contribution_score": 8.922537480314457,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Rite%20of%20the%20Moth%22",
-        "community": 2,
-        "x": 901.799293213081,
-        "y": 806.0892887818852,
+        "community": 0,
+        "x": 1442.8532545119592,
+        "y": 483.8837725604183,
         "analysis_radius": 28.0,
         "pick_radius": 30.0,
         "radius": 28.0,
@@ -1071,42 +930,6 @@
             "synergy_delta_logit": 0.14468803010392928,
             "partner_pick_score": 10.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Vile Mutilator",
-            "quality_score": 1.5827355505730827,
-            "pair_win_rate": 0.6623376623376623,
-            "pair_games": 1078,
-            "synergy_delta_logit": 0.17659395955277402,
-            "partner_pick_score": 9.151450026649327,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Innocuous Rat",
-            "quality_score": 1.0290903184968954,
-            "pair_win_rate": 0.6354973198332341,
-            "pair_games": 1679,
-            "synergy_delta_logit": 0.12725622063805953,
-            "partner_pick_score": 8.870329204409503,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Fanatic of the Harrowing",
-            "quality_score": 0.5509273303973734,
-            "pair_win_rate": 0.6363636363636364,
-            "pair_games": 1903,
-            "synergy_delta_logit": 0.06321080403608703,
-            "partner_pick_score": 9.497313183833027,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Shepherding Spirits",
-            "quality_score": 0.5000345377409479,
-            "pair_win_rate": 0.6164794007490637,
-            "pair_games": 1335,
-            "synergy_delta_logit": 0.0802063252747241,
-            "partner_pick_score": 7.859364275839391,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -1153,10 +976,10 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.5010030933592496,
-            "analysis_score": 9.98303948460161,
+            "analysis_score": 9.983048234376023,
             "pick_priority_score": 10.0,
-            "build_around_score": 9.36743795911946,
-            "core_score": 9.97308765918413,
+            "build_around_score": 9.183088809609302,
+            "core_score": 9.973098735272549,
             "role": "engine"
           }
         ]
@@ -1182,8 +1005,8 @@
         "supported_win_rate": 0.5754979874084013,
         "support_delta": 0.19135164594498666,
         "standalone_delta": 0.05141599939698671,
-        "dependency_score": 0.10807939321814362,
-        "degree": 6,
+        "dependency_score": 0.1583850342469535,
+        "degree": 1,
         "signpost_score": 12324.89238322745,
         "signpost_lift": 5.930162408639349,
         "deck_prevalence": 0.46412016351491653,
@@ -1196,29 +1019,31 @@
         "alsa": 5.020892209909985,
         "average_taken_at": 9.14421459422596,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 12334.036052220956,
-        "analysis_score": 9.858946407901946,
+        "analysis_score_raw": 12334.941553759474,
+        "analysis_score": 9.858753839662366,
         "pick_priority_score_raw": 415.796439881229,
         "pick_priority_score": 9.497313183833027,
         "pick_market_score_raw": 7.82244690159374,
         "pick_market_score": 7.82244690159374,
         "pick_urgency_score_raw": 6.528046375912774,
         "pick_urgency_score": 6.528046375912774,
-        "shell_dependence_score_raw": 27.93682005895231,
-        "shell_dependence_score": 6.82141373912667,
-        "build_around_score_raw": 27.93682005895231,
-        "build_around_score": 6.82141373912667,
-        "core_score_raw": 12354.910103184024,
-        "core_score": 9.776939224156123,
+        "shell_dependence_score_raw": 31.86159112366406,
+        "shell_dependence_score": 6.517394722946997,
+        "build_around_score_raw": 31.86159112366406,
+        "build_around_score": 6.517394722946997,
+        "core_score_raw": 12355.614382158428,
+        "core_score": 9.776704879880148,
+        "win_contribution_logit": 0.1327106255194984,
+        "contribution_score": 4.676536501007587,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fanatic%20of%20the%20Harrowing%22",
         "community": 0,
-        "x": 1178.6529077004068,
-        "y": 627.2553741973675,
-        "analysis_radius": 17.71873812268744,
+        "x": 1241.6626937292738,
+        "y": 476.6876289822551,
+        "analysis_radius": 19.529741199724594,
         "pick_radius": 30.0,
-        "radius": 17.71873812268744,
+        "radius": 19.529741199724594,
         "top_synergies": [
           {
             "card": "Shroudstomper",
@@ -1228,42 +1053,6 @@
             "synergy_delta_logit": 0.1583850342469535,
             "partner_pick_score": 10.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Live or Die",
-            "quality_score": 1.3220219681168033,
-            "pair_win_rate": 0.6632083000798085,
-            "pair_games": 1253,
-            "synergy_delta_logit": 0.15927152467531214,
-            "partner_pick_score": 9.063573891519047,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Vile Mutilator",
-            "quality_score": 0.9972748554798782,
-            "pair_win_rate": 0.6480541455160744,
-            "pair_games": 1182,
-            "synergy_delta_logit": 0.13598193014406523,
-            "partner_pick_score": 9.151450026649327,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Rite of the Moth",
-            "quality_score": 0.5509273303973734,
-            "pair_win_rate": 0.6363636363636364,
-            "pair_games": 1903,
-            "synergy_delta_logit": 0.06321080403608703,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Innocuous Rat",
-            "quality_score": 0.5076361709785998,
-            "pair_win_rate": 0.6163157894736843,
-            "pair_games": 1900,
-            "synergy_delta_logit": 0.06794203925249848,
-            "partner_pick_score": 8.870329204409503,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -1310,10 +1099,10 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.46412016351491653,
-            "analysis_score": 9.858946407901946,
+            "analysis_score": 9.858753839662366,
             "pick_priority_score": 9.497313183833027,
-            "build_around_score": 6.82141373912667,
-            "core_score": 9.776939224156123,
+            "build_around_score": 6.517394722946997,
+            "core_score": 9.776704879880148,
             "role": "engine"
           }
         ]
@@ -1339,8 +1128,8 @@
         "supported_win_rate": 0.5571697324414716,
         "support_delta": 0.14412625418060204,
         "standalone_delta": 0.032640281306014485,
-        "dependency_score": 0.42604367771302554,
-        "degree": 6,
+        "dependency_score": 1.1788755287228756,
+        "degree": 1,
         "signpost_score": 11894.783237372665,
         "signpost_lift": 4.3741929806823485,
         "deck_prevalence": 0.518984384130864,
@@ -1353,26 +1142,28 @@
         "alsa": 4.5726572447963285,
         "average_taken_at": 8.26693060541976,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 11907.021662954341,
-        "analysis_score": 9.835854443500518,
+        "analysis_score_raw": 11920.572636272518,
+        "analysis_score": 9.836359752332697,
         "pick_priority_score_raw": 231.50447630519466,
         "pick_priority_score": 8.578393630653375,
         "pick_market_score_raw": 8.243011716979252,
         "pick_market_score": 8.243011716979252,
         "pick_urgency_score_raw": 6.9030414966674725,
         "pick_urgency_score": 6.9030414966674725,
-        "shell_dependence_score_raw": 40.25462176536422,
-        "shell_dependence_score": 8.014600127003682,
-        "build_around_score_raw": 40.25462176536422,
-        "build_around_score": 8.014600127003682,
-        "core_score_raw": 11930.509460746462,
-        "core_score": 9.740670376432732,
+        "shell_dependence_score_raw": 85.08154998668655,
+        "shell_dependence_score": 9.19602754316419,
+        "build_around_score_raw": 85.08154998668655,
+        "build_around_score": 9.19602754316419,
+        "core_score_raw": 11941.049106660601,
+        "core_score": 9.74129417802096,
+        "win_contribution_logit": 0.11712242865653606,
+        "contribution_score": 4.15649067446638,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Spectral%20Snatcher%22",
-        "community": 3,
-        "x": 920.8606918948708,
-        "y": 864.9259075199416,
+        "community": 0,
+        "x": 1344.0112697249028,
+        "y": 425.099129625346,
         "analysis_radius": 28.0,
         "pick_radius": 30.0,
         "radius": 28.0,
@@ -1385,42 +1176,6 @@
             "synergy_delta_logit": 0.1779913658067087,
             "partner_pick_score": 10.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Final Vengeance",
-            "quality_score": 0.8905897044673667,
-            "pair_win_rate": 0.6203252032520326,
-            "pair_games": 1230,
-            "synergy_delta_logit": 0.14381588031023596,
-            "partner_pick_score": 8.499105361363615,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Live or Die",
-            "quality_score": 0.47381438970378276,
-            "pair_win_rate": 0.6262135922330098,
-            "pair_games": 1236,
-            "synergy_delta_logit": 0.07375051223882767,
-            "partner_pick_score": 9.063573891519047,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Vile Mutilator",
-            "quality_score": 0.3937459200429881,
-            "pair_win_rate": 0.6139817629179332,
-            "pair_games": 987,
-            "synergy_delta_logit": 0.06566211748231432,
-            "partner_pick_score": 9.151450026649327,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Winter's Intervention",
-            "quality_score": 0.3846854984120091,
-            "pair_win_rate": 0.6021573604060914,
-            "pair_games": 1576,
-            "synergy_delta_logit": 0.06400776301254968,
-            "partner_pick_score": 8.873498107640792,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -1467,10 +1222,10 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.518984384130864,
-            "analysis_score": 9.835854443500518,
+            "analysis_score": 9.836359752332697,
             "pick_priority_score": 8.578393630653375,
-            "build_around_score": 8.014600127003682,
-            "core_score": 9.740670376432732,
+            "build_around_score": 9.19602754316419,
+            "core_score": 9.74129417802096,
             "role": "engine"
           },
           {
@@ -1478,11 +1233,11 @@
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.38465490010360415,
-            "analysis_score": 9.695672607776592,
+            "analysis_score": 9.695762972889577,
             "pick_priority_score": 4.596674349130935,
-            "build_around_score": 9.95675952717066,
-            "core_score": 9.506114336115708,
-            "role": "needs_support"
+            "build_around_score": 10.0,
+            "core_score": 9.506223259586676,
+            "role": "balanced"
           },
           {
             "cluster_id": 7,
@@ -1491,7 +1246,7 @@
             "deck_prevalence": 0.006457478686330789,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.3451459888413453,
+            "build_around_score": 3.6720909472897407,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -1518,8 +1273,8 @@
         "supported_win_rate": 0.5359578425294482,
         "support_delta": 0.0820252582597853,
         "standalone_delta": 0.015830646694986017,
-        "dependency_score": 0.09050296774623373,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9559.286986045176,
         "signpost_lift": 7.100694196131025,
         "deck_prevalence": 0.33683255293479847,
@@ -1532,67 +1287,32 @@
         "alsa": 4.9214408352668215,
         "average_taken_at": 9.326801727000996,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9563.132330001907,
-        "analysis_score": 9.692187684176455,
+        "analysis_score_raw": 9561.503276582474,
+        "analysis_score": 9.69183942796714,
         "pick_priority_score_raw": 124.02418146611318,
         "pick_priority_score": 7.601674302804278,
         "pick_market_score_raw": 7.80621265008143,
         "pick_market_score": 7.80621265008143,
         "pick_urgency_score_raw": 5.951793662758336,
         "pick_urgency_score": 5.951793662758336,
-        "shell_dependence_score_raw": 15.022953853977752,
-        "shell_dependence_score": 4.832729385277128,
-        "build_around_score_raw": 15.022953853977752,
-        "build_around_score": 4.832729385277128,
-        "core_score_raw": 9579.414925315306,
-        "core_score": 9.512938441695548,
+        "shell_dependence_score_raw": 11.029972773375276,
+        "shell_dependence_score": 3.722178493849617,
+        "build_around_score_raw": 11.029972773375276,
+        "build_around_score": 3.722178493849617,
+        "core_score_raw": 9578.147883766858,
+        "core_score": 9.512515636444023,
+        "win_contribution_logit": 0.041320781851030046,
+        "contribution_score": 1.5195174008105166,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Possessed%20Goat%22",
-        "community": 3,
-        "x": 705.8606918948708,
-        "y": 759.6711014622746,
-        "analysis_radius": 15.128792407088644,
+        "community": 1,
+        "x": 1233.1812696812403,
+        "y": 753.9216209925065,
+        "analysis_radius": 11.87068556822423,
         "pick_radius": 30.0,
-        "radius": 15.128792407088644,
-        "top_synergies": [
-          {
-            "card": "Final Vengeance",
-            "quality_score": 0.46523576612052053,
-            "pair_win_rate": 0.5981182795698925,
-            "pair_games": 744,
-            "synergy_delta_logit": 0.11817600187232707,
-            "partner_pick_score": 8.499105361363615,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Vile Mutilator",
-            "quality_score": 0.4143115605248037,
-            "pair_win_rate": 0.6060606060606061,
-            "pair_games": 726,
-            "synergy_delta_logit": 0.10002260903425209,
-            "partner_pick_score": 9.151450026649327,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Shroudstomper",
-            "quality_score": 0.3693682231104468,
-            "pair_win_rate": 0.5997200839748076,
-            "pair_games": 1429,
-            "synergy_delta_logit": 0.06623513991230429,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Spectral Snatcher",
-            "quality_score": 0.3631878938090395,
-            "pair_win_rate": 0.5845724907063197,
-            "pair_games": 1076,
-            "synergy_delta_logit": 0.08763899215436671,
-            "partner_pick_score": 8.578393630653375,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 11.87068556822423,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Balemurk Leech",
@@ -1637,10 +1357,10 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.33683255293479847,
-            "analysis_score": 9.692187684176455,
+            "analysis_score": 9.69183942796714,
             "pick_priority_score": 7.601674302804278,
-            "build_around_score": 4.832729385277128,
-            "core_score": 9.512938441695548,
+            "build_around_score": 3.722178493849617,
+            "core_score": 9.512515636444023,
             "role": "balanced"
           }
         ]
@@ -1666,8 +1386,8 @@
         "supported_win_rate": 0.5713391739674594,
         "support_delta": 0.09443530380516224,
         "standalone_delta": 0.04922327836855611,
-        "dependency_score": 0.09469180606879064,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9394.498474924043,
         "signpost_lift": 3.3294214393107695,
         "deck_prevalence": 0.4828123554493145,
@@ -1680,49 +1400,32 @@
         "alsa": 3.0780676344094697,
         "average_taken_at": 4.732653423649694,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9403.09418640488,
-        "analysis_score": 9.681127358148702,
+        "analysis_score_raw": 9401.389733895641,
+        "analysis_score": 9.680772215892736,
         "pick_priority_score_raw": 270.3800116930195,
         "pick_priority_score": 8.821802104663655,
         "pick_market_score_raw": 9.618209020580409,
         "pick_market_score": 9.618209020580409,
         "pick_urgency_score_raw": 9.074152570970414,
         "pick_urgency_score": 9.074152570970414,
-        "shell_dependence_score_raw": 10.1227527073339,
-        "shell_dependence_score": 3.604616293934674,
-        "build_around_score_raw": 10.1227527073339,
-        "build_around_score": 3.604616293934674,
-        "core_score_raw": 9425.114381353696,
-        "core_score": 9.496089637993949,
+        "shell_dependence_score_raw": 7.341886671737193,
+        "shell_dependence_score": 2.7038100228225836,
+        "build_around_score_raw": 7.341886671737193,
+        "build_around_score": 2.7038100228225836,
+        "core_score_raw": 9423.788696068734,
+        "core_score": 9.495658635235694,
+        "win_contribution_logit": 0.22565559818519024,
+        "contribution_score": 7.6361073156833355,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Murder%22",
         "community": 2,
-        "x": 1116.799293213081,
-        "y": 942.6193239521779,
-        "analysis_radius": 17.11618532874705,
+        "x": 1116.2409292483944,
+        "y": 720.3466273673557,
+        "analysis_radius": 13.707280310270587,
         "pick_radius": 30.0,
-        "radius": 17.11618532874705,
-        "top_synergies": [
-          {
-            "card": "Innocuous Rat",
-            "quality_score": 0.680913555816698,
-            "pair_win_rate": 0.6205035971223022,
-            "pair_games": 1668,
-            "synergy_delta_logit": 0.09461109695011627,
-            "partner_pick_score": 8.870329204409503,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Vile Mutilator",
-            "quality_score": 0.5921936960656523,
-            "pair_win_rate": 0.6365422396856582,
-            "pair_games": 1018,
-            "synergy_delta_logit": 0.09479511711012567,
-            "partner_pick_score": 9.151450026649327,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 13.707280310270587,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Seized from Slumber",
@@ -1767,44 +1470,44 @@
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.4861596801173812,
-            "analysis_score": 9.864093529512589,
+            "analysis_score": 9.864239417512158,
             "pick_priority_score": 8.651473223054417,
-            "build_around_score": 7.682328584034826,
-            "core_score": 9.779590226732575,
-            "role": "engine"
+            "build_around_score": 9.040712497389416,
+            "core_score": 9.779772087213905,
+            "role": "good_alone"
           },
           {
             "cluster_id": 6,
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.4828123554493145,
-            "analysis_score": 9.681127358148702,
+            "analysis_score": 9.680772215892736,
             "pick_priority_score": 8.821802104663655,
-            "build_around_score": 3.604616293934674,
-            "core_score": 9.496089637993949,
-            "role": "engine"
+            "build_around_score": 2.7038100228225836,
+            "core_score": 9.495658635235694,
+            "role": "good_alone"
           },
           {
             "cluster_id": 0,
             "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
             "color_name": "Dimir",
             "deck_prevalence": 0.41411298313003303,
-            "analysis_score": 9.62002699385932,
+            "analysis_score": 9.620168936532675,
             "pick_priority_score": 7.2724970927917605,
-            "build_around_score": 5.214880063574063,
-            "core_score": 9.421566285620893,
-            "role": "engine"
+            "build_around_score": 5.303056063846681,
+            "core_score": 9.421726933429989,
+            "role": "good_alone"
           },
           {
             "cluster_id": 2,
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.3984494442353922,
-            "analysis_score": 9.519350141904972,
+            "analysis_score": 9.519329044495915,
             "pick_priority_score": 7.471693416262692,
-            "build_around_score": 7.21724402759323,
-            "core_score": 9.21504741261676,
-            "role": "engine"
+            "build_around_score": 6.815573504917612,
+            "core_score": 9.21501687616712,
+            "role": "balanced"
           }
         ]
       },
@@ -1829,8 +1532,8 @@
         "supported_win_rate": 0.5603085553997195,
         "support_delta": 0.07916225072400301,
         "standalone_delta": 0.03978060800802785,
-        "dependency_score": 0.07545736999906957,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9011.659389754104,
         "signpost_lift": 3.4866627262688574,
         "deck_prevalence": 0.44925247189293155,
@@ -1843,58 +1546,32 @@
         "alsa": 4.1858913115986685,
         "average_taken_at": 7.1013892444092805,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9018.586907535211,
-        "analysis_score": 9.65376509151543,
+        "analysis_score_raw": 9017.228674875229,
+        "analysis_score": 9.65343071497448,
         "pick_priority_score_raw": 279.4391809348456,
         "pick_priority_score": 8.873498107640792,
         "pick_market_score_raw": 8.684623347028701,
         "pick_market_score": 8.684623347028701,
         "pick_urgency_score_raw": 7.663351470412065,
         "pick_urgency_score": 7.663351470412065,
-        "shell_dependence_score_raw": 8.432234996730621,
-        "shell_dependence_score": 3.0499586995576236,
-        "build_around_score_raw": 8.432234996730621,
-        "build_around_score": 3.0499586995576236,
-        "core_score_raw": 9039.458273153206,
-        "core_score": 9.45274134930234,
+        "shell_dependence_score_raw": 6.477219272031485,
+        "shell_dependence_score": 2.399426338229194,
+        "build_around_score_raw": 6.477219272031485,
+        "build_around_score": 2.399426338229194,
+        "core_score_raw": 9038.401869973219,
+        "core_score": 9.452336333396525,
+        "win_contribution_logit": 0.1657841544935606,
+        "contribution_score": 5.756616859397896,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Winter%27s%20Intervention%22",
-        "community": 1,
-        "x": 1137.008691907768,
-        "y": 836.5626594126462,
-        "analysis_radius": 15.904398760408036,
+        "community": 3,
+        "x": 1144.9222354506169,
+        "y": 839.4100263507551,
+        "analysis_radius": 13.187933440441531,
         "pick_radius": 30.0,
-        "radius": 15.904398760408036,
-        "top_synergies": [
-          {
-            "card": "Unholy Annex // Ritual Chamber",
-            "quality_score": 0.5398200276954834,
-            "pair_win_rate": 0.7002398081534772,
-            "pair_games": 417,
-            "synergy_delta_logit": 0.09640886518421132,
-            "partner_pick_score": 9.838835784602741,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Live or Die",
-            "quality_score": 0.45493480959517657,
-            "pair_win_rate": 0.6335403726708074,
-            "pair_games": 966,
-            "synergy_delta_logit": 0.07631626047953499,
-            "partner_pick_score": 9.063573891519047,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Spectral Snatcher",
-            "quality_score": 0.3846854984120091,
-            "pair_win_rate": 0.6021573604060914,
-            "pair_games": 1576,
-            "synergy_delta_logit": 0.06400776301254968,
-            "partner_pick_score": 8.578393630653375,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.187933440441531,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Unsettling Twins",
@@ -1939,42 +1616,42 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.44925247189293155,
-            "analysis_score": 9.65376509151543,
+            "analysis_score": 9.65343071497448,
             "pick_priority_score": 8.873498107640792,
-            "build_around_score": 3.0499586995576236,
-            "core_score": 9.45274134930234,
-            "role": "engine"
+            "build_around_score": 2.399426338229194,
+            "core_score": 9.452336333396525,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.42249269613436263,
-            "analysis_score": 9.762681935919767,
+            "analysis_score": 9.762781027068538,
             "pick_priority_score": 8.15262088066301,
-            "build_around_score": 8.697436092129196,
-            "core_score": 9.614889812067972,
-            "role": "engine"
+            "build_around_score": 10.0,
+            "core_score": 9.615010886148605,
+            "role": "balanced"
           },
           {
             "cluster_id": 0,
             "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
             "color_name": "Dimir",
             "deck_prevalence": 0.37947095317930446,
-            "analysis_score": 9.574339501187895,
+            "analysis_score": 9.573495370312918,
             "pick_priority_score": 6.3022719979171375,
-            "build_around_score": 8.586990284385136,
-            "core_score": 9.351570087764646,
-            "role": "engine"
+            "build_around_score": 5.965941921446468,
+            "core_score": 9.350563450352011,
+            "role": "good_alone"
           },
           {
             "cluster_id": 4,
             "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
             "color_name": "Izzet Spirit",
             "deck_prevalence": 0.008252116583056876,
-            "analysis_score": 0.04690734533690211,
+            "analysis_score": 0.0469127272808911,
             "pick_priority_score": 0.0,
-            "build_around_score": 0.062378062329523955,
+            "build_around_score": 0.09533938301970048,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2001,8 +1678,8 @@
         "supported_win_rate": 0.5502773431944247,
         "support_delta": 0.1311044108635976,
         "standalone_delta": 0.02622027680338035,
-        "dependency_score": 0.09870068803749402,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8805.284227726772,
         "signpost_lift": 4.169129349476384,
         "deck_prevalence": 0.39328354326013276,
@@ -2015,76 +1692,32 @@
         "alsa": 4.546127034278693,
         "average_taken_at": 8.393763240841214,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8810.73167886392,
-        "analysis_score": 9.638483872091975,
+        "analysis_score_raw": 8808.955066479246,
+        "analysis_score": 9.638116415294025,
         "pick_priority_score_raw": 146.2584568947164,
         "pick_priority_score": 7.859364275839391,
         "pick_market_score_raw": 8.218976183326742,
         "pick_market_score": 8.218976183326742,
         "pick_urgency_score_raw": 6.657160505688664,
         "pick_urgency_score": 6.657160505688664,
-        "shell_dependence_score_raw": 16.96360039656345,
-        "shell_dependence_score": 5.217367538410065,
-        "build_around_score_raw": 16.96360039656345,
-        "build_around_score": 5.217367538410065,
-        "core_score_raw": 8829.345505137111,
-        "core_score": 9.428339470688504,
+        "shell_dependence_score_raw": 12.1620066854725,
+        "shell_dependence_score": 3.9723344605148707,
+        "build_around_score_raw": 12.1620066854725,
+        "build_around_score": 3.9723344605148707,
+        "core_score_raw": 8827.963695504586,
+        "core_score": 9.427894058080113,
+        "win_contribution_logit": 0.10711501419050895,
+        "contribution_score": 3.818789363171605,
         "is_build_around": false,
-        "role": "engine",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Shepherding%20Spirits%22",
         "community": 4,
-        "x": 752.6034290772966,
-        "y": 671.2902606354315,
-        "analysis_radius": 15.995339993535703,
+        "x": 1023.9604406143026,
+        "y": 841.094783798187,
+        "analysis_radius": 12.442115224185919,
         "pick_radius": 30.0,
-        "radius": 15.995339993535703,
-        "top_synergies": [
-          {
-            "card": "Shroudstomper",
-            "quality_score": 0.8070358201563885,
-            "pair_win_rate": 0.6237154150197628,
-            "pair_games": 1265,
-            "synergy_delta_logit": 0.1255097405682134,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Valgavoth's Faithful",
-            "quality_score": 0.6311619408102779,
-            "pair_win_rate": 0.6180836707152496,
-            "pair_games": 741,
-            "synergy_delta_logit": 0.13629414650711275,
-            "partner_pick_score": 8.99733510060288,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Rite of the Moth",
-            "quality_score": 0.5000345377409479,
-            "pair_win_rate": 0.6164794007490637,
-            "pair_games": 1335,
-            "synergy_delta_logit": 0.0802063252747241,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Live or Die",
-            "quality_score": 0.4385408139431396,
-            "pair_win_rate": 0.6234256926952141,
-            "pair_games": 794,
-            "synergy_delta_logit": 0.08774096657037711,
-            "partner_pick_score": 9.063573891519047,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Unsettling Twins",
-            "quality_score": 0.35998835680251995,
-            "pair_win_rate": 0.6216790648246546,
-            "pair_games": 941,
-            "synergy_delta_logit": 0.06635286258652923,
-            "partner_pick_score": 9.415446122681029,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 12.442115224185919,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Balemurk Leech",
@@ -2129,20 +1762,20 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.39328354326013276,
-            "analysis_score": 9.638483872091975,
+            "analysis_score": 9.638116415294025,
             "pick_priority_score": 7.859364275839391,
-            "build_around_score": 5.217367538410065,
-            "core_score": 9.428339470688504,
-            "role": "engine"
+            "build_around_score": 3.9723344605148707,
+            "core_score": 9.427894058080113,
+            "role": "balanced"
           },
           {
             "cluster_id": 2,
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.0068752546190154985,
-            "analysis_score": 0.20599881548711552,
+            "analysis_score": 0.2060008697263962,
             "pick_priority_score": 0.0,
-            "build_around_score": 4.627657529818093,
+            "build_around_score": 4.971131096244122,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2169,8 +1802,8 @@
         "supported_win_rate": 0.5675361355706928,
         "support_delta": 0.13184059751295002,
         "standalone_delta": 0.04485263995292421,
-        "dependency_score": 0.12423030596951681,
-        "degree": 6,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8638.042740733157,
         "signpost_lift": 5.596922698147969,
         "deck_prevalence": 0.3324523794813761,
@@ -2183,76 +1816,32 @@
         "alsa": 3.1281670395781305,
         "average_taken_at": 4.769891135303266,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8646.558255834017,
-        "analysis_score": 9.626157084213105,
+        "analysis_score_raw": 8644.322110326566,
+        "analysis_score": 9.625752581770785,
         "pick_priority_score_raw": 302.3893280803616,
         "pick_priority_score": 8.99733510060288,
         "pick_market_score_raw": 9.592777972270847,
         "pick_market_score": 9.592777972270847,
         "pick_urgency_score_raw": 9.086376568734494,
         "pick_urgency_score": 9.086376568734494,
-        "shell_dependence_score_raw": 16.290039667039302,
-        "shell_dependence_score": 5.08878972613745,
-        "build_around_score_raw": 16.290039667039302,
-        "build_around_score": 5.08878972613745,
-        "core_score_raw": 8660.88196314576,
-        "core_score": 9.408351480348273,
+        "shell_dependence_score_raw": 10.882362683613216,
+        "shell_dependence_score": 3.6878368789928326,
+        "build_around_score_raw": 10.882362683613216,
+        "build_around_score": 3.6878368789928326,
+        "core_score_raw": 8659.142738862187,
+        "core_score": 9.407860684927241,
+        "win_contribution_logit": 0.18702761038123278,
+        "contribution_score": 6.43431901195132,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Valgavoth%27s%20Faithful%22",
-        "community": 1,
-        "x": 1219.0305473122687,
-        "y": 787.4813070945879,
-        "analysis_radius": 17.939186212313437,
+        "community": 5,
+        "x": 946.4405189240018,
+        "y": 933.9146496707709,
+        "analysis_radius": 13.466895197410832,
         "pick_radius": 30.0,
-        "radius": 17.939186212313437,
-        "top_synergies": [
-          {
-            "card": "Unholy Annex // Ritual Chamber",
-            "quality_score": 1.3018038632819298,
-            "pair_win_rate": 0.7383966244725738,
-            "pair_games": 237,
-            "synergy_delta_logit": 0.265063496435742,
-            "partner_pick_score": 9.838835784602741,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Final Vengeance",
-            "quality_score": 0.9898483391622662,
-            "pair_win_rate": 0.6392009987515606,
-            "pair_games": 801,
-            "synergy_delta_logit": 0.17536551233098513,
-            "partner_pick_score": 8.499105361363615,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Shroudstomper",
-            "quality_score": 0.7703172641841192,
-            "pair_win_rate": 0.6372021521906226,
-            "pair_games": 1301,
-            "synergy_delta_logit": 0.10809966455119813,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Shepherding Spirits",
-            "quality_score": 0.6311619408102779,
-            "pair_win_rate": 0.6180836707152496,
-            "pair_games": 741,
-            "synergy_delta_logit": 0.13629414650711275,
-            "partner_pick_score": 7.859364275839391,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Seized from Slumber",
-            "quality_score": 0.3885748514757485,
-            "pair_win_rate": 0.6383561643835617,
-            "pair_games": 730,
-            "synergy_delta_logit": 0.07307279452999327,
-            "partner_pick_score": 9.26932807093047,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.466895197410832,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Cynical Loner",
@@ -2297,11 +1886,11 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.3324523794813761,
-            "analysis_score": 9.626157084213105,
+            "analysis_score": 9.625752581770785,
             "pick_priority_score": 8.99733510060288,
-            "build_around_score": 5.08878972613745,
-            "core_score": 9.408351480348273,
-            "role": "engine"
+            "build_around_score": 3.6878368789928326,
+            "core_score": 9.407860684927241,
+            "role": "good_alone"
           }
         ]
       },
@@ -2326,8 +1915,8 @@
         "supported_win_rate": 0.556528401006895,
         "support_delta": 0.11281979173537188,
         "standalone_delta": 0.03469804211902627,
-        "dependency_score": 0.0920614561813466,
-        "degree": 5,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 8304.821337978308,
         "signpost_lift": 3.1469840790817836,
         "deck_prevalence": 0.4447478352968962,
@@ -2340,76 +1929,32 @@
         "alsa": 4.2036097168345385,
         "average_taken_at": 6.959885265058961,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8311.336170086235,
-        "analysis_score": 9.600243535503367,
+        "analysis_score_raw": 8309.679063874972,
+        "analysis_score": 9.599878496367836,
         "pick_priority_score_raw": 278.8752651163618,
         "pick_priority_score": 8.870329204409503,
         "pick_market_score_raw": 8.712116923766398,
         "pick_market_score": 8.712116923766398,
         "pick_urgency_score_raw": 7.704419797580536,
         "pick_urgency_score": 7.704419797580536,
-        "shell_dependence_score_raw": 13.154676880253353,
-        "shell_dependence_score": 4.415617773569222,
-        "build_around_score_raw": 13.154676880253353,
-        "build_around_score": 4.415617773569222,
-        "core_score_raw": 8332.186419380405,
-        "core_score": 9.368207544378633,
+        "shell_dependence_score_raw": 9.614264222508087,
+        "shell_dependence_score": 3.373918078431781,
+        "build_around_score_raw": 9.614264222508087,
+        "build_around_score": 3.373918078431781,
+        "core_score_raw": 8330.897558993865,
+        "core_score": 9.367765823825058,
+        "win_contribution_logit": 0.11323566607654235,
+        "contribution_score": 4.0256921234816065,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Innocuous%20Rat%22",
-        "community": 2,
-        "x": 1065.9153291720825,
-        "y": 757.954376361204,
-        "analysis_radius": 16.222604739074924,
+        "community": 6,
+        "x": 840.2061748589337,
+        "y": 876.2458466386199,
+        "analysis_radius": 12.908392316546445,
         "pick_radius": 30.0,
-        "radius": 16.222604739074924,
-        "top_synergies": [
-          {
-            "card": "Rite of the Moth",
-            "quality_score": 1.0290903184968954,
-            "pair_win_rate": 0.6354973198332341,
-            "pair_games": 1679,
-            "synergy_delta_logit": 0.12725622063805953,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Shroudstomper",
-            "quality_score": 0.7330709488105391,
-            "pair_win_rate": 0.6245146977260122,
-            "pair_games": 1803,
-            "synergy_delta_logit": 0.09472431195259023,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Murder",
-            "quality_score": 0.680913555816698,
-            "pair_win_rate": 0.6205035971223022,
-            "pair_games": 1668,
-            "synergy_delta_logit": 0.09461109695011627,
-            "partner_pick_score": 8.821802104663655,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Fanatic of the Harrowing",
-            "quality_score": 0.5076361709785998,
-            "pair_win_rate": 0.6163157894736843,
-            "pair_games": 1900,
-            "synergy_delta_logit": 0.06794203925249848,
-            "partner_pick_score": 9.497313183833027,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Unholy Annex // Ritual Chamber",
-            "quality_score": 0.341277060334935,
-            "pair_win_rate": 0.6887871853546911,
-            "pair_games": 437,
-            "synergy_delta_logit": 0.0629775677339145,
-            "partner_pick_score": 9.838835784602741,
-            "partner_rarity": "rare"
-          }
-        ],
+        "radius": 12.908392316546445,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Unsettling Twins",
@@ -2454,10 +1999,10 @@
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.5857061945634683,
-            "analysis_score": 9.933857042595273,
+            "analysis_score": 9.933956103938403,
             "pick_priority_score": 9.053444197496331,
-            "build_around_score": 8.745771685874978,
-            "core_score": 9.89207877187058,
+            "build_around_score": 9.394899537869104,
+            "core_score": 9.892203981098953,
             "role": "good_alone"
           },
           {
@@ -2465,22 +2010,22 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.4447478352968962,
-            "analysis_score": 9.600243535503367,
+            "analysis_score": 9.599878496367836,
             "pick_priority_score": 8.870329204409503,
-            "build_around_score": 4.415617773569222,
-            "core_score": 9.368207544378633,
-            "role": "engine"
+            "build_around_score": 3.373918078431781,
+            "core_score": 9.367765823825058,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.4097512234567905,
-            "analysis_score": 9.68441304267616,
+            "analysis_score": 9.683752381787086,
             "pick_priority_score": 6.4304993266499935,
-            "build_around_score": 9.999999999999998,
-            "core_score": 9.487676826164765,
-            "role": "needs_support"
+            "build_around_score": 9.945325967778576,
+            "core_score": 9.486838189846544,
+            "role": "balanced"
           }
         ]
       },
@@ -2505,8 +2050,8 @@
         "supported_win_rate": 0.5323390894819466,
         "support_delta": 0.06644890645366047,
         "standalone_delta": 0.011775382385860622,
-        "dependency_score": 0.06218358424685069,
-        "degree": 4,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 7860.103642611221,
         "signpost_lift": 4.100324994297563,
         "deck_prevalence": 0.354817772092034,
@@ -2519,67 +2064,32 @@
         "alsa": 4.697804801782347,
         "average_taken_at": 8.723814892360553,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7862.871500661686,
-        "analysis_score": 9.563891923824242,
+        "analysis_score_raw": 7861.752196145242,
+        "analysis_score": 9.563565150603592,
         "pick_priority_score_raw": 64.94841938355341,
         "pick_priority_score": 6.594677495452385,
         "pick_market_score_raw": 8.069783157768988,
         "pick_market_score": 8.069783157768988,
         "pick_urgency_score_raw": 6.0613931850878755,
         "pick_urgency_score": 6.0613931850878755,
-        "shell_dependence_score_raw": 8.682533925582891,
-        "shell_dependence_score": 3.138074775509238,
-        "build_around_score_raw": 8.682533925582891,
-        "build_around_score": 3.138074775509238,
-        "core_score_raw": 7880.425644442262,
-        "core_score": 9.310370077867997,
+        "shell_dependence_score_raw": 6.953067332583872,
+        "shell_dependence_score": 2.571040525761973,
+        "build_around_score_raw": 6.953067332583872,
+        "build_around_score": 2.571040525761973,
+        "core_score_raw": 7879.555074262806,
+        "core_score": 9.309975971607546,
+        "win_contribution_logit": 0.07405567835491814,
+        "contribution_score": 2.6810918542727062,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Appendage%20Amalgam%22",
-        "community": 0,
-        "x": 1332.7600027579135,
-        "y": 591.2821381606539,
-        "analysis_radius": 13.88625506410896,
+        "community": 7,
+        "x": 723.1819925093872,
+        "y": 906.1609934739903,
+        "analysis_radius": 11.647646031222335,
         "pick_radius": 30.0,
-        "radius": 13.88625506410896,
-        "top_synergies": [
-          {
-            "card": "Shroudstomper",
-            "quality_score": 0.31508800732277853,
-            "pair_win_rate": 0.5954583683767872,
-            "pair_games": 1189,
-            "synergy_delta_logit": 0.06478757270918617,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Seized from Slumber",
-            "quality_score": 0.2787268021553476,
-            "pair_win_rate": 0.6050632911392405,
-            "pair_games": 790,
-            "synergy_delta_logit": 0.06479606235240598,
-            "partner_pick_score": 9.26932807093047,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Live or Die",
-            "quality_score": 0.27772350891197917,
-            "pair_win_rate": 0.6049723756906077,
-            "pair_games": 724,
-            "synergy_delta_logit": 0.06790335211643483,
-            "partner_pick_score": 9.063573891519047,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Valgavoth's Faithful",
-            "quality_score": 0.16537957886222363,
-            "pair_win_rate": 0.5835654596100278,
-            "pair_games": 718,
-            "synergy_delta_logit": 0.05034868173508483,
-            "partner_pick_score": 8.99733510060288,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.647646031222335,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Commune with Evil",
@@ -2624,10 +2134,10 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.354817772092034,
-            "analysis_score": 9.563891923824242,
+            "analysis_score": 9.563565150603592,
             "pick_priority_score": 6.594677495452385,
-            "build_around_score": 3.138074775509238,
-            "core_score": 9.310370077867997,
+            "build_around_score": 2.571040525761973,
+            "core_score": 9.309975971607546,
             "role": "balanced"
           },
           {
@@ -2635,11 +2145,11 @@
             "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
             "color_name": "Dimir",
             "deck_prevalence": 0.29313513371475663,
-            "analysis_score": 9.460438401324552,
+            "analysis_score": 9.460476542133705,
             "pick_priority_score": 0.0,
-            "build_around_score": 7.4999745364881525,
-            "core_score": 9.178066835880756,
-            "role": "needs_support"
+            "build_around_score": 7.793753798650569,
+            "core_score": 9.178101470998888,
+            "role": "balanced"
           }
         ]
       },
@@ -2664,8 +2174,8 @@
         "supported_win_rate": 0.547568710359408,
         "support_delta": 0.09405397113038305,
         "standalone_delta": 0.025953107911073636,
-        "dependency_score": 0.10739475655417521,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 7684.571914291211,
         "signpost_lift": 5.007610039323366,
         "deck_prevalence": 0.31159095903418516,
@@ -2678,40 +2188,32 @@
         "alsa": 3.621460040221925,
         "average_taken_at": 5.812928010689828,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7690.138455016737,
-        "analysis_score": 9.549334523159343,
+        "analysis_score_raw": 7688.205349398761,
+        "analysis_score": 9.548936645866936,
         "pick_priority_score_raw": 193.0817508128894,
         "pick_priority_score": 8.294021987724838,
         "pick_market_score_raw": 9.19049797087704,
         "pick_market_score": 9.19049797087704,
         "pick_urgency_score_raw": 8.267385115586702,
         "pick_urgency_score": 8.267385115586702,
-        "shell_dependence_score_raw": 12.321046588800321,
-        "shell_dependence_score": 4.211397876586856,
-        "build_around_score_raw": 12.321046588800321,
-        "build_around_score": 4.211397876586856,
-        "core_score_raw": 7704.484184925189,
-        "core_score": 9.286942817450969,
+        "shell_dependence_score_raw": 8.618653717526387,
+        "shell_dependence_score": 3.0999480874160015,
+        "build_around_score_raw": 8.618653717526387,
+        "build_around_score": 3.0999480874160015,
+        "core_score_raw": 7702.98065833343,
+        "core_score": 9.286461547397504,
+        "win_contribution_logit": 0.10312397399677692,
+        "contribution_score": 3.6832590583539613,
         "is_build_around": false,
-        "role": "engine",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cynical%20Loner%22",
-        "community": 1,
-        "x": 1115.4210835720162,
-        "y": 621.5626594126462,
-        "analysis_radius": 16.293632171059357,
+        "community": 8,
+        "x": 673.039059946494,
+        "y": 796.3549456728704,
+        "analysis_radius": 12.42742093510905,
         "pick_radius": 30.0,
-        "radius": 16.293632171059357,
-        "top_synergies": [
-          {
-            "card": "Balemurk Leech",
-            "quality_score": 0.1788936074099956,
-            "pair_win_rate": 0.5561224489795918,
-            "pair_games": 392,
-            "synergy_delta_logit": 0.10739475655417523,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 12.42742093510905,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Unsettling Twins",
@@ -2756,11 +2258,11 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.31159095903418516,
-            "analysis_score": 9.549334523159343,
+            "analysis_score": 9.548936645866936,
             "pick_priority_score": 8.294021987724838,
-            "build_around_score": 4.211397876586856,
-            "core_score": 9.286942817450969,
-            "role": "engine"
+            "build_around_score": 3.0999480874160015,
+            "core_score": 9.286461547397504,
+            "role": "balanced"
           }
         ]
       },
@@ -2785,8 +2287,8 @@
         "supported_win_rate": 0.5854830956577471,
         "support_delta": 0.115380002874242,
         "standalone_delta": 0.06232838705372701,
-        "dependency_score": 0.10561500130407245,
-        "degree": 8,
+        "dependency_score": 0.20979120192867684,
+        "degree": 1,
         "signpost_score": 7571.265422728586,
         "signpost_lift": 4.28404066906263,
         "deck_prevalence": 0.33340307053308205,
@@ -2799,29 +2301,31 @@
         "alsa": 2.443864821955092,
         "average_taken_at": 3.373740185979175,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7581.89246693958,
-        "analysis_score": 9.540044297562869,
+        "analysis_score_raw": 7583.767638550823,
+        "analysis_score": 9.539973461336912,
         "pick_priority_score_raw": 315.42653780427815,
         "pick_priority_score": 9.063573891519047,
         "pick_market_score_raw": 9.925505533523275,
         "pick_market_score": 9.925505533523275,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 10.329261976246212,
-        "shell_dependence_score": 3.6665086285263353,
-        "build_around_score_raw": 10.329261976246212,
-        "build_around_score": 3.6665086285263353,
-        "core_score_raw": 7595.37890531413,
-        "core_score": 9.272144794160647,
+        "shell_dependence_score_raw": 13.355184009893563,
+        "shell_dependence_score": 4.213710664092569,
+        "build_around_score_raw": 13.355184009893563,
+        "build_around_score": 4.213710664092569,
+        "core_score_raw": 7596.8373721228745,
+        "core_score": 9.272065664114013,
+        "win_contribution_logit": 0.28966125211533894,
+        "contribution_score": 9.546437684773377,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Live%20or%20Die%22",
         "community": 0,
-        "x": 1229.2879063568646,
-        "y": 599.9513825598741,
-        "analysis_radius": 18.230201334901594,
+        "x": 1435.5240025389153,
+        "y": 598.4962715278547,
+        "analysis_radius": 21.980544557387354,
         "pick_radius": 30.0,
-        "radius": 18.230201334901594,
+        "radius": 21.980544557387354,
         "top_synergies": [
           {
             "card": "Shroudstomper",
@@ -2831,42 +2335,6 @@
             "synergy_delta_logit": 0.20979120192867684,
             "partner_pick_score": 10.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Fanatic of the Harrowing",
-            "quality_score": 1.3220219681168033,
-            "pair_win_rate": 0.6632083000798085,
-            "pair_games": 1253,
-            "synergy_delta_logit": 0.15927152467531214,
-            "partner_pick_score": 9.497313183833027,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Spectral Snatcher",
-            "quality_score": 0.47381438970378276,
-            "pair_win_rate": 0.6262135922330098,
-            "pair_games": 1236,
-            "synergy_delta_logit": 0.07375051223882767,
-            "partner_pick_score": 8.578393630653375,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Emerge from the Cocoon",
-            "quality_score": 0.4595721503665069,
-            "pair_win_rate": 0.6431064572425829,
-            "pair_games": 1146,
-            "synergy_delta_logit": 0.06564128805867653,
-            "partner_pick_score": 9.786734401862507,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Winter's Intervention",
-            "quality_score": 0.45493480959517657,
-            "pair_win_rate": 0.6335403726708074,
-            "pair_games": 966,
-            "synergy_delta_logit": 0.07631626047953499,
-            "partner_pick_score": 8.873498107640792,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -2913,10 +2381,10 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.33340307053308205,
-            "analysis_score": 9.540044297562869,
+            "analysis_score": 9.539973461336912,
             "pick_priority_score": 9.063573891519047,
-            "build_around_score": 3.6665086285263353,
-            "core_score": 9.272144794160647,
+            "build_around_score": 4.213710664092569,
+            "core_score": 9.272065664114013,
             "role": "engine"
           },
           {
@@ -2924,11 +2392,11 @@
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.28150959447629853,
-            "analysis_score": 9.539294904941041,
+            "analysis_score": 9.539252849482699,
             "pick_priority_score": 8.24588853297309,
-            "build_around_score": 8.607001824364325,
-            "core_score": 9.25146853240333,
-            "role": "engine"
+            "build_around_score": 9.376315918778761,
+            "core_score": 9.251407536776236,
+            "role": "good_alone"
           }
         ]
       },
@@ -2953,8 +2421,8 @@
         "supported_win_rate": 0.5761863675582398,
         "support_delta": 0.14866794003981232,
         "standalone_delta": 0.051595323764597856,
-        "dependency_score": 0.6246536251354209,
-        "degree": 9,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 7562.991951179686,
         "signpost_lift": 4.5551930218053585,
         "deck_prevalence": 0.3219732071036456,
@@ -2967,76 +2435,32 @@
         "alsa": 2.8086727435586702,
         "average_taken_at": 4.052167264600365,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7581.4590617591675,
-        "analysis_score": 9.540006834570633,
+        "analysis_score_raw": 7570.21529650673,
+        "analysis_score": 9.53880131831687,
         "pick_priority_score_raw": 333.5910852051992,
         "pick_priority_score": 9.151450026649327,
         "pick_market_score_raw": 9.787602001740176,
         "pick_market_score": 9.787602001740176,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 35.56959129637229,
-        "shell_dependence_score": 7.609032268632339,
-        "build_around_score_raw": 35.56959129637229,
-        "build_around_score": 7.609032268632339,
-        "core_score_raw": 7592.865311220963,
-        "core_score": 9.271801374395608,
+        "shell_dependence_score_raw": 10.16676495534593,
+        "shell_dependence_score": 3.515064145836039,
+        "build_around_score_raw": 10.16676495534593,
+        "build_around_score": 3.515064145836039,
+        "core_score_raw": 7584.120160469067,
+        "core_score": 9.270327393139487,
+        "win_contribution_logit": 0.2396940549105537,
+        "contribution_score": 8.063507412314475,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Vile%20Mutilator%22",
-        "community": 2,
-        "x": 911.027837201688,
-        "y": 950.6893517625296,
-        "analysis_radius": 28.0,
+        "community": 9,
+        "x": 568.2251984758184,
+        "y": 736.546595848052,
+        "analysis_radius": 13.837742807052882,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Rite of the Moth",
-            "quality_score": 1.5827355505730827,
-            "pair_win_rate": 0.6623376623376623,
-            "pair_games": 1078,
-            "synergy_delta_logit": 0.17659395955277402,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Shroudstomper",
-            "quality_score": 1.189408420199677,
-            "pair_win_rate": 0.6534260178748759,
-            "pair_games": 1007,
-            "synergy_delta_logit": 0.15158439828941783,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Fanatic of the Harrowing",
-            "quality_score": 0.9972748554798782,
-            "pair_win_rate": 0.6480541455160744,
-            "pair_games": 1182,
-            "synergy_delta_logit": 0.13598193014406523,
-            "partner_pick_score": 9.497313183833027,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Unholy Annex // Ritual Chamber",
-            "quality_score": 0.9399548079631066,
-            "pair_win_rate": 0.7307692307692307,
-            "pair_games": 234,
-            "synergy_delta_logit": 0.1985336318335158,
-            "partner_pick_score": 9.838835784602741,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Emerge from the Cocoon",
-            "quality_score": 0.6157718992147618,
-            "pair_win_rate": 0.6331034482758621,
-            "pair_games": 1450,
-            "synergy_delta_logit": 0.0661604299998495,
-            "partner_pick_score": 9.786734401862507,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.837742807052882,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Seized from Slumber",
@@ -3081,11 +2505,11 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.3219732071036456,
-            "analysis_score": 9.540006834570633,
+            "analysis_score": 9.53880131831687,
             "pick_priority_score": 9.151450026649327,
-            "build_around_score": 7.609032268632339,
-            "core_score": 9.271801374395608,
-            "role": "engine"
+            "build_around_score": 3.515064145836039,
+            "core_score": 9.270327393139487,
+            "role": "good_alone"
           }
         ]
       },
@@ -3110,8 +2534,8 @@
         "supported_win_rate": 0.6012424771888953,
         "support_delta": 0.1323900181725019,
         "standalone_delta": 0.07900678218166324,
-        "dependency_score": 0.736185795840641,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 6801.199376764914,
         "signpost_lift": 4.892426924817379,
         "deck_prevalence": 0.27929830750609,
@@ -3124,49 +2548,32 @@
         "alsa": 4.0210219832269924,
         "average_taken_at": 6.477909147479776,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6825.511670595479,
-        "analysis_score": 9.471170396294204,
+        "analysis_score_raw": 6812.260326270347,
+        "analysis_score": 9.469665670132484,
         "pick_priority_score_raw": 475.3751576681231,
         "pick_priority_score": 9.707656152789193,
         "pick_market_score_raw": 8.893493174200234,
         "pick_market_score": 8.893493174200234,
         "pick_urgency_score_raw": 8.225016819589941,
         "pick_urgency_score": 8.225016819589941,
-        "shell_dependence_score_raw": 28.15361046927668,
-        "shell_dependence_score": 6.846525540868802,
-        "build_around_score_raw": 28.15361046927668,
-        "build_around_score": 6.846525540868802,
-        "core_score_raw": 6832.74506638244,
-        "core_score": 9.162359103300792,
+        "shell_dependence_score_raw": 7.136994516656489,
+        "shell_dependence_score": 2.6346363020558536,
+        "build_around_score_raw": 7.136994516656489,
+        "build_around_score": 2.6346363020558536,
+        "core_score_raw": 6822.438465240672,
+        "core_score": 9.160517903425838,
+        "win_contribution_logit": 0.30090781955648616,
+        "contribution_score": 9.872286856257027,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Commune%20with%20Evil%22",
-        "community": 4,
-        "x": 537.6034290772966,
-        "y": 819.3968174601556,
-        "analysis_radius": 28.0,
+        "community": 10,
+        "x": 522.6911507761736,
+        "y": 624.9141977012067,
+        "analysis_radius": 15.345373019991477,
         "pick_radius": 30.0,
-        "radius": 28.0,
-        "top_synergies": [
-          {
-            "card": "Unsettling Twins",
-            "quality_score": 0.6458766714344195,
-            "pair_win_rate": 0.6779411764705883,
-            "pair_games": 680,
-            "synergy_delta_logit": 0.09871960967738103,
-            "partner_pick_score": 9.415446122681029,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Rite of the Moth",
-            "quality_score": 0.48481718963742265,
-            "pair_win_rate": 0.6606574761399788,
-            "pair_games": 943,
-            "synergy_delta_logit": 0.05652182292137309,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 15.345373019991477,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Appendage Amalgam",
@@ -3211,11 +2618,11 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.27929830750609,
-            "analysis_score": 9.471170396294204,
+            "analysis_score": 9.469665670132484,
             "pick_priority_score": 9.707656152789193,
-            "build_around_score": 6.846525540868802,
-            "core_score": 9.162359103300792,
-            "role": "engine"
+            "build_around_score": 2.6346363020558536,
+            "core_score": 9.160517903425838,
+            "role": "good_alone"
           }
         ]
       },
@@ -3240,8 +2647,8 @@
         "supported_win_rate": 0.5138363527772247,
         "support_delta": 0.0980114369523089,
         "standalone_delta": -0.0113632559879695,
-        "dependency_score": 0.1630674032569116,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 6255.0192723492055,
         "signpost_lift": 4.119740458869833,
         "deck_prevalence": 0.28247504872796975,
@@ -3254,58 +2661,32 @@
         "alsa": 4.803545690400692,
         "average_taken_at": 8.905927148791138,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6257.95448560783,
-        "analysis_score": 9.414278051854037,
+        "analysis_score_raw": 6255.0192723492055,
+        "analysis_score": 9.413740787343025,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 7.9770997320693375,
         "pick_market_score": 7.9770997320693375,
         "pick_urgency_score_raw": 4.001388681705897,
         "pick_urgency_score": 4.001388681705897,
-        "shell_dependence_score_raw": 17.922396000653535,
-        "shell_dependence_score": 5.3923130243050545,
-        "build_around_score_raw": 17.922396000653535,
-        "build_around_score": 5.3923130243050545,
-        "core_score_raw": 6271.990918528657,
-        "core_score": 9.073513072758248,
-        "is_build_around": true,
-        "role": "needs_support",
+        "shell_dependence_score_raw": 10.847137694321109,
+        "shell_dependence_score": 3.6795787104621516,
+        "build_around_score_raw": 10.847137694321109,
+        "build_around_score": 3.6795787104621516,
+        "core_score_raw": 6269.70797488306,
+        "core_score": 9.072862996513512,
+        "win_contribution_logit": -0.0036077258941263983,
+        "contribution_score": 0.0,
+        "is_build_around": false,
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Balemurk%20Leech%22",
-        "community": 1,
-        "x": 1152.139527256171,
-        "y": 723.2057675446126,
-        "analysis_radius": 16.870426517248816,
+        "community": 11,
+        "x": 533.9929196512327,
+        "y": 505.0663028064612,
+        "analysis_radius": 11.0,
         "pick_radius": 30.0,
-        "radius": 16.870426517248816,
-        "top_synergies": [
-          {
-            "card": "Unholy Annex // Ritual Chamber",
-            "quality_score": 1.614710625648881,
-            "pair_win_rate": 0.7125,
-            "pair_games": 240,
-            "synergy_delta_logit": 0.3609762102357773,
-            "partner_pick_score": 9.838835784602741,
-            "partner_rarity": "rare"
-          },
-          {
-            "card": "Shroudstomper",
-            "quality_score": 0.31522734828329424,
-            "pair_win_rate": 0.58,
-            "pair_games": 800,
-            "synergy_delta_logit": 0.09363913803756646,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Cynical Loner",
-            "quality_score": 0.1788936074099956,
-            "pair_win_rate": 0.5561224489795918,
-            "pair_games": 392,
-            "synergy_delta_logit": 0.10739475655417523,
-            "partner_pick_score": 8.294021987724838,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.0,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Shepherding Spirits",
@@ -3350,10 +2731,10 @@
             "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
             "color_name": "Dimir",
             "deck_prevalence": 0.33301458812704154,
-            "analysis_score": 9.709740902186475,
+            "analysis_score": 9.709901151699631,
             "pick_priority_score": 0.0,
-            "build_around_score": 8.561317656966024,
-            "core_score": 9.557699348758845,
+            "build_around_score": 9.296376918768129,
+            "core_score": 9.557883315968917,
             "role": "balanced"
           },
           {
@@ -3361,11 +2742,11 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.28247504872796975,
-            "analysis_score": 9.414278051854037,
+            "analysis_score": 9.413740787343025,
             "pick_priority_score": 0.0,
-            "build_around_score": 5.3923130243050545,
-            "core_score": 9.073513072758248,
-            "role": "needs_support"
+            "build_around_score": 3.6795787104621516,
+            "core_score": 9.072862996513512,
+            "role": "balanced"
           }
         ]
       },
@@ -3390,8 +2771,8 @@
         "supported_win_rate": 0.5653066812705367,
         "support_delta": 0.14610668127053672,
         "standalone_delta": 0.03895502518435312,
-        "dependency_score": 0.1123515512083561,
-        "degree": 7,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 5922.223861931164,
         "signpost_lift": 2.501330629289859,
         "deck_prevalence": 0.38637303060885353,
@@ -3404,76 +2785,32 @@
         "alsa": 4.130408354339215,
         "average_taken_at": 6.528558512520147,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5929.699893378724,
-        "analysis_score": 9.37896906338184,
+        "analysis_score_raw": 5927.677565456973,
+        "analysis_score": 9.378516568443244,
         "pick_priority_score_raw": 220.08480599434273,
         "pick_priority_score": 8.499105361363615,
         "pick_market_score_raw": 8.84126224137713,
         "pick_market_score": 8.84126224137713,
         "pick_urgency_score_raw": 7.793667528318123,
         "pick_urgency_score": 7.793667528318123,
-        "shell_dependence_score_raw": 14.162262735857999,
-        "shell_dependence_score": 4.646970648399842,
-        "build_around_score_raw": 14.162262735857999,
-        "build_around_score": 4.646970648399842,
-        "core_score_raw": 5947.1993583804115,
-        "core_score": 9.018344925577015,
+        "shell_dependence_score_raw": 9.771079141672104,
+        "shell_dependence_score": 3.4147124344922504,
+        "build_around_score_raw": 9.771079141672104,
+        "build_around_score": 3.4147124344922504,
+        "core_score_raw": 5945.626436663494,
+        "core_score": 9.017799779704028,
+        "win_contribution_logit": 0.15254775665540848,
+        "contribution_score": 5.328080185104341,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Final%20Vengeance%22",
-        "community": 3,
-        "x": 776.622301610309,
-        "y": 968.4172466611315,
-        "analysis_radius": 17.187182228640243,
+        "community": 12,
+        "x": 566.281939406135,
+        "y": 389.23586281106367,
+        "analysis_radius": 13.142526385139423,
         "pick_radius": 30.0,
-        "radius": 17.187182228640243,
-        "top_synergies": [
-          {
-            "card": "Shroudstomper",
-            "quality_score": 1.026459723859062,
-            "pair_win_rate": 0.6376021798365122,
-            "pair_games": 1468,
-            "synergy_delta_logit": 0.1337289764574508,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Valgavoth's Faithful",
-            "quality_score": 0.9898483391622662,
-            "pair_win_rate": 0.6392009987515606,
-            "pair_games": 801,
-            "synergy_delta_logit": 0.17536551233098513,
-            "partner_pick_score": 8.99733510060288,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Spectral Snatcher",
-            "quality_score": 0.8905897044673667,
-            "pair_win_rate": 0.6203252032520326,
-            "pair_games": 1230,
-            "synergy_delta_logit": 0.14381588031023596,
-            "partner_pick_score": 8.578393630653375,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Emerge from the Cocoon",
-            "quality_score": 0.5129358184894781,
-            "pair_win_rate": 0.622508038585209,
-            "pair_games": 1555,
-            "synergy_delta_logit": 0.0721193963244593,
-            "partner_pick_score": 9.786734401862507,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Possessed Goat",
-            "quality_score": 0.46523576612052053,
-            "pair_win_rate": 0.5981182795698925,
-            "pair_games": 744,
-            "synergy_delta_logit": 0.11817600187232707,
-            "partner_pick_score": 7.601674302804278,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 13.142526385139423,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Trapped in the Screen",
@@ -3520,42 +2857,42 @@
             "deck_prevalence": 0.6543535850642519,
             "analysis_score": 10.0,
             "pick_priority_score": 10.0,
-            "build_around_score": 9.907628639701814,
+            "build_around_score": 8.364642461506902,
             "core_score": 10.0,
-            "role": "engine"
+            "role": "good_alone"
           },
           {
             "cluster_id": 6,
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.38637303060885353,
-            "analysis_score": 9.37896906338184,
+            "analysis_score": 9.378516568443244,
             "pick_priority_score": 8.499105361363615,
-            "build_around_score": 4.646970648399842,
-            "core_score": 9.018344925577015,
-            "role": "engine"
+            "build_around_score": 3.4147124344922504,
+            "core_score": 9.017799779704028,
+            "role": "good_alone"
           },
           {
             "cluster_id": 0,
             "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
             "color_name": "Dimir",
             "deck_prevalence": 0.37132450484172547,
-            "analysis_score": 9.429346250024754,
+            "analysis_score": 9.428543859497715,
             "pick_priority_score": 7.805367782001679,
-            "build_around_score": 6.73656315893104,
-            "core_score": 9.130841990091414,
-            "role": "engine"
+            "build_around_score": 4.482993914776162,
+            "core_score": 9.129882321464125,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.3662476668757339,
-            "analysis_score": 9.493274628590036,
+            "analysis_score": 9.492887251903108,
             "pick_priority_score": 8.278078165736657,
-            "build_around_score": 9.953950256993814,
-            "core_score": 9.177361852201944,
-            "role": "engine"
+            "build_around_score": 9.673819438078663,
+            "core_score": 9.176864816941627,
+            "role": "good_alone"
           }
         ]
       },
@@ -3595,7 +2932,7 @@
         "average_taken_at": 2.5434978783864217,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 5449.296945731202,
-        "analysis_score": 9.323602911098813,
+        "analysis_score": 9.323375299897279,
         "pick_priority_score_raw": 397.2572552172922,
         "pick_priority_score": 9.425681411306382,
         "pick_market_score_raw": 10.0,
@@ -3603,17 +2940,19 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 6.474450160988025,
-        "shell_dependence_score": 2.2672512268971454,
+        "shell_dependence_score": 2.398396018924549,
         "build_around_score_raw": 6.474450160988025,
-        "build_around_score": 2.2672512268971454,
+        "build_around_score": 2.398396018924549,
         "core_score_raw": 5467.479889440615,
-        "core_score": 8.931088336814685,
+        "core_score": 8.930820239799333,
+        "win_contribution_logit": 0.30724770057062245,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Trapped%20in%20the%20Screen%22",
         "community": 0,
-        "x": 1117.7600027579135,
-        "y": 540.349306641859,
+        "x": 1335.2060787150667,
+        "y": 655.099129625346,
         "analysis_radius": 20.753352700859303,
         "pick_radius": 30.0,
         "radius": 20.753352700859303,
@@ -3672,32 +3011,32 @@
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.4988345375228287,
-            "analysis_score": 9.793306543502478,
+            "analysis_score": 9.793289120503292,
             "pick_priority_score": 9.31765610337665,
-            "build_around_score": 5.220322531284048,
-            "core_score": 9.66629254641331,
-            "role": "engine"
+            "build_around_score": 5.031360921472524,
+            "core_score": 9.666270148316599,
+            "role": "good_alone"
           },
           {
             "cluster_id": 10,
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.473603366586778,
-            "analysis_score": 9.379793417291637,
+            "analysis_score": 9.38004856439539,
             "pick_priority_score": 9.638582029989097,
-            "build_around_score": 1.4046584026926474,
-            "core_score": 9.06566017319288,
-            "role": "engine"
+            "build_around_score": 1.4762706695583356,
+            "core_score": 9.065938652706205,
+            "role": "good_alone"
           },
           {
             "cluster_id": 6,
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.4364158772140456,
-            "analysis_score": 9.323602911098813,
+            "analysis_score": 9.323375299897279,
             "pick_priority_score": 9.425681411306382,
-            "build_around_score": 2.2672512268971454,
-            "core_score": 8.931088336814685,
+            "build_around_score": 2.398396018924549,
+            "core_score": 8.930820239799333,
             "role": "engine"
           }
         ]
@@ -3723,8 +3062,8 @@
         "supported_win_rate": 0.6493620765508139,
         "support_delta": 0.09789148831551975,
         "standalone_delta": 0.1290007563912804,
-        "dependency_score": 0.1648748377874515,
-        "degree": 6,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 1985.352727861237,
         "signpost_lift": 2.641627093603165,
         "deck_prevalence": 0.12809036738938823,
@@ -3737,76 +3076,32 @@
         "alsa": 0.7112422156669944,
         "average_taken_at": 0.6721414373888482,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 2006.3805808361906,
-        "analysis_score": 8.668926758838357,
+        "analysis_score_raw": 2003.4128337560164,
+        "analysis_score": 8.667745427034209,
         "pick_priority_score_raw": 516.7692474699938,
         "pick_priority_score": 9.838835784602741,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 3.27466056086224,
-        "shell_dependence_score": 0.38726010357389945,
-        "build_around_score_raw": 3.27466056086224,
-        "build_around_score": 0.38726010357389945,
-        "core_score_raw": 2005.2867389877683,
-        "core_score": 7.890587501600419,
+        "shell_dependence_score_raw": 1.9732822182746552,
+        "shell_dependence_score": 0.0,
+        "build_around_score_raw": 1.9732822182746552,
+        "build_around_score": 0.0,
+        "core_score_raw": 2002.978491258744,
+        "core_score": 7.889156124817829,
+        "win_contribution_logit": 0.517362194766191,
+        "contribution_score": 10.0,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Unholy%20Annex%20//%20Ritual%20Chamber%22",
-        "community": 1,
-        "x": 1170.8273409516917,
-        "y": 771.6440102034645,
-        "analysis_radius": 24.030535761868677,
+        "community": 13,
+        "x": 643.0709139862669,
+        "y": 298.1275998062862,
+        "analysis_radius": 18.09504160152042,
         "pick_radius": 30.0,
-        "radius": 24.030535761868677,
-        "top_synergies": [
-          {
-            "card": "Balemurk Leech",
-            "quality_score": 1.614710625648881,
-            "pair_win_rate": 0.7125,
-            "pair_games": 240,
-            "synergy_delta_logit": 0.3609762102357773,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Valgavoth's Faithful",
-            "quality_score": 1.3018038632819298,
-            "pair_win_rate": 0.7383966244725738,
-            "pair_games": 237,
-            "synergy_delta_logit": 0.265063496435742,
-            "partner_pick_score": 8.99733510060288,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Vile Mutilator",
-            "quality_score": 0.9399548079631066,
-            "pair_win_rate": 0.7307692307692307,
-            "pair_games": 234,
-            "synergy_delta_logit": 0.1985336318335158,
-            "partner_pick_score": 9.151450026649327,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Winter's Intervention",
-            "quality_score": 0.5398200276954834,
-            "pair_win_rate": 0.7002398081534772,
-            "pair_games": 417,
-            "synergy_delta_logit": 0.09640886518421132,
-            "partner_pick_score": 8.873498107640792,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Innocuous Rat",
-            "quality_score": 0.341277060334935,
-            "pair_win_rate": 0.6887871853546911,
-            "pair_games": 437,
-            "synergy_delta_logit": 0.0629775677339145,
-            "partner_pick_score": 8.870329204409503,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 18.09504160152042,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Murder",
@@ -3851,44 +3146,44 @@
             "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
             "color_name": "Dimir",
             "deck_prevalence": 0.1324973451505307,
-            "analysis_score": 8.76658346800154,
+            "analysis_score": 8.76600101694248,
             "pick_priority_score": 10.0,
-            "build_around_score": 0.9694569692841349,
-            "core_score": 8.115317726209659,
-            "role": "engine"
+            "build_around_score": 0.04800864132468483,
+            "core_score": 8.114600094586091,
+            "role": "good_alone"
           },
           {
             "cluster_id": 6,
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.12809036738938823,
-            "analysis_score": 8.668926758838357,
+            "analysis_score": 8.667745427034209,
             "pick_priority_score": 9.838835784602741,
-            "build_around_score": 0.38726010357389945,
-            "core_score": 7.890587501600419,
-            "role": "engine"
+            "build_around_score": 0.0,
+            "core_score": 7.889156124817829,
+            "role": "good_alone"
           },
           {
             "cluster_id": 9,
             "title": "Golgari | Broodspinner / Drag to the Roots",
             "color_name": "Golgari",
             "deck_prevalence": 0.12613327018390627,
-            "analysis_score": 8.848692420742921,
+            "analysis_score": 8.84836097430121,
             "pick_priority_score": 9.56495166924465,
-            "build_around_score": 5.118079884218991,
-            "core_score": 8.12730592431561,
-            "role": "engine"
+            "build_around_score": 5.491418797993322,
+            "core_score": 8.126866517669692,
+            "role": "good_alone"
           },
           {
             "cluster_id": 2,
             "title": "Rakdos | Disturbing Mirth / Final Vengeance",
             "color_name": "Rakdos",
             "deck_prevalence": 0.12038763753447748,
-            "analysis_score": 8.691673263227477,
+            "analysis_score": 8.691292451623353,
             "pick_priority_score": 9.947878217890375,
-            "build_around_score": 4.829418471826816,
-            "core_score": 7.85969267661119,
-            "role": "engine"
+            "build_around_score": 4.311885875474908,
+            "core_score": 7.859197774855177,
+            "role": "good_alone"
           }
         ]
       },
@@ -3913,8 +3208,8 @@
         "supported_win_rate": 0.5871608917539619,
         "support_delta": 0.08555317471216128,
         "standalone_delta": 0.06573033578832332,
-        "dependency_score": 0.08122482439139661,
-        "degree": 2,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 5224.439402104398,
         "signpost_lift": 2.289929984271918,
         "deck_prevalence": 0.3733966930097201,
@@ -3927,49 +3222,32 @@
         "alsa": 3.9880161781594845,
         "average_taken_at": 6.3811472360687445,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5235.103695953809,
-        "analysis_score": 9.297324848551696,
+        "analysis_score_raw": 5233.641649114764,
+        "analysis_score": 9.29691484394773,
         "pick_priority_score_raw": 394.67644287632146,
         "pick_priority_score": 9.415446122681029,
         "pick_market_score_raw": 8.928055425496012,
         "pick_market_score": 8.928055425496012,
         "pick_urgency_score_raw": 8.192796249173844,
         "pick_urgency_score": 8.192796249173844,
-        "shell_dependence_score_raw": 5.874170069591448,
-        "shell_dependence_score": 1.9855830750858514,
-        "build_around_score_raw": 5.874170069591448,
-        "build_around_score": 1.9855830750858514,
-        "core_score_raw": 5250.580256224391,
-        "core_score": 8.889091579241017,
+        "shell_dependence_score_raw": 4.433672868862442,
+        "shell_dependence_score": 1.5114198221431054,
+        "build_around_score_raw": 4.433672868862442,
+        "build_around_score": 1.5114198221431054,
+        "core_score_raw": 5249.443108682911,
+        "core_score": 8.888600031197265,
+        "win_contribution_logit": 0.28618414207801407,
+        "contribution_score": 9.445119364076788,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Unsettling%20Twins%22",
-        "community": 4,
-        "x": 633.1368272454573,
-        "y": 753.5867641051872,
-        "analysis_radius": 17.53926214644806,
+        "community": 14,
+        "x": 737.6025906126514,
+        "y": 225.79055101833603,
+        "analysis_radius": 14.615168468357783,
         "pick_radius": 30.0,
-        "radius": 17.53926214644806,
-        "top_synergies": [
-          {
-            "card": "Commune with Evil",
-            "quality_score": 0.6458766714344195,
-            "pair_win_rate": 0.6779411764705883,
-            "pair_games": 680,
-            "synergy_delta_logit": 0.09871960967738103,
-            "partner_pick_score": 9.707656152789193,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Shepherding Spirits",
-            "quality_score": 0.35998835680251995,
-            "pair_win_rate": 0.6216790648246546,
-            "pair_games": 941,
-            "synergy_delta_logit": 0.06635286258652923,
-            "partner_pick_score": 7.859364275839391,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 14.615168468357783,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Innocuous Rat",
@@ -4014,10 +3292,10 @@
             "title": "Boros Toy | Ragged Playmate / Vicious Clown",
             "color_name": "Boros Toy",
             "deck_prevalence": 0.4618469551455175,
-            "analysis_score": 9.66459182112614,
+            "analysis_score": 9.664557486752459,
             "pick_priority_score": 7.899334595192713,
             "build_around_score": 0.0,
-            "core_score": 9.490290249908252,
+            "core_score": 9.490261209930335,
             "role": "balanced"
           },
           {
@@ -4025,22 +3303,22 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.38708744904245973,
-            "analysis_score": 9.243240168226055,
+            "analysis_score": 9.243404201084811,
             "pick_priority_score": 8.835287860685705,
-            "build_around_score": 3.833427116267281,
-            "core_score": 8.859219612489515,
-            "role": "engine"
+            "build_around_score": 4.212582641405413,
+            "core_score": 8.85938664900581,
+            "role": "balanced"
           },
           {
             "cluster_id": 6,
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.3733966930097201,
-            "analysis_score": 9.297324848551696,
+            "analysis_score": 9.29691484394773,
             "pick_priority_score": 9.415446122681029,
-            "build_around_score": 1.9855830750858514,
-            "core_score": 8.889091579241017,
-            "role": "engine"
+            "build_around_score": 1.5114198221431054,
+            "core_score": 8.888600031197265,
+            "role": "good_alone"
           }
         ]
       },
@@ -4065,8 +3343,8 @@
         "supported_win_rate": 0.5852040096004518,
         "support_delta": 0.10309478172851211,
         "standalone_delta": 0.06317932435008733,
-        "dependency_score": 0.09060257311629873,
-        "degree": 3,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 5790.592970566984,
         "signpost_lift": 2.5564665161052273,
         "deck_prevalence": 0.3709358679023805,
@@ -4079,58 +3357,32 @@
         "alsa": 3.485160984783489,
         "average_taken_at": 5.743601709485681,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5801.068922292089,
-        "analysis_score": 9.364596862401699,
+        "analysis_score_raw": 5799.438075975996,
+        "analysis_score": 9.364183998766048,
         "pick_priority_score_raw": 359.6053311918531,
         "pick_priority_score": 9.26932807093047,
         "pick_market_score_raw": 9.254848225478685,
         "pick_market_score": 9.254848225478685,
         "pick_urgency_score_raw": 8.64939091045631,
         "pick_urgency_score": 8.64939091045631,
-        "shell_dependence_score_raw": 7.5254937812971345,
-        "shell_dependence_score": 2.7099094441164335,
-        "build_around_score_raw": 7.5254937812971345,
-        "build_around_score": 2.7099094441164335,
-        "core_score_raw": 5816.520314291293,
-        "core_score": 8.995293371848039,
+        "shell_dependence_score_raw": 5.523661868173523,
+        "shell_dependence_score": 2.0199493242361504,
+        "build_around_score_raw": 5.523661868173523,
+        "build_around_score": 2.0199493242361504,
+        "core_score_raw": 5815.251878267665,
+        "core_score": 8.994797075993379,
+        "win_contribution_logit": 0.24428234718445924,
+        "contribution_score": 8.202148890412948,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Seized%20from%20Slumber%22",
-        "community": 0,
-        "x": 1287.0674129577342,
-        "y": 508.8064605294107,
-        "analysis_radius": 17.73655547144156,
+        "community": 15,
+        "x": 855.7506727490568,
+        "y": 204.4761656264088,
+        "analysis_radius": 14.474862839254804,
         "pick_radius": 30.0,
-        "radius": 17.73655547144156,
-        "top_synergies": [
-          {
-            "card": "Shroudstomper",
-            "quality_score": 1.0748948038565969,
-            "pair_win_rate": 0.6572739187418086,
-            "pair_games": 1526,
-            "synergy_delta_logit": 0.12129500136526972,
-            "partner_pick_score": 10.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Valgavoth's Faithful",
-            "quality_score": 0.3885748514757485,
-            "pair_win_rate": 0.6383561643835617,
-            "pair_games": 730,
-            "synergy_delta_logit": 0.07307279452999327,
-            "partner_pick_score": 8.99733510060288,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Appendage Amalgam",
-            "quality_score": 0.2787268021553476,
-            "pair_win_rate": 0.6050632911392405,
-            "pair_games": 790,
-            "synergy_delta_logit": 0.06479606235240598,
-            "partner_pick_score": 6.594677495452385,
-            "partner_rarity": "common"
-          }
-        ],
+        "radius": 14.474862839254804,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Winter's Intervention",
@@ -4175,32 +3427,32 @@
             "title": "Selesnya Humans | Shrewd Storyteller / Baseball Bat",
             "color_name": "Selesnya Humans",
             "deck_prevalence": 0.3872122947904494,
-            "analysis_score": 9.34712708843167,
+            "analysis_score": 9.347368650233534,
             "pick_priority_score": 8.417473062071124,
-            "build_around_score": 3.9146189905668685,
-            "core_score": 9.015555073568953,
-            "role": "engine"
+            "build_around_score": 4.387743618801238,
+            "core_score": 9.01581627223985,
+            "role": "balanced"
           },
           {
             "cluster_id": 6,
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.3709358679023805,
-            "analysis_score": 9.364596862401699,
+            "analysis_score": 9.364183998766048,
             "pick_priority_score": 9.26932807093047,
-            "build_around_score": 2.7099094441164335,
-            "core_score": 8.995293371848039,
-            "role": "engine"
+            "build_around_score": 2.0199493242361504,
+            "core_score": 8.994797075993379,
+            "role": "good_alone"
           },
           {
             "cluster_id": 5,
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.367593338784143,
-            "analysis_score": 9.637261095670608,
+            "analysis_score": 9.637241567102196,
             "pick_priority_score": 8.026509193810963,
-            "build_around_score": 7.473589180048596,
-            "core_score": 9.414025630657557,
+            "build_around_score": 7.542738088882626,
+            "core_score": 9.414000175143448,
             "role": "balanced"
           }
         ]
@@ -4249,17 +3501,19 @@
         "pick_urgency_score_raw": 5.405276275307461,
         "pick_urgency_score": 5.405276275307461,
         "shell_dependence_score_raw": 5.873826541130928,
-        "shell_dependence_score": 1.985414937931691,
+        "shell_dependence_score": 2.1653843484944386,
         "build_around_score_raw": 5.873826541130928,
-        "build_around_score": 1.985414937931691,
+        "build_around_score": 2.1653843484944386,
         "core_score_raw": -307.20067394369084,
         "core_score": 0.0,
+        "win_contribution_logit": 0.033510827598106946,
+        "contribution_score": 1.2369924796393217,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cathartic%20Parting%22",
-        "community": 5,
-        "x": 580.0,
-        "y": 560.0,
+        "community": 16,
+        "x": 955.4402175380969,
+        "y": 234.37541987500038,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4273,7 +3527,7 @@
             "deck_prevalence": 0.009894683407017525,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.985414937931691,
+            "build_around_score": 2.1653843484944386,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4315,7 +3569,7 @@
         "average_taken_at": 9.868332241978543,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -212.36571489361262,
-        "analysis_score": 0.16948813336985613,
+        "analysis_score": 0.16948399576360565,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 7.534981723941483,
@@ -4323,17 +3577,19 @@
         "pick_urgency_score_raw": 3.326153905656082,
         "pick_urgency_score": 3.326153905656082,
         "shell_dependence_score_raw": 5.295135648730969,
-        "shell_dependence_score": 1.6895351747962908,
+        "shell_dependence_score": 1.920762060471424,
         "build_around_score_raw": 5.295135648730969,
-        "build_around_score": 1.6895351747962908,
+        "build_around_score": 1.920762060471424,
         "core_score_raw": -212.00285905028008,
         "core_score": 0.0,
+        "win_contribution_logit": -0.12876835146396917,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Anthropede%22",
-        "community": 6,
-        "x": 641.1145618000169,
-        "y": 371.90871926640864,
+        "community": 17,
+        "x": 1042.9150952393586,
+        "y": 248.01024183133313,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4345,9 +3601,9 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.006977996987164089,
-            "analysis_score": 0.16948813336985613,
+            "analysis_score": 0.16948399576360565,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.6895351747962908,
+            "build_around_score": 1.920762060471424,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4389,7 +3645,7 @@
         "average_taken_at": 1.0031400966183575,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -210.4423959332459,
-        "analysis_score": 0.17542315527251665,
+        "analysis_score": 0.17541887277834253,
         "pick_priority_score_raw": 20.60253035673818,
         "pick_priority_score": 4.837624433683529,
         "pick_market_score_raw": 10.0,
@@ -4402,12 +3658,14 @@
         "build_around_score": 0.0,
         "core_score_raw": -211.41138934130663,
         "core_score": 0.0,
+        "win_contribution_logit": 0.10596797115897916,
+        "contribution_score": 3.77988743501295,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Enduring%20Vitality%22",
-        "community": 7,
-        "x": 801.1145618000168,
-        "y": 255.6619147855509,
+        "community": 18,
+        "x": 1098.9153139125845,
+        "y": 317.28414660765236,
         "analysis_radius": 12.4018246328947,
         "pick_radius": 30.0,
         "radius": 12.4018246328947,
@@ -4419,7 +3677,7 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.008323677400653911,
-            "analysis_score": 0.17542315527251665,
+            "analysis_score": 0.17541887277834253,
             "pick_priority_score": 4.837624433683529,
             "build_around_score": 0.0,
             "core_score": 0.0,
@@ -4471,17 +3729,19 @@
         "pick_urgency_score_raw": 5.687317769276499,
         "pick_urgency_score": 5.687317769276499,
         "shell_dependence_score_raw": 3.951683920287369,
-        "shell_dependence_score": 0.8819074561406705,
+        "shell_dependence_score": 1.2530457614086303,
         "build_around_score_raw": 3.951683920287369,
-        "build_around_score": 0.8819074561406705,
+        "build_around_score": 1.2530457614086303,
         "core_score_raw": -462.1525458357106,
         "core_score": 0.0,
+        "win_contribution_logit": -0.17489617771099525,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Stalked%20Researcher%22",
-        "community": 8,
-        "x": 998.8854381999831,
-        "y": 255.66191478555083,
+        "community": 19,
+        "x": 1183.6106031948493,
+        "y": 343.11557671368644,
         "analysis_radius": 11.2555112688394,
         "pick_radius": 30.0,
         "radius": 11.2555112688394,
@@ -4493,33 +3753,33 @@
             "title": "Izzet Spirit | Smoky Lounge // Misty Salon / Rampaging Soulrager",
             "color_name": "Izzet Spirit",
             "deck_prevalence": 0.44644815704155266,
-            "analysis_score": 9.744682819329828,
+            "analysis_score": 9.745680624357728,
             "pick_priority_score": 7.772967757976858,
-            "build_around_score": 5.131986327590568,
-            "core_score": 9.585373304796486,
-            "role": "engine"
+            "build_around_score": 6.984536253346844,
+            "core_score": 9.58661226612839,
+            "role": "balanced"
           },
           {
             "cluster_id": 5,
             "title": "Azorius Humans | Tunnel Surveyor / Gremlin Tamer",
             "color_name": "Azorius Humans",
             "deck_prevalence": 0.4281547623864168,
-            "analysis_score": 9.843764146349121,
+            "analysis_score": 9.84374469849806,
             "pick_priority_score": 0.0,
             "build_around_score": 10.0,
-            "core_score": 9.747659142190834,
-            "role": "needs_support"
+            "core_score": 9.747634321622591,
+            "role": "balanced"
           },
           {
             "cluster_id": 0,
             "title": "Dimir | Fear of Infinity / Skullsnap Nuisance",
             "color_name": "Dimir",
             "deck_prevalence": 0.34730094220437746,
-            "analysis_score": 9.42083843761743,
+            "analysis_score": 9.420850371356648,
             "pick_priority_score": 3.766292366739136,
-            "build_around_score": 6.784015214348922,
-            "core_score": 9.118458674607288,
-            "role": "needs_support"
+            "build_around_score": 6.896222618164572,
+            "core_score": 9.118461799846832,
+            "role": "balanced"
           },
           {
             "cluster_id": 6,
@@ -4528,7 +3788,7 @@
             "deck_prevalence": 0.011666624747915737,
             "analysis_score": 0.0,
             "pick_priority_score": 4.684238604380413,
-            "build_around_score": 0.8819074561406705,
+            "build_around_score": 1.2530457614086303,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4570,7 +3830,7 @@
         "average_taken_at": 7.995457744226217,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -134.19336754949728,
-        "analysis_score": 0.4685649866122187,
+        "analysis_score": 0.46855354783253056,
         "pick_priority_score_raw": 51.15690640942507,
         "pick_priority_score": 6.225313491297035,
         "pick_market_score_raw": 8.381126760887875,
@@ -4578,17 +3838,19 @@
         "pick_urgency_score_raw": 6.429448432278802,
         "pick_urgency_score": 6.429448432278802,
         "shell_dependence_score_raw": 2.626506085067096,
-        "shell_dependence_score": 0.0,
+        "shell_dependence_score": 0.3867011369212655,
         "build_around_score_raw": 2.626506085067096,
-        "build_around_score": 0.0,
+        "build_around_score": 0.3867011369212655,
         "core_score_raw": -135.45696861331314,
         "core_score": 0.0,
+        "win_contribution_logit": 0.14287560304670807,
+        "contribution_score": 5.011814527612447,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Greenhouse%20//%20Rickety%20Gazebo%22",
-        "community": 9,
-        "x": 1158.8854381999831,
-        "y": 371.9087192664085,
+        "community": 20,
+        "x": 1148.6491915287684,
+        "y": 425.50871576411123,
         "analysis_radius": 12.903862917191054,
         "pick_radius": 30.0,
         "radius": 12.903862917191054,
@@ -4600,9 +3862,9 @@
             "title": "Orzhov | Emerge from the Cocoon / Shroudstomper",
             "color_name": "Orzhov",
             "deck_prevalence": 0.012312727949522817,
-            "analysis_score": 0.4685649866122187,
+            "analysis_score": 0.46855354783253056,
             "pick_priority_score": 6.225313491297035,
-            "build_around_score": 0.0,
+            "build_around_score": 0.3867011369212655,
             "core_score": 0.0,
             "role": "good_alone"
           }
@@ -4620,13 +3882,17 @@
         "synergy_delta_logit": 0.13162901835048613,
         "synergy_delta_prob": 0.030509710453255234,
         "confidence_probability": 0.9995275914882197,
+        "p_value": 0.00047240851178032006,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 1.4955578611527505,
         "draft_pair_events": 4568,
         "quality_score": 1.9381986591993408,
         "anti_quality": 0.0,
         "pick_score_raw": 14.127357476824569,
-        "pick_score": 10.0
+        "pick_score": 10.0,
+        "q_value": 0.027281591555313484,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Shroudstomper",
@@ -4638,13 +3904,17 @@
         "synergy_delta_logit": 0.1779913658067087,
         "synergy_delta_prob": 0.041859751219822994,
         "confidence_probability": 0.99987015682489,
+        "p_value": 0.00012984317511000043,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 1.0008841629161669,
         "draft_pair_events": 3736,
         "quality_score": 1.8663586538547656,
         "anti_quality": 0.0,
         "pick_score_raw": 10.343954340191921,
-        "pick_score": 9.431775752205464
+        "pick_score": 2.3103141841011943,
+        "q_value": 0.02226853575548482,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Live or Die",
@@ -4656,13 +3926,17 @@
         "synergy_delta_logit": 0.20979120192867684,
         "synergy_delta_prob": 0.04751953192787273,
         "confidence_probability": 0.9997107982369418,
+        "p_value": 0.0002892017630582444,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2242,
         "quality_score": 1.848050345994099,
         "anti_quality": 0.0,
         "pick_score_raw": 9.299455060847812,
-        "pick_score": 8.335550481563095
+        "pick_score": 0.0,
+        "q_value": 0.02226853575548482,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Fanatic of the Harrowing",
@@ -4674,13 +3948,17 @@
         "synergy_delta_logit": 0.1583850342469535,
         "synergy_delta_prob": 0.03662227373878746,
         "confidence_probability": 0.9998053074908451,
+        "p_value": 0.00019469250915493674,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3966,
         "quality_score": 1.6879307139485598,
         "anti_quality": 0.0,
         "pick_score_raw": 11.28149527554389,
-        "pick_score": 10.0
+        "pick_score": 4.842689676996049,
+        "q_value": 0.02226853575548482,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Rite of the Moth",
@@ -4692,13 +3970,17 @@
         "synergy_delta_logit": 0.14468803010392928,
         "synergy_delta_prob": 0.033311773331876404,
         "confidence_probability": 0.9989261698411691,
+        "p_value": 0.0010738301588308907,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.7306517651601243,
         "draft_pair_events": 3371,
         "quality_score": 1.6659725964982004,
         "anti_quality": 0.0,
         "pick_score_raw": 11.550239098447701,
-        "pick_score": 10.0
+        "pick_score": 5.532990212320246,
+        "q_value": 0.04134246111498929,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Shroudstomper",
@@ -4710,877 +3992,17 @@
         "synergy_delta_logit": 0.16383346234819196,
         "synergy_delta_prob": 0.03701753062649127,
         "confidence_probability": 0.9991406631421479,
+        "p_value": 0.000859336857852111,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2837,
         "quality_score": 1.664771260762537,
         "anti_quality": 0.0,
         "pick_score_raw": 10.739459828975244,
-        "pick_score": 9.820708775192786
-      },
-      {
-        "from": "Balemurk Leech",
-        "to": "Unholy Annex // Ritual Chamber",
-        "pair_games": 240,
-        "pair_win_rate": 0.7125,
-        "pair_expected_win_rate": 0.6333419569328833,
-        "pair_lift_vs_baseline": 0.19766513995292423,
-        "synergy_delta_logit": 0.3609762102357773,
-        "synergy_delta_prob": 0.07915804306711671,
-        "confidence_probability": 0.9943134303065776,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 685,
-        "quality_score": 1.614710625648881,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.693402110611017,
-        "pick_score": 1.6081761369132581
-      },
-      {
-        "from": "Rite of the Moth",
-        "to": "Vile Mutilator",
-        "pair_games": 1078,
-        "pair_win_rate": 0.6623376623376623,
-        "pair_expected_win_rate": 0.6217858415077933,
-        "pair_lift_vs_baseline": 0.14750280229058654,
-        "synergy_delta_logit": 0.17659395955277402,
-        "synergy_delta_prob": 0.04055182082986908,
-        "confidence_probability": 0.9969466131469968,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.9914335253985627,
-        "draft_pair_events": 2116,
-        "quality_score": 1.5827355505730827,
-        "anti_quality": 0.0,
-        "pick_score_raw": 8.822254334737252,
-        "pick_score": 7.797159831962777
-      },
-      {
-        "from": "Fanatic of the Harrowing",
-        "to": "Live or Die",
-        "pair_games": 1253,
-        "pair_win_rate": 0.6632083000798085,
-        "pair_expected_win_rate": 0.626762551789699,
-        "pair_lift_vs_baseline": 0.14837344003273267,
-        "synergy_delta_logit": 0.15927152467531214,
-        "synergy_delta_prob": 0.03644574829010949,
-        "confidence_probability": 0.9961451108741999,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2574,
-        "quality_score": 1.3220219681168033,
-        "anti_quality": 0.0,
-        "pick_score_raw": 8.768506841208382,
-        "pick_score": 7.734888545181359
-      },
-      {
-        "from": "Unholy Annex // Ritual Chamber",
-        "to": "Valgavoth's Faithful",
-        "pair_games": 237,
-        "pair_win_rate": 0.7383966244725738,
-        "pair_expected_win_rate": 0.6840804840042005,
-        "pair_lift_vs_baseline": 0.22356176442549802,
-        "synergy_delta_logit": 0.265063496435742,
-        "synergy_delta_prob": 0.0543161404683733,
-        "confidence_probability": 0.9635499443624124,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 490,
-        "quality_score": 1.3018038632819298,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.143631601332216,
-        "pick_score": 2.4719110274016183
-      },
-      {
-        "from": "Shroudstomper",
-        "to": "Vile Mutilator",
-        "pair_games": 1007,
-        "pair_win_rate": 0.6534260178748759,
-        "pair_expected_win_rate": 0.6183495112318163,
-        "pair_lift_vs_baseline": 0.13859115782780007,
-        "synergy_delta_logit": 0.15158439828941783,
-        "synergy_delta_prob": 0.03507650664305961,
-        "confidence_probability": 0.9889633302046297,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.7111603012095048,
-        "draft_pair_events": 2087,
-        "quality_score": 1.189408420199677,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.862807861101195,
-        "pick_score": 6.630650603716499
-      },
-      {
-        "from": "Seized from Slumber",
-        "to": "Shroudstomper",
-        "pair_games": 1526,
-        "pair_win_rate": 0.6572739187418086,
-        "pair_expected_win_rate": 0.6294537992162441,
-        "pair_lift_vs_baseline": 0.14243905869473283,
-        "synergy_delta_logit": 0.12129500136526972,
-        "synergy_delta_prob": 0.027820119525564513,
-        "confidence_probability": 0.9877400438017081,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2781,
-        "quality_score": 1.0748948038565969,
-        "anti_quality": 0.0,
-        "pick_score_raw": 9.365081811665489,
-        "pick_score": 8.40763409204787
-      },
-      {
-        "from": "Innocuous Rat",
-        "to": "Rite of the Moth",
-        "pair_games": 1679,
-        "pair_win_rate": 0.6354973198332341,
-        "pair_expected_win_rate": 0.6055435511954202,
-        "pair_lift_vs_baseline": 0.1206624597861583,
-        "synergy_delta_logit": 0.12725622063805953,
-        "synergy_delta_prob": 0.02995376863781385,
-        "confidence_probability": 0.9939573014701809,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3167,
-        "quality_score": 1.0290903184968954,
-        "anti_quality": 0.0,
-        "pick_score_raw": 8.55136434114348,
-        "pick_score": 7.479771932334242
-      },
-      {
-        "from": "Final Vengeance",
-        "to": "Shroudstomper",
-        "pair_games": 1468,
-        "pair_win_rate": 0.6376021798365122,
-        "pair_expected_win_rate": 0.6061704488091053,
-        "pair_lift_vs_baseline": 0.12276731978943645,
-        "synergy_delta_logit": 0.1337289764574508,
-        "synergy_delta_prob": 0.03143173102740693,
-        "confidence_probability": 0.9931101129758801,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3178,
-        "quality_score": 1.026459723859062,
-        "anti_quality": 0.0,
-        "pick_score_raw": 8.116794718413257,
-        "pick_score": 6.951306988827937
-      },
-      {
-        "from": "Fanatic of the Harrowing",
-        "to": "Vile Mutilator",
-        "pair_games": 1182,
-        "pair_win_rate": 0.6480541455160744,
-        "pair_expected_win_rate": 0.6164518332137183,
-        "pair_lift_vs_baseline": 0.13321928546899864,
-        "synergy_delta_logit": 0.13598193014406523,
-        "synergy_delta_prob": 0.031602312302356106,
-        "confidence_probability": 0.9872161655141801,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2551,
-        "quality_score": 0.9972748554798782,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.747110572497909,
-        "pick_score": 6.481525097643937
-      },
-      {
-        "from": "Final Vengeance",
-        "to": "Valgavoth's Faithful",
-        "pair_games": 801,
-        "pair_win_rate": 0.6392009987515606,
-        "pair_expected_win_rate": 0.597854253497576,
-        "pair_lift_vs_baseline": 0.12436613870448476,
-        "synergy_delta_logit": 0.17536551233098513,
-        "synergy_delta_prob": 0.04134674525398452,
-        "confidence_probability": 0.9914251327639136,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2057,
-        "quality_score": 0.9898483391622662,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.956215837170303,
-        "pick_score": 3.8816540253138756
-      },
-      {
-        "from": "Unholy Annex // Ritual Chamber",
-        "to": "Vile Mutilator",
-        "pair_games": 234,
-        "pair_win_rate": 0.7307692307692307,
-        "pair_expected_win_rate": 0.6899734539916965,
-        "pair_lift_vs_baseline": 0.21593437072215493,
-        "synergy_delta_logit": 0.1985336318335158,
-        "synergy_delta_prob": 0.04079577677753421,
-        "confidence_probability": 0.911023315173043,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 510,
-        "quality_score": 0.9399548079631066,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.959563473730101,
-        "pick_score": 2.126694251525249
-      },
-      {
-        "from": "Final Vengeance",
-        "to": "Spectral Snatcher",
-        "pair_games": 1230,
-        "pair_win_rate": 0.6203252032520326,
-        "pair_expected_win_rate": 0.585917288426573,
-        "pair_lift_vs_baseline": 0.10549034320495676,
-        "synergy_delta_logit": 0.14381588031023596,
-        "synergy_delta_prob": 0.034407914825459573,
-        "confidence_probability": 0.9928133244193177,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3431,
-        "quality_score": 0.8905897044673667,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.55085902293054,
-        "pick_score": 4.812547199622431
-      },
-      {
-        "from": "Shepherding Spirits",
-        "to": "Shroudstomper",
-        "pair_games": 1265,
-        "pair_win_rate": 0.6237154150197628,
-        "pair_expected_win_rate": 0.593834205028697,
-        "pair_lift_vs_baseline": 0.108880554972687,
-        "synergy_delta_logit": 0.1255097405682134,
-        "synergy_delta_prob": 0.029881209991065805,
-        "confidence_probability": 0.9847136276528413,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3149,
-        "quality_score": 0.8070358201563885,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.799303511872185,
-        "pick_score": 5.179942977140338
-      },
-      {
-        "from": "Shroudstomper",
-        "to": "Valgavoth's Faithful",
-        "pair_games": 1301,
-        "pair_win_rate": 0.6372021521906226,
-        "pair_expected_win_rate": 0.611860975148515,
-        "pair_lift_vs_baseline": 0.1223672921435468,
-        "synergy_delta_logit": 0.10809966455119813,
-        "synergy_delta_prob": 0.025341177042107588,
-        "confidence_probability": 0.9695836451588208,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2330,
-        "quality_score": 0.7703172641841192,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.524169581689788,
-        "pick_score": 6.188523920285061
-      },
-      {
-        "from": "Innocuous Rat",
-        "to": "Shroudstomper",
-        "pair_games": 1803,
-        "pair_win_rate": 0.6245146977260122,
-        "pair_expected_win_rate": 0.6020540956517836,
-        "pair_lift_vs_baseline": 0.10967983767893641,
-        "synergy_delta_logit": 0.09472431195259023,
-        "synergy_delta_prob": 0.02246060207422862,
-        "confidence_probability": 0.974275923731223,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3323,
-        "quality_score": 0.7330709488105391,
-        "anti_quality": 0.0,
-        "pick_score_raw": 8.185507143770248,
-        "pick_score": 7.036521086459821
-      },
-      {
-        "from": "Innocuous Rat",
-        "to": "Murder",
-        "pair_games": 1668,
-        "pair_win_rate": 0.6205035971223022,
-        "pair_expected_win_rate": 0.5979847398731535,
-        "pair_lift_vs_baseline": 0.1056687370752264,
-        "synergy_delta_logit": 0.09461109695011627,
-        "synergy_delta_prob": 0.022518857249148705,
-        "confidence_probability": 0.9696080369905262,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3117,
-        "quality_score": 0.680913555816698,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.60987688610338,
-        "pick_score": 6.302061952490566
-      },
-      {
-        "from": "Commune with Evil",
-        "to": "Unsettling Twins",
-        "pair_games": 680,
-        "pair_win_rate": 0.6779411764705883,
-        "pair_expected_win_rate": 0.6560197615625004,
-        "pair_lift_vs_baseline": 0.16310631642351248,
-        "synergy_delta_logit": 0.09871960967738103,
-        "synergy_delta_prob": 0.021921414908087855,
-        "confidence_probability": 0.8854881850318183,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1642,
-        "quality_score": 0.6458766714344195,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.896078354905455,
-        "pick_score": 5.319893955056222
-      },
-      {
-        "from": "Shepherding Spirits",
-        "to": "Valgavoth's Faithful",
-        "pair_games": 741,
-        "pair_win_rate": 0.6180836707152496,
-        "pair_expected_win_rate": 0.5854356691347681,
-        "pair_lift_vs_baseline": 0.10324881066817382,
-        "synergy_delta_logit": 0.13629414650711275,
-        "synergy_delta_prob": 0.032648001580481534,
-        "confidence_probability": 0.9642727396728605,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2009,
-        "quality_score": 0.6311619408102779,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.886057968345724,
-        "pick_score": 1.985847304578
-      },
-      {
-        "from": "Emerge from the Cocoon",
-        "to": "Vile Mutilator",
-        "pair_games": 1450,
-        "pair_win_rate": 0.6331034482758621,
-        "pair_expected_win_rate": 0.6176046416191051,
-        "pair_lift_vs_baseline": 0.11826858822878628,
-        "synergy_delta_logit": 0.0661604299998495,
-        "synergy_delta_prob": 0.015498806656756958,
-        "confidence_probability": 0.8876649848523015,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 1.4646530073900772,
-        "draft_pair_events": 2916,
-        "quality_score": 0.6157718992147618,
-        "anti_quality": 0.0,
-        "pick_score_raw": 8.92581997390244,
-        "pick_score": 7.91619485582683
-      },
-      {
-        "from": "Murder",
-        "to": "Vile Mutilator",
-        "pair_games": 1018,
-        "pair_win_rate": 0.6365422396856582,
-        "pair_expected_win_rate": 0.6143400485889898,
-        "pair_lift_vs_baseline": 0.12170737963858236,
-        "synergy_delta_logit": 0.09479511711012567,
-        "synergy_delta_prob": 0.022202191096668322,
-        "confidence_probability": 0.9271363594810295,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2066,
-        "quality_score": 0.5921936960656523,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.592242547003111,
-        "pick_score": 4.8745760256159
-      },
-      {
-        "from": "Fanatic of the Harrowing",
-        "to": "Rite of the Moth",
-        "pair_games": 1903,
-        "pair_win_rate": 0.6363636363636364,
-        "pair_expected_win_rate": 0.6216141178836055,
-        "pair_lift_vs_baseline": 0.12152877631656056,
-        "synergy_delta_logit": 0.06321080403608703,
-        "synergy_delta_prob": 0.01474951848003081,
-        "confidence_probability": 0.9076577684205346,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3765,
-        "quality_score": 0.5509273303973734,
-        "anti_quality": 0.0,
-        "pick_score_raw": 9.224064622040672,
-        "pick_score": 8.252173488780056
-      },
-      {
-        "from": "Unholy Annex // Ritual Chamber",
-        "to": "Winter's Intervention",
-        "pair_games": 417,
-        "pair_win_rate": 0.7002398081534772,
-        "pair_expected_win_rate": 0.6796211262667201,
-        "pair_lift_vs_baseline": 0.1854049481064014,
-        "synergy_delta_logit": 0.09640886518421132,
-        "synergy_delta_prob": 0.020618681886757084,
-        "confidence_probability": 0.8164654087131463,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 810,
-        "quality_score": 0.5398200276954834,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.880235926854253,
-        "pick_score": 3.7570137920106395
-      },
-      {
-        "from": "Emerge from the Cocoon",
-        "to": "Final Vengeance",
-        "pair_games": 1555,
-        "pair_win_rate": 0.622508038585209,
-        "pair_expected_win_rate": 0.6054169773968812,
-        "pair_lift_vs_baseline": 0.10767317853813319,
-        "synergy_delta_logit": 0.0721193963244593,
-        "synergy_delta_prob": 0.017091061188327816,
-        "confidence_probability": 0.9159935569342703,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3841,
-        "quality_score": 0.5129358184894781,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.527857479683205,
-        "pick_score": 6.193432803932212
-      },
-      {
-        "from": "Fanatic of the Harrowing",
-        "to": "Innocuous Rat",
-        "pair_games": 1900,
-        "pair_win_rate": 0.6163157894736843,
-        "pair_expected_win_rate": 0.6001277894072113,
-        "pair_lift_vs_baseline": 0.10148092942660847,
-        "synergy_delta_logit": 0.06794203925249848,
-        "synergy_delta_prob": 0.01618800006647292,
-        "confidence_probability": 0.9250857633142691,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3714,
-        "quality_score": 0.5076361709785998,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.906881413657344,
-        "pick_score": 6.686946788030374
-      },
-      {
-        "from": "Rite of the Moth",
-        "to": "Shepherding Spirits",
-        "pair_games": 1335,
-        "pair_win_rate": 0.6164794007490637,
-        "pair_expected_win_rate": 0.5973475327948897,
-        "pair_lift_vs_baseline": 0.10164454070198792,
-        "synergy_delta_logit": 0.0802063252747241,
-        "synergy_delta_prob": 0.019131867954173987,
-        "confidence_probability": 0.9229157180483482,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3144,
-        "quality_score": 0.5000345377409479,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.592302322825291,
-        "pick_score": 4.874665377481317
-      },
-      {
-        "from": "Commune with Evil",
-        "to": "Rite of the Moth",
-        "pair_games": 943,
-        "pair_win_rate": 0.6606574761399788,
-        "pair_expected_win_rate": 0.6478732090990077,
-        "pair_lift_vs_baseline": 0.14582261609290303,
-        "synergy_delta_logit": 0.05652182292137309,
-        "synergy_delta_prob": 0.012784267040971131,
-        "confidence_probability": 0.794411736496766,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 1.2209860791309275,
-        "draft_pair_events": 2036,
-        "quality_score": 0.48481718963742265,
-        "anti_quality": 0.0,
-        "pick_score_raw": 8.325993868615527,
-        "pick_score": 7.208780052284257
-      },
-      {
-        "from": "Live or Die",
-        "to": "Spectral Snatcher",
-        "pair_games": 1236,
-        "pair_win_rate": 0.6262135922330098,
-        "pair_expected_win_rate": 0.608796570902069,
-        "pair_lift_vs_baseline": 0.11137873218593397,
-        "synergy_delta_logit": 0.07375051223882767,
-        "synergy_delta_prob": 0.017417021330940807,
-        "confidence_probability": 0.8951575647900128,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2486,
-        "quality_score": 0.47381438970378276,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.785697782905099,
-        "pick_score": 5.1601279383104846
-      },
-      {
-        "from": "Final Vengeance",
-        "to": "Possessed Goat",
-        "pair_games": 744,
-        "pair_win_rate": 0.5981182795698925,
-        "pair_expected_win_rate": 0.5694125330051004,
-        "pair_lift_vs_baseline": 0.0832834195228167,
-        "synergy_delta_logit": 0.11817600187232707,
-        "synergy_delta_prob": 0.02870574656479208,
-        "confidence_probability": 0.9429887744930283,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2830,
-        "quality_score": 0.46523576612052053,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.160725677187093,
-        "pick_score": 0.4933749549467233
-      },
-      {
-        "from": "Fanatic of the Harrowing",
-        "to": "Final Vengeance",
-        "pair_games": 1403,
-        "pair_win_rate": 0.6208125445473984,
-        "pair_expected_win_rate": 0.604250970482557,
-        "pair_lift_vs_baseline": 0.10597768450032263,
-        "synergy_delta_logit": 0.06978910833057117,
-        "synergy_delta_prob": 0.016561574064841378,
-        "confidence_probability": 0.8976554755270798,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3546,
-        "quality_score": 0.4639021913444128,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.032900327965952,
-        "pick_score": 5.514859758431055
-      },
-      {
-        "from": "Emerge from the Cocoon",
-        "to": "Live or Die",
-        "pair_games": 1146,
-        "pair_win_rate": 0.6431064572425829,
-        "pair_expected_win_rate": 0.6279030759612049,
-        "pair_lift_vs_baseline": 0.12827159719550707,
-        "synergy_delta_logit": 0.06564128805867653,
-        "synergy_delta_prob": 0.015203381281377992,
-        "confidence_probability": 0.8564680263823644,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2688,
-        "quality_score": 0.4595721503665069,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.397643327042294,
-        "pick_score": 6.018808344549171
-      },
-      {
-        "from": "Live or Die",
-        "to": "Winter's Intervention",
-        "pair_games": 966,
-        "pair_win_rate": 0.6335403726708074,
-        "pair_expected_win_rate": 0.6156486002328138,
-        "pair_lift_vs_baseline": 0.11870551262373163,
-        "synergy_delta_logit": 0.07631626047953499,
-        "synergy_delta_prob": 0.01789177243799367,
-        "confidence_probability": 0.873458647611716,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2111,
-        "quality_score": 0.45493480959517657,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.29120508473072,
-        "pick_score": 4.415424449244706
-      },
-      {
-        "from": "Live or Die",
-        "to": "Shepherding Spirits",
-        "pair_games": 794,
-        "pair_win_rate": 0.6234256926952141,
-        "pair_expected_win_rate": 0.6026150690027854,
-        "pair_lift_vs_baseline": 0.10859083264813829,
-        "synergy_delta_logit": 0.08774096657037711,
-        "synergy_delta_prob": 0.020810623692428698,
-        "confidence_probability": 0.8845272829986105,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1973,
-        "quality_score": 0.4385408139431396,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.273070134768194,
-        "pick_score": 2.7085318239044165
-      },
-      {
-        "from": "Final Vengeance",
-        "to": "Vile Mutilator",
-        "pair_games": 763,
-        "pair_win_rate": 0.6251638269986893,
-        "pair_expected_win_rate": 0.6044255595207744,
-        "pair_lift_vs_baseline": 0.11032896695161354,
-        "synergy_delta_logit": 0.08758514963746705,
-        "synergy_delta_prob": 0.020738267477914962,
-        "confidence_probability": 0.8792296124948429,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2040,
-        "quality_score": 0.4354578950619823,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.246186865425081,
-        "pick_score": 2.659791990474634
-      },
-      {
-        "from": "Possessed Goat",
-        "to": "Vile Mutilator",
-        "pair_games": 726,
-        "pair_win_rate": 0.6060606060606061,
-        "pair_expected_win_rate": 0.5819443597532321,
-        "pair_lift_vs_baseline": 0.09122574601353028,
-        "synergy_delta_logit": 0.10002260903425209,
-        "synergy_delta_prob": 0.024116246307373967,
-        "confidence_probability": 0.9060570271196206,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2085,
-        "quality_score": 0.4143115605248037,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.371233005482425,
-        "pick_score": 0.9471031430346154
-      },
-      {
-        "from": "Spectral Snatcher",
-        "to": "Vile Mutilator",
-        "pair_games": 987,
-        "pair_win_rate": 0.6139817629179332,
-        "pair_expected_win_rate": 0.5983076269372926,
-        "pair_lift_vs_baseline": 0.09914690287085737,
-        "synergy_delta_logit": 0.06566211748231432,
-        "synergy_delta_prob": 0.015674135980640602,
-        "confidence_probability": 0.8423783280386968,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.854831460391151,
-        "draft_pair_events": 2361,
-        "quality_score": 0.3937459200429881,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.956744962699059,
-        "pick_score": 3.882517240354606
-      },
-      {
-        "from": "Seized from Slumber",
-        "to": "Valgavoth's Faithful",
-        "pair_games": 730,
-        "pair_win_rate": 0.6383561643835617,
-        "pair_expected_win_rate": 0.621322120022507,
-        "pair_lift_vs_baseline": 0.1235213043364859,
-        "synergy_delta_logit": 0.07307279452999327,
-        "synergy_delta_prob": 0.017034044361054712,
-        "confidence_probability": 0.8285913372744355,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1679,
-        "quality_score": 0.3885748514757485,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.605622175650932,
-        "pick_score": 3.2947567052807574
-      },
-      {
-        "from": "Spectral Snatcher",
-        "to": "Winter's Intervention",
-        "pair_games": 1576,
-        "pair_win_rate": 0.6021573604060914,
-        "pair_expected_win_rate": 0.5867277884217192,
-        "pair_lift_vs_baseline": 0.08732250035901556,
-        "synergy_delta_logit": 0.06400776301254968,
-        "synergy_delta_prob": 0.015429571984372115,
-        "confidence_probability": 0.8931980518163286,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3684,
-        "quality_score": 0.3846854984120091,
-        "anti_quality": 0.0,
-        "pick_score_raw": 6.359861980914837,
-        "pick_score": 4.521789250646046
-      },
-      {
-        "from": "Possessed Goat",
-        "to": "Shroudstomper",
-        "pair_games": 1429,
-        "pair_win_rate": 0.5997200839748076,
-        "pair_expected_win_rate": 0.5837201171886536,
-        "pair_lift_vs_baseline": 0.08488522392773179,
-        "synergy_delta_logit": 0.06623513991230429,
-        "synergy_delta_prob": 0.015999966786154007,
-        "confidence_probability": 0.8900442125807745,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3394,
-        "quality_score": 0.3693682231104468,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.898967623609477,
-        "pick_score": 3.7878693294262047
-      },
-      {
-        "from": "Possessed Goat",
-        "to": "Spectral Snatcher",
-        "pair_games": 1076,
-        "pair_win_rate": 0.5845724907063197,
-        "pair_expected_win_rate": 0.5631444731298224,
-        "pair_lift_vs_baseline": 0.06973763065924388,
-        "synergy_delta_logit": 0.08763899215436671,
-        "synergy_delta_prob": 0.02142801757649726,
-        "confidence_probability": 0.9217110596808898,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3486,
-        "quality_score": 0.3631878938090395,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.38424045254509,
-        "pick_score": 0.9745531583244271
-      },
-      {
-        "from": "Shepherding Spirits",
-        "to": "Unsettling Twins",
-        "pair_games": 941,
-        "pair_win_rate": 0.6216790648246546,
-        "pair_expected_win_rate": 0.6059520496818922,
-        "pair_lift_vs_baseline": 0.10684420477757883,
-        "synergy_delta_logit": 0.06635286258652923,
-        "synergy_delta_prob": 0.015727015142762424,
-        "confidence_probability": 0.8382068857237172,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2660,
-        "quality_score": 0.35998835680251995,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.732227894913802,
-        "pick_score": 3.5102135931569243
-      },
-      {
-        "from": "Innocuous Rat",
-        "to": "Unholy Annex // Ritual Chamber",
-        "pair_games": 437,
-        "pair_win_rate": 0.6887871853546911,
-        "pair_expected_win_rate": 0.6751294842828636,
-        "pair_lift_vs_baseline": 0.17395232530761529,
-        "synergy_delta_logit": 0.0629775677339145,
-        "synergy_delta_prob": 0.01365770107182751,
-        "confidence_probability": 0.7289146963692852,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 837,
-        "quality_score": 0.341277060334935,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.6919338621767475,
-        "pick_score": 3.4420841707073517
-      },
-      {
-        "from": "Balemurk Leech",
-        "to": "Shroudstomper",
-        "pair_games": 800,
-        "pair_win_rate": 0.58,
-        "pair_expected_win_rate": 0.5570342449045461,
-        "pair_lift_vs_baseline": 0.06516513995292417,
-        "synergy_delta_logit": 0.09363913803756646,
-        "synergy_delta_prob": 0.022965755095453844,
-        "confidence_probability": 0.9044270930702969,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2836,
-        "quality_score": 0.31522734828329424,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.5579203156625288,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Appendage Amalgam",
-        "to": "Shroudstomper",
-        "pair_games": 1189,
-        "pair_win_rate": 0.5954583683767872,
-        "pair_expected_win_rate": 0.5797602443018602,
-        "pair_lift_vs_baseline": 0.08062350832971144,
-        "synergy_delta_logit": 0.06478757270918617,
-        "synergy_delta_prob": 0.01569812407492699,
-        "confidence_probability": 0.8635596702676712,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3082,
-        "quality_score": 0.31508800732277853,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.1421448038744915,
-        "pick_score": 2.469164214683552
-      },
-      {
-        "from": "Live or Die",
-        "to": "Unholy Annex // Ritual Chamber",
-        "pair_games": 240,
-        "pair_win_rate": 0.7125,
-        "pair_expected_win_rate": 0.6992719122962264,
-        "pair_lift_vs_baseline": 0.19766513995292423,
-        "synergy_delta_logit": 0.063723876818928,
-        "synergy_delta_prob": 0.013228087703773594,
-        "confidence_probability": 0.672492494757172,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 511,
-        "quality_score": 0.2819050111481009,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.634211841897715,
-        "pick_score": 1.4895731383196733
-      },
-      {
-        "from": "Appendage Amalgam",
-        "to": "Seized from Slumber",
-        "pair_games": 790,
-        "pair_win_rate": 0.6050632911392405,
-        "pair_expected_win_rate": 0.5894788720110306,
-        "pair_lift_vs_baseline": 0.09022843109216472,
-        "synergy_delta_logit": 0.06479606235240598,
-        "synergy_delta_prob": 0.015584419128209959,
-        "confidence_probability": 0.8133420546594626,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2364,
-        "quality_score": 0.2787268021553476,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.542284367548869,
-        "pick_score": 1.302879597852248
-      },
-      {
-        "from": "Appendage Amalgam",
-        "to": "Live or Die",
-        "pair_games": 724,
-        "pair_win_rate": 0.6049723756906077,
-        "pair_expected_win_rate": 0.5886346001049835,
-        "pair_lift_vs_baseline": 0.0901375156435319,
-        "synergy_delta_logit": 0.06790335211643483,
-        "synergy_delta_prob": 0.016337775585624215,
-        "confidence_probability": 0.8141212656327734,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2002,
-        "quality_score": 0.27772350891197917,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.315279279821488,
-        "pick_score": 0.8282592599805605
-      },
-      {
-        "from": "Balemurk Leech",
-        "to": "Cynical Loner",
-        "pair_games": 392,
-        "pair_win_rate": 0.5561224489795918,
-        "pair_expected_win_rate": 0.5294770304248074,
-        "pair_lift_vs_baseline": 0.04128758893251605,
-        "synergy_delta_logit": 0.10739475655417523,
-        "synergy_delta_prob": 0.026645418554784417,
-        "confidence_probability": 0.8546153132292426,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1728,
-        "quality_score": 0.1788936074099956,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.7562223754912771,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Appendage Amalgam",
-        "to": "Valgavoth's Faithful",
-        "pair_games": 718,
-        "pair_win_rate": 0.5835654596100278,
-        "pair_expected_win_rate": 0.571280791760304,
-        "pair_lift_vs_baseline": 0.06873059956295202,
-        "synergy_delta_logit": 0.05034868173508483,
-        "synergy_delta_prob": 0.012284667849723818,
-        "confidence_probability": 0.7469976922417256,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2059,
-        "quality_score": 0.16537957886222363,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.466105910762475,
-        "pick_score": 0.0
+        "pick_score": 3.403225168411841,
+        "q_value": 0.039701362832767526,
+        "is_eligible": true,
+        "display_tier": "core"
       }
     ],
     "triplets": [
@@ -5760,80 +4182,146 @@
         "top_cards": [
           "Emerge from the Cocoon",
           "Shroudstomper",
+          "Rite of the Moth",
           "Fanatic of the Harrowing",
-          "Appendage Amalgam",
-          "Live or Die"
+          "Spectral Snatcher"
         ]
       },
       {
         "community_id": 1,
-        "size": 5,
+        "size": 1,
         "top_cards": [
-          "Winter's Intervention",
-          "Valgavoth's Faithful",
-          "Cynical Loner",
-          "Balemurk Leech",
-          "Unholy Annex // Ritual Chamber"
+          "Possessed Goat"
         ]
       },
       {
         "community_id": 2,
-        "size": 4,
+        "size": 1,
         "top_cards": [
-          "Rite of the Moth",
-          "Murder",
-          "Innocuous Rat",
-          "Vile Mutilator"
+          "Murder"
         ]
       },
       {
         "community_id": 3,
-        "size": 3,
+        "size": 1,
         "top_cards": [
-          "Spectral Snatcher",
-          "Possessed Goat",
-          "Final Vengeance"
+          "Winter's Intervention"
         ]
       },
       {
         "community_id": 4,
-        "size": 3,
+        "size": 1,
         "top_cards": [
-          "Shepherding Spirits",
-          "Commune with Evil",
-          "Unsettling Twins"
+          "Shepherding Spirits"
         ]
       },
       {
         "community_id": 5,
         "size": 1,
         "top_cards": [
-          "Cathartic Parting"
+          "Valgavoth's Faithful"
         ]
       },
       {
         "community_id": 6,
         "size": 1,
         "top_cards": [
-          "Anthropede"
+          "Innocuous Rat"
         ]
       },
       {
         "community_id": 7,
         "size": 1,
         "top_cards": [
-          "Enduring Vitality"
+          "Appendage Amalgam"
         ]
       },
       {
         "community_id": 8,
         "size": 1,
         "top_cards": [
-          "Stalked Researcher"
+          "Cynical Loner"
         ]
       },
       {
         "community_id": 9,
+        "size": 1,
+        "top_cards": [
+          "Vile Mutilator"
+        ]
+      },
+      {
+        "community_id": 10,
+        "size": 1,
+        "top_cards": [
+          "Commune with Evil"
+        ]
+      },
+      {
+        "community_id": 11,
+        "size": 1,
+        "top_cards": [
+          "Balemurk Leech"
+        ]
+      },
+      {
+        "community_id": 12,
+        "size": 1,
+        "top_cards": [
+          "Final Vengeance"
+        ]
+      },
+      {
+        "community_id": 13,
+        "size": 1,
+        "top_cards": [
+          "Unholy Annex // Ritual Chamber"
+        ]
+      },
+      {
+        "community_id": 14,
+        "size": 1,
+        "top_cards": [
+          "Unsettling Twins"
+        ]
+      },
+      {
+        "community_id": 15,
+        "size": 1,
+        "top_cards": [
+          "Seized from Slumber"
+        ]
+      },
+      {
+        "community_id": 16,
+        "size": 1,
+        "top_cards": [
+          "Cathartic Parting"
+        ]
+      },
+      {
+        "community_id": 17,
+        "size": 1,
+        "top_cards": [
+          "Anthropede"
+        ]
+      },
+      {
+        "community_id": 18,
+        "size": 1,
+        "top_cards": [
+          "Enduring Vitality"
+        ]
+      },
+      {
+        "community_id": 19,
+        "size": 1,
+        "top_cards": [
+          "Stalked Researcher"
+        ]
+      },
+      {
+        "community_id": 20,
         "size": 1,
         "top_cards": [
           "Greenhouse // Rickety Gazebo"
@@ -6066,19 +4554,7 @@
         }
       ]
     },
-    "build_arounds": [
-      {
-        "card": "Balemurk Leech",
-        "shell_dependence_score": 5.3923130243050545,
-        "shell_dependence_score_raw": 17.922396000653535,
-        "build_around_score": 5.3923130243050545,
-        "build_around_score_raw": 17.922396000653535,
-        "support_delta": 0.0980114369523089,
-        "supported_win_rate": 0.5138363527772247,
-        "isolated_win_rate": 0.4158249158249158,
-        "supported_games": 5023
-      }
-    ],
+    "build_arounds": [],
     "core_cards": [
       {
         "card": "Emerge from the Cocoon",
@@ -6094,61 +4570,61 @@
       },
       {
         "card": "Rite of the Moth",
-        "core_score": 9.97308765918413,
+        "core_score": 9.973098735272549,
         "deck_prevalence": 0.5010030933592496,
         "signpost_score": 14887.14094483328
       },
       {
         "card": "Fanatic of the Harrowing",
-        "core_score": 9.776939224156123,
+        "core_score": 9.776704879880148,
         "deck_prevalence": 0.46412016351491653,
         "signpost_score": 12324.89238322745
       },
       {
         "card": "Spectral Snatcher",
-        "core_score": 9.740670376432732,
+        "core_score": 9.74129417802096,
         "deck_prevalence": 0.518984384130864,
         "signpost_score": 11894.783237372665
       },
       {
         "card": "Possessed Goat",
-        "core_score": 9.512938441695548,
+        "core_score": 9.512515636444023,
         "deck_prevalence": 0.33683255293479847,
         "signpost_score": 9559.286986045176
       },
       {
         "card": "Murder",
-        "core_score": 9.496089637993949,
+        "core_score": 9.495658635235694,
         "deck_prevalence": 0.4828123554493145,
         "signpost_score": 9394.498474924043
       },
       {
         "card": "Winter's Intervention",
-        "core_score": 9.45274134930234,
+        "core_score": 9.452336333396525,
         "deck_prevalence": 0.44925247189293155,
         "signpost_score": 9011.659389754104
       },
       {
         "card": "Shepherding Spirits",
-        "core_score": 9.428339470688504,
+        "core_score": 9.427894058080113,
         "deck_prevalence": 0.39328354326013276,
         "signpost_score": 8805.284227726772
       },
       {
         "card": "Valgavoth's Faithful",
-        "core_score": 9.408351480348273,
+        "core_score": 9.407860684927241,
         "deck_prevalence": 0.3324523794813761,
         "signpost_score": 8638.042740733157
       },
       {
         "card": "Innocuous Rat",
-        "core_score": 9.368207544378633,
+        "core_score": 9.367765823825058,
         "deck_prevalence": 0.4447478352968962,
         "signpost_score": 8304.821337978308
       },
       {
         "card": "Appendage Amalgam",
-        "core_score": 9.310370077867997,
+        "core_score": 9.309975971607546,
         "deck_prevalence": 0.354817772092034,
         "signpost_score": 7860.103642611221
       }
@@ -6230,45 +4706,33 @@
     "top_dependency": [
       {
         "card": "Emerge from the Cocoon",
-        "dependency_score": 0.9086715780449233,
+        "dependency_score": 1.6271868795032365,
         "standalone_delta": 0.052613820304830416,
         "draw_games": 12958
       },
       {
-        "card": "Commune with Evil",
-        "dependency_score": 0.736185795840641,
-        "standalone_delta": 0.07900678218166324,
-        "draw_games": 5456
-      },
-      {
-        "card": "Vile Mutilator",
-        "dependency_score": 0.6246536251354209,
-        "standalone_delta": 0.051595323764597856,
-        "draw_games": 6202
+        "card": "Spectral Snatcher",
+        "dependency_score": 1.1788755287228756,
+        "standalone_delta": 0.032640281306014485,
+        "draw_games": 10258
       },
       {
         "card": "Rite of the Moth",
-        "dependency_score": 0.5562982149330838,
+        "dependency_score": 0.8753397952640536,
         "standalone_delta": 0.05696320490167406,
         "draw_games": 10439
       },
       {
         "card": "Shroudstomper",
-        "dependency_score": 0.43239771466169163,
+        "dependency_score": 0.7478355384211604,
         "standalone_delta": 0.05338808602603318,
         "draw_games": 11052
       },
       {
-        "card": "Spectral Snatcher",
-        "dependency_score": 0.42604367771302554,
-        "standalone_delta": 0.032640281306014485,
-        "draw_games": 10258
-      },
-      {
-        "card": "Unholy Annex // Ritual Chamber",
-        "dependency_score": 0.1648748377874515,
-        "standalone_delta": 0.1290007563912804,
-        "draw_games": 2409
+        "card": "Live or Die",
+        "dependency_score": 0.20979120192867684,
+        "standalone_delta": 0.06232838705372701,
+        "draw_games": 6726
       },
       {
         "card": "Trapped in the Screen",
@@ -6277,28 +4741,40 @@
         "draw_games": 9278
       },
       {
-        "card": "Balemurk Leech",
-        "dependency_score": 0.1630674032569116,
-        "standalone_delta": -0.0113632559879695,
-        "draw_games": 5617
+        "card": "Fanatic of the Harrowing",
+        "dependency_score": 0.1583850342469535,
+        "standalone_delta": 0.05141599939698671,
+        "draw_games": 10181
       },
       {
-        "card": "Valgavoth's Faithful",
-        "dependency_score": 0.12423030596951681,
-        "standalone_delta": 0.04485263995292421,
-        "draw_games": 6400
+        "card": "Murder",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.04922327836855611,
+        "draw_games": 10389
+      },
+      {
+        "card": "Innocuous Rat",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.03469804211902627,
+        "draw_games": 9741
+      },
+      {
+        "card": "Winter's Intervention",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.03978060800802785,
+        "draw_games": 9219
+      },
+      {
+        "card": "Unsettling Twins",
+        "dependency_score": 0.0,
+        "standalone_delta": 0.06573033578832332,
+        "draw_games": 8068
       },
       {
         "card": "Final Vengeance",
-        "dependency_score": 0.1123515512083561,
+        "dependency_score": 0.0,
         "standalone_delta": 0.03895502518435312,
         "draw_games": 7929
-      },
-      {
-        "card": "Fanatic of the Harrowing",
-        "dependency_score": 0.10807939321814362,
-        "standalone_delta": 0.05141599939698671,
-        "draw_games": 10181
       }
     ],
     "top_pairs": [
@@ -6361,66 +4837,6 @@
         "pair_win_rate": 0.6730769230769231,
         "pair_games": 1664,
         "synergy_delta_logit": 0.16383346234819196
-      },
-      {
-        "cards": [
-          "Balemurk Leech",
-          "Unholy Annex // Ritual Chamber"
-        ],
-        "quality_score": 1.614710625648881,
-        "pair_win_rate": 0.7125,
-        "pair_games": 240,
-        "synergy_delta_logit": 0.3609762102357773
-      },
-      {
-        "cards": [
-          "Rite of the Moth",
-          "Vile Mutilator"
-        ],
-        "quality_score": 1.5827355505730827,
-        "pair_win_rate": 0.6623376623376623,
-        "pair_games": 1078,
-        "synergy_delta_logit": 0.17659395955277402
-      },
-      {
-        "cards": [
-          "Fanatic of the Harrowing",
-          "Live or Die"
-        ],
-        "quality_score": 1.3220219681168033,
-        "pair_win_rate": 0.6632083000798085,
-        "pair_games": 1253,
-        "synergy_delta_logit": 0.15927152467531214
-      },
-      {
-        "cards": [
-          "Unholy Annex // Ritual Chamber",
-          "Valgavoth's Faithful"
-        ],
-        "quality_score": 1.3018038632819298,
-        "pair_win_rate": 0.7383966244725738,
-        "pair_games": 237,
-        "synergy_delta_logit": 0.265063496435742
-      },
-      {
-        "cards": [
-          "Shroudstomper",
-          "Vile Mutilator"
-        ],
-        "quality_score": 1.189408420199677,
-        "pair_win_rate": 0.6534260178748759,
-        "pair_games": 1007,
-        "synergy_delta_logit": 0.15158439828941783
-      },
-      {
-        "cards": [
-          "Seized from Slumber",
-          "Shroudstomper"
-        ],
-        "quality_score": 1.0748948038565969,
-        "pair_win_rate": 0.6572739187418086,
-        "pair_games": 1526,
-        "synergy_delta_logit": 0.12129500136526972
       }
     ],
     "top_anti_pairs": [
@@ -6696,7 +5112,7 @@
           "Rite of the Moth",
           "Shroudstomper"
         ],
-        "pick_score": 10.0,
+        "pick_score": 5.532990212320246,
         "pick_score_raw": 11.550239098447701,
         "pair_win_rate": 0.656813627254509,
         "pair_games": 1996,
@@ -6707,7 +5123,7 @@
           "Fanatic of the Harrowing",
           "Shroudstomper"
         ],
-        "pick_score": 10.0,
+        "pick_score": 4.842689676996049,
         "pick_score_raw": 11.28149527554389,
         "pair_win_rate": 0.654799459215863,
         "pair_games": 2219,
@@ -6718,7 +5134,7 @@
           "Shroudstomper",
           "Trapped in the Screen"
         ],
-        "pick_score": 9.820708775192786,
+        "pick_score": 3.403225168411841,
         "pick_score_raw": 10.739459828975244,
         "pair_win_rate": 0.6730769230769231,
         "pair_games": 1664,
@@ -6729,7 +5145,7 @@
           "Shroudstomper",
           "Spectral Snatcher"
         ],
-        "pick_score": 9.431775752205464,
+        "pick_score": 2.3103141841011943,
         "pick_score_raw": 10.343954340191921,
         "pair_win_rate": 0.6419213973799127,
         "pair_games": 1832,
@@ -6737,80 +5153,14 @@
       },
       {
         "cards": [
-          "Seized from Slumber",
-          "Shroudstomper"
-        ],
-        "pick_score": 8.40763409204787,
-        "pick_score_raw": 9.365081811665489,
-        "pair_win_rate": 0.6572739187418086,
-        "pair_games": 1526,
-        "draft_pair_events": 2781
-      },
-      {
-        "cards": [
           "Live or Die",
           "Shroudstomper"
         ],
-        "pick_score": 8.335550481563095,
+        "pick_score": 0.0,
         "pick_score_raw": 9.299455060847812,
         "pair_win_rate": 0.676159479251424,
         "pair_games": 1229,
         "draft_pair_events": 2242
-      },
-      {
-        "cards": [
-          "Fanatic of the Harrowing",
-          "Rite of the Moth"
-        ],
-        "pick_score": 8.252173488780056,
-        "pick_score_raw": 9.224064622040672,
-        "pair_win_rate": 0.6363636363636364,
-        "pair_games": 1903,
-        "draft_pair_events": 3765
-      },
-      {
-        "cards": [
-          "Emerge from the Cocoon",
-          "Vile Mutilator"
-        ],
-        "pick_score": 7.91619485582683,
-        "pick_score_raw": 8.92581997390244,
-        "pair_win_rate": 0.6331034482758621,
-        "pair_games": 1450,
-        "draft_pair_events": 2916
-      },
-      {
-        "cards": [
-          "Rite of the Moth",
-          "Vile Mutilator"
-        ],
-        "pick_score": 7.797159831962777,
-        "pick_score_raw": 8.822254334737252,
-        "pair_win_rate": 0.6623376623376623,
-        "pair_games": 1078,
-        "draft_pair_events": 2116
-      },
-      {
-        "cards": [
-          "Fanatic of the Harrowing",
-          "Live or Die"
-        ],
-        "pick_score": 7.734888545181359,
-        "pick_score_raw": 8.768506841208382,
-        "pair_win_rate": 0.6632083000798085,
-        "pair_games": 1253,
-        "draft_pair_events": 2574
-      },
-      {
-        "cards": [
-          "Innocuous Rat",
-          "Rite of the Moth"
-        ],
-        "pick_score": 7.479771932334242,
-        "pick_score_raw": 8.55136434114348,
-        "pair_win_rate": 0.6354973198332341,
-        "pair_games": 1679,
-        "draft_pair_events": 3167
       }
     ]
   },
@@ -6834,11 +5184,7 @@
         "Arabella, Abandoned Doll",
         "Overlord of the Mistmoors"
       ],
-      "build_arounds": [
-        "Turn Inside Out",
-        "Hand That Feeds",
-        "Ragged Playmate"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Ragged Playmate",
         "Vicious Clown",
@@ -6867,8 +5213,7 @@
       ],
       "build_arounds": [
         "Erratic Apparition",
-        "Stalked Researcher",
-        "Inquisitive Glimmer"
+        "Fear of Surveillance"
       ],
       "core_cards": [
         "Tunnel Surveyor",
@@ -6896,9 +5241,7 @@
         "Fear of Burning Alive",
         "Overlord of the Boilerbilges"
       ],
-      "build_arounds": [
-        "Patchwork Beastie"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Wildfire Wickerfolk",
         "Beastie Beatdown",
@@ -6925,9 +5268,7 @@
         "Oblivious Bookworm",
         "Under the Skin"
       ],
-      "build_arounds": [
-        "Moldering Gym // Weight Room"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Oblivious Bookworm",
         "Growing Dread",
@@ -6954,9 +5295,7 @@
         "Unholy Annex // Ritual Chamber",
         "Vengeful Possession"
       ],
-      "build_arounds": [
-        "Diversion Specialist"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Disturbing Mirth",
         "Final Vengeance",
@@ -6983,11 +5322,7 @@
         "Valgavoth's Onslaught",
         "Unholy Annex // Ritual Chamber"
       ],
-      "build_arounds": [
-        "Innocuous Rat",
-        "Spectral Snatcher",
-        "Flesh Burrower"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Broodspinner",
         "Drag to the Roots",
@@ -7014,10 +5349,7 @@
         "Beastie Beatdown",
         "Under the Skin"
       ],
-      "build_arounds": [
-        "Moldering Gym // Weight Room",
-        "Overgrown Zealot"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Spineseeker Centipede",
         "Moldering Gym // Weight Room",
@@ -7044,11 +5376,7 @@
         "Overlord of the Mistmoors",
         "Ghostly Dancers"
       ],
-      "build_arounds": [
-        "Baseball Bat",
-        "Shrewd Storyteller",
-        "Hardened Escort"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Shrewd Storyteller",
         "Baseball Bat",
@@ -7075,9 +5403,7 @@
         "Unholy Annex // Ritual Chamber",
         "Emerge from the Cocoon"
       ],
-      "build_arounds": [
-        "Balemurk Leech"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Emerge from the Cocoon",
         "Shroudstomper",
@@ -7104,10 +5430,7 @@
         "Floodpits Drowner",
         "Unnerving Grasp"
       ],
-      "build_arounds": [
-        "Rampaging Soulrager",
-        "Creeping Peeper"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Smoky Lounge // Misty Salon",
         "Rampaging Soulrager",
@@ -7134,11 +5457,7 @@
         "Unnerving Grasp",
         "Glimmerburst"
       ],
-      "build_arounds": [
-        "Balemurk Leech",
-        "Appendage Amalgam",
-        "Stalked Researcher"
-      ],
+      "build_arounds": [],
       "core_cards": [
         "Fear of Infinity",
         "Skullsnap Nuisance",
@@ -7150,6 +5469,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -7255,6 +5575,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -7277,28 +5599,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -7366,16 +5679,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -7503,7 +5807,7 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
     if (filters.topSynergies) {
@@ -7838,22 +6142,27 @@
       ? 'Node size = normalized analysis score on a 0-10 scale inside this archetype. Larger cards are more defining or more structurally important.'
       : 'Node size = normalized pick score on a 0-10 scale inside this archetype. Larger cards contribute more to projected wins when you draft this lane.';
     var edgeText = mode === 'analysis'
-      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\'s own baseline.'
+      ? 'Edge width/brightness = stronger positive pair synergy after adjusting for each card\\'s own baseline.'
       : 'Edge width/brightness = stronger draft-backed pair that wins more than the archetype baseline.';
     var visibilityText = mode === 'analysis'
       ? 'Showing all supported cards in the archetype.'
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -8031,8 +6340,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -8149,6 +6459,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

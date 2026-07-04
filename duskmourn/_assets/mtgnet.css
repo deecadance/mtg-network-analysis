@@ -1,0 +1,175 @@
+/* mtgnet.css — shared design tokens and rules for MTGNET graph pages.
+ *
+ * Extracted from cluster_page.html.jinja2, network.html.jinja2 and
+ * landing_page.html.jinja2. Page-specific / layout-specific rules stay
+ * inline in each template; only genuinely duplicated blocks live here.
+ */
+
+:root {
+  --bg: #09111f;
+  --bg-2: #10203a;
+  --panel: rgba(11, 18, 32, 0.92);
+  --panel-2: rgba(18, 30, 52, 0.96);
+  --text: #ecf2fb;
+  --muted: #9dafc8;
+  --line: rgba(126, 157, 197, 0.18);
+  --accent: #5cc8ff;
+  --good: #43d17a;
+  --warn: #f4c95d;
+  --engine: #c084fc;
+  --danger: #ee6c4d;
+  --gold: #f4c95d;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  font: 14px/1.4 var(--font);
+  background: radial-gradient(circle at top, #132849, var(--bg) 58%);
+}
+
+a { color: inherit; text-decoration: none; }
+
+.muted { color: var(--muted); }
+.hidden { display: none !important; }
+
+button {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+button.active {
+  background: rgba(92, 200, 255, 0.18);
+  border-color: rgba(92, 200, 255, 0.45);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--muted);
+  font-size: 12px;
+  background: rgba(255,255,255,0.04);
+}
+.chip small { color: var(--muted); font-size: 11px; }
+
+.tableish { display: grid; gap: 6px; }
+.tableish .row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+.tableish .row:last-child { border-bottom: 0; }
+.tableish .sub { color: var(--muted); font-size: 12px; }
+
+.legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* ── Legend panel (collapsible, both graph page types) ─────────────────── */
+.legend-panel {
+  position: fixed;
+  right: 16px;
+  top: 86px;
+  z-index: 8;
+  width: min(340px, calc(100vw - 32px));
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+}
+.legend-panel strong { display: block; margin-bottom: 8px; }
+.legend-grid { display: grid; gap: 8px; }
+.legend-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.legend-samples {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+}
+.legend-node {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid rgba(236, 242, 251, 0.9);
+  background: rgba(92, 200, 255, 0.35);
+}
+.legend-node.sm { width: 10px; height: 10px; }
+.legend-node.md { width: 16px; height: 16px; }
+.legend-node.lg { width: 24px; height: 24px; }
+.legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+.legend-edge {
+  display: inline-block;
+  width: 40px;
+  border-top: 2px solid rgba(92, 200, 255, 0.9);
+  border-radius: 999px;
+}
+.legend-edge.strong { border-top-width: 6px; }
+.legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+.legend-edge.extended {
+  border-top-width: 1px;
+  border-top-style: dashed;
+  opacity: 0.55;
+}
+.legend-edge.none {
+  border-top-width: 0;
+  height: 10px;
+  border: 1px dashed rgba(157, 175, 200, 0.45);
+  width: 40px;
+}
+.legend-area {
+  width: 38px;
+  height: 22px;
+  border-radius: 12px;
+  background: rgba(92, 200, 255, 0.14);
+  border: 1px solid rgba(92, 200, 255, 0.25);
+}
+.legend-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+.legend-toggle .caret { color: var(--muted); font-size: 11px; transition: transform 120ms ease; }
+.legend-panel.collapsed .legend-grid,
+.legend-panel.collapsed .legend-toggle .caret-label { display: none; }
+.legend-panel.collapsed .legend-toggle .caret { transform: rotate(-90deg); }
+
+/* ── Edge density slider ────────────────────────────────────────────────── */
+.edge-density-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.edge-density-control input[type="range"] {
+  width: 120px;
+  accent-color: var(--accent);
+}
+.edge-density-control .edge-density-value {
+  min-width: 34px;
+  text-align: right;
+  color: var(--text);
+}
