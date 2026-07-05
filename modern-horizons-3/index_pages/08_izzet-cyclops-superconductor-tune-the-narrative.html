@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Izzet | Cyclops Superconductor / Tune the Narrative | Modern Horizons 3 Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -758,7 +638,7 @@
         "average_taken_at": 8.425621836976418,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 18046.08973064458,
-        "analysis_score": 9.999999999999998,
+        "analysis_score": 10.0,
         "pick_priority_score_raw": 267.7064899725179,
         "pick_priority_score": 7.770282115515798,
         "pick_market_score_raw": 8.053668828520681,
@@ -766,17 +646,22 @@
         "pick_urgency_score_raw": 6.378776280799816,
         "pick_urgency_score": 6.378776280799816,
         "shell_dependence_score_raw": 43.818445040718345,
-        "shell_dependence_score": 9.652744899884093,
+        "shell_dependence_score": 9.67458202510675,
         "build_around_score_raw": 43.818445040718345,
-        "build_around_score": 9.652744899884093,
+        "build_around_score": 9.67458202510675,
         "core_score_raw": 18085.092272060952,
         "core_score": 10.0,
+        "win_contribution_logit": 0.11444058047309992,
+        "contribution_score": 2.619507715016145,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cyclops%20Superconductor%22",
-        "community": 2,
-        "x": 819.6023937631389,
-        "y": 984.4909765073172,
+        "flow_in_degree": 2,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 0,
+        "x": 1366.8647027284183,
+        "y": 469.3976304949031,
         "analysis_radius": 25.836601831604376,
         "pick_radius": 30.0,
         "radius": 25.836601831604376,
@@ -853,9 +738,9 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.8048194542864756,
-            "analysis_score": 9.999999999999998,
+            "analysis_score": 10.0,
             "pick_priority_score": 7.770282115515798,
-            "build_around_score": 9.652744899884093,
+            "build_around_score": 9.67458202510675,
             "core_score": 10.0,
             "role": "engine"
           }
@@ -882,8 +767,8 @@
         "supported_win_rate": 0.577385050875985,
         "support_delta": 0.14630000688771522,
         "standalone_delta": 0.03665799969575345,
-        "dependency_score": 0.4401612939410264,
-        "degree": 6,
+        "dependency_score": 0.42466279938453255,
+        "degree": 3,
         "signpost_score": 12912.424101839246,
         "signpost_lift": 4.8941776192486195,
         "deck_prevalence": 0.6766250227290795,
@@ -896,26 +781,31 @@
         "alsa": 4.426420661004632,
         "average_taken_at": 7.1337128399747,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 12925.47912508759,
-        "analysis_score": 9.999999999999998,
+        "analysis_score_raw": 12925.200152185573,
+        "analysis_score": 10.0,
         "pick_priority_score_raw": 311.5057706126319,
         "pick_priority_score": 8.295643145383947,
         "pick_market_score_raw": 8.586572946887202,
         "pick_market_score": 8.586572946887202,
         "pick_urgency_score_raw": 7.345498506630329,
         "pick_urgency_score": 7.345498506630329,
-        "shell_dependence_score_raw": 49.50552329551281,
+        "shell_dependence_score_raw": 48.393810584226735,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 49.50552329551281,
+        "build_around_score_raw": 48.393810584226735,
         "build_around_score": 10.0,
-        "core_score_raw": 12956.886791110472,
+        "core_score_raw": 12956.66981218668,
         "core_score": 10.0,
+        "win_contribution_logit": 0.11487145210225827,
+        "contribution_score": 2.630909469164351,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Tune%20the%20Narrative%22",
+        "flow_in_degree": 3,
+        "flow_out_degree": 2,
+        "flow_role": null,
         "community": 1,
-        "x": 1074.6661358532447,
-        "y": 730.6297962138742,
+        "x": 1355.9399720432873,
+        "y": 843.9342350073038,
         "analysis_radius": 28.0,
         "pick_radius": 30.0,
         "radius": 28.0,
@@ -957,13 +847,13 @@
             "partner_rarity": "uncommon"
           },
           {
-            "card": "Aether Revolt",
-            "quality_score": 0.3311082941766089,
-            "pair_win_rate": 0.6296975252062328,
-            "pair_games": 1091,
-            "synergy_delta_logit": 0.06309809023628782,
-            "partner_pick_score": 6.865791908840703,
-            "partner_rarity": "rare"
+            "card": "Izzet Generatorium",
+            "quality_score": 0.30414617443223935,
+            "pair_win_rate": 0.5660805445263755,
+            "pair_games": 1763,
+            "synergy_delta_logit": 0.08961291734464799,
+            "partner_pick_score": 0.0,
+            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -1010,7 +900,7 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.6766250227290795,
-            "analysis_score": 9.999999999999998,
+            "analysis_score": 10.0,
             "pick_priority_score": 8.295643145383947,
             "build_around_score": 10.0,
             "core_score": 10.0,
@@ -1021,10 +911,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.4711612696299753,
-            "analysis_score": 9.767486439581226,
+            "analysis_score": 9.767421514342468,
             "pick_priority_score": 6.132601455688141,
-            "build_around_score": 9.798460680487107,
-            "core_score": 9.63913459288473,
+            "build_around_score": 9.790906690964714,
+            "core_score": 9.639058274561748,
             "role": "needs_support"
           }
         ]
@@ -1050,8 +940,8 @@
         "supported_win_rate": 0.574904214559387,
         "support_delta": 0.10955767990592163,
         "standalone_delta": 0.03542156345737224,
-        "dependency_score": 0.07478826784955236,
-        "degree": 3,
+        "dependency_score": 0.08311534519519737,
+        "degree": 2,
         "signpost_score": 10601.816724380435,
         "signpost_lift": 4.194910053270122,
         "deck_prevalence": 0.5885354089451892,
@@ -1064,29 +954,34 @@
         "alsa": 4.583425009167583,
         "average_taken_at": 7.662854777366691,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 10608.121932085758,
-        "analysis_score": 9.884874915663469,
+        "analysis_score_raw": 10608.27181947798,
+        "analysis_score": 9.884895596586901,
         "pick_priority_score_raw": 253.64599442132766,
         "pick_priority_score": 7.583294704446542,
         "pick_market_score_raw": 8.395891885852071,
         "pick_market_score": 8.395891885852071,
         "pick_urgency_score_raw": 6.847047885140337,
         "pick_urgency_score": 6.847047885140337,
-        "shell_dependence_score_raw": 14.620382880287222,
-        "shell_dependence_score": 6.048162741292537,
-        "build_around_score_raw": 14.620382880287222,
-        "build_around_score": 6.048162741292537,
-        "core_score_raw": 10636.478434289356,
-        "core_score": 9.822324747497332,
+        "shell_dependence_score_raw": 14.995227266980063,
+        "shell_dependence_score": 6.130206310086743,
+        "build_around_score_raw": 14.995227266980063,
+        "build_around_score": 6.130206310086743,
+        "core_score_raw": 10636.595013372194,
+        "core_score": 9.82234945653944,
+        "win_contribution_logit": 0.12298262517132508,
+        "contribution_score": 2.844729522611839,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Aether%20Spike%22",
-        "community": 0,
-        "x": 1191.643917444731,
-        "y": 577.3905250391011,
-        "analysis_radius": 15.640563632739358,
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 2,
+        "x": 1020.3831840449888,
+        "y": 994.1325993271463,
+        "analysis_radius": 15.940338417182577,
         "pick_radius": 30.0,
-        "radius": 15.640563632739358,
+        "radius": 15.940338417182577,
         "top_synergies": [
           {
             "card": "Deem Inferior",
@@ -1096,15 +991,6 @@
             "synergy_delta_logit": 0.08785430037794512,
             "partner_pick_score": 8.249494928103283,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Reiterating Bolt",
-            "quality_score": 0.2873468826825683,
-            "pair_win_rate": 0.6231028667790893,
-            "pair_games": 1186,
-            "synergy_delta_logit": 0.05515914153860607,
-            "partner_pick_score": 6.33191175535531,
-            "partner_rarity": "uncommon"
           },
           {
             "card": "Izzet Generatorium",
@@ -1160,10 +1046,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.5885354089451892,
-            "analysis_score": 9.884874915663469,
+            "analysis_score": 9.884895596586901,
             "pick_priority_score": 7.583294704446542,
-            "build_around_score": 6.048162741292537,
-            "core_score": 9.822324747497332,
+            "build_around_score": 6.130206310086743,
+            "core_score": 9.82234945653944,
             "role": "engine"
           },
           {
@@ -1171,10 +1057,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.44116830957749803,
-            "analysis_score": 9.674216772508924,
+            "analysis_score": 9.674170941796314,
             "pick_priority_score": 5.239776777746334,
             "build_around_score": 10.0,
-            "core_score": 9.49418918229517,
+            "core_score": 9.494136760229628,
             "role": "needs_support"
           },
           {
@@ -1211,8 +1097,8 @@
         "supported_win_rate": 0.5688949522510232,
         "support_delta": 0.11322119338577491,
         "standalone_delta": 0.029524336206327773,
-        "dependency_score": 0.09614448141391618,
-        "degree": 4,
+        "dependency_score": 0.11318889081403823,
+        "degree": 3,
         "signpost_score": 9961.252818912606,
         "signpost_lift": 3.807412651476056,
         "deck_prevalence": 0.5833636718290354,
@@ -1225,29 +1111,34 @@
         "alsa": 4.64021605894476,
         "average_taken_at": 7.7316098475504464,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9967.116826646943,
-        "analysis_score": 9.842149244534987,
+        "analysis_score_raw": 9967.423626016145,
+        "analysis_score": 9.842181292159053,
         "pick_priority_score_raw": 214.76883192442838,
         "pick_priority_score": 7.006917542463306,
         "pick_market_score_raw": 8.356729681365875,
         "pick_market_score": 8.356729681365875,
         "pick_urgency_score_raw": 6.619563162075389,
         "pick_urgency_score": 6.619563162075389,
-        "shell_dependence_score_raw": 16.235714711716355,
-        "shell_dependence_score": 6.384691818363829,
-        "build_around_score_raw": 16.235714711716355,
-        "build_around_score": 6.384691818363829,
-        "core_score_raw": 9995.443321165048,
-        "core_score": 9.756482570440733,
+        "shell_dependence_score_raw": 17.035173271100895,
+        "shell_dependence_score": 6.5431266507518595,
+        "build_around_score_raw": 17.035173271100895,
+        "build_around_score": 6.5431266507518595,
+        "core_score_raw": 9995.68194289665,
+        "core_score": 9.756520868967876,
+        "win_contribution_logit": 0.07873192504027948,
+        "contribution_score": 1.6589273306000885,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Tempest%20Harvester%22",
+        "flow_in_degree": 2,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 1,
-        "x": 1141.4878169969136,
-        "y": 834.7214758080411,
-        "analysis_radius": 16.085039822249012,
+        "x": 1125.0522710263417,
+        "y": 865.914845457642,
+        "analysis_radius": 16.698638560653404,
         "pick_radius": 30.0,
-        "radius": 16.085039822249012,
+        "radius": 16.698638560653404,
         "top_synergies": [
           {
             "card": "Scurry of Gremlins",
@@ -1275,15 +1166,6 @@
             "synergy_delta_logit": 0.11370723803693028,
             "partner_pick_score": 0.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Thriving Skyclaw",
-            "quality_score": 0.18757025544767872,
-            "pair_win_rate": 0.5816249050873197,
-            "pair_games": 1317,
-            "synergy_delta_logit": 0.05419227636969837,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -1330,10 +1212,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.5833636718290354,
-            "analysis_score": 9.842149244534987,
+            "analysis_score": 9.842181292159053,
             "pick_priority_score": 7.006917542463306,
-            "build_around_score": 6.384691818363829,
-            "core_score": 9.756482570440733,
+            "build_around_score": 6.5431266507518595,
+            "core_score": 9.756520868967876,
             "role": "engine"
           },
           {
@@ -1341,10 +1223,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.44910007111170713,
-            "analysis_score": 9.647881369587505,
+            "analysis_score": 9.647746637334382,
             "pick_priority_score": 5.769344670859149,
-            "build_around_score": 8.04241032596539,
-            "core_score": 9.45342215207773,
+            "build_around_score": 7.770115913846126,
+            "core_score": 9.453262702490674,
             "role": "needs_support"
           },
           {
@@ -1354,7 +1236,7 @@
             "deck_prevalence": 0.4032902150691954,
             "analysis_score": 9.443122652390025,
             "pick_priority_score": 7.927876377221466,
-            "build_around_score": 6.081578606255299,
+            "build_around_score": 6.024794321080884,
             "core_score": 9.11007742151555,
             "role": "balanced"
           }
@@ -1381,8 +1263,8 @@
         "supported_win_rate": 0.5516489506677569,
         "support_delta": 0.08872760235315014,
         "standalone_delta": 0.01310371676164046,
-        "dependency_score": 0.10580332204846983,
-        "degree": 7,
+        "dependency_score": 0.1291016623308588,
+        "degree": 4,
         "signpost_score": 9043.274514844858,
         "signpost_lift": 5.743602717072113,
         "deck_prevalence": 0.42690621840832943,
@@ -1395,29 +1277,34 @@
         "alsa": 5.260860306031121,
         "average_taken_at": 9.603269150851919,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9047.01349498836,
-        "analysis_score": 9.775755420717555,
+        "analysis_score_raw": 9047.432865113442,
+        "analysis_score": 9.775798069145267,
         "pick_priority_score_raw": 80.1806435911637,
         "pick_priority_score": 3.605954201200263,
         "pick_market_score_raw": 7.585102509383512,
         "pick_market_score": 7.585102509383512,
         "pick_urgency_score_raw": 4.451706872862169,
         "pick_urgency_score": 4.451706872862169,
-        "shell_dependence_score_raw": 16.577868786969695,
-        "shell_dependence_score": 6.451914141795907,
-        "build_around_score_raw": 16.577868786969695,
-        "build_around_score": 6.451914141795907,
-        "core_score_raw": 9068.06870063551,
-        "core_score": 9.653345697362857,
+        "shell_dependence_score_raw": 17.663403418664334,
+        "shell_dependence_score": 6.660915896192446,
+        "build_around_score_raw": 17.663403418664334,
+        "build_around_score": 6.660915896192446,
+        "core_score_raw": 9068.394877399463,
+        "core_score": 9.653396670861062,
+        "win_contribution_logit": 0.05594615555768508,
+        "contribution_score": 1.029214660349454,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Electrozoa%22",
-        "community": 0,
-        "x": 1194.8507814312643,
-        "y": 451.40732007681294,
-        "analysis_radius": 15.52962401563514,
+        "flow_in_degree": 4,
+        "flow_out_degree": 2,
+        "flow_role": null,
+        "community": 4,
+        "x": 635.1986665634876,
+        "y": 330.542590334823,
+        "analysis_radius": 16.36836426580114,
         "pick_radius": 30.0,
-        "radius": 15.52962401563514,
+        "radius": 16.36836426580114,
         "top_synergies": [
           {
             "card": "Izzet Generatorium",
@@ -1509,10 +1396,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.42690621840832943,
-            "analysis_score": 9.775755420717555,
+            "analysis_score": 9.775798069145267,
             "pick_priority_score": 3.605954201200263,
-            "build_around_score": 6.451914141795907,
-            "core_score": 9.653345697362857,
+            "build_around_score": 6.660915896192446,
+            "core_score": 9.653396670861062,
             "role": "needs_support"
           },
           {
@@ -1520,10 +1407,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.34957511632243315,
-            "analysis_score": 9.68403664370448,
+            "analysis_score": 9.684043581477646,
             "pick_priority_score": 3.052480171265729,
-            "build_around_score": 6.796374861283675,
-            "core_score": 9.508620699538767,
+            "build_around_score": 7.094646068721511,
+            "core_score": 9.508631997418831,
             "role": "needs_support"
           }
         ]
@@ -1551,8 +1438,8 @@
         "supported_win_rate": 0.5211917006561447,
         "support_delta": 0.2847052141696582,
         "standalone_delta": -0.02647973586516672,
-        "dependency_score": 0.3115692761354285,
-        "degree": 19,
+        "dependency_score": 0.33642721210670623,
+        "degree": 14,
         "signpost_score": 8588.722324071667,
         "signpost_lift": 10.577107909928275,
         "deck_prevalence": 0.37837884633820884,
@@ -1565,29 +1452,34 @@
         "alsa": 4.707055318572686,
         "average_taken_at": 7.866777504698569,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8594.330571042105,
-        "analysis_score": 9.740568399847884,
+        "analysis_score_raw": 8594.778013889587,
+        "analysis_score": 9.74061492148556,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.296470399390403,
         "pick_market_score": 8.296470399390403,
         "pick_urgency_score_raw": 4.489154791796252,
         "pick_urgency_score": 4.489154791796252,
-        "shell_dependence_score_raw": 130.81202776395833,
+        "shell_dependence_score_raw": 136.60243893603482,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 130.81202776395833,
+        "build_around_score_raw": 136.60243893603482,
         "build_around_score": 10.0,
-        "core_score_raw": 8612.759993947151,
-        "core_score": 9.598780644047944,
+        "core_score_raw": 8613.108005050748,
+        "core_score": 9.598836243733437,
+        "win_contribution_logit": -0.20319403862800325,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Izzet%20Generatorium%22",
-        "community": 2,
-        "x": 867.6019250132292,
-        "y": 840.6020943875487,
-        "analysis_radius": 22.216493940875427,
+        "flow_in_degree": 17,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
+        "community": 0,
+        "x": 1260.0031274698508,
+        "y": 471.46823892014936,
+        "analysis_radius": 23.111379635841423,
         "pick_radius": 30.0,
-        "radius": 22.216493940875427,
+        "radius": 23.111379635841423,
         "top_synergies": [
           {
             "card": "Bespoke Battlewagon",
@@ -1652,10 +1544,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.37837884633820884,
-            "analysis_score": 9.740568399847884,
+            "analysis_score": 9.74061492148556,
             "pick_priority_score": 0.0,
             "build_around_score": 10.0,
-            "core_score": 9.598780644047944,
+            "core_score": 9.598836243733437,
             "role": "needs_support"
           }
         ]
@@ -1681,8 +1573,8 @@
         "supported_win_rate": 0.5814717477003942,
         "support_delta": 0.17183319348352677,
         "standalone_delta": 0.03911351605661317,
-        "dependency_score": 0.4013665557322117,
-        "degree": 6,
+        "dependency_score": 0.5118747417216926,
+        "degree": 3,
         "signpost_score": 8088.821951618254,
         "signpost_lift": 5.954179396145332,
         "deck_prevalence": 0.3762438769966693,
@@ -1695,29 +1587,34 @@
         "alsa": 3.7685380065135035,
         "average_taken_at": 5.585877466251298,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8101.52244186936,
-        "analysis_score": 9.700090559312143,
+        "analysis_score_raw": 8103.511589217171,
+        "analysis_score": 9.700269631156992,
         "pick_priority_score_raw": 219.9673957967646,
         "pick_priority_score": 7.089747261214428,
         "pick_market_score_raw": 9.187772000923037,
         "pick_market_score": 9.187772000923037,
         "pick_urgency_score_raw": 7.912887350126652,
         "pick_urgency_score": 7.912887350126652,
-        "shell_dependence_score_raw": 40.64645154947581,
-        "shell_dependence_score": 9.401721649554505,
-        "build_around_score_raw": 40.64645154947581,
-        "build_around_score": 9.401721649554505,
-        "core_score_raw": 8117.330413867145,
-        "core_score": 9.536029295928335,
+        "shell_dependence_score_raw": 47.54236228992307,
+        "shell_dependence_score": 9.949156120856628,
+        "build_around_score_raw": 47.54236228992307,
+        "build_around_score": 9.949156120856628,
+        "core_score_raw": 8118.877528470997,
+        "core_score": 9.536243873190546,
+        "win_contribution_logit": 0.13427138338921948,
+        "contribution_score": 3.1397580335966184,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Bespoke%20Battlewagon%22",
-        "community": 2,
-        "x": 915.0309845340087,
-        "y": 893.5178073427239,
-        "analysis_radius": 27.600439389473344,
+        "flow_in_degree": 1,
+        "flow_out_degree": 5,
+        "flow_role": "payoff",
+        "community": 0,
+        "x": 1227.6416045728447,
+        "y": 364.2536875555332,
+        "analysis_radius": 28.0,
         "pick_radius": 30.0,
-        "radius": 27.600439389473344,
+        "radius": 28.0,
         "top_synergies": [
           {
             "card": "Aether Revolt",
@@ -1809,10 +1706,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.3762438769966693,
-            "analysis_score": 9.700090559312143,
+            "analysis_score": 9.700269631156992,
             "pick_priority_score": 7.089747261214428,
-            "build_around_score": 9.401721649554505,
-            "core_score": 9.536029295928335,
+            "build_around_score": 9.949156120856628,
+            "core_score": 9.536243873190546,
             "role": "engine"
           }
         ]
@@ -1853,7 +1750,7 @@
         "average_taken_at": 2.4197627663852033,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 7466.766016067003,
-        "analysis_score": 9.644163088765174,
+        "analysis_score": 9.644173816324425,
         "pick_priority_score_raw": 530.3912492456445,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
@@ -1861,17 +1758,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 6.707619955411189,
-        "shell_dependence_score": 3.6325512669654545,
+        "shell_dependence_score": 3.6186976945012748,
         "build_around_score_raw": 6.707619955411189,
-        "build_around_score": 3.6325512669654545,
+        "build_around_score": 3.6186976945012748,
         "core_score_raw": 7493.913703848664,
-        "core_score": 9.451388330173831,
+        "core_score": 9.451400934991112,
+        "win_contribution_logit": 0.3728975738502779,
+        "contribution_score": 8.771538296472666,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Galvanic%20Discharge%22",
-        "community": 2,
-        "x": 730.7455423862755,
-        "y": 862.3273561232264,
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
+        "community": 0,
+        "x": 1351.7714423719176,
+        "y": 360.4814985111142,
         "analysis_radius": 19.01159622779926,
         "pick_radius": 30.0,
         "radius": 19.01159622779926,
@@ -1939,10 +1841,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.6123692686803358,
-            "analysis_score": 9.644163088765174,
+            "analysis_score": 9.644173816324425,
             "pick_priority_score": 10.0,
-            "build_around_score": 3.6325512669654545,
-            "core_score": 9.451388330173831,
+            "build_around_score": 3.6186976945012748,
+            "core_score": 9.451400934991112,
             "role": "engine"
           },
           {
@@ -1950,10 +1852,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.5760330084372058,
-            "analysis_score": 8.337783610801806,
+            "analysis_score": 8.337740368603988,
             "pick_priority_score": 9.166321775426429,
             "build_around_score": 0.0,
-            "core_score": 8.34079310724249,
+            "core_score": 8.340759819515997,
             "role": "engine"
           },
           {
@@ -1961,10 +1863,10 @@
             "title": "Rakdos Zombies | Cranial Ram / Refurbished Familiar",
             "color_name": "Rakdos Zombies",
             "deck_prevalence": 0.4299056950802206,
-            "analysis_score": 4.5978695980626485,
+            "analysis_score": 4.59749760856384,
             "pick_priority_score": 8.318000240048129,
-            "build_around_score": 3.6039434742181147,
-            "core_score": 4.606139649162002,
+            "build_around_score": 3.621734197372881,
+            "core_score": 4.605852536789446,
             "role": "engine"
           }
         ]
@@ -2005,7 +1907,7 @@
         "average_taken_at": 3.975783643648362,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 6926.258369015289,
-        "analysis_score": 9.592655926291307,
+        "analysis_score": 9.592666596557239,
         "pick_priority_score_raw": 403.31293439500195,
         "pick_priority_score": 9.191751320880412,
         "pick_market_score_raw": 9.770651714605997,
@@ -2013,17 +1915,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 21.96637050473411,
-        "shell_dependence_score": 7.366326870214154,
+        "shell_dependence_score": 7.374608973844736,
         "build_around_score_raw": 21.96637050473411,
-        "build_around_score": 7.366326870214154,
+        "build_around_score": 7.374608973844736,
         "core_score_raw": 6941.613668396988,
-        "core_score": 9.370299955181634,
+        "core_score": 9.370312451855632,
+        "win_contribution_logit": 0.1592009863044294,
+        "contribution_score": 3.7810171938639914,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Roil%20Cartographer%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 6,
+        "flow_role": "payoff",
         "community": 1,
-        "x": 1104.8876585842154,
-        "y": 720.1904921697862,
+        "x": 1326.9174808095827,
+        "y": 774.3332349467498,
         "analysis_radius": 26.957819677983014,
         "pick_radius": 30.0,
         "radius": 26.957819677983014,
@@ -2118,10 +2025,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.3783319346613481,
-            "analysis_score": 9.592655926291307,
+            "analysis_score": 9.592666596557239,
             "pick_priority_score": 9.191751320880412,
-            "build_around_score": 7.366326870214154,
-            "core_score": 9.370299955181634,
+            "build_around_score": 7.374608973844736,
+            "core_score": 9.370312451855632,
             "role": "engine"
           },
           {
@@ -2129,10 +2036,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.31024601610853975,
-            "analysis_score": 9.456009571823648,
+            "analysis_score": 9.455917175397868,
             "pick_priority_score": 9.402611427829065,
-            "build_around_score": 8.67114921728089,
-            "core_score": 9.153762202089673,
+            "build_around_score": 8.48856753387354,
+            "core_score": 9.153655688576352,
             "role": "engine"
           }
         ]
@@ -2158,8 +2065,8 @@
         "supported_win_rate": 0.5950205982446714,
         "support_delta": 0.1432133693290087,
         "standalone_delta": 0.053510094795391705,
-        "dependency_score": 0.11923638912707576,
-        "degree": 3,
+        "dependency_score": 0.15242580334577358,
+        "degree": 2,
         "signpost_score": 6207.295272653364,
         "signpost_lift": 4.12194282540436,
         "deck_prevalence": 0.34565013838446934,
@@ -2172,29 +2079,34 @@
         "alsa": 3.5771701337733512,
         "average_taken_at": 4.90929597530571,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6216.932940929006,
-        "analysis_score": 9.518597473294093,
+        "analysis_score_raw": 6217.530350384943,
+        "analysis_score": 9.518673925416282,
         "pick_priority_score_raw": 356.3181564187235,
         "pick_priority_score": 8.761860163697934,
         "pick_market_score_raw": 9.403826739631935,
         "pick_market_score": 9.403826739631935,
         "pick_urgency_score_raw": 8.729294704513626,
         "pick_urgency_score": 8.729294704513626,
-        "shell_dependence_score_raw": 13.299433581897816,
-        "shell_dependence_score": 5.746003289575242,
-        "build_around_score_raw": 13.299433581897816,
-        "build_around_score": 5.746003289575242,
-        "core_score_raw": 6231.486747354744,
-        "core_score": 9.25599435836148,
+        "shell_dependence_score_raw": 14.494874830435634,
+        "shell_dependence_score": 6.020878119301082,
+        "build_around_score_raw": 14.494874830435634,
+        "build_around_score": 6.020878119301082,
+        "core_score_raw": 6231.951399153806,
+        "core_score": 9.256085676752473,
+        "win_contribution_logit": 0.21703901628605526,
+        "contribution_score": 5.217179766013484,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Unstable%20Amulet%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
         "community": 3,
-        "x": 719.1899622712259,
-        "y": 592.9661812556478,
-        "analysis_radius": 18.23556522232127,
+        "x": 408.82736492287654,
+        "y": 974.1234900794394,
+        "analysis_radius": 19.43038413419439,
         "pick_radius": 30.0,
-        "radius": 18.23556522232127,
+        "radius": 19.43038413419439,
         "top_synergies": [
           {
             "card": "Thriving Skyclaw",
@@ -2213,15 +2125,6 @@
             "synergy_delta_logit": 0.1383144808646427,
             "partner_pick_score": 6.865791908840703,
             "partner_rarity": "rare"
-          },
-          {
-            "card": "Izzet Generatorium",
-            "quality_score": 0.14503621345885642,
-            "pair_win_rate": 0.5762483130904184,
-            "pair_games": 741,
-            "synergy_delta_logit": 0.06200469126047531,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -2268,10 +2171,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.34565013838446934,
-            "analysis_score": 9.518597473294093,
+            "analysis_score": 9.518673925416282,
             "pick_priority_score": 8.761860163697934,
-            "build_around_score": 5.746003289575242,
-            "core_score": 9.25599435836148,
+            "build_around_score": 6.020878119301082,
+            "core_score": 9.256085676752473,
             "role": "engine"
           }
         ]
@@ -2297,8 +2200,8 @@
         "supported_win_rate": 0.5486603284356093,
         "support_delta": 0.162790763218218,
         "standalone_delta": 0.00545194833871554,
-        "dependency_score": 0.09082405151250605,
-        "degree": 8,
+        "dependency_score": 0.13721778931781856,
+        "degree": 3,
         "signpost_score": 5978.509531583703,
         "signpost_lift": 3.5533098023601077,
         "deck_prevalence": 0.3650448117746744,
@@ -2311,29 +2214,34 @@
         "alsa": 4.789612517408044,
         "average_taken_at": 8.594620350445743,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5980.907637278348,
-        "analysis_score": 9.49206775945173,
+        "analysis_score_raw": 5981.742724558844,
+        "analysis_score": 9.492174016588267,
         "pick_priority_score_raw": 25.94022585676431,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.07044738493827,
         "pick_market_score": 8.07044738493827,
         "pick_urgency_score_raw": 4.143956006087539,
         "pick_urgency_score": 4.143956006087539,
-        "shell_dependence_score_raw": 22.661171906403933,
-        "shell_dependence_score": 7.468250963004631,
-        "build_around_score_raw": 22.661171906403933,
-        "build_around_score": 7.468250963004631,
-        "core_score_raw": 5999.226814125952,
-        "core_score": 9.21576268943871,
+        "shell_dependence_score_raw": 25.74586168437355,
+        "shell_dependence_score": 7.89869502181365,
+        "build_around_score_raw": 25.74586168437355,
+        "build_around_score": 7.89869502181365,
+        "core_score_raw": 5999.876326455226,
+        "core_score": 9.215889645093258,
+        "win_contribution_logit": 0.038104448878922316,
+        "contribution_score": 0.5265777697219534,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Thriving%20Skyclaw%22",
+        "flow_in_degree": 4,
+        "flow_out_degree": 1,
+        "flow_role": "enabler",
         "community": 3,
-        "x": 504.1899622712259,
-        "y": 804.7194117795893,
-        "analysis_radius": 14.569523013079571,
+        "x": 638.8273649228765,
+        "y": 763.424649513987,
+        "analysis_radius": 16.239697574070824,
         "pick_radius": 30.0,
-        "radius": 14.569523013079571,
+        "radius": 16.239697574070824,
         "top_synergies": [
           {
             "card": "Unstable Amulet",
@@ -2363,15 +2271,6 @@
             "partner_rarity": "uncommon"
           },
           {
-            "card": "Tempest Harvester",
-            "quality_score": 0.18757025544767872,
-            "pair_win_rate": 0.5816249050873197,
-            "pair_games": 1317,
-            "synergy_delta_logit": 0.05419227636969837,
-            "partner_pick_score": 7.006917542463306,
-            "partner_rarity": "common"
-          },
-          {
             "card": "Electrozoa",
             "quality_score": 0.1762719097810589,
             "pair_win_rate": 0.5694581280788177,
@@ -2379,6 +2278,15 @@
             "synergy_delta_logit": 0.07087258355812004,
             "partner_pick_score": 3.605954201200263,
             "partner_rarity": "common"
+          },
+          {
+            "card": "Izzet Generatorium",
+            "quality_score": 0.06957995116228588,
+            "pair_win_rate": 0.5340909090909091,
+            "pair_games": 792,
+            "synergy_delta_logit": 0.08668112202202066,
+            "partner_pick_score": 0.0,
+            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -2425,10 +2333,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.3650448117746744,
-            "analysis_score": 9.49206775945173,
+            "analysis_score": 9.492174016588267,
             "pick_priority_score": 0.0,
-            "build_around_score": 7.468250963004631,
-            "core_score": 9.21576268943871,
+            "build_around_score": 7.89869502181365,
+            "core_score": 9.215889645093258,
             "role": "needs_support"
           },
           {
@@ -2436,10 +2344,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.3483481934901119,
-            "analysis_score": 7.428643158637759,
+            "analysis_score": 7.427795010841489,
             "pick_priority_score": 0.0,
-            "build_around_score": 8.765224688721956,
-            "core_score": 7.429438227041641,
+            "build_around_score": 7.6336859028147215,
+            "core_score": 7.428779826802146,
             "role": "needs_support"
           },
           {
@@ -2478,8 +2386,8 @@
         "supported_win_rate": 0.5582305734977491,
         "support_delta": 0.050294065561241164,
         "standalone_delta": 0.022394289102512288,
-        "dependency_score": 0.198868783391867,
-        "degree": 3,
+        "dependency_score": 0.2654520920869642,
+        "degree": 2,
         "signpost_score": 5935.017500516955,
         "signpost_lift": 3.753898704801508,
         "deck_prevalence": 0.34989630320087695,
@@ -2492,29 +2400,34 @@
         "alsa": 3.8142747505755947,
         "average_taken_at": 6.07632985183386,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5941.73233909236,
-        "analysis_score": 9.487563301257731,
+        "analysis_score_raw": 5942.930838648872,
+        "analysis_score": 9.487712100559822,
         "pick_priority_score_raw": 104.75699253578043,
         "pick_priority_score": 4.526071435471971,
         "pick_market_score_raw": 9.061386272004652,
         "pick_market_score": 9.061386272004652,
         "pick_urgency_score_raw": 6.974065269380768,
         "pick_urgency_score": 6.974065269380768,
-        "shell_dependence_score_raw": 7.107398033037374,
-        "shell_dependence_score": 3.805480478893784,
-        "build_around_score_raw": 7.107398033037374,
-        "build_around_score": 3.805480478893784,
-        "core_score_raw": 5957.899785824599,
-        "core_score": 9.20844117697923,
+        "shell_dependence_score_raw": 8.161679584266379,
+        "shell_dependence_score": 4.213205910755487,
+        "build_around_score_raw": 8.161679584266379,
+        "build_around_score": 4.213205910755487,
+        "core_score_raw": 5958.831952146331,
+        "core_score": 9.208619160002785,
+        "win_contribution_logit": 0.016528630456101628,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Rush%20of%20Inspiration%22",
-        "community": 0,
-        "x": 1311.6570967950252,
-        "y": 666.407320076813,
-        "analysis_radius": 19.390962102745387,
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 2,
+        "x": 789.4048636571961,
+        "y": 951.3285520349118,
+        "analysis_radius": 21.787961215768888,
         "pick_radius": 30.0,
-        "radius": 19.390962102745387,
+        "radius": 21.787961215768888,
         "top_synergies": [
           {
             "card": "Smelted Chargebug",
@@ -2533,15 +2446,6 @@
             "synergy_delta_logit": 0.0927216402428305,
             "partner_pick_score": 0.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Thriving Skyclaw",
-            "quality_score": 0.11059205399027686,
-            "pair_win_rate": 0.5740458015267176,
-            "pair_games": 655,
-            "synergy_delta_logit": 0.05205171062218711,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -2588,10 +2492,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.34989630320087695,
-            "analysis_score": 9.487563301257731,
+            "analysis_score": 9.487712100559822,
             "pick_priority_score": 4.526071435471971,
-            "build_around_score": 3.805480478893784,
-            "core_score": 9.20844117697923,
+            "build_around_score": 4.213205910755487,
+            "core_score": 9.208619160002785,
             "role": "engine"
           }
         ]
@@ -2617,8 +2521,8 @@
         "supported_win_rate": 0.5607439122290607,
         "support_delta": 0.10568773245377983,
         "standalone_delta": 0.020224149970985428,
-        "dependency_score": 0.11711887050987271,
-        "degree": 6,
+        "dependency_score": 0.1195860546660439,
+        "degree": 5,
         "signpost_score": 5541.398981491113,
         "signpost_lift": 2.4094838647091628,
         "deck_prevalence": 0.4580514257031824,
@@ -2631,29 +2535,34 @@
         "alsa": 4.124709841925428,
         "average_taken_at": 6.245658016577456,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5546.338502156229,
-        "analysis_score": 9.44036214180192,
+        "analysis_score_raw": 5546.38291147104,
+        "analysis_score": 9.440378130893489,
         "pick_priority_score_raw": 89.79339409539911,
         "pick_priority_score": 3.9953033332550283,
         "pick_market_score_raw": 8.908730556293063,
         "pick_market_score": 8.908730556293063,
         "pick_urgency_score_raw": 6.586513092012685,
         "pick_urgency_score": 6.586513092012685,
-        "shell_dependence_score_raw": 12.709006876486285,
-        "shell_dependence_score": 5.6018023946982805,
-        "build_around_score_raw": 12.709006876486285,
-        "build_around_score": 5.6018023946982805,
-        "core_score_raw": 5568.57637256235,
-        "core_score": 9.136865056010326,
+        "shell_dependence_score_raw": 12.794416434330012,
+        "shell_dependence_score": 5.62098910525801,
+        "build_around_score_raw": 12.794416434330012,
+        "build_around_score": 5.62098910525801,
+        "core_score_raw": 5568.6109131405365,
+        "core_score": 9.136883810996471,
+        "win_contribution_logit": 0.0864822805511025,
+        "contribution_score": 1.8700900466321817,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Smelted%20Chargebug%22",
-        "community": 0,
-        "x": 1237.2077261887578,
-        "y": 602.6626331535264,
-        "analysis_radius": 16.328607586759617,
+        "flow_in_degree": 4,
+        "flow_out_degree": 2,
+        "flow_role": null,
+        "community": 2,
+        "x": 854.3487079736917,
+        "y": 1011.2133758799915,
+        "analysis_radius": 16.417426216381777,
         "pick_radius": 30.0,
-        "radius": 16.328607586759617,
+        "radius": 16.417426216381777,
         "top_synergies": [
           {
             "card": "Bespoke Battlewagon",
@@ -2745,10 +2654,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.5981227265672197,
-            "analysis_score": 9.79711937602738,
+            "analysis_score": 9.797031208042194,
             "pick_priority_score": 6.889558420261424,
-            "build_around_score": 8.019569470188769,
-            "core_score": 9.797571082449073,
+            "build_around_score": 6.878444969982766,
+            "core_score": 9.797502717405207,
             "role": "balanced"
           },
           {
@@ -2756,10 +2665,10 @@
             "title": "Rakdos Zombies | Cranial Ram / Refurbished Familiar",
             "color_name": "Rakdos Zombies",
             "deck_prevalence": 0.5127649369299405,
-            "analysis_score": 7.359991666203476,
+            "analysis_score": 7.359337465475492,
             "pick_priority_score": 6.818347491299218,
-            "build_around_score": 7.361331399579309,
-            "core_score": 7.362380276720655,
+            "build_around_score": 6.714224667491071,
+            "core_score": 7.361873605246401,
             "role": "balanced"
           },
           {
@@ -2767,10 +2676,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.4580514257031824,
-            "analysis_score": 9.44036214180192,
+            "analysis_score": 9.440378130893489,
             "pick_priority_score": 3.9953033332550283,
-            "build_around_score": 5.6018023946982805,
-            "core_score": 9.136865056010326,
+            "build_around_score": 5.62098910525801,
+            "core_score": 9.136883810996471,
             "role": "engine"
           },
           {
@@ -2780,7 +2689,7 @@
             "deck_prevalence": 0.00873286290027183,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.3620192428080686,
+            "build_around_score": 1.3084583801993106,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2807,8 +2716,8 @@
         "supported_win_rate": 0.562514079747691,
         "support_delta": 0.11601961480304152,
         "standalone_delta": 0.022366487463641338,
-        "dependency_score": 0.12331943655753375,
-        "degree": 8,
+        "dependency_score": 0.14017843812209185,
+        "degree": 5,
         "signpost_score": 5409.602817458886,
         "signpost_lift": 4.281109748203585,
         "deck_prevalence": 0.29539398327688815,
@@ -2821,29 +2730,34 @@
         "alsa": 3.5153912736050326,
         "average_taken_at": 5.133646548608602,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5414.953875561831,
-        "analysis_score": 9.423929843509935,
+        "analysis_score_raw": 5415.257337589994,
+        "analysis_score": 9.423978737632384,
         "pick_priority_score_raw": 90.46506844172383,
         "pick_priority_score": 4.020946669884974,
         "pick_market_score_raw": 9.377777018340542,
         "pick_market_score": 9.377777018340542,
         "pick_urgency_score_raw": 7.310334841068454,
         "pick_urgency_score": 7.310334841068454,
-        "shell_dependence_score_raw": 13.521326059320911,
-        "shell_dependence_score": 5.798662250361948,
-        "build_around_score_raw": 13.521326059320911,
-        "build_around_score": 5.798662250361948,
-        "core_score_raw": 5428.590928135499,
-        "core_score": 9.109899406514929,
+        "shell_dependence_score_raw": 14.1319453704691,
+        "shell_dependence_score": 5.939344954197423,
+        "build_around_score_raw": 14.1319453704691,
+        "build_around_score": 5.939344954197423,
+        "core_score_raw": 5428.826954157403,
+        "core_score": 9.109957604702851,
+        "win_contribution_logit": 0.11046186534445107,
+        "contribution_score": 2.514013908567103,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Phyrexian%20Ironworks%22",
-        "community": 0,
-        "x": 1200.5025375206105,
-        "y": 530.1298302757083,
-        "analysis_radius": 16.669656526571487,
+        "flow_in_degree": 2,
+        "flow_out_degree": 4,
+        "flow_role": null,
+        "community": 2,
+        "x": 812.3199729057618,
+        "y": 1074.2962740973899,
+        "analysis_radius": 17.27658058289558,
         "pick_radius": 30.0,
-        "radius": 16.669656526571487,
+        "radius": 17.27658058289558,
         "top_synergies": [
           {
             "card": "Smelted Chargebug",
@@ -2935,10 +2849,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.29539398327688815,
-            "analysis_score": 9.423929843509935,
+            "analysis_score": 9.423978737632384,
             "pick_priority_score": 4.020946669884974,
-            "build_around_score": 5.798662250361948,
-            "core_score": 9.109899406514929,
+            "build_around_score": 5.939344954197423,
+            "core_score": 9.109957604702851,
             "role": "engine"
           }
         ]
@@ -2964,8 +2878,8 @@
         "supported_win_rate": 0.5798625151637687,
         "support_delta": 0.09205763711498827,
         "standalone_delta": 0.042028616690706344,
-        "dependency_score": 0.08953105697079987,
-        "degree": 3,
+        "dependency_score": 0.11147486724371002,
+        "degree": 2,
         "signpost_score": 4997.8126615823485,
         "signpost_lift": 3.333264499246845,
         "deck_prevalence": 0.3200765827595679,
@@ -2978,29 +2892,34 @@
         "alsa": 2.3731663241442846,
         "average_taken_at": 3.060220034742328,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5005.308226944521,
-        "analysis_score": 9.370010560126104,
+        "analysis_score_raw": 5005.703215529434,
+        "analysis_score": 9.370075069907896,
         "pick_priority_score_raw": 176.7169845211826,
         "pick_priority_score": 6.33191175535531,
         "pick_market_score_raw": 9.988063826931226,
         "pick_market_score": 9.988063826931226,
         "pick_urgency_score_raw": 8.914689991780143,
         "pick_urgency_score": 8.914689991780143,
-        "shell_dependence_score_raw": 7.46544577733723,
-        "shell_dependence_score": 3.953268092075396,
-        "build_around_score_raw": 7.46544577733723,
-        "build_around_score": 3.953268092075396,
-        "core_score_raw": 5019.282511102148,
-        "core_score": 9.026871086161318,
+        "shell_dependence_score_raw": 7.947935736288688,
+        "shell_dependence_score": 4.131998021063751,
+        "build_around_score_raw": 7.947935736288688,
+        "build_around_score": 4.131998021063751,
+        "core_score_raw": 5019.589724445968,
+        "core_score": 9.026947948486626,
+        "win_contribution_logit": 0.14626533330067756,
+        "contribution_score": 3.4500166092600217,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Reiterating%20Bolt%22",
-        "community": 0,
-        "x": 1243.4707427330663,
-        "y": 484.8115509096965,
-        "analysis_radius": 16.534691968937643,
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
+        "community": 4,
+        "x": 405.19866656348756,
+        "y": 541.2414309002755,
+        "analysis_radius": 17.32466913876241,
         "pick_radius": 30.0,
-        "radius": 16.534691968937643,
+        "radius": 17.32466913876241,
         "top_synergies": [
           {
             "card": "Electrozoa",
@@ -3019,15 +2938,6 @@
             "synergy_delta_logit": 0.13400193885127326,
             "partner_pick_score": 0.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Aether Spike",
-            "quality_score": 0.2873468826825683,
-            "pair_win_rate": 0.6231028667790893,
-            "pair_games": 1186,
-            "synergy_delta_logit": 0.05515914153860607,
-            "partner_pick_score": 7.583294704446542,
-            "partner_rarity": "common"
           }
         ],
         "top_anti_synergies": [
@@ -3074,10 +2984,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.3200765827595679,
-            "analysis_score": 9.370010560126104,
+            "analysis_score": 9.370075069907896,
             "pick_priority_score": 6.33191175535531,
-            "build_around_score": 3.953268092075396,
-            "core_score": 9.026871086161318,
+            "build_around_score": 4.131998021063751,
+            "core_score": 9.026947948486626,
             "role": "engine"
           },
           {
@@ -3087,7 +2997,7 @@
             "deck_prevalence": 0.009337757610629285,
             "analysis_score": 0.09060624127182905,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.7013568247194601,
+            "build_around_score": 1.6344516472644064,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3114,8 +3024,8 @@
         "supported_win_rate": 0.5917745620715917,
         "support_delta": 0.09983907820062399,
         "standalone_delta": 0.05380057354740897,
-        "dependency_score": 0.10186984943520168,
-        "degree": 2,
+        "dependency_score": 0.12215444458693975,
+        "degree": 1,
         "signpost_score": 4786.5052661338805,
         "signpost_lift": 2.1970443548953904,
         "deck_prevalence": 0.4366977118962544,
@@ -3128,29 +3038,34 @@
         "alsa": 3.848628920145991,
         "average_taken_at": 5.733714908694467,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4795.871003720351,
-        "analysis_score": 9.340713301855844,
+        "analysis_score_raw": 4796.236126433082,
+        "analysis_score": 9.340775872436279,
         "pick_priority_score_raw": 345.2686520085962,
         "pick_priority_score": 8.65257471810895,
         "pick_market_score_raw": 9.125845021923533,
         "pick_market_score": 9.125845021923533,
         "pick_urgency_score_raw": 8.272948678751272,
         "pick_urgency_score": 8.272948678751272,
-        "shell_dependence_score_raw": 8.146898056157317,
-        "shell_dependence_score": 4.218033779331258,
-        "build_around_score_raw": 8.146898056157317,
-        "build_around_score": 4.218033779331258,
-        "core_score_raw": 4815.212773796107,
-        "core_score": 8.982910355807935,
+        "shell_dependence_score_raw": 8.616550483260383,
+        "shell_dependence_score": 4.379896898957675,
+        "build_around_score_raw": 8.616550483260383,
+        "build_around_score": 4.379896898957675,
+        "core_score_raw": 4815.496758128232,
+        "core_score": 8.982984797117668,
+        "win_contribution_logit": 0.14005413456715804,
+        "contribution_score": 3.2897532626726136,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Serum%20Visionary%22",
-        "community": 1,
-        "x": 1076.277510968327,
-        "y": 935.1904921697862,
-        "analysis_radius": 17.626346124774752,
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 0,
+        "x": 1232.4666505047537,
+        "y": 593.1685556946711,
+        "analysis_radius": 18.356591550237326,
         "pick_radius": 30.0,
-        "radius": 17.626346124774752,
+        "radius": 18.356591550237326,
         "top_synergies": [
           {
             "card": "Izzet Generatorium",
@@ -3159,15 +3074,6 @@
             "pair_games": 927,
             "synergy_delta_logit": 0.12215444458693975,
             "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Scurry of Gremlins",
-            "quality_score": 0.33807622149213895,
-            "pair_win_rate": 0.6868932038834952,
-            "pair_games": 412,
-            "synergy_delta_logit": 0.0714429567075946,
-            "partner_pick_score": 8.718665486122028,
             "partner_rarity": "uncommon"
           }
         ],
@@ -3217,7 +3123,7 @@
             "deck_prevalence": 0.5583390618783469,
             "analysis_score": 9.697668996546719,
             "pick_priority_score": 9.799909974851683,
-            "build_around_score": 5.5102537996533165,
+            "build_around_score": 5.465569742355667,
             "core_score": 9.517163260164619,
             "role": "good_alone"
           },
@@ -3226,10 +3132,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.4472675868787525,
-            "analysis_score": 9.464006886393749,
+            "analysis_score": 9.463934330498953,
             "pick_priority_score": 9.129852606620661,
-            "build_around_score": 5.2140126525118005,
-            "core_score": 9.167927328719676,
+            "build_around_score": 5.194388479725097,
+            "core_score": 9.167844562253045,
             "role": "engine"
           },
           {
@@ -3237,10 +3143,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.4366977118962544,
-            "analysis_score": 9.340713301855844,
+            "analysis_score": 9.340775872436279,
             "pick_priority_score": 8.65257471810895,
-            "build_around_score": 4.218033779331258,
-            "core_score": 8.982910355807935,
+            "build_around_score": 4.379896898957675,
+            "core_score": 8.982984797117668,
             "role": "engine"
           }
         ]
@@ -3268,8 +3174,8 @@
         "supported_win_rate": 0.5849529780564263,
         "support_delta": 0.13758455700379474,
         "standalone_delta": 0.043746781185924344,
-        "dependency_score": 0.13244722158818997,
-        "degree": 5,
+        "dependency_score": 0.12958378813928578,
+        "degree": 4,
         "signpost_score": 4717.532139371252,
         "signpost_lift": 6.850689594284237,
         "deck_prevalence": 0.21054132121817906,
@@ -3282,29 +3188,34 @@
         "alsa": 3.0908473040326236,
         "average_taken_at": 3.9773769037409434,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4726.040738725868,
-        "analysis_score": 9.330659968722271,
+        "analysis_score_raw": 4725.989196923788,
+        "analysis_score": 9.330662872459287,
         "pick_priority_score_raw": 176.38528326757623,
         "pick_priority_score": 6.325412025572301,
         "pick_market_score_raw": 9.771293104456218,
         "pick_market_score": 9.771293104456218,
         "pick_urgency_score_raw": 8.581731148790528,
         "pick_urgency_score": 8.581731148790528,
-        "shell_dependence_score_raw": 14.357405785982277,
-        "shell_dependence_score": 5.990099070268967,
-        "build_around_score_raw": 14.357405785982277,
-        "build_around_score": 5.990099070268967,
-        "core_score_raw": 4734.053025577636,
-        "core_score": 8.96490695394852,
+        "shell_dependence_score_raw": 14.249909970490798,
+        "shell_dependence_score": 5.966058605271702,
+        "build_around_score_raw": 14.249909970490798,
+        "build_around_score": 5.966058605271702,
+        "core_score_raw": 4734.012937509351,
+        "core_score": 8.964909941321471,
+        "win_contribution_logit": 0.16793251615498878,
+        "contribution_score": 4.002360152467222,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Invert%20Polarity%22",
+        "flow_in_degree": 2,
+        "flow_out_degree": 2,
+        "flow_role": null,
         "community": 1,
-        "x": 1101.0607033071615,
-        "y": 784.3915953593022,
-        "analysis_radius": 18.174172942400677,
+        "x": 1245.9183294973902,
+        "y": 855.2145258133241,
+        "analysis_radius": 18.071089338240128,
         "pick_radius": 30.0,
-        "radius": 18.174172942400677,
+        "radius": 18.071089338240128,
         "top_synergies": [
           {
             "card": "Tune the Narrative",
@@ -3341,15 +3252,6 @@
             "synergy_delta_logit": 0.09624786583215145,
             "partner_pick_score": 7.006917542463306,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Aether Revolt",
-            "quality_score": 0.396656685964927,
-            "pair_win_rate": 0.6565656565656566,
-            "pair_games": 198,
-            "synergy_delta_logit": 0.1512204521642047,
-            "partner_pick_score": 6.865791908840703,
-            "partner_rarity": "rare"
           }
         ],
         "top_anti_synergies": [
@@ -3396,10 +3298,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.21054132121817906,
-            "analysis_score": 9.330659968722271,
+            "analysis_score": 9.330662872459287,
             "pick_priority_score": 6.325412025572301,
-            "build_around_score": 5.990099070268967,
-            "core_score": 8.96490695394852,
+            "build_around_score": 5.966058605271702,
+            "core_score": 8.964909941321471,
             "role": "engine"
           }
         ]
@@ -3425,8 +3327,8 @@
         "supported_win_rate": 0.5846645367412141,
         "support_delta": 0.11340016892512217,
         "standalone_delta": 0.045737135741090285,
-        "dependency_score": 0.15343190874371593,
-        "degree": 10,
+        "dependency_score": 0.1948410406081225,
+        "degree": 6,
         "signpost_score": 4635.6128331383925,
         "signpost_lift": 5.6416393385633805,
         "deck_prevalence": 0.22152873399297607,
@@ -3439,29 +3341,34 @@
         "alsa": 2.2750311016910105,
         "average_taken_at": 2.419090123812266,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4644.777806499532,
-        "analysis_score": 9.318772014467717,
+        "analysis_score_raw": 4645.523170873092,
+        "analysis_score": 9.318892361625819,
         "pick_priority_score_raw": 206.19164953664801,
         "pick_priority_score": 6.865791908840703,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 9.088230373480929,
         "pick_urgency_score": 9.088230373480929,
-        "shell_dependence_score_raw": 11.380711139080672,
-        "shell_dependence_score": 5.253282473293791,
-        "build_around_score_raw": 11.380711139080672,
-        "build_around_score": 5.253282473293791,
-        "core_score_raw": 4653.168030566431,
-        "core_score": 8.946654825961227,
+        "shell_dependence_score_raw": 12.548852176155375,
+        "shell_dependence_score": 5.559198839682338,
+        "build_around_score_raw": 12.548852176155375,
+        "build_around_score": 5.559198839682338,
+        "core_score_raw": 4653.747758412533,
+        "core_score": 8.946798701750359,
+        "win_contribution_logit": 0.21296111839375617,
+        "contribution_score": 5.118182070462056,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Aether%20Revolt%22",
-        "community": 2,
-        "x": 823.3132729754161,
-        "y": 881.4323805209679,
-        "analysis_radius": 19.039091180533738,
+        "flow_in_degree": 3,
+        "flow_out_degree": 3,
+        "flow_role": null,
+        "community": 0,
+        "x": 1291.0077806082486,
+        "y": 403.57782877711475,
+        "analysis_radius": 20.529819927652376,
         "pick_radius": 30.0,
-        "radius": 19.039091180533738,
+        "radius": 20.529819927652376,
         "top_synergies": [
           {
             "card": "Bespoke Battlewagon",
@@ -3553,10 +3460,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.22152873399297607,
-            "analysis_score": 9.318772014467717,
+            "analysis_score": 9.318892361625819,
             "pick_priority_score": 6.865791908840703,
-            "build_around_score": 5.253282473293791,
-            "core_score": 8.946654825961227,
+            "build_around_score": 5.559198839682338,
+            "core_score": 8.946798701750359,
             "role": "engine"
           }
         ]
@@ -3597,7 +3504,7 @@
         "average_taken_at": 2.341489415706381,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 4423.5751759356435,
-        "analysis_score": 9.285327400865675,
+        "analysis_score": 9.285337729278723,
         "pick_priority_score_raw": 610.3827670056837,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
@@ -3605,17 +3512,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 3.5964988207114503,
-        "shell_dependence_score": 1.8648237845973867,
+        "shell_dependence_score": 1.840490245704731,
         "build_around_score_raw": 3.5964988207114503,
-        "build_around_score": 1.8648237845973867,
+        "build_around_score": 1.840490245704731,
         "core_score_raw": 4434.005331606396,
-        "core_score": 8.895558366877742,
+        "core_score": 8.895570230413965,
+        "win_contribution_logit": 0.45994907298642634,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Amped%20Raptor%22",
-        "community": 2,
-        "x": 816.4656881318083,
-        "y": 769.4909765073172,
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
+        "community": 0,
+        "x": 1186.7231850229728,
+        "y": 437.39817133443285,
         "analysis_radius": 22.12313969005932,
         "pick_radius": 30.0,
         "radius": 22.12313969005932,
@@ -3683,10 +3595,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.35692237550126227,
-            "analysis_score": 7.267341774755971,
+            "analysis_score": 7.267107040299977,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 7.267241832999402,
+            "core_score": 7.2670593949331295,
             "role": "good_alone"
           },
           {
@@ -3694,10 +3606,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.32304342840017974,
-            "analysis_score": 9.285327400865675,
+            "analysis_score": 9.285337729278723,
             "pick_priority_score": 10.0,
-            "build_around_score": 1.8648237845973867,
-            "core_score": 8.895558366877742,
+            "build_around_score": 1.840490245704731,
+            "core_score": 8.895570230413965,
             "role": "engine"
           },
           {
@@ -3707,7 +3619,7 @@
             "deck_prevalence": 0.1663113337117269,
             "analysis_score": 0.0,
             "pick_priority_score": 8.277961207227605,
-            "build_around_score": 1.6996486530763966,
+            "build_around_score": 1.744678043777435,
             "core_score": 0.0,
             "role": "engine"
           }
@@ -3736,8 +3648,8 @@
         "supported_win_rate": 0.6261872455902306,
         "support_delta": 0.05800542740841241,
         "standalone_delta": 0.0879475224888785,
-        "dependency_score": 0.1104424485594604,
-        "degree": 6,
+        "dependency_score": 0.14770074848027545,
+        "degree": 3,
         "signpost_score": 1719.860860988974,
         "signpost_lift": 1.9014942933460433,
         "deck_prevalence": 0.19965474492642116,
@@ -3750,29 +3662,34 @@
         "alsa": 2.9090411815269204,
         "average_taken_at": 3.3366022783556217,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 1734.1614782114873,
-        "analysis_score": 8.643594874801398,
+        "analysis_score_raw": 1734.832127610062,
+        "analysis_score": 8.643869410264628,
         "pick_priority_score_raw": 351.90935396118607,
         "pick_priority_score": 8.718665486122028,
         "pick_market_score_raw": 9.93295293896632,
         "pick_market_score": 9.93295293896632,
         "pick_urgency_score_raw": 9.524848993656786,
         "pick_urgency_score": 9.524848993656786,
-        "shell_dependence_score_raw": 2.192451094888798,
-        "shell_dependence_score": 0.6182984451147324,
-        "build_around_score_raw": 2.192451094888798,
-        "build_around_score": 0.6182984451147324,
-        "core_score_raw": 1739.264641416535,
-        "core_score": 7.904556961839171,
+        "shell_dependence_score_raw": 2.419080896072192,
+        "shell_dependence_score": 0.8225024877567628,
+        "build_around_score_raw": 2.419080896072192,
+        "build_around_score": 0.8225024877567628,
+        "core_score_raw": 1739.7862576154264,
+        "core_score": 7.904884975885478,
+        "win_contribution_logit": 0.44057093600129354,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Scurry%20of%20Gremlins%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 3,
+        "flow_role": "payoff",
         "community": 1,
-        "x": 1098.7205938589063,
-        "y": 855.9925946178278,
-        "analysis_radius": 19.81304188502889,
+        "x": 1167.5186309632481,
+        "y": 935.8524215225357,
+        "analysis_radius": 21.154340682178233,
         "pick_radius": 30.0,
-        "radius": 19.81304188502889,
+        "radius": 21.154340682178233,
         "top_synergies": [
           {
             "card": "Tempest Harvester",
@@ -3800,24 +3717,6 @@
             "synergy_delta_logit": 0.13193984133814285,
             "partner_pick_score": 3.9953033332550283,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Serum Visionary",
-            "quality_score": 0.33807622149213895,
-            "pair_win_rate": 0.6868932038834952,
-            "pair_games": 412,
-            "synergy_delta_logit": 0.0714429567075946,
-            "partner_pick_score": 8.65257471810895,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Izzet Generatorium",
-            "quality_score": 0.23698479491739038,
-            "pair_win_rate": 0.6165413533834586,
-            "pair_games": 399,
-            "synergy_delta_logit": 0.08543288865723442,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -3864,10 +3763,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.4541720128543164,
-            "analysis_score": 9.301652828852802,
+            "analysis_score": 9.301782014046124,
             "pick_priority_score": 9.810940054896829,
             "build_around_score": 0.0,
-            "core_score": 9.299943401768548,
+            "core_score": 9.30004337045538,
             "role": "engine"
           },
           {
@@ -3875,10 +3774,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.19965474492642116,
-            "analysis_score": 8.643594874801398,
+            "analysis_score": 8.643869410264628,
             "pick_priority_score": 8.718665486122028,
-            "build_around_score": 0.6182984451147324,
-            "core_score": 7.904556961839171,
+            "build_around_score": 0.8225024877567628,
+            "core_score": 7.904884975885478,
             "role": "engine"
           },
           {
@@ -3886,10 +3785,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.1776265184671679,
-            "analysis_score": 8.419087375980796,
+            "analysis_score": 8.419442474033927,
             "pick_priority_score": 9.194331260005791,
-            "build_around_score": 3.7547718493507274,
-            "core_score": 7.541380063105792,
+            "build_around_score": 3.849523814880195,
+            "core_score": 7.5418228134197385,
             "role": "engine"
           }
         ]
@@ -3915,8 +3814,8 @@
         "supported_win_rate": 0.5905106442187282,
         "support_delta": 0.14024886411401621,
         "standalone_delta": 0.04996026799485609,
-        "dependency_score": 0.08711491117502196,
-        "degree": 4,
+        "dependency_score": 0.0950163442528657,
+        "degree": 3,
         "signpost_score": 4185.513645110389,
         "signpost_lift": 2.104351901700441,
         "deck_prevalence": 0.40384993292502813,
@@ -3929,29 +3828,34 @@
         "alsa": 4.588088086393205,
         "average_taken_at": 7.315788359340264,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4194.076151030819,
-        "analysis_score": 9.248812698587267,
+        "analysis_score_raw": 4194.21837682622,
+        "analysis_score": 9.248846228496816,
         "pick_priority_score_raw": 307.38797922556967,
         "pick_priority_score": 8.249494928103283,
         "pick_market_score_raw": 8.480667308146845,
         "pick_market_score": 8.480667308146845,
         "pick_urgency_score_raw": 7.170326776981591,
         "pick_urgency_score": 7.170326776981591,
-        "shell_dependence_score_raw": 10.681511974003785,
-        "shell_dependence_score": 5.054483572783736,
-        "build_around_score_raw": 10.681511974003785,
-        "build_around_score": 5.054483572783736,
-        "core_score_raw": 4211.980073158505,
-        "core_score": 8.841152310653905,
+        "shell_dependence_score_raw": 10.931869490788198,
+        "shell_dependence_score": 5.122007752452438,
+        "build_around_score_raw": 10.931869490788198,
+        "build_around_score": 5.122007752452438,
+        "core_score_raw": 4212.090693221594,
+        "core_score": 8.84119191629075,
+        "win_contribution_logit": 0.1530187136928376,
+        "contribution_score": 3.62328704337622,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Deem%20Inferior%22",
-        "community": 0,
-        "x": 1160.667197886545,
-        "y": 607.1908204683418,
-        "analysis_radius": 16.883951542017876,
+        "flow_in_degree": 0,
+        "flow_out_degree": 3,
+        "flow_role": "payoff",
+        "community": 2,
+        "x": 946.0221921300302,
+        "y": 1001.6679618386851,
+        "analysis_radius": 17.168403132820252,
         "pick_radius": 30.0,
-        "radius": 16.883951542017876,
+        "radius": 17.168403132820252,
         "top_synergies": [
           {
             "card": "Aether Spike",
@@ -3978,15 +3882,6 @@
             "pair_games": 837,
             "synergy_delta_logit": 0.11924309278752993,
             "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Phyrexian Ironworks",
-            "quality_score": 0.19235496923275738,
-            "pair_win_rate": 0.6179245283018868,
-            "pair_games": 636,
-            "synergy_delta_logit": 0.0536672823443905,
-            "partner_pick_score": 4.020946669884974,
             "partner_rarity": "uncommon"
           }
         ],
@@ -4036,7 +3931,7 @@
             "deck_prevalence": 0.5697402463155457,
             "analysis_score": 9.737680294277625,
             "pick_priority_score": 10.0,
-            "build_around_score": 6.002993472822601,
+            "build_around_score": 5.947873561418191,
             "core_score": 9.581060349628705,
             "role": "good_alone"
           },
@@ -4045,10 +3940,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.40384993292502813,
-            "analysis_score": 9.248812698587267,
+            "analysis_score": 9.248846228496816,
             "pick_priority_score": 8.249494928103283,
-            "build_around_score": 5.054483572783736,
-            "core_score": 8.841152310653905,
+            "build_around_score": 5.122007752452438,
+            "core_score": 8.84119191629075,
             "role": "engine"
           }
         ]
@@ -4104,12 +3999,17 @@
         "build_around_score": 0.0,
         "core_score_raw": -195.57124436423183,
         "core_score": 0.0,
+        "win_contribution_logit": 0.3797762790339819,
+        "contribution_score": 8.918955263192986,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cranial%20Ram%22",
-        "community": 4,
-        "x": 611.6899622712258,
-        "y": 421.1572034823814,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 5,
+        "x": 730.7660699686553,
+        "y": 282.2945305650179,
         "analysis_radius": 15.430961369668898,
         "pick_radius": 30.0,
         "radius": 15.430961369668898,
@@ -4176,7 +4076,7 @@
         "average_taken_at": 0.6389666977902272,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -90.98449849164321,
-        "analysis_score": 0.4302882830203211,
+        "analysis_score": 0.43028876164589075,
         "pick_priority_score_raw": 64.42826750676093,
         "pick_priority_score": 2.8554262764337066,
         "pick_market_score_raw": 10.0,
@@ -4189,12 +4089,17 @@
         "build_around_score": 0.0,
         "core_score_raw": -93.40421090551943,
         "core_score": 0.0,
+        "win_contribution_logit": 0.16578071531687752,
+        "contribution_score": 3.9479663606181954,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Ocelot%20Pride%22",
-        "community": 5,
-        "x": 828.7933011339793,
-        "y": 248.02306810181642,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 6,
+        "x": 899.9999999999999,
+        "y": 240.0,
         "analysis_radius": 13.966723852799799,
         "pick_radius": 28.766701627829946,
         "radius": 13.966723852799799,
@@ -4206,7 +4111,7 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.01051945074853025,
-            "analysis_score": 0.4302882830203211,
+            "analysis_score": 0.43028876164589075,
             "pick_priority_score": 2.8554262764337066,
             "build_around_score": 0.0,
             "core_score": 0.0,
@@ -4260,17 +4165,22 @@
         "pick_urgency_score_raw": 4.891460686219033,
         "pick_urgency_score": 4.891460686219033,
         "shell_dependence_score_raw": 3.233101123371013,
-        "shell_dependence_score": 1.5831716247955587,
+        "shell_dependence_score": 1.5571683120216506,
         "build_around_score_raw": 3.233101123371013,
-        "build_around_score": 1.5831716247955587,
+        "build_around_score": 1.5571683120216506,
         "core_score_raw": -337.54399724234355,
         "core_score": 0.0,
+        "win_contribution_logit": 0.053934275418453005,
+        "contribution_score": 0.9729625242203431,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Sneaky%20Snacker%22",
-        "community": 6,
-        "x": 1099.5167365947946,
-        "y": 309.8139256102304,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 7,
+        "x": 1103.9568199857474,
+        "y": 305.90116102867614,
         "analysis_radius": 11.697493083569029,
         "pick_radius": 30.0,
         "radius": 11.697493083569029,
@@ -4294,7 +4204,7 @@
             "deck_prevalence": 0.857427361847221,
             "analysis_score": 10.0,
             "pick_priority_score": 9.93014858231399,
-            "build_around_score": 9.080106277928158,
+            "build_around_score": 9.518909404176002,
             "core_score": 10.0,
             "role": "engine"
           },
@@ -4305,7 +4215,7 @@
             "deck_prevalence": 0.014261432238319542,
             "analysis_score": 0.0,
             "pick_priority_score": 1.313134261304798,
-            "build_around_score": 1.5831716247955587,
+            "build_around_score": 1.5571683120216506,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4323,13 +4233,18 @@
         "synergy_delta_logit": 0.17272371478243204,
         "synergy_delta_prob": 0.03972317813926829,
         "confidence_probability": 0.9998808767575594,
+        "p_value": 0.00011912324244056638,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.7407677850953938,
         "draft_pair_events": 2747,
         "quality_score": 1.8080145751372902,
         "anti_quality": 0.0,
         "pick_score_raw": 10.48306672640838,
-        "pick_score": 9.999999999999998
+        "pick_score": 10.0,
+        "q_value": 0.015199116080761965,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Revolt",
@@ -4341,13 +4256,18 @@
         "synergy_delta_logit": 0.28850295953141153,
         "synergy_delta_prob": 0.06549142957312315,
         "confidence_probability": 0.9986341787919376,
+        "p_value": 0.00136582120806239,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 885,
         "quality_score": 1.4595051016974976,
         "anti_quality": 0.0,
         "pick_score_raw": 5.315236699671443,
-        "pick_score": 7.10680863033281
+        "pick_score": 6.897424137175602,
+        "q_value": 0.06356619009978055,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Bespoke Battlewagon",
@@ -4359,13 +4279,18 @@
         "synergy_delta_logit": 0.2457447868668583,
         "synergy_delta_prob": 0.059921166109894064,
         "confidence_probability": 0.9998559325489975,
+        "p_value": 0.00014406745100248308,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.795839794260385,
         "draft_pair_events": 1729,
         "quality_score": 1.0818971018187076,
         "anti_quality": 0.0,
         "pick_score_raw": 4.383141076330867,
-        "pick_score": 5.4594588976387755
+        "pick_score": 5.4449523186505955,
+        "q_value": 0.015199116080761965,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Revolt",
@@ -4377,13 +4302,18 @@
         "synergy_delta_logit": 0.20935997434276998,
         "synergy_delta_prob": 0.04374299984383001,
         "confidence_probability": 0.9516800616110702,
+        "p_value": 0.048319938388929784,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 692,
         "quality_score": 1.0371776508590416,
         "anti_quality": 0.0,
         "pick_score_raw": 5.198224193497862,
-        "pick_score": 6.913879899398478
+        "pick_score": 6.727318458275446,
+        "q_value": 0.4432829130462689,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Revolt",
@@ -4395,13 +4325,18 @@
         "synergy_delta_logit": 0.14697569644183495,
         "synergy_delta_prob": 0.03244745478629274,
         "confidence_probability": 0.973885501087275,
+        "p_value": 0.026114498912724993,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1297,
         "quality_score": 0.9855469144946218,
         "anti_quality": 0.0,
         "pick_score_raw": 7.059366542980707,
-        "pick_score": 9.622499645247084
+        "pick_score": 9.115514340343296,
+        "q_value": 0.374716239399563,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Revolt",
@@ -4413,13 +4348,18 @@
         "synergy_delta_logit": 0.1507788285967943,
         "synergy_delta_prob": 0.03547229718048195,
         "confidence_probability": 0.9949175145289355,
+        "p_value": 0.005082485471064491,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1821,
         "quality_score": 0.9207431446654569,
         "anti_quality": 0.0,
         "pick_score_raw": 6.439915654029211,
-        "pick_score": 8.797495560944329
+        "pick_score": 8.388106456737354,
+        "q_value": 0.1364141228028677,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Revolt",
@@ -4431,13 +4371,18 @@
         "synergy_delta_logit": 0.2720971903096984,
         "synergy_delta_prob": 0.06589653621872293,
         "confidence_probability": 0.9984936921777303,
+        "p_value": 0.0015063078222696813,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1016,
         "quality_score": 0.8682040232362438,
         "anti_quality": 0.0,
         "pick_score_raw": 3.354911055707047,
-        "pick_score": 3.2728584696515575
+        "pick_score": 3.5170219969985923,
+        "q_value": 0.06356619009978055,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Izzet Generatorium",
@@ -4449,13 +4394,18 @@
         "synergy_delta_logit": 0.1922508509635465,
         "synergy_delta_prob": 0.04670214812291362,
         "confidence_probability": 0.9975111588531945,
+        "p_value": 0.002488841146805476,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.5371006274763303,
         "draft_pair_events": 1668,
         "quality_score": 0.801979145772048,
         "anti_quality": 0.0,
         "pick_score_raw": 4.225004832203302,
-        "pick_score": 5.151882138651246
+        "pick_score": 5.173761225711243,
+        "q_value": 0.08752424699599258,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Bespoke Battlewagon",
@@ -4467,13 +4417,18 @@
         "synergy_delta_logit": 0.1538391565056581,
         "synergy_delta_prob": 0.03655434169862626,
         "confidence_probability": 0.9888662697253651,
+        "p_value": 0.011133730274634934,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1894,
         "quality_score": 0.7526757261630439,
         "anti_quality": 0.0,
         "pick_score_raw": 5.160698181946383,
-        "pick_score": 6.851235457208255
+        "pick_score": 6.6720847182488425,
+        "q_value": 0.2610241208831079,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Scurry of Gremlins",
@@ -4485,13 +4440,18 @@
         "synergy_delta_logit": 0.13211595802914167,
         "synergy_delta_prob": 0.029471156417692934,
         "confidence_probability": 0.9332014167514195,
+        "p_value": 0.06679858324858046,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1384,
         "quality_score": 0.7217851562370048,
         "anti_quality": 0.0,
         "pick_score_raw": 5.7534889687165185,
-        "pick_score": 7.798931525817762
+        "pick_score": 7.50767038950224,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Thriving Skyclaw",
@@ -4503,13 +4463,18 @@
         "synergy_delta_logit": 0.16331478588934328,
         "synergy_delta_prob": 0.0387673476019843,
         "confidence_probability": 0.9815963551674112,
+        "p_value": 0.018403644832588828,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1751,
         "quality_score": 0.6987792165191059,
         "anti_quality": 0.0,
         "pick_score_raw": 4.51139762666624,
-        "pick_score": 5.70235479625158
+        "pick_score": 5.659114157250252,
+        "q_value": 0.3376352817865849,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Spike",
@@ -4521,13 +4486,18 @@
         "synergy_delta_logit": 0.08785430037794512,
         "synergy_delta_prob": 0.020519362482054104,
         "confidence_probability": 0.968063618915638,
+        "p_value": 0.03193638108436203,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3118,
         "quality_score": 0.6750525020808505,
         "anti_quality": 0.0,
         "pick_score_raw": 8.124617516138237,
-        "pick_score": 9.999999999999998
+        "pick_score": 10.0,
+        "q_value": 0.374716239399563,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Invert Polarity",
@@ -4539,13 +4509,18 @@
         "synergy_delta_logit": 0.1230195347504261,
         "synergy_delta_prob": 0.02875021690684909,
         "confidence_probability": 0.9671872126949079,
+        "p_value": 0.03281278730509207,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1484,
         "quality_score": 0.6719919026819161,
         "anti_quality": 0.0,
         "pick_score_raw": 5.75470687978568,
-        "pick_score": 7.8007916744130545
+        "pick_score": 7.509310486537685,
+        "q_value": 0.374716239399563,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Invert Polarity",
@@ -4557,13 +4532,18 @@
         "synergy_delta_logit": 0.208691389904321,
         "synergy_delta_prob": 0.045000398997083746,
         "confidence_probability": 0.869429654279544,
+        "p_value": 0.130570345720456,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 411,
         "quality_score": 0.6221954860244417,
         "anti_quality": 0.0,
         "pick_score_raw": 3.1193885800639083,
-        "pick_score": 2.699310419195196
+        "pick_score": 3.011323441722504,
+        "q_value": 0.593712693441651,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Scurry of Gremlins",
@@ -4575,13 +4555,18 @@
         "synergy_delta_logit": 0.13193984133814285,
         "synergy_delta_prob": 0.02978906657626257,
         "confidence_probability": 0.9113441714334715,
+        "p_value": 0.08865582856652854,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1225,
         "quality_score": 0.6096063596246636,
         "anti_quality": 0.0,
         "pick_score_raw": 4.8627240525562385,
-        "pick_score": 6.339825940363557
+        "pick_score": 6.2211738423125915,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Phyrexian Ironworks",
@@ -4593,13 +4578,18 @@
         "synergy_delta_logit": 0.1547882145576288,
         "synergy_delta_prob": 0.037293824140048004,
         "confidence_probability": 0.9811568148461846,
+        "p_value": 0.018843185153815445,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1662,
         "quality_score": 0.5831198421271143,
         "anti_quality": 0.0,
         "pick_score_raw": 3.971023780555098,
-        "pick_score": 4.637850878967641
+        "pick_score": 4.72053875344948,
+        "q_value": 0.3376352817865849,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Invert Polarity",
@@ -4611,13 +4601,18 @@
         "synergy_delta_logit": 0.13970073964570207,
         "synergy_delta_prob": 0.032019841951016814,
         "confidence_probability": 0.9170000607282655,
+        "p_value": 0.08299993927173455,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 806,
         "quality_score": 0.5710667755097077,
         "anti_quality": 0.0,
         "pick_score_raw": 4.292787992843752,
-        "pick_score": 5.284845695614621
+        "pick_score": 5.290995481162461,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Revolt",
@@ -4629,13 +4624,18 @@
         "synergy_delta_logit": 0.1383144808646427,
         "synergy_delta_prob": 0.03157839891071712,
         "confidence_probability": 0.9093874474427536,
+        "p_value": 0.09061255255724643,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 815,
         "quality_score": 0.5633766522406998,
         "anti_quality": 0.0,
         "pick_score_raw": 4.277678911483941,
-        "pick_score": 5.255355775697706
+        "pick_score": 5.264994155056784,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Cyclops Superconductor",
@@ -4647,13 +4647,18 @@
         "synergy_delta_logit": 0.06744470181263423,
         "synergy_delta_prob": 0.015931494023133208,
         "confidence_probability": 0.9447965236183838,
+        "p_value": 0.05520347638161616,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3165,
         "quality_score": 0.5172479577111998,
         "anti_quality": 0.0,
         "pick_score_raw": 8.109807902515293,
-        "pick_score": 9.999999999999998
+        "pick_score": 10.0,
+        "q_value": 0.46591734066084034,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Electrozoa",
@@ -4665,13 +4670,18 @@
         "synergy_delta_logit": 0.19683643866388806,
         "synergy_delta_prob": 0.0487779683106323,
         "confidence_probability": 0.999152468350092,
+        "p_value": 0.0008475316499080288,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2469,
         "quality_score": 0.4889985806941096,
         "anti_quality": 0.0,
         "pick_score_raw": 2.6238489328611356,
-        "pick_score": 1.3771651342993028
+        "pick_score": 1.8455850874469597,
+        "q_value": 0.059609726043531354,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Electrozoa",
@@ -4683,13 +4693,18 @@
         "synergy_delta_logit": 0.14029175668108446,
         "synergy_delta_prob": 0.03402415928622249,
         "confidence_probability": 0.97184020303,
+        "p_value": 0.02815979697000004,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1738,
         "quality_score": 0.47865213615221835,
         "anti_quality": 0.0,
         "pick_score_raw": 3.5972300561226875,
-        "pick_score": 3.8314522034412564
+        "pick_score": 4.0095352989598885,
+        "q_value": 0.374716239399563,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Izzet Generatorium",
@@ -4701,13 +4716,18 @@
         "synergy_delta_logit": 0.1950991298296879,
         "synergy_delta_prob": 0.0481748348002734,
         "confidence_probability": 0.9948279005572372,
+        "p_value": 0.0051720994427627565,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1466,
         "quality_score": 0.4548556278532028,
         "anti_quality": 0.0,
         "pick_score_raw": 2.4559781517051484,
-        "pick_score": 0.8878785835601972
+        "pick_score": 1.414180078524151,
+        "q_value": 0.1364141228028677,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Phyrexian Ironworks",
@@ -4719,13 +4739,18 @@
         "synergy_delta_logit": 0.15505919062934231,
         "synergy_delta_prob": 0.03774910623254257,
         "confidence_probability": 0.9682212573698555,
+        "p_value": 0.03177874263014446,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1540,
         "quality_score": 0.44255329677975797,
         "anti_quality": 0.0,
         "pick_score_raw": 3.00734378816752,
-        "pick_score": 2.4148429263317337
+        "pick_score": 2.760507838653848,
+        "q_value": 0.374716239399563,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Amped Raptor",
@@ -4737,13 +4762,18 @@
         "synergy_delta_logit": 0.10485705619845637,
         "synergy_delta_prob": 0.024545900319971503,
         "confidence_probability": 0.8929616277222415,
+        "p_value": 0.10703837227775848,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1355,
         "quality_score": 0.4386331063755129,
         "anti_quality": 0.0,
         "pick_score_raw": 4.4048919452979485,
-        "pick_score": 5.5010561209674895
+        "pick_score": 5.48162868033309,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Deem Inferior",
@@ -4755,13 +4785,18 @@
         "synergy_delta_logit": 0.08362384714304133,
         "synergy_delta_prob": 0.019834470746133093,
         "confidence_probability": 0.9154314439554191,
+        "p_value": 0.08456855604458091,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2311,
         "quality_score": 0.43083315960998486,
         "anti_quality": 0.0,
         "pick_score_raw": 5.439697910275134,
-        "pick_score": 7.308134218905277
+        "pick_score": 7.074933343597273,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Invert Polarity",
@@ -4773,13 +4808,18 @@
         "synergy_delta_logit": 0.09624786583215145,
         "synergy_delta_prob": 0.022730639105608574,
         "confidence_probability": 0.9057870629424187,
+        "p_value": 0.09421293705758127,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1331,
         "quality_score": 0.4267092230760497,
         "anti_quality": 0.0,
         "pick_score_raw": 4.668019082463992,
-        "pick_score": 5.991416086108819
+        "pick_score": 5.913980121053523,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Electrozoa",
@@ -4791,13 +4831,18 @@
         "synergy_delta_logit": 0.08593917950644914,
         "synergy_delta_prob": 0.020469434078025928,
         "confidence_probability": 0.9147279719135775,
+        "p_value": 0.08527202808642254,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2198,
         "quality_score": 0.4113135324715653,
         "anti_quality": 0.0,
         "pick_score_raw": 5.052080881223745,
-        "pick_score": 6.667739979759873
+        "pick_score": 6.510296359328419,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Izzet Generatorium",
@@ -4809,31 +4854,18 @@
         "synergy_delta_logit": 0.12215444458693975,
         "synergy_delta_prob": 0.029818575076194342,
         "confidence_probability": 0.9662577793905607,
+        "p_value": 0.03374222060943932,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1927,
         "quality_score": 0.3981861425206962,
         "anti_quality": 0.0,
         "pick_score_raw": 3.4386007482386254,
-        "pick_score": 3.4692180714555607
-      },
-      {
-        "from": "Aether Revolt",
-        "to": "Invert Polarity",
-        "pair_games": 198,
-        "pair_win_rate": 0.6565656565656566,
-        "pair_expected_win_rate": 0.6217085052189986,
-        "pair_lift_vs_baseline": 0.12309350284033826,
-        "synergy_delta_logit": 0.1512204521642047,
-        "synergy_delta_prob": 0.03485715134665801,
-        "confidence_probability": 0.8438541349159612,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 425,
-        "quality_score": 0.396656685964927,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.744942355763261,
-        "pick_score": 1.7162378203427606
+        "pick_score": 3.690152682157163,
+        "q_value": 0.374716239399563,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Phyrexian Ironworks",
@@ -4845,67 +4877,18 @@
         "synergy_delta_logit": 0.07869149276412207,
         "synergy_delta_prob": 0.018859238141579637,
         "confidence_probability": 0.9180017256455518,
+        "p_value": 0.08199827435444818,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2113,
         "quality_score": 0.38476165637625714,
         "anti_quality": 0.0,
         "pick_score_raw": 5.160214976998056,
-        "pick_score": 6.850426327988133
-      },
-      {
-        "from": "Bespoke Battlewagon",
-        "to": "Tune the Narrative",
-        "pair_games": 1876,
-        "pair_win_rate": 0.6210021321961621,
-        "pair_expected_win_rate": 0.6084261773433427,
-        "pair_lift_vs_baseline": 0.08752997847084376,
-        "synergy_delta_logit": 0.05310241147645367,
-        "synergy_delta_prob": 0.012575954852819371,
-        "confidence_probability": 0.8677512009869308,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.5355194913178116,
-        "draft_pair_events": 2708,
-        "quality_score": 0.3783278862601978,
-        "anti_quality": 0.0,
-        "pick_score_raw": 7.23395894635177,
-        "pick_score": 9.843585848507514
-      },
-      {
-        "from": "Bespoke Battlewagon",
-        "to": "Phyrexian Ironworks",
-        "pair_games": 600,
-        "pair_win_rate": 0.62,
-        "pair_expected_win_rate": 0.5945023166364609,
-        "pair_lift_vs_baseline": 0.08652784627468169,
-        "synergy_delta_logit": 0.10693877291645187,
-        "synergy_delta_prob": 0.02549768336353908,
-        "confidence_probability": 0.8982152702210148,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1220,
-        "quality_score": 0.37820933606797563,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.722150797028793,
-        "pick_score": 4.108020829713402
-      },
-      {
-        "from": "Bespoke Battlewagon",
-        "to": "Electrozoa",
-        "pair_games": 1037,
-        "pair_win_rate": 0.6065573770491803,
-        "pair_expected_win_rate": 0.5854444944924277,
-        "pair_lift_vs_baseline": 0.07308522332386203,
-        "synergy_delta_logit": 0.08769957909414416,
-        "synergy_delta_prob": 0.021112882556752588,
-        "confidence_probability": 0.9161501452723507,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2218,
-        "quality_score": 0.3641605051487581,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.38332075364663,
-        "pick_score": 5.459803207653035
+        "pick_score": 6.6713713072672824,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Roil Cartographer",
@@ -4917,13 +4900,18 @@
         "synergy_delta_logit": 0.09609255874176709,
         "synergy_delta_prob": 0.023011687033155592,
         "confidence_probability": 0.9000948439512673,
+        "p_value": 0.09990515604873274,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1768,
         "quality_score": 0.36315968232289814,
         "anti_quality": 0.0,
         "pick_score_raw": 3.9849748132728773,
-        "pick_score": 4.666761087432371
+        "pick_score": 4.746028946715262,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Deem Inferior",
@@ -4935,13 +4923,18 @@
         "synergy_delta_logit": 0.11924309278752993,
         "synergy_delta_prob": 0.02918296373852547,
         "confidence_probability": 0.9553241605053608,
+        "p_value": 0.04467583949463916,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2008,
         "quality_score": 0.3483010349906478,
         "anti_quality": 0.0,
         "pick_score_raw": 3.0818782274922025,
-        "pick_score": 2.6049472230736765
+        "pick_score": 2.9281232078241977,
+        "q_value": 0.4432829130462689,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Electrozoa",
@@ -4953,13 +4946,18 @@
         "synergy_delta_logit": 0.09146230969224073,
         "synergy_delta_prob": 0.021959170252584426,
         "confidence_probability": 0.8986973423667853,
+        "p_value": 0.10130265763321467,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1772,
         "quality_score": 0.3475798832115098,
         "anti_quality": 0.0,
         "pick_score_raw": 4.007145458854577,
-        "pick_score": 4.712538454234868
+        "pick_score": 4.786390949930069,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Galvanic Discharge",
@@ -4971,49 +4969,18 @@
         "synergy_delta_logit": 0.07133104481343322,
         "synergy_delta_prob": 0.017194895822784217,
         "confidence_probability": 0.9088978697903506,
+        "p_value": 0.09110213020964941,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2604,
         "quality_score": 0.34013416153701037,
         "anti_quality": 0.0,
         "pick_score_raw": 5.03757260976695,
-        "pick_score": 6.642981074598585
-      },
-      {
-        "from": "Scurry of Gremlins",
-        "to": "Serum Visionary",
-        "pair_games": 412,
-        "pair_win_rate": 0.6868932038834952,
-        "pair_expected_win_rate": 0.6713266737723755,
-        "pair_lift_vs_baseline": 0.15342105015817686,
-        "synergy_delta_logit": 0.0714429567075946,
-        "synergy_delta_prob": 0.015566530111119636,
-        "confidence_probability": 0.7493705300195757,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 978,
-        "quality_score": 0.33807622149213895,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.974524325075869,
-        "pick_score": 6.534691201708192
-      },
-      {
-        "from": "Aether Revolt",
-        "to": "Tune the Narrative",
-        "pair_games": 1091,
-        "pair_win_rate": 0.6296975252062328,
-        "pair_expected_win_rate": 0.6148679635486718,
-        "pair_lift_vs_baseline": 0.09622537148091448,
-        "synergy_delta_logit": 0.06309809023628782,
-        "synergy_delta_prob": 0.014829561657560997,
-        "confidence_probability": 0.8428896637098446,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1537,
-        "quality_score": 0.3311082941766089,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.529228741915531,
-        "pick_score": 7.450565339886747
+        "pick_score": 6.48846637915445,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Izzet Generatorium",
@@ -5025,31 +4992,18 @@
         "synergy_delta_logit": 0.13400193885127326,
         "synergy_delta_prob": 0.0329065631312343,
         "confidence_probability": 0.9532388992764477,
+        "p_value": 0.04676110072355233,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1407,
         "quality_score": 0.31889063285448016,
         "anti_quality": 0.0,
         "pick_score_raw": 2.506374163029296,
-        "pick_score": 1.0372189326503143
-      },
-      {
-        "from": "Izzet Generatorium",
-        "to": "Tune the Narrative",
-        "pair_games": 1763,
-        "pair_win_rate": 0.5660805445263755,
-        "pair_expected_win_rate": 0.5439523930898494,
-        "pair_lift_vs_baseline": 0.03260839080105715,
-        "synergy_delta_logit": 0.08961291734464799,
-        "synergy_delta_prob": 0.022128151436526022,
-        "confidence_probability": 0.9688977431176804,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.5355194913178116,
-        "draft_pair_events": 3065,
-        "quality_score": 0.30414617443223935,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.448210874870282,
-        "pick_score": 3.4915287466509377
+        "pick_score": 1.5458537869766653,
+        "q_value": 0.4432829130462689,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Izzet Generatorium",
@@ -5061,49 +5015,18 @@
         "synergy_delta_logit": 0.11370723803693028,
         "synergy_delta_prob": 0.028125560867262256,
         "confidence_probability": 0.9807979934528956,
+        "p_value": 0.019202006547104356,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2686,
         "quality_score": 0.29935976821214394,
         "anti_quality": 0.0,
         "pick_score_raw": 2.7817655929632368,
-        "pick_score": 1.8171746765487415
-      },
-      {
-        "from": "Aether Revolt",
-        "to": "Phyrexian Ironworks",
-        "pair_games": 319,
-        "pair_win_rate": 0.6269592476489029,
-        "pair_expected_win_rate": 0.601022956710276,
-        "pair_lift_vs_baseline": 0.09348709392358456,
-        "synergy_delta_logit": 0.10946462172944887,
-        "synergy_delta_prob": 0.025936290938626927,
-        "confidence_probability": 0.8278011555201422,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 707,
-        "quality_score": 0.29468201779017633,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.825046832780613,
-        "pick_score": 1.9345646706302404
-      },
-      {
-        "from": "Aether Spike",
-        "to": "Reiterating Bolt",
-        "pair_games": 1186,
-        "pair_win_rate": 0.6231028667790893,
-        "pair_expected_win_rate": 0.6100637474109649,
-        "pair_lift_vs_baseline": 0.08963071305377102,
-        "synergy_delta_logit": 0.05515914153860607,
-        "synergy_delta_prob": 0.013039119368124408,
-        "confidence_probability": 0.8213593686414582,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1989,
-        "quality_score": 0.2873468826825683,
-        "anti_quality": 0.0,
-        "pick_score_raw": 5.496198319228275,
-        "pick_score": 7.398247175348303
+        "pick_score": 2.2335424515181748,
+        "q_value": 0.3376352817865849,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Rush of Inspiration",
@@ -5115,31 +5038,18 @@
         "synergy_delta_logit": 0.08371320187607256,
         "synergy_delta_prob": 0.02030529283598914,
         "confidence_probability": 0.8902998845449805,
+        "p_value": 0.10970011545501945,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1750,
         "quality_score": 0.2843767717210207,
         "anti_quality": 0.0,
         "pick_score_raw": 3.58175233689526,
-        "pick_score": 3.796663179244514
-      },
-      {
-        "from": "Izzet Generatorium",
-        "to": "Scurry of Gremlins",
-        "pair_games": 399,
-        "pair_win_rate": 0.6165413533834586,
-        "pair_expected_win_rate": 0.5961528732939086,
-        "pair_lift_vs_baseline": 0.0830691996581403,
-        "synergy_delta_logit": 0.08543288865723442,
-        "synergy_delta_prob": 0.020388480089549965,
-        "confidence_probability": 0.7966624397930575,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1039,
-        "quality_score": 0.23698479491739038,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.916954056371561,
-        "pick_score": 2.1794970721921176
+        "pick_score": 3.9788617411616203,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Cyclops Superconductor",
@@ -5151,13 +5061,18 @@
         "synergy_delta_logit": 0.07732283507127588,
         "synergy_delta_prob": 0.019196398007512827,
         "confidence_probability": 0.9617773409375419,
+        "p_value": 0.03822265906245814,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.795839794260385,
         "draft_pair_events": 3580,
         "quality_score": 0.21474680177189567,
         "anti_quality": 0.0,
         "pick_score_raw": 2.7749114503136183,
-        "pick_score": 1.7984613151662987
+        "pick_score": 2.2170428403558127,
+        "q_value": 0.40324905310893333,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Aether Spike",
@@ -5169,139 +5084,18 @@
         "synergy_delta_logit": 0.07753557826368973,
         "synergy_delta_prob": 0.01916944798741904,
         "confidence_probability": 0.9242509158253197,
+        "p_value": 0.07574908417468029,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2714,
         "quality_score": 0.19521585881748096,
         "anti_quality": 0.0,
         "pick_score_raw": 2.6604258945333723,
-        "pick_score": 1.4807638479380594
-      },
-      {
-        "from": "Deem Inferior",
-        "to": "Phyrexian Ironworks",
-        "pair_games": 636,
-        "pair_win_rate": 0.6179245283018868,
-        "pair_expected_win_rate": 0.6051763960047114,
-        "pair_lift_vs_baseline": 0.08445237457656851,
-        "synergy_delta_logit": 0.0536672823443905,
-        "synergy_delta_prob": 0.012748132297175419,
-        "confidence_probability": 0.744611479769838,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1356,
-        "quality_score": 0.19235496923275738,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.7742178278854346,
-        "pick_score": 4.22114072863486
-      },
-      {
-        "from": "Tempest Harvester",
-        "to": "Thriving Skyclaw",
-        "pair_games": 1317,
-        "pair_win_rate": 0.5816249050873197,
-        "pair_expected_win_rate": 0.5683825628055778,
-        "pair_lift_vs_baseline": 0.04815275136200137,
-        "synergy_delta_logit": 0.05419227636969837,
-        "synergy_delta_prob": 0.013242342281741926,
-        "confidence_probability": 0.8340117990023829,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2946,
-        "quality_score": 0.18757025544767872,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.6587794477316513,
-        "pick_score": 3.9686464131549815
-      },
-      {
-        "from": "Izzet Generatorium",
-        "to": "Smelted Chargebug",
-        "pair_games": 952,
-        "pair_win_rate": 0.5535714285714286,
-        "pair_expected_win_rate": 0.5273474372261021,
-        "pair_lift_vs_baseline": 0.020099274846110293,
-        "synergy_delta_logit": 0.10561235362266633,
-        "synergy_delta_prob": 0.02622399134532649,
-        "confidence_probability": 0.9473762510628814,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2209,
-        "quality_score": 0.1809802616902412,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.808904727198922,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Aether Revolt",
-        "to": "Electrozoa",
-        "pair_games": 584,
-        "pair_win_rate": 0.6061643835616438,
-        "pair_expected_win_rate": 0.5920108309191721,
-        "pair_lift_vs_baseline": 0.0726922298363255,
-        "synergy_delta_logit": 0.05893330170363942,
-        "synergy_delta_prob": 0.014153552642471756,
-        "confidence_probability": 0.7567407545304796,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1283,
-        "quality_score": 0.17925615825733163,
-        "anti_quality": 0.0,
-        "pick_score_raw": 3.202012441378593,
-        "pick_score": 2.9041683191360272
-      },
-      {
-        "from": "Electrozoa",
-        "to": "Thriving Skyclaw",
-        "pair_games": 1015,
-        "pair_win_rate": 0.5694581280788177,
-        "pair_expected_win_rate": 0.5520032831381453,
-        "pair_lift_vs_baseline": 0.03598597435349937,
-        "synergy_delta_logit": 0.07087258355812004,
-        "synergy_delta_prob": 0.017454844940672398,
-        "confidence_probability": 0.8682209438396473,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2665,
-        "quality_score": 0.1762719097810589,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.627867546354223,
-        "pick_score": 1.388598257275824
-      },
-      {
-        "from": "Scurry of Gremlins",
-        "to": "Thriving Skyclaw",
-        "pair_games": 244,
-        "pair_win_rate": 0.639344262295082,
-        "pair_expected_win_rate": 0.6265633041730921,
-        "pair_lift_vs_baseline": 0.1058721085697637,
-        "synergy_delta_logit": 0.05501788049227907,
-        "synergy_delta_prob": 0.012780958121989872,
-        "confidence_probability": 0.660079166169376,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1054,
-        "quality_score": 0.14582737079327737,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.7874170217817147,
-        "pick_score": 1.8325788630410396
-      },
-      {
-        "from": "Izzet Generatorium",
-        "to": "Unstable Amulet",
-        "pair_games": 741,
-        "pair_win_rate": 0.5762483130904184,
-        "pair_expected_win_rate": 0.5610405971116965,
-        "pair_lift_vs_baseline": 0.04277615936510004,
-        "synergy_delta_logit": 0.06200469126047531,
-        "synergy_delta_prob": 0.015207715978721836,
-        "confidence_probability": 0.7978747427564127,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1597,
-        "quality_score": 0.14503621345885642,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.4651702061101215,
-        "pick_score": 0.9152794370943068
+        "pick_score": 1.9369282970941635,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Izzet Generatorium",
@@ -5313,31 +5107,156 @@
         "synergy_delta_logit": 0.0927216402428305,
         "synergy_delta_prob": 0.023019982382956883,
         "confidence_probability": 0.8893874774992601,
+        "p_value": 0.11061252250073994,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.3775306165290129,
         "draft_pair_events": 1568,
         "quality_score": 0.14047026753497074,
         "anti_quality": 0.0,
         "pick_score_raw": 1.5513109726551733,
-        "pick_score": 0.0
+        "pick_score": 0.0,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
-        "from": "Rush of Inspiration",
-        "to": "Thriving Skyclaw",
-        "pair_games": 655,
-        "pair_win_rate": 0.5740458015267176,
-        "pair_expected_win_rate": 0.5612719127089861,
-        "pair_lift_vs_baseline": 0.04057364780139927,
-        "synergy_delta_logit": 0.05205171062218711,
-        "synergy_delta_prob": 0.012773888817731449,
-        "confidence_probability": 0.744966848736373,
+        "from": "Bespoke Battlewagon",
+        "to": "Tune the Narrative",
+        "pair_games": 1876,
+        "pair_win_rate": 0.6210021321961621,
+        "pair_expected_win_rate": 0.6084261773433427,
+        "pair_lift_vs_baseline": 0.08752997847084376,
+        "synergy_delta_logit": 0.05310241147645367,
+        "synergy_delta_prob": 0.012575954852819371,
+        "confidence_probability": 0.8677512009869308,
+        "p_value": 0.13224879901306918,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5355194913178116,
+        "draft_pair_events": 2708,
+        "quality_score": 0.3783278862601978,
+        "anti_quality": 0.0,
+        "pick_score_raw": 7.23395894635177,
+        "pick_score": 9.310446523429464,
+        "q_value": 0.593712693441651,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
+      },
+      {
+        "from": "Bespoke Battlewagon",
+        "to": "Phyrexian Ironworks",
+        "pair_games": 600,
+        "pair_win_rate": 0.62,
+        "pair_expected_win_rate": 0.5945023166364609,
+        "pair_lift_vs_baseline": 0.08652784627468169,
+        "synergy_delta_logit": 0.10693877291645187,
+        "synergy_delta_prob": 0.02549768336353908,
+        "confidence_probability": 0.8982152702210148,
+        "p_value": 0.10178472977898523,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
-        "draft_pair_events": 1652,
-        "quality_score": 0.11059205399027686,
+        "draft_pair_events": 1220,
+        "quality_score": 0.37820933606797563,
         "anti_quality": 0.0,
-        "pick_score_raw": 2.2395370389355707,
-        "pick_score": 0.22070857842901756
+        "pick_score_raw": 3.722150797028793,
+        "pick_score": 4.253386454288952,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
+      },
+      {
+        "from": "Bespoke Battlewagon",
+        "to": "Electrozoa",
+        "pair_games": 1037,
+        "pair_win_rate": 0.6065573770491803,
+        "pair_expected_win_rate": 0.5854444944924277,
+        "pair_lift_vs_baseline": 0.07308522332386203,
+        "synergy_delta_logit": 0.08769957909414416,
+        "synergy_delta_prob": 0.021112882556752588,
+        "confidence_probability": 0.9161501452723507,
+        "p_value": 0.08384985472764928,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2218,
+        "quality_score": 0.3641605051487581,
+        "anti_quality": 0.0,
+        "pick_score_raw": 4.38332075364663,
+        "pick_score": 5.445255897534074,
+        "q_value": 0.5339597076176674,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
+      },
+      {
+        "from": "Izzet Generatorium",
+        "to": "Tune the Narrative",
+        "pair_games": 1763,
+        "pair_win_rate": 0.5660805445263755,
+        "pair_expected_win_rate": 0.5439523930898494,
+        "pair_lift_vs_baseline": 0.03260839080105715,
+        "synergy_delta_logit": 0.08961291734464799,
+        "synergy_delta_prob": 0.022128151436526022,
+        "confidence_probability": 0.9688977431176804,
+        "p_value": 0.0311022568823196,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.5355194913178116,
+        "draft_pair_events": 3065,
+        "quality_score": 0.30414617443223935,
+        "anti_quality": 0.0,
+        "pick_score_raw": 3.448210874870282,
+        "pick_score": 3.7098240526806254,
+        "q_value": 0.374716239399563,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
+      },
+      {
+        "from": "Izzet Generatorium",
+        "to": "Smelted Chargebug",
+        "pair_games": 952,
+        "pair_win_rate": 0.5535714285714286,
+        "pair_expected_win_rate": 0.5273474372261021,
+        "pair_lift_vs_baseline": 0.020099274846110293,
+        "synergy_delta_logit": 0.10561235362266633,
+        "synergy_delta_prob": 0.02622399134532649,
+        "confidence_probability": 0.9473762510628814,
+        "p_value": 0.05262374893711863,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2209,
+        "quality_score": 0.1809802616902412,
+        "anti_quality": 0.0,
+        "pick_score_raw": 1.808904727198922,
+        "pick_score": 0.0,
+        "q_value": 0.46265045940550126,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
+      },
+      {
+        "from": "Electrozoa",
+        "to": "Thriving Skyclaw",
+        "pair_games": 1015,
+        "pair_win_rate": 0.5694581280788177,
+        "pair_expected_win_rate": 0.5520032831381453,
+        "pair_lift_vs_baseline": 0.03598597435349937,
+        "synergy_delta_logit": 0.07087258355812004,
+        "synergy_delta_prob": 0.017454844940672398,
+        "confidence_probability": 0.8682209438396473,
+        "p_value": 0.13177905616035268,
+        "deck_pair_log_lift": 0.0,
+        "triplet_bonus": 0.0,
+        "draft_pair_events": 2665,
+        "quality_score": 0.1762719097810589,
+        "anti_quality": 0.0,
+        "pick_score_raw": 2.627867546354223,
+        "pick_score": 1.8556656966773812,
+        "q_value": 0.593712693441651,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
       },
       {
         "from": "Izzet Generatorium",
@@ -5349,13 +5268,18 @@
         "synergy_delta_logit": 0.08668112202202066,
         "synergy_delta_prob": 0.021619892904452542,
         "confidence_probability": 0.8881737541606799,
+        "p_value": 0.1118262458393201,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2136,
         "quality_score": 0.06957995116228588,
         "anti_quality": 0.0,
         "pick_score_raw": 0.8472014026534559,
-        "pick_score": 0.0
+        "pick_score": 0.0,
+        "q_value": 0.5362576789112851,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
       }
     ],
     "triplets": [
@@ -5533,33 +5457,33 @@
         "community_id": 0,
         "size": 7,
         "top_cards": [
-          "Aether Spike",
-          "Electrozoa",
-          "Rush of Inspiration",
-          "Smelted Chargebug",
-          "Phyrexian Ironworks"
-        ]
-      },
-      {
-        "community_id": 1,
-        "size": 6,
-        "top_cards": [
-          "Tune the Narrative",
-          "Tempest Harvester",
-          "Roil Cartographer",
-          "Serum Visionary",
-          "Invert Polarity"
-        ]
-      },
-      {
-        "community_id": 2,
-        "size": 6,
-        "top_cards": [
           "Cyclops Superconductor",
           "Izzet Generatorium",
           "Bespoke Battlewagon",
           "Galvanic Discharge",
-          "Aether Revolt"
+          "Serum Visionary"
+        ]
+      },
+      {
+        "community_id": 1,
+        "size": 5,
+        "top_cards": [
+          "Tune the Narrative",
+          "Tempest Harvester",
+          "Roil Cartographer",
+          "Invert Polarity",
+          "Scurry of Gremlins"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 5,
+        "top_cards": [
+          "Aether Spike",
+          "Rush of Inspiration",
+          "Smelted Chargebug",
+          "Phyrexian Ironworks",
+          "Deem Inferior"
         ]
       },
       {
@@ -5572,20 +5496,28 @@
       },
       {
         "community_id": 4,
-        "size": 1,
+        "size": 2,
         "top_cards": [
-          "Cranial Ram"
+          "Electrozoa",
+          "Reiterating Bolt"
         ]
       },
       {
         "community_id": 5,
         "size": 1,
         "top_cards": [
-          "Ocelot Pride"
+          "Cranial Ram"
         ]
       },
       {
         "community_id": 6,
+        "size": 1,
+        "top_cards": [
+          "Ocelot Pride"
+        ]
+      },
+      {
+        "community_id": 7,
         "size": 1,
         "top_cards": [
           "Sneaky Snacker"
@@ -5834,9 +5766,9 @@
       {
         "card": "Izzet Generatorium",
         "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 130.81202776395833,
+        "shell_dependence_score_raw": 136.60243893603482,
         "build_around_score": 10.0,
-        "build_around_score_raw": 130.81202776395833,
+        "build_around_score_raw": 136.60243893603482,
         "support_delta": 0.2847052141696582,
         "supported_win_rate": 0.5211917006561447,
         "isolated_win_rate": 0.23648648648648649,
@@ -5844,10 +5776,10 @@
       },
       {
         "card": "Thriving Skyclaw",
-        "shell_dependence_score": 7.468250963004631,
-        "shell_dependence_score_raw": 22.661171906403933,
-        "build_around_score": 7.468250963004631,
-        "build_around_score_raw": 22.661171906403933,
+        "shell_dependence_score": 7.89869502181365,
+        "shell_dependence_score_raw": 25.74586168437355,
+        "build_around_score": 7.89869502181365,
+        "build_around_score_raw": 25.74586168437355,
         "support_delta": 0.162790763218218,
         "supported_win_rate": 0.5486603284356093,
         "isolated_win_rate": 0.3858695652173913,
@@ -5855,10 +5787,10 @@
       },
       {
         "card": "Electrozoa",
-        "shell_dependence_score": 6.451914141795907,
-        "shell_dependence_score_raw": 16.577868786969695,
-        "build_around_score": 6.451914141795907,
-        "build_around_score_raw": 16.577868786969695,
+        "shell_dependence_score": 6.660915896192446,
+        "shell_dependence_score_raw": 17.663403418664334,
+        "build_around_score": 6.660915896192446,
+        "build_around_score_raw": 17.663403418664334,
         "support_delta": 0.08872760235315014,
         "supported_win_rate": 0.5516489506677569,
         "isolated_win_rate": 0.46292134831460674,
@@ -5880,61 +5812,61 @@
       },
       {
         "card": "Aether Spike",
-        "core_score": 9.822324747497332,
+        "core_score": 9.82234945653944,
         "deck_prevalence": 0.5885354089451892,
         "signpost_score": 10601.816724380435
       },
       {
         "card": "Tempest Harvester",
-        "core_score": 9.756482570440733,
+        "core_score": 9.756520868967876,
         "deck_prevalence": 0.5833636718290354,
         "signpost_score": 9961.252818912606
       },
       {
         "card": "Electrozoa",
-        "core_score": 9.653345697362857,
+        "core_score": 9.653396670861062,
         "deck_prevalence": 0.42690621840832943,
         "signpost_score": 9043.274514844858
       },
       {
         "card": "Izzet Generatorium",
-        "core_score": 9.598780644047944,
+        "core_score": 9.598836243733437,
         "deck_prevalence": 0.37837884633820884,
         "signpost_score": 8588.722324071667
       },
       {
         "card": "Bespoke Battlewagon",
-        "core_score": 9.536029295928335,
+        "core_score": 9.536243873190546,
         "deck_prevalence": 0.3762438769966693,
         "signpost_score": 8088.821951618254
       },
       {
         "card": "Galvanic Discharge",
-        "core_score": 9.451388330173831,
+        "core_score": 9.451400934991112,
         "deck_prevalence": 0.6123692686803358,
         "signpost_score": 7454.003618995239
       },
       {
         "card": "Roil Cartographer",
-        "core_score": 9.370299955181634,
+        "core_score": 9.370312451855632,
         "deck_prevalence": 0.3783319346613481,
         "signpost_score": 6912.42336594408
       },
       {
         "card": "Unstable Amulet",
-        "core_score": 9.25599435836148,
+        "core_score": 9.256085676752473,
         "deck_prevalence": 0.34565013838446934,
         "signpost_score": 6207.295272653364
       },
       {
         "card": "Thriving Skyclaw",
-        "core_score": 9.21576268943871,
+        "core_score": 9.215889645093258,
         "deck_prevalence": 0.3650448117746744,
         "signpost_score": 5978.509531583703
       },
       {
         "card": "Rush of Inspiration",
-        "core_score": 9.20844117697923,
+        "core_score": 9.208619160002785,
         "deck_prevalence": 0.34989630320087695,
         "signpost_score": 5935.017500516955
       }
@@ -6015,16 +5947,16 @@
     ],
     "top_dependency": [
       {
-        "card": "Tune the Narrative",
-        "dependency_score": 0.4401612939410264,
-        "standalone_delta": 0.03665799969575345,
-        "draw_games": 13753
-      },
-      {
         "card": "Bespoke Battlewagon",
-        "dependency_score": 0.4013665557322117,
+        "dependency_score": 0.5118747417216926,
         "standalone_delta": 0.03911351605661317,
         "draw_games": 6420
+      },
+      {
+        "card": "Tune the Narrative",
+        "dependency_score": 0.42466279938453255,
+        "standalone_delta": 0.03665799969575345,
+        "draw_games": 13753
       },
       {
         "card": "Cyclops Superconductor",
@@ -6040,21 +5972,27 @@
       },
       {
         "card": "Izzet Generatorium",
-        "dependency_score": 0.3115692761354285,
+        "dependency_score": 0.33642721210670623,
         "standalone_delta": -0.02647973586516672,
         "draw_games": 5935
       },
       {
         "card": "Rush of Inspiration",
-        "dependency_score": 0.198868783391867,
+        "dependency_score": 0.2654520920869642,
         "standalone_delta": 0.022394289102512288,
         "draw_games": 5361
       },
       {
         "card": "Aether Revolt",
-        "dependency_score": 0.15343190874371593,
+        "dependency_score": 0.1948410406081225,
         "standalone_delta": 0.045737135741090285,
         "draw_games": 3617
+      },
+      {
+        "card": "Unstable Amulet",
+        "dependency_score": 0.15242580334577358,
+        "standalone_delta": 0.053510094795391705,
+        "draw_games": 5915
       },
       {
         "card": "Amped Raptor",
@@ -6063,28 +6001,22 @@
         "draw_games": 5493
       },
       {
-        "card": "Invert Polarity",
-        "dependency_score": 0.13244722158818997,
-        "standalone_delta": 0.043746781185924344,
-        "draw_games": 3380
+        "card": "Scurry of Gremlins",
+        "dependency_score": 0.14770074848027545,
+        "standalone_delta": 0.0879475224888785,
+        "draw_games": 3212
       },
       {
         "card": "Phyrexian Ironworks",
-        "dependency_score": 0.12331943655753375,
+        "dependency_score": 0.14017843812209185,
         "standalone_delta": 0.022366487463641338,
         "draw_games": 4710
       },
       {
-        "card": "Unstable Amulet",
-        "dependency_score": 0.11923638912707576,
-        "standalone_delta": 0.053510094795391705,
-        "draw_games": 5915
-      },
-      {
-        "card": "Smelted Chargebug",
-        "dependency_score": 0.11711887050987271,
-        "standalone_delta": 0.020224149970985428,
-        "draw_games": 8008
+        "card": "Thriving Skyclaw",
+        "dependency_score": 0.13721778931781856,
+        "standalone_delta": 0.00545194833871554,
+        "draw_games": 6153
       }
     ],
     "top_pairs": [
@@ -6471,7 +6403,7 @@
           "Roil Cartographer",
           "Tune the Narrative"
         ],
-        "pick_score": 9.999999999999998,
+        "pick_score": 10.0,
         "pick_score_raw": 10.48306672640838,
         "pair_win_rate": 0.6607231302625062,
         "pair_games": 2019,
@@ -6482,7 +6414,7 @@
           "Aether Spike",
           "Deem Inferior"
         ],
-        "pick_score": 9.999999999999998,
+        "pick_score": 10.0,
         "pick_score_raw": 8.124617516138237,
         "pair_win_rate": 0.6382978723404256,
         "pair_games": 1927,
@@ -6493,7 +6425,7 @@
           "Cyclops Superconductor",
           "Roil Cartographer"
         ],
-        "pick_score": 9.999999999999998,
+        "pick_score": 10.0,
         "pick_score_raw": 8.109807902515293,
         "pair_win_rate": 0.6252613969050607,
         "pair_games": 2391,
@@ -6504,7 +6436,7 @@
           "Bespoke Battlewagon",
           "Tune the Narrative"
         ],
-        "pick_score": 9.843585848507514,
+        "pick_score": 9.310446523429464,
         "pick_score_raw": 7.23395894635177,
         "pair_win_rate": 0.6210021321961621,
         "pair_games": 1876,
@@ -6515,7 +6447,7 @@
           "Aether Revolt",
           "Galvanic Discharge"
         ],
-        "pick_score": 9.622499645247084,
+        "pick_score": 9.115514340343296,
         "pick_score_raw": 7.059366542980707,
         "pair_win_rate": 0.686806411837238,
         "pair_games": 811,
@@ -6526,7 +6458,7 @@
           "Aether Revolt",
           "Cyclops Superconductor"
         ],
-        "pick_score": 8.797495560944329,
+        "pick_score": 8.388106456737354,
         "pick_score_raw": 6.439915654029211,
         "pair_win_rate": 0.6386020651310564,
         "pair_games": 1259,
@@ -6537,7 +6469,7 @@
           "Invert Polarity",
           "Tune the Narrative"
         ],
-        "pick_score": 7.8007916744130545,
+        "pick_score": 7.509310486537685,
         "pick_score_raw": 5.75470687978568,
         "pair_win_rate": 0.6416837782340863,
         "pair_games": 974,
@@ -6548,7 +6480,7 @@
           "Scurry of Gremlins",
           "Tempest Harvester"
         ],
-        "pick_score": 7.798931525817762,
+        "pick_score": 7.50767038950224,
         "pick_score_raw": 5.7534889687165185,
         "pair_win_rate": 0.6785109983079526,
         "pair_games": 591,
@@ -6556,32 +6488,10 @@
       },
       {
         "cards": [
-          "Aether Revolt",
-          "Tune the Narrative"
-        ],
-        "pick_score": 7.450565339886747,
-        "pick_score_raw": 5.529228741915531,
-        "pair_win_rate": 0.6296975252062328,
-        "pair_games": 1091,
-        "draft_pair_events": 1537
-      },
-      {
-        "cards": [
-          "Aether Spike",
-          "Reiterating Bolt"
-        ],
-        "pick_score": 7.398247175348303,
-        "pick_score_raw": 5.496198319228275,
-        "pair_win_rate": 0.6231028667790893,
-        "pair_games": 1186,
-        "draft_pair_events": 1989
-      },
-      {
-        "cards": [
           "Deem Inferior",
           "Smelted Chargebug"
         ],
-        "pick_score": 7.308134218905277,
+        "pick_score": 7.074933343597273,
         "pick_score_raw": 5.439697910275134,
         "pair_win_rate": 0.6229365768896612,
         "pair_games": 1151,
@@ -6592,11 +6502,33 @@
           "Aether Revolt",
           "Bespoke Battlewagon"
         ],
-        "pick_score": 7.10680863033281,
+        "pick_score": 6.897424137175602,
         "pick_score_raw": 5.315236699671443,
         "pair_win_rate": 0.6827309236947792,
         "pair_games": 498,
         "draft_pair_events": 885
+      },
+      {
+        "cards": [
+          "Aether Revolt",
+          "Amped Raptor"
+        ],
+        "pick_score": 6.727318458275446,
+        "pick_score_raw": 5.198224193497862,
+        "pair_win_rate": 0.7238095238095238,
+        "pair_games": 315,
+        "draft_pair_events": 692
+      },
+      {
+        "cards": [
+          "Bespoke Battlewagon",
+          "Smelted Chargebug"
+        ],
+        "pick_score": 6.6720847182488425,
+        "pick_score_raw": 5.160698181946383,
+        "pair_win_rate": 0.6289640591966174,
+        "pair_games": 946,
+        "draft_pair_events": 1894
       }
     ]
   },
@@ -6834,9 +6766,9 @@
         "Etherium Pteramander"
       ],
       "build_arounds": [
+        "Drossclaw",
         "Pyretic Rebirth",
-        "Furnace Hellkite",
-        "Eviscerator's Insight"
+        "Furnace Hellkite"
       ],
       "core_cards": [
         "Cranial Ram",
@@ -6866,8 +6798,8 @@
       ],
       "build_arounds": [
         "Eviscerator's Insight",
-        "Fetid Gargantua",
-        "Retrofitted Transmogrant"
+        "Retrofitted Transmogrant",
+        "Refurbished Familiar"
       ],
       "core_cards": [
         "Dreamdrinker Vampire",
@@ -6880,6 +6812,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -6985,6 +6918,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -7007,28 +6942,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -7096,16 +7022,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -7233,10 +7150,12 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
-    if (filters.topSynergies) {
+    if (filters.topSynergies && visibleEdges.length) {
+      // Guard on visibleEdges.length: with no edges at all, culling
+      // unconnected nodes would blank the entire graph.
       visibleEdges = visibleEdges.slice(0, mode === 'analysis' ? 26 : 20);
       var connected = Object.create(null);
       visibleEdges.forEach(function(edge) {
@@ -7575,15 +7494,25 @@
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
+    var hasFlowRoles = segment.nodes.some(function(node) { return node.flow_role === 'enabler' || node.flow_role === 'payoff'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
+        (hasFlowRoles
+          ? '<div class="legend-row"><div class="legend-samples"><span class="legend-flow enabler"></span></div><div><strong style="color:#2dd4bf">Enabler (sink)</strong>: teal solid ring - most synergy arrows point into it. Its partners win more than it does; it exists to make them work (fixing, engines, setup).</div></div>' +
+            '<div class="legend-row"><div class="legend-samples"><span class="legend-flow payoff"></span></div><div><strong style="color:#e879f9">Payoff (source)</strong>: pink solid ring - most synergy arrows point out of it. It is what the deck actually wins with, once the enablers put it in motion.</div></div>'
+          : '') +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -7684,6 +7613,17 @@
     }
     if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
     var ringOffset = r + 4;
+    if (node.flow_role === 'enabler' || node.flow_role === 'payoff') {
+      g.appendChild(svgEl('circle', {
+        cx: node.x,
+        cy: node.y,
+        r: ringOffset,
+        fill: 'none',
+        stroke: node.flow_role === 'enabler' ? 'rgba(45, 212, 191, 0.95)' : 'rgba(232, 121, 249, 0.95)',
+        'stroke-width': 2.4
+      }));
+      ringOffset += 6;
+    }
     if (node.is_build_around) {
       g.appendChild(svgEl('circle', {
         cx: node.x,
@@ -7706,7 +7646,13 @@
     g.style.cursor = 'pointer';
     var onNodeClick = function() {
       var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
-      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>');
+      var flowLine = '';
+      if (node.flow_role === 'enabler') {
+        flowLine = '<div style="margin-top:6px;color:#2dd4bf"><strong>Enabler (sink)</strong> - ' + (node.flow_in_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point into it: its partners win more than it does, it makes them work.</div>';
+      } else if (node.flow_role === 'payoff') {
+        flowLine = '<div style="margin-top:6px;color:#e879f9"><strong>Payoff (source)</strong> - ' + (node.flow_out_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point out of it: it is what the deck is winning with, once enabled.</div>';
+      }
+      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>' + flowLine);
       nodeDetail(node);
     };
     g.addEventListener('pointerdown', function(evt) {
@@ -7761,8 +7707,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -7879,6 +7826,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

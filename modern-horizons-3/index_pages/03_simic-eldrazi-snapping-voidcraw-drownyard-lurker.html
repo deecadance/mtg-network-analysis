@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Simic Eldrazi | Snapping Voidcraw / Drownyard Lurker | Modern Horizons 3 Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -766,17 +646,22 @@
         "pick_urgency_score_raw": 6.333076553061794,
         "pick_urgency_score": 6.333076553061794,
         "shell_dependence_score_raw": 52.214661436305924,
-        "shell_dependence_score": 9.959723035468615,
+        "shell_dependence_score": 9.897577342818629,
         "build_around_score_raw": 52.214661436305924,
-        "build_around_score": 9.959723035468615,
+        "build_around_score": 9.897577342818629,
         "core_score_raw": 26647.67909666337,
         "core_score": 10.0,
+        "win_contribution_logit": -0.049555479332405575,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Snapping%20Voidcraw%22",
+        "flow_in_degree": 2,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 1,
-        "x": 1187.3082361866218,
-        "y": 689.184738652705,
+        "x": 1417.6484033511547,
+        "y": 816.9320024922811,
         "analysis_radius": 14.824314609784405,
         "pick_radius": 30.0,
         "radius": 14.824314609784405,
@@ -855,7 +740,7 @@
             "deck_prevalence": 0.6332350780165403,
             "analysis_score": 10.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 9.959723035468615,
+            "build_around_score": 9.897577342818629,
             "core_score": 10.0,
             "role": "needs_support"
           }
@@ -905,17 +790,22 @@
         "pick_urgency_score_raw": 7.751626944366653,
         "pick_urgency_score": 7.751626944366653,
         "shell_dependence_score_raw": 39.530119618838825,
-        "shell_dependence_score": 9.14814401852154,
+        "shell_dependence_score": 9.091062336182759,
         "build_around_score_raw": 39.530119618838825,
-        "build_around_score": 9.14814401852154,
+        "build_around_score": 9.091062336182759,
         "core_score_raw": 19983.519910398256,
         "core_score": 10.0,
+        "win_contribution_logit": 0.08000523405936445,
+        "contribution_score": 2.977388865563197,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Drownyard%20Lurker%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
         "community": 0,
-        "x": 1274.1764599062055,
-        "y": 532.8156805915917,
+        "x": 1339.7477459922206,
+        "y": 353.66867889241075,
         "analysis_radius": 24.186323789998248,
         "pick_radius": 30.0,
         "radius": 24.186323789998248,
@@ -985,7 +875,7 @@
             "deck_prevalence": 0.5113722310753052,
             "analysis_score": 10.0,
             "pick_priority_score": 8.176062109696188,
-            "build_around_score": 9.14814401852154,
+            "build_around_score": 9.091062336182759,
             "core_score": 10.0,
             "role": "engine"
           }
@@ -1040,12 +930,17 @@
         "build_around_score": 10.0,
         "core_score_raw": 19717.759275298005,
         "core_score": 9.989181825514416,
+        "win_contribution_logit": -0.14918831221016485,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Sage%20of%20the%20Unknowable%22",
+        "flow_in_degree": 3,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
         "community": 1,
-        "x": 1199.9622636837557,
-        "y": 811.1718254500753,
+        "x": 1363.1653568438937,
+        "y": 694.1534504524075,
         "analysis_radius": 19.630264122333013,
         "pick_radius": 30.0,
         "radius": 19.630264122333013,
@@ -1174,17 +1069,22 @@
         "pick_urgency_score_raw": 8.256982944128628,
         "pick_urgency_score": 8.256982944128628,
         "shell_dependence_score_raw": 19.01506529221493,
-        "shell_dependence_score": 7.045162503567044,
+        "shell_dependence_score": 7.001202796850633,
         "build_around_score_raw": 19.01506529221493,
-        "build_around_score": 7.045162503567044,
+        "build_around_score": 7.001202796850633,
         "core_score_raw": 19285.367612773203,
         "core_score": 9.966786022433558,
+        "win_contribution_logit": 0.17647972345476937,
+        "contribution_score": 6.287268115097223,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Petrifying%20Meddler%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1182.0351620661684,
-        "y": 550.8873702488362,
+        "x": 1296.6893926396142,
+        "y": 538.7940064355929,
         "analysis_radius": 20.10438043457807,
         "pick_radius": 30.0,
         "radius": 20.10438043457807,
@@ -1245,7 +1145,7 @@
             "deck_prevalence": 0.5314506932427271,
             "analysis_score": 9.979389700816192,
             "pick_priority_score": 9.101815171234747,
-            "build_around_score": 7.045162503567044,
+            "build_around_score": 7.001202796850633,
             "core_score": 9.966786022433558,
             "role": "engine"
           }
@@ -1295,17 +1195,22 @@
         "pick_urgency_score_raw": 8.010421002307504,
         "pick_urgency_score": 8.010421002307504,
         "shell_dependence_score_raw": 17.565945725451478,
-        "shell_dependence_score": 6.821153028465952,
+        "shell_dependence_score": 6.778591073869829,
         "build_around_score_raw": 17.565945725451478,
-        "build_around_score": 6.821153028465952,
+        "build_around_score": 6.778591073869829,
         "core_score_raw": 15272.61087796355,
         "core_score": 9.731158645820559,
+        "win_contribution_logit": 0.11547052068044009,
+        "contribution_score": 4.227302146594401,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Unfathomable%20Truths%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 2,
-        "x": 1207.0167365947948,
-        "y": 704.3094591277988,
+        "x": 745.8670500965757,
+        "y": 700.9234969356019,
         "analysis_radius": 15.504245667031812,
         "pick_radius": 30.0,
         "radius": 15.504245667031812,
@@ -1366,7 +1271,7 @@
             "deck_prevalence": 0.5105153231651731,
             "analysis_score": 9.613242814998477,
             "pick_priority_score": 9.554611799644503,
-            "build_around_score": 5.981035870950908,
+            "build_around_score": 5.926381004969356,
             "core_score": 9.382104848785016,
             "role": "good_alone"
           },
@@ -1377,7 +1282,7 @@
             "deck_prevalence": 0.4841892832598066,
             "analysis_score": 9.833362941918674,
             "pick_priority_score": 9.16478780926172,
-            "build_around_score": 6.821153028465952,
+            "build_around_score": 6.778591073869829,
             "core_score": 9.731158645820559,
             "role": "good_alone"
           }
@@ -1427,17 +1332,22 @@
         "pick_urgency_score_raw": 8.176458701649736,
         "pick_urgency_score": 8.176458701649736,
         "shell_dependence_score_raw": 16.940691717089106,
-        "shell_dependence_score": 6.71904531824968,
+        "shell_dependence_score": 6.677120485223474,
         "build_around_score_raw": 16.940691717089106,
-        "build_around_score": 6.71904531824968,
+        "build_around_score": 6.677120485223474,
         "core_score_raw": 14810.171400512174,
         "core_score": 9.700103364355327,
+        "win_contribution_logit": 0.08801183971753228,
+        "contribution_score": 3.263118305263758,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Warped%20Tusker%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
         "community": 1,
-        "x": 1177.659613315945,
-        "y": 596.1718254500753,
+        "x": 1465.2279768042013,
+        "y": 924.1534504524075,
         "analysis_radius": 16.77524795799038,
         "pick_radius": 30.0,
         "radius": 16.77524795799038,
@@ -1507,7 +1417,7 @@
             "deck_prevalence": 0.44963175324000265,
             "analysis_score": 9.814151443102038,
             "pick_priority_score": 8.189671863519909,
-            "build_around_score": 6.71904531824968,
+            "build_around_score": 6.677120485223474,
             "core_score": 9.700103364355327,
             "role": "engine"
           },
@@ -1516,10 +1426,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.41846443047505294,
-            "analysis_score": 9.665269623931502,
+            "analysis_score": 9.66526760900161,
             "pick_priority_score": 0.0,
-            "build_around_score": 9.9816640975295,
-            "core_score": 9.456167120648425,
+            "build_around_score": 9.949190432125528,
+            "core_score": 9.45616463135959,
             "role": "needs_support"
           }
         ]
@@ -1568,17 +1478,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 5.119431509176948,
-        "shell_dependence_score": 3.5131221821261907,
+        "shell_dependence_score": 3.4912013505333075,
         "build_around_score_raw": 5.119431509176948,
-        "build_around_score": 3.5131221821261907,
+        "build_around_score": 3.4912013505333075,
         "core_score_raw": 13778.267304661735,
         "core_score": 9.627157539675736,
+        "win_contribution_logit": 0.16339779347490294,
+        "contribution_score": 5.854703993181061,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Eldrazi%20Repurposer%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
         "community": 4,
-        "x": 828.7933011339794,
-        "y": 871.9769318981836,
+        "x": 880.8591744338695,
+        "y": 876.3967954368404,
         "analysis_radius": 13.526495993599069,
         "pick_radius": 30.0,
         "radius": 13.526495993599069,
@@ -1627,10 +1542,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5293694855485743,
-            "analysis_score": 9.809293093753574,
+            "analysis_score": 9.809291048798942,
             "pick_priority_score": 9.963449580802394,
-            "build_around_score": 6.548390327040421,
-            "core_score": 9.690235640046774,
+            "build_around_score": 6.527086240433504,
+            "core_score": 9.69023308914057,
             "role": "engine"
           },
           {
@@ -1640,7 +1555,7 @@
             "deck_prevalence": 0.48894972060165887,
             "analysis_score": 9.768840606824408,
             "pick_priority_score": 9.455001955248266,
-            "build_around_score": 3.5131221821261907,
+            "build_around_score": 3.4912013505333075,
             "core_score": 9.627157539675736,
             "role": "good_alone"
           }
@@ -1690,17 +1605,22 @@
         "pick_urgency_score_raw": 8.983984099345792,
         "pick_urgency_score": 8.983984099345792,
         "shell_dependence_score_raw": 6.571505617550549,
-        "shell_dependence_score": 4.147756368592782,
+        "shell_dependence_score": 4.1218756095042375,
         "build_around_score_raw": 6.571505617550549,
-        "build_around_score": 4.147756368592782,
+        "build_around_score": 4.1218756095042375,
         "core_score_raw": 13444.093739054751,
         "core_score": 9.602358809493154,
+        "win_contribution_logit": 0.1992802549128952,
+        "contribution_score": 7.029813522471448,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Malevolent%20Rumble%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
         "community": 5,
-        "x": 700.4832634052053,
-        "y": 810.1860743897696,
+        "x": 759.5507103980492,
+        "y": 876.5369479688223,
         "analysis_radius": 14.01178048261685,
         "pick_radius": 30.0,
         "radius": 14.01178048261685,
@@ -1749,10 +1669,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5689159705910981,
-            "analysis_score": 9.90967251728084,
+            "analysis_score": 9.909670451399997,
             "pick_priority_score": 10.0,
-            "build_around_score": 6.782786554890365,
-            "core_score": 9.853344292474304,
+            "build_around_score": 6.760719899577391,
+            "core_score": 9.85334169863056,
             "role": "engine"
           },
           {
@@ -1762,7 +1682,7 @@
             "deck_prevalence": 0.4779091365905047,
             "analysis_score": 9.753508226718788,
             "pick_priority_score": 9.768742906095014,
-            "build_around_score": 4.147756368592782,
+            "build_around_score": 4.1218756095042375,
             "core_score": 9.602358809493154,
             "role": "good_alone"
           },
@@ -1771,10 +1691,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.23079225112151552,
-            "analysis_score": 7.260589173324356,
+            "analysis_score": 7.2622316978140695,
             "pick_priority_score": 9.488550488410231,
             "build_around_score": 0.0,
-            "core_score": 5.831032585747021,
+            "core_score": 5.832928022411595,
             "role": "engine"
           },
           {
@@ -1784,7 +1704,7 @@
             "deck_prevalence": 0.20613497237091286,
             "analysis_score": 0.8599427468793177,
             "pick_priority_score": 9.579510274545589,
-            "build_around_score": 2.905241214098242,
+            "build_around_score": 2.7909937639720583,
             "core_score": 0.0,
             "role": "engine"
           }
@@ -1834,17 +1754,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 10.26509842145445,
-        "shell_dependence_score": 5.331994311301054,
+        "shell_dependence_score": 5.298724261672008,
         "build_around_score_raw": 10.26509842145445,
-        "build_around_score": 5.331994311301054,
+        "build_around_score": 5.298724261672008,
         "core_score_raw": 12847.554022364038,
         "core_score": 9.556517576837742,
+        "win_contribution_logit": 0.05544284709625251,
+        "contribution_score": 2.0874340039243164,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Nightshade%20Dryad%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
         "community": 6,
-        "x": 611.6899622712259,
-        "y": 698.8427965176186,
+        "x": 662.7237032106643,
+        "y": 797.7388093848541,
         "analysis_radius": 12.645365605434362,
         "pick_radius": 30.0,
         "radius": 12.645365605434362,
@@ -1893,10 +1818,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.47357490195937574,
-            "analysis_score": 9.677531205922024,
+            "analysis_score": 9.677529188435946,
             "pick_priority_score": 8.530191218746163,
-            "build_around_score": 9.967007208564446,
-            "core_score": 9.476354504140742,
+            "build_around_score": 9.934581226883695,
+            "core_score": 9.476352009537681,
             "role": "needs_support"
           },
           {
@@ -1906,7 +1831,7 @@
             "deck_prevalence": 0.46791781003664773,
             "analysis_score": 9.725033876219026,
             "pick_priority_score": 9.081855568790242,
-            "build_around_score": 5.331994311301054,
+            "build_around_score": 5.298724261672008,
             "core_score": 9.556517576837742,
             "role": "good_alone"
           }
@@ -1956,17 +1881,22 @@
         "pick_urgency_score_raw": 7.2128739252523335,
         "pick_urgency_score": 7.2128739252523335,
         "shell_dependence_score_raw": 11.557153263474088,
-        "shell_dependence_score": 5.655629659748129,
+        "shell_dependence_score": 5.620340222348595,
         "build_around_score_raw": 11.557153263474088,
-        "build_around_score": 5.655629659748129,
+        "build_around_score": 5.620340222348595,
         "core_score_raw": 12433.905065119478,
         "core_score": 9.52346331755187,
+        "win_contribution_logit": 0.14829707883599397,
+        "contribution_score": 5.3492979360326744,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Utter%20Insignificance%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
         "community": 7,
-        "x": 580.0,
-        "y": 560.0,
+        "x": 598.23293327775,
+        "y": 684.5335686067839,
         "analysis_radius": 13.095085394964922,
         "pick_radius": 30.0,
         "radius": 13.095085394964922,
@@ -2017,7 +1947,7 @@
             "deck_prevalence": 0.375659348987135,
             "analysis_score": 9.704793574543615,
             "pick_priority_score": 8.758863200521052,
-            "build_around_score": 5.655629659748129,
+            "build_around_score": 5.620340222348595,
             "core_score": 9.52346331755187,
             "role": "good_alone"
           }
@@ -2067,17 +1997,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 11.811035608100275,
-        "shell_dependence_score": 5.715290443291223,
+        "shell_dependence_score": 5.679628740447749,
         "build_around_score_raw": 11.811035608100275,
-        "build_around_score": 5.715290443291223,
+        "build_around_score": 5.679628740447749,
         "core_score_raw": 12001.73077930186,
         "core_score": 9.487732887053676,
+        "win_contribution_logit": 0.28532559140231045,
+        "contribution_score": 9.710282714806103,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Horrific%20Assault%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1260.9069841372625,
-        "y": 590.9229546896261,
+        "x": 1413.4222688263042,
+        "y": 542.5958593304453,
         "analysis_radius": 18.766539793387903,
         "pick_radius": 30.0,
         "radius": 18.766539793387903,
@@ -2136,10 +2071,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5118133651945801,
-            "analysis_score": 9.737996737797392,
+            "analysis_score": 9.737994707705994,
             "pick_priority_score": 9.78446297031999,
-            "build_around_score": 8.472816601732628,
-            "core_score": 9.574469224535108,
+            "build_around_score": 8.445251717895074,
+            "core_score": 9.574466704103836,
             "role": "engine"
           },
           {
@@ -2149,7 +2084,7 @@
             "deck_prevalence": 0.4694641601192604,
             "analysis_score": 9.682496296861537,
             "pick_priority_score": 9.941740149178113,
-            "build_around_score": 5.715290443291223,
+            "build_around_score": 5.679628740447749,
             "core_score": 9.487732887053676,
             "role": "engine"
           },
@@ -2158,11 +2093,11 @@
             "title": "Black Base | Dreamdrinker Vampire / Wither and Bloom",
             "color_name": "Black Base",
             "deck_prevalence": 0.25338111721270906,
-            "analysis_score": 8.138752378597506,
+            "analysis_score": 8.138993635628019,
             "pick_priority_score": 9.322138561666556,
-            "build_around_score": 3.4653615036473897,
-            "core_score": 6.910502613793097,
-            "role": "balanced"
+            "build_around_score": 3.441287175886655,
+            "core_score": 6.910811456637036,
+            "role": "engine"
           },
           {
             "cluster_id": 5,
@@ -2223,17 +2158,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 5.8946965326219,
-        "shell_dependence_score": 3.868656109488889,
+        "shell_dependence_score": 3.844516852534393,
         "build_around_score_raw": 5.8946965326219,
-        "build_around_score": 3.868656109488889,
+        "build_around_score": 3.844516852534393,
         "core_score_raw": 11821.95504125686,
         "core_score": 9.472489301056926,
+        "win_contribution_logit": 0.2744255348554,
+        "contribution_score": 9.380824070281683,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Wastescape%20Battlemage%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1157.002846505212,
-        "y": 498.3390294684392,
+        "x": 1463.7081039794866,
+        "y": 415.3493254363155,
         "analysis_radius": 17.264363037748467,
         "pick_radius": 30.0,
         "radius": 17.264363037748467,
@@ -2294,7 +2234,7 @@
             "deck_prevalence": 0.3126688899968075,
             "analysis_score": 9.673460864244344,
             "pick_priority_score": 9.816664541625022,
-            "build_around_score": 3.868656109488889,
+            "build_around_score": 3.844516852534393,
             "core_score": 9.472489301056926,
             "role": "balanced"
           }
@@ -2321,8 +2261,8 @@
         "supported_win_rate": 0.5516251292063856,
         "support_delta": 0.23599091091730007,
         "standalone_delta": -0.0022112277956928272,
-        "dependency_score": 0.11721003845018292,
-        "degree": 13,
+        "dependency_score": 0.12719244773251773,
+        "degree": 11,
         "signpost_score": 10716.820778821837,
         "signpost_lift": 4.568564770315617,
         "deck_prevalence": 0.2689835343791986,
@@ -2335,29 +2275,34 @@
         "alsa": 3.1962485213766687,
         "average_taken_at": 4.448610213316096,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 10718.93055951394,
-        "analysis_score": 9.612849543996665,
+        "analysis_score_raw": 10719.110242881023,
+        "analysis_score": 9.612860027837415,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 9.636625852658618,
         "pick_market_score": 9.636625852658618,
         "pick_urgency_score_raw": 6.535937665878615,
         "pick_urgency_score": 6.535937665878615,
-        "shell_dependence_score_raw": 53.12116540761505,
+        "shell_dependence_score_raw": 54.56523599155515,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 53.12116540761505,
+        "build_around_score_raw": 54.56523599155515,
         "build_around_score": 10.0,
-        "core_score_raw": 10732.448863147858,
-        "core_score": 9.374835050824787,
+        "core_score_raw": 10732.58861687781,
+        "core_score": 9.374848202604515,
+        "win_contribution_logit": -0.10819930788764383,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Kozilek%27s%20Unsealing%22",
+        "flow_in_degree": 9,
+        "flow_out_degree": 2,
+        "flow_role": "enabler",
         "community": 0,
-        "x": 1219.1117207956993,
-        "y": 557.0990320225073,
-        "analysis_radius": 15.219561384206585,
+        "x": 1346.1324362608857,
+        "y": 461.28209804853685,
+        "analysis_radius": 15.578928118370637,
         "pick_radius": 30.0,
-        "radius": 15.219561384206585,
+        "radius": 15.578928118370637,
         "top_synergies": [
           {
             "card": "Petrifying Meddler",
@@ -2422,10 +2367,10 @@
             "title": "Simic Eldrazi | Snapping Voidcraw / Drownyard Lurker",
             "color_name": "Simic Eldrazi",
             "deck_prevalence": 0.2689835343791986,
-            "analysis_score": 9.612849543996665,
+            "analysis_score": 9.612860027837415,
             "pick_priority_score": 0.0,
             "build_around_score": 10.0,
-            "core_score": 9.374835050824787,
+            "core_score": 9.374848202604515,
             "role": "needs_support"
           }
         ]
@@ -2451,8 +2396,8 @@
         "supported_win_rate": 0.5601004895645452,
         "support_delta": 0.09574835069287746,
         "standalone_delta": 0.014300608918114688,
-        "dependency_score": 0.053979766382007355,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 10465.134392731716,
         "signpost_lift": 2.0439189049344675,
         "deck_prevalence": 0.4213323517680258,
@@ -2465,40 +2410,35 @@
         "alsa": 2.6090209103475885,
         "average_taken_at": 3.66968373414724,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 10468.108113775128,
-        "analysis_score": 9.598040958517862,
+        "analysis_score_raw": 10467.136477980252,
+        "analysis_score": 9.59798290585771,
         "pick_priority_score_raw": 146.03916734727304,
         "pick_priority_score": 7.710134728714346,
         "pick_market_score_raw": 9.86579034492453,
         "pick_market_score": 9.86579034492453,
         "pick_urgency_score_raw": 9.128882629692544,
         "pick_urgency_score": 9.128882629692544,
-        "shell_dependence_score_raw": 14.022808352276556,
-        "shell_dependence_score": 6.189986198108189,
-        "build_around_score_raw": 14.022808352276556,
-        "build_around_score": 6.189986198108189,
-        "core_score_raw": 10489.014943511042,
-        "core_score": 9.351662325879623,
+        "shell_dependence_score_raw": 11.532682355126129,
+        "shell_dependence_score": 5.614562382901233,
+        "build_around_score_raw": 11.532682355126129,
+        "build_around_score": 5.614562382901233,
+        "core_score_raw": 10488.259226781693,
+        "core_score": 9.35158955429849,
+        "win_contribution_logit": 0.012661854019948952,
+        "contribution_score": 0.4867427487918209,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Basking%20Broodscale%22",
-        "community": 0,
-        "x": 1248.013351575581,
-        "y": 678.2627110242214,
-        "analysis_radius": 13.729805080248571,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 8,
+        "x": 580.0,
+        "y": 560.0,
+        "analysis_radius": 11.786533490496307,
         "pick_radius": 30.0,
-        "radius": 13.729805080248571,
-        "top_synergies": [
-          {
-            "card": "Kozilek's Unsealing",
-            "quality_score": 0.124346236213555,
-            "pair_win_rate": 0.5622154779969651,
-            "pair_games": 1318,
-            "synergy_delta_logit": 0.053979766382007355,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 11.786533490496307,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Writhing Chrysalis",
@@ -2543,10 +2483,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.4839153660735198,
-            "analysis_score": 9.724776339676431,
+            "analysis_score": 9.724774312341106,
             "pick_priority_score": 6.920415885907522,
-            "build_around_score": 8.456913818340762,
-            "core_score": 9.55307993972427,
+            "build_around_score": 8.42940067153441,
+            "core_score": 9.55307742492362,
             "role": "needs_support"
           },
           {
@@ -2554,10 +2494,10 @@
             "title": "Simic Eldrazi | Snapping Voidcraw / Drownyard Lurker",
             "color_name": "Simic Eldrazi",
             "deck_prevalence": 0.4213323517680258,
-            "analysis_score": 9.598040958517862,
+            "analysis_score": 9.59798290585771,
             "pick_priority_score": 7.710134728714346,
-            "build_around_score": 6.189986198108189,
-            "core_score": 9.351662325879623,
+            "build_around_score": 5.614562382901233,
+            "core_score": 9.35158955429849,
             "role": "balanced"
           },
           {
@@ -2567,7 +2507,7 @@
             "deck_prevalence": 0.006960357906064357,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.6705534701313145,
+            "build_around_score": 1.707191365650732,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2619,17 +2559,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 2.4450304110794265,
-        "shell_dependence_score": 1.8006677632341015,
+        "shell_dependence_score": 1.7894321349962303,
         "build_around_score_raw": 2.4450304110794265,
-        "build_around_score": 1.8006677632341015,
+        "build_around_score": 1.7894321349962303,
         "core_score_raw": 9806.304622893469,
         "core_score": 9.283686440731493,
+        "win_contribution_logit": 0.43517736632896203,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Writhing%20Chrysalis%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1173.6027225859798,
-        "y": 608.4105109305567,
+        "x": 1233.7081039794866,
+        "y": 433.3717672340919,
         "analysis_radius": 18.57584821239839,
         "pick_radius": 30.0,
         "radius": 18.57584821239839,
@@ -2688,7 +2633,7 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.7197798650355872,
-            "analysis_score": 10.0,
+            "analysis_score": 9.999999999999998,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
             "core_score": 10.0,
@@ -2701,7 +2646,7 @@
             "deck_prevalence": 0.424409873123369,
             "analysis_score": 9.556135579729023,
             "pick_priority_score": 10.0,
-            "build_around_score": 1.8006677632341015,
+            "build_around_score": 1.7894321349962303,
             "core_score": 9.283686440731493,
             "role": "balanced"
           },
@@ -2712,7 +2657,7 @@
             "deck_prevalence": 0.12468152350595264,
             "analysis_score": 0.0,
             "pick_priority_score": 9.221982148869168,
-            "build_around_score": 2.292007720763624,
+            "build_around_score": 1.2350423275294165,
             "core_score": 0.0,
             "role": "engine"
           },
@@ -2723,7 +2668,7 @@
             "deck_prevalence": 0.011142134139889837,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.316616958024828,
+            "build_around_score": 1.2720398441943932,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2775,17 +2720,22 @@
         "pick_urgency_score_raw": 9.366920705652241,
         "pick_urgency_score": 9.366920705652241,
         "shell_dependence_score_raw": 12.94432228053296,
-        "shell_dependence_score": 5.967941060305396,
+        "shell_dependence_score": 5.930702893183058,
         "build_around_score_raw": 12.94432228053296,
-        "build_around_score": 5.967941060305396,
+        "build_around_score": 5.930702893183058,
         "core_score_raw": 9786.090770083048,
         "core_score": 9.281602378808323,
+        "win_contribution_logit": 0.10920889355014458,
+        "contribution_score": 4.009537092585112,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Drowner%20of%20Truth%22",
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 2,
-        "x": 992.0167365947948,
-        "y": 916.0626896517404,
+        "x": 975.8670500965757,
+        "y": 490.22465637014926,
         "analysis_radius": 16.20415342482272,
         "pick_radius": 30.0,
         "radius": 16.20415342482272,
@@ -2855,7 +2805,7 @@
             "deck_prevalence": 0.27437089251891,
             "analysis_score": 9.555135764269988,
             "pick_priority_score": 8.28412426393262,
-            "build_around_score": 5.967941060305396,
+            "build_around_score": 5.930702893183058,
             "core_score": 9.281602378808323,
             "role": "engine"
           }
@@ -2905,17 +2855,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 11.419949415429231,
-        "shell_dependence_score": 5.62288352716885,
+        "shell_dependence_score": 5.587798415841789,
         "build_around_score_raw": 11.419949415429231,
-        "build_around_score": 5.62288352716885,
+        "build_around_score": 5.587798415841789,
         "core_score_raw": 9675.44703535632,
         "core_score": 9.270118120422884,
+        "win_contribution_logit": 0.26144232861234806,
+        "contribution_score": 8.984704403652096,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Twisted%20Riddlekeeper%22",
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 3,
-        "x": 863.7066988660206,
-        "y": 977.8535471601544,
+        "x": 1208.6913516000513,
+        "y": 948.2898269587874,
         "analysis_radius": 18.377176574299007,
         "pick_radius": 30.0,
         "radius": 18.377176574299007,
@@ -2985,7 +2940,7 @@
             "deck_prevalence": 0.2778563170477197,
             "analysis_score": 9.54810036917757,
             "pick_priority_score": 9.279839729178631,
-            "build_around_score": 5.62288352716885,
+            "build_around_score": 5.587798415841789,
             "core_score": 9.270118120422884,
             "role": "engine"
           }
@@ -3012,8 +2967,8 @@
         "supported_win_rate": 0.6185831116366144,
         "support_delta": 0.07631507039950103,
         "standalone_delta": 0.07513785329120537,
-        "dependency_score": 0.050800656674383826,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9411.345576696998,
         "signpost_lift": 2.9048841046289255,
         "deck_prevalence": 0.2788349003719897,
@@ -3026,40 +2981,35 @@
         "alsa": 1.912002123095296,
         "average_taken_at": 2.0985108820160367,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9422.779287977906,
-        "analysis_score": 9.532245871899931,
+        "analysis_score_raw": 9421.864876157768,
+        "analysis_score": 9.532185177873915,
         "pick_priority_score_raw": 652.4953396028071,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 5.640787782192381,
-        "shell_dependence_score": 3.756818923173845,
-        "build_around_score_raw": 5.640787782192381,
-        "build_around_score": 3.756818923173845,
-        "core_score_raw": 9432.942918239536,
-        "core_score": 9.244481184785458,
+        "shell_dependence_score_raw": 4.688144504533549,
+        "shell_dependence_score": 3.2747242649738086,
+        "build_around_score_raw": 4.688144504533549,
+        "build_around_score": 3.2747242649738086,
+        "core_score_raw": 9432.231709046095,
+        "core_score": 9.244405032362458,
+        "win_contribution_logit": 0.2974147121083436,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Path%20of%20Annihilation%22",
-        "community": 0,
-        "x": 1245.1507524278913,
-        "y": 463.2627110242214,
-        "analysis_radius": 16.96140557129411,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 9,
+        "x": 604.3585495963882,
+        "y": 437.5413016431713,
+        "analysis_radius": 15.132581931016295,
         "pick_radius": 30.0,
-        "radius": 16.96140557129411,
-        "top_synergies": [
-          {
-            "card": "Kozilek's Unsealing",
-            "quality_score": 0.22155228573499663,
-            "pair_win_rate": 0.6218302094818081,
-            "pair_games": 907,
-            "synergy_delta_logit": 0.050800656674383826,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 15.132581931016295,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Petrifying Meddler",
@@ -3104,10 +3054,10 @@
             "title": "Simic Eldrazi | Snapping Voidcraw / Drownyard Lurker",
             "color_name": "Simic Eldrazi",
             "deck_prevalence": 0.2788349003719897,
-            "analysis_score": 9.532245871899931,
+            "analysis_score": 9.532185177873915,
             "pick_priority_score": 10.0,
-            "build_around_score": 3.756818923173845,
-            "core_score": 9.244481184785458,
+            "build_around_score": 3.2747242649738086,
+            "core_score": 9.244405032362458,
             "role": "good_alone"
           }
         ]
@@ -3156,17 +3106,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 10.946072162816428,
-        "shell_dependence_score": 5.50693441797131,
+        "shell_dependence_score": 5.472572794403654,
         "build_around_score_raw": 10.946072162816428,
-        "build_around_score": 5.50693441797131,
+        "build_around_score": 5.472572794403654,
         "core_score_raw": 8888.586007992237,
         "core_score": 9.184447407537029,
+        "win_contribution_logit": 0.24069283871879188,
+        "contribution_score": 8.343090321503189,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Depth%20Defiler%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
         "community": 3,
-        "x": 1078.7066988660206,
-        "y": 766.1003166362127,
+        "x": 978.6913516000513,
+        "y": 1158.9886675242399,
         "analysis_radius": 18.055578447537286,
         "pick_radius": 30.0,
         "radius": 18.055578447537286,
@@ -3236,7 +3191,7 @@
             "deck_prevalence": 0.2775527390297574,
             "analysis_score": 9.49503872951783,
             "pick_priority_score": 9.703084184126336,
-            "build_around_score": 5.50693441797131,
+            "build_around_score": 5.472572794403654,
             "core_score": 9.184447407537029,
             "role": "engine"
           }
@@ -3286,17 +3241,22 @@
         "pick_urgency_score_raw": 3.3505240278242336,
         "pick_urgency_score": 3.3505240278242336,
         "shell_dependence_score_raw": 1.5705882352941174,
-        "shell_dependence_score": 0.9279586995273998,
+        "shell_dependence_score": 0.9221685148076699,
         "build_around_score_raw": 1.5705882352941174,
-        "build_around_score": 0.9279586995273998,
+        "build_around_score": 0.9221685148076699,
         "core_score_raw": -165.32624970333225,
         "core_score": 0.0,
+        "win_contribution_logit": -0.07515195916301534,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fledgling%20Dragon%22",
-        "community": 8,
-        "x": 611.6899622712258,
-        "y": 421.1572034823814,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 10,
+        "x": 673.7258300203048,
+        "y": 333.7258300203048,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3310,7 +3270,7 @@
             "deck_prevalence": 0.0035304423967383266,
             "analysis_score": 0.6092279453320767,
             "pick_priority_score": 0.0,
-            "build_around_score": 0.9279586995273998,
+            "build_around_score": 0.9221685148076699,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3360,17 +3320,22 @@
         "pick_urgency_score_raw": 8.829581263595163,
         "pick_urgency_score": 8.829581263595163,
         "shell_dependence_score_raw": 1.0905993221159738,
-        "shell_dependence_score": 0.31191967137090953,
+        "shell_dependence_score": 0.30997338592105617,
         "build_around_score_raw": 1.0905993221159738,
-        "build_around_score": 0.31191967137090953,
+        "build_around_score": 0.30997338592105617,
         "core_score_raw": 86.10576297564444,
         "core_score": 4.512229211899547,
+        "win_contribution_logit": 0.08793228190498209,
+        "contribution_score": 3.260289504442115,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Endurance%22",
-        "community": 9,
-        "x": 700.4832634052052,
-        "y": 309.8139256102305,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 11,
+        "x": 777.5413016431711,
+        "y": 264.35854959638834,
         "analysis_radius": 13.207446853844164,
         "pick_radius": 27.793727935460076,
         "radius": 13.207446853844164,
@@ -3384,7 +3349,7 @@
             "deck_prevalence": 0.004875792166601092,
             "analysis_score": 6.616490628431006,
             "pick_priority_score": 5.976685593608372,
-            "build_around_score": 0.31191967137090953,
+            "build_around_score": 0.30997338592105617,
             "core_score": 4.512229211899547,
             "role": "good_alone"
           }
@@ -3439,12 +3404,17 @@
         "build_around_score": 0.0,
         "core_score_raw": -561.2735723815855,
         "core_score": 0.0,
+        "win_contribution_logit": -0.14265095987206303,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Thriving%20Skyclaw%22",
-        "community": 10,
-        "x": 828.7933011339793,
-        "y": 248.02306810181642,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 12,
+        "x": 899.9999999999999,
+        "y": 240.0,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3456,10 +3426,10 @@
             "title": "Izzet | Cyclops Superconductor / Tune the Narrative",
             "color_name": "Izzet",
             "deck_prevalence": 0.3650448117746744,
-            "analysis_score": 9.49206775945173,
+            "analysis_score": 9.492174016588267,
             "pick_priority_score": 0.0,
-            "build_around_score": 7.468250963004631,
-            "core_score": 9.21576268943871,
+            "build_around_score": 7.89869502181365,
+            "core_score": 9.215889645093258,
             "role": "needs_support"
           },
           {
@@ -3467,10 +3437,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.3483481934901119,
-            "analysis_score": 7.428643158637759,
+            "analysis_score": 7.427795010841489,
             "pick_priority_score": 0.0,
-            "build_around_score": 8.765224688721956,
-            "core_score": 7.429438227041641,
+            "build_around_score": 7.6336859028147215,
+            "core_score": 7.428779826802146,
             "role": "needs_support"
           },
           {
@@ -3535,12 +3505,17 @@
         "build_around_score": 0.0,
         "core_score_raw": -614.8808564022091,
         "core_score": 0.0,
+        "win_contribution_logit": -0.13488128570437025,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Sarpadian%20Simulacrum%22",
-        "community": 11,
-        "x": 971.2066988660202,
-        "y": 248.02306810181636,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 13,
+        "x": 1016.5190515044652,
+        "y": 260.9482304646235,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3552,10 +3527,10 @@
             "title": "Rakdos Zombies | Cranial Ram / Refurbished Familiar",
             "color_name": "Rakdos Zombies",
             "deck_prevalence": 0.4597548626462741,
-            "analysis_score": 8.451212732144349,
+            "analysis_score": 8.451228376318365,
             "pick_priority_score": 5.8110719088536955,
-            "build_around_score": 9.106167923719667,
-            "core_score": 8.45009994992148,
+            "build_around_score": 9.028522845392798,
+            "core_score": 8.450112346967584,
             "role": "needs_support"
           },
           {
@@ -3615,17 +3590,22 @@
         "pick_urgency_score_raw": 7.09090909090909,
         "pick_urgency_score": 7.09090909090909,
         "shell_dependence_score_raw": 3.9803144256937038,
-        "shell_dependence_score": 2.899192815646465,
+        "shell_dependence_score": 2.8811027196656243,
         "build_around_score_raw": 3.9803144256937038,
-        "build_around_score": 2.899192815646465,
+        "build_around_score": 2.8811027196656243,
         "core_score_raw": 131.50253245608982,
         "core_score": 4.935943552329798,
+        "win_contribution_logit": -0.13155824691434,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Subtlety%22",
-        "community": 12,
-        "x": 1099.5167365947946,
-        "y": 309.8139256102304,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 14,
+        "x": 1103.663556832302,
+        "y": 310.69784879555544,
         "analysis_radius": 11.0,
         "pick_radius": 28.6748493969831,
         "radius": 11.0,
@@ -3639,7 +3619,7 @@
             "deck_prevalence": 0.006756243715541109,
             "analysis_score": 6.863327182020358,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.899192815646465,
+            "build_around_score": 2.8811027196656243,
             "core_score": 4.935943552329798,
             "role": "balanced"
           }
@@ -3689,17 +3669,22 @@
         "pick_urgency_score_raw": 5.389958724510054,
         "pick_urgency_score": 5.389958724510054,
         "shell_dependence_score_raw": 1.8935062328016077,
-        "shell_dependence_score": 1.2806638794598053,
+        "shell_dependence_score": 1.2726729199163098,
         "build_around_score_raw": 1.8935062328016077,
-        "build_around_score": 1.2806638794598053,
+        "build_around_score": 1.2726729199163098,
         "core_score_raw": -95.28548914893096,
         "core_score": 0.0,
+        "win_contribution_logit": -0.08255476209131338,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Cursed%20Mirror%22",
-        "community": 13,
-        "x": 1188.3100377287742,
-        "y": 421.1572034823816,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 15,
+        "x": 1125.3620165828747,
+        "y": 411.0230746244317,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3713,7 +3698,7 @@
             "deck_prevalence": 0.004427923351603654,
             "analysis_score": 0.9503282219321838,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.2806638794598053,
+            "build_around_score": 1.2726729199163098,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3731,13 +3716,18 @@
         "synergy_delta_logit": 0.1873596019920436,
         "synergy_delta_prob": 0.04493010582750434,
         "confidence_probability": 0.9999810884346153,
+        "p_value": 1.891156538469385e-05,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3829,
         "quality_score": 1.268564574280945,
         "anti_quality": 0.0,
         "pick_score_raw": 7.166228229912126,
-        "pick_score": 9.35428714176017
+        "pick_score": 9.273816460041445,
+        "q_value": 0.0032338776807826486,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Kozilek's Unsealing",
@@ -3749,13 +3739,18 @@
         "synergy_delta_logit": 0.1756930352518679,
         "synergy_delta_prob": 0.04259683238037704,
         "confidence_probability": 0.9998142575318387,
+        "p_value": 0.00018574246816127626,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3303,
         "quality_score": 0.9260152349712494,
         "anti_quality": 0.0,
         "pick_score_raw": 5.574579076523432,
-        "pick_score": 7.099854383045746
+        "pick_score": 6.987560778738745,
+        "q_value": 0.010587320685192747,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Horrific Assault",
@@ -3767,13 +3762,18 @@
         "synergy_delta_logit": 0.1090161098664027,
         "synergy_delta_prob": 0.025744307026109636,
         "confidence_probability": 0.9834360637277054,
+        "p_value": 0.016563936272294577,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3036,
         "quality_score": 0.7016102694215811,
         "anti_quality": 0.0,
         "pick_score_raw": 6.8042137436739365,
-        "pick_score": 8.882769157162215
+        "pick_score": 8.795642663570264,
+        "q_value": 0.2832433102562373,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Depth Defiler",
@@ -3785,13 +3785,18 @@
         "synergy_delta_logit": 0.08971503982013851,
         "synergy_delta_prob": 0.019650335251672257,
         "confidence_probability": 0.9186053242654371,
+        "p_value": 0.08139467573456294,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1796,
         "quality_score": 0.6979563965655761,
         "anti_quality": 0.0,
         "pick_score_raw": 8.203798675405718,
-        "pick_score": 9.999999999999998
+        "pick_score": 10.0,
+        "q_value": 0.8627684274583292,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Kozilek's Unsealing",
@@ -3803,13 +3808,18 @@
         "synergy_delta_logit": 0.14089431867396457,
         "synergy_delta_prob": 0.03348812884993413,
         "confidence_probability": 0.9849756022396882,
+        "p_value": 0.015024397760311836,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2000,
         "quality_score": 0.6837630368554358,
         "anti_quality": 0.0,
         "pick_score_raw": 5.120324179556064,
-        "pick_score": 6.3553443976868955
+        "pick_score": 6.232541505161522,
+        "q_value": 0.2832433102562373,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Kozilek's Unsealing",
@@ -3821,13 +3831,18 @@
         "synergy_delta_logit": 0.1572589370123158,
         "synergy_delta_prob": 0.03883557647040636,
         "confidence_probability": 0.9998816158907561,
+        "p_value": 0.00011838410924391862,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 4317,
         "quality_score": 0.5970206854936476,
         "anti_quality": 0.0,
         "pick_score_raw": 4.020439920451541,
-        "pick_score": 4.295360379367843
+        "pick_score": 4.1434793465898245,
+        "q_value": 0.010121841340355042,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Drownyard Lurker",
@@ -3839,13 +3854,18 @@
         "synergy_delta_logit": 0.12640697246664517,
         "synergy_delta_prob": 0.030899433092507866,
         "confidence_probability": 0.9978761318599187,
+        "p_value": 0.002123868140081253,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3943,
         "quality_score": 0.5967689989199296,
         "anti_quality": 0.0,
         "pick_score_raw": 4.997461860075716,
-        "pick_score": 6.144469366669231
+        "pick_score": 6.018689823027546,
+        "q_value": 0.07263629039077886,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Drowner of Truth",
@@ -3857,13 +3877,18 @@
         "synergy_delta_logit": 0.14804730284989182,
         "synergy_delta_prob": 0.035896438299037214,
         "confidence_probability": 0.9845663242505147,
+        "p_value": 0.015433675749485287,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1885,
         "quality_score": 0.5304500107130556,
         "anti_quality": 0.0,
         "pick_score_raw": 3.7792103813192783,
-        "pick_score": 3.7832984363002002
+        "pick_score": 3.62418928482507,
+        "q_value": 0.2832433102562373,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Snapping Voidcraw",
@@ -3875,13 +3900,18 @@
         "synergy_delta_logit": 0.07693312464730073,
         "synergy_delta_prob": 0.01878428943319621,
         "confidence_probability": 0.9946435536745412,
+        "p_value": 0.005356446325458841,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 7002,
         "quality_score": 0.514095822356405,
         "anti_quality": 0.0,
         "pick_score_raw": 7.092480024632498,
-        "pick_score": 9.259949884977157
+        "pick_score": 9.178147565750864,
+        "q_value": 0.15265872027557698,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Kozilek's Unsealing",
@@ -3893,13 +3923,18 @@
         "synergy_delta_logit": 0.06661178034744919,
         "synergy_delta_prob": 0.015408949304511088,
         "confidence_probability": 0.9004841783495635,
+        "p_value": 0.09951582165043649,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3011,
         "quality_score": 0.4789637424887323,
         "anti_quality": 0.0,
         "pick_score_raw": 7.601634468387483,
-        "pick_score": 9.894455852862604
+        "pick_score": 9.821610036871885,
+        "q_value": 0.8627684274583292,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Depth Defiler",
@@ -3911,13 +3946,18 @@
         "synergy_delta_logit": 0.07691931608645125,
         "synergy_delta_prob": 0.018166235405972175,
         "confidence_probability": 0.8874566327260973,
+        "p_value": 0.11254336727390268,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1823,
         "quality_score": 0.3785405928906564,
         "anti_quality": 0.0,
         "pick_score_raw": 5.18992978541525,
-        "pick_score": 6.472941516311595
+        "pick_score": 6.351798590794831,
+        "q_value": 0.8747689001744253,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Drowner of Truth",
@@ -3929,13 +3969,18 @@
         "synergy_delta_logit": 0.053598309295195656,
         "synergy_delta_prob": 0.01259467912209511,
         "confidence_probability": 0.8563859628613488,
+        "p_value": 0.14361403713865117,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3138,
         "quality_score": 0.345988045714678,
         "anti_quality": 0.0,
         "pick_score_raw": 6.8257715558301335,
-        "pick_score": 8.911454578701688
+        "pick_score": 8.82473300024661,
+        "q_value": 0.9445384750272827,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Kozilek's Unsealing",
@@ -3947,13 +3992,18 @@
         "synergy_delta_logit": 0.06929889267928152,
         "synergy_delta_prob": 0.016462352630864263,
         "confidence_probability": 0.8571465554065897,
+        "p_value": 0.14285344459341032,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2039,
         "quality_score": 0.3124311369429237,
         "anti_quality": 0.0,
         "pick_score_raw": 4.7572395381000065,
-        "pick_score": 5.7193830973994935
+        "pick_score": 5.587603158586108,
+        "q_value": 0.9445384750272827,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Sage of the Unknowable",
@@ -3965,31 +4015,18 @@
         "synergy_delta_logit": 0.09972876862830812,
         "synergy_delta_prob": 0.024839106022474633,
         "confidence_probability": 0.999603562677613,
+        "p_value": 0.0003964373223870332,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 8216,
         "quality_score": 0.24734443839124196,
         "anti_quality": 0.0,
         "pick_score_raw": 2.6342776615336962,
-        "pick_score": 0.9354207551935041
-      },
-      {
-        "from": "Kozilek's Unsealing",
-        "to": "Path of Annihilation",
-        "pair_games": 907,
-        "pair_win_rate": 0.6218302094818081,
-        "pair_expected_win_rate": 0.609812263869856,
-        "pair_lift_vs_baseline": 0.08504252990135241,
-        "synergy_delta_logit": 0.050800656674383826,
-        "synergy_delta_prob": 0.01201794561195213,
-        "confidence_probability": 0.7709296203968556,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1942,
-        "quality_score": 0.22155228573499663,
-        "anti_quality": 0.0,
-        "pick_score_raw": 4.6007494852248,
-        "pick_score": 5.4328151433250245
+        "pick_score": 0.7361117837696889,
+        "q_value": 0.01694769553204567,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Kozilek's Unsealing",
@@ -4001,13 +4038,18 @@
         "synergy_delta_logit": 0.11493559482931473,
         "synergy_delta_prob": 0.02862686036622042,
         "confidence_probability": 0.9935796114313041,
+        "p_value": 0.006420388568695867,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3933,
         "quality_score": 0.18989344356507237,
         "anti_quality": 0.0,
         "pick_score_raw": 1.7488979809577896,
-        "pick_score": 0.0
+        "pick_score": 0.0,
+        "q_value": 0.15684092074957048,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Drownyard Lurker",
@@ -4019,31 +4061,18 @@
         "synergy_delta_logit": 0.05163197621101959,
         "synergy_delta_prob": 0.012789705056465372,
         "confidence_probability": 0.9424640711381125,
+        "p_value": 0.05753592886188752,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.4304059886518515,
         "draft_pair_events": 7000,
         "quality_score": 0.18393060195597027,
         "anti_quality": 0.0,
         "pick_score_raw": 3.6601331654499143,
-        "pick_score": 3.5209220383299624
-      },
-      {
-        "from": "Basking Broodscale",
-        "to": "Kozilek's Unsealing",
-        "pair_games": 1318,
-        "pair_win_rate": 0.5622154779969651,
-        "pair_expected_win_rate": 0.5488879565929105,
-        "pair_lift_vs_baseline": 0.02542779841650944,
-        "synergy_delta_logit": 0.053979766382007355,
-        "synergy_delta_prob": 0.013327521404054687,
-        "confidence_probability": 0.8345326476258169,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2793,
-        "quality_score": 0.124346236213555,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.4344408527682058,
-        "pick_score": 0.34730151845980384
+        "pick_score": 3.358109257296877,
+        "q_value": 0.8627684274583292,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       }
     ],
     "triplets": [
@@ -4219,7 +4248,7 @@
     "communities": [
       {
         "community_id": 0,
-        "size": 8,
+        "size": 6,
         "top_cards": [
           "Drownyard Lurker",
           "Petrifying Meddler",
@@ -4285,39 +4314,53 @@
         "community_id": 8,
         "size": 1,
         "top_cards": [
-          "Fledgling Dragon"
+          "Basking Broodscale"
         ]
       },
       {
         "community_id": 9,
         "size": 1,
         "top_cards": [
-          "Endurance"
+          "Path of Annihilation"
         ]
       },
       {
         "community_id": 10,
         "size": 1,
         "top_cards": [
-          "Thriving Skyclaw"
+          "Fledgling Dragon"
         ]
       },
       {
         "community_id": 11,
         "size": 1,
         "top_cards": [
-          "Sarpadian Simulacrum"
+          "Endurance"
         ]
       },
       {
         "community_id": 12,
         "size": 1,
         "top_cards": [
-          "Subtlety"
+          "Thriving Skyclaw"
         ]
       },
       {
         "community_id": 13,
+        "size": 1,
+        "top_cards": [
+          "Sarpadian Simulacrum"
+        ]
+      },
+      {
+        "community_id": 14,
+        "size": 1,
+        "top_cards": [
+          "Subtlety"
+        ]
+      },
+      {
+        "community_id": 15,
         "size": 1,
         "top_cards": [
           "Cursed Mirror"
@@ -4565,9 +4608,9 @@
       {
         "card": "Kozilek's Unsealing",
         "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 53.12116540761505,
+        "shell_dependence_score_raw": 54.56523599155515,
         "build_around_score": 10.0,
-        "build_around_score_raw": 53.12116540761505,
+        "build_around_score_raw": 54.56523599155515,
         "support_delta": 0.23599091091730007,
         "supported_win_rate": 0.5516251292063856,
         "isolated_win_rate": 0.31563421828908556,
@@ -4575,9 +4618,9 @@
       },
       {
         "card": "Snapping Voidcraw",
-        "shell_dependence_score": 9.959723035468615,
+        "shell_dependence_score": 9.897577342818629,
         "shell_dependence_score_raw": 52.214661436305924,
-        "build_around_score": 9.959723035468615,
+        "build_around_score": 9.897577342818629,
         "build_around_score_raw": 52.214661436305924,
         "support_delta": 0.1363540171478141,
         "supported_win_rate": 0.5507435017552164,
@@ -4754,7 +4797,7 @@
       },
       {
         "card": "Kozilek's Unsealing",
-        "dependency_score": 0.11721003845018292,
+        "dependency_score": 0.12719244773251773,
         "standalone_delta": -0.0022112277956928272,
         "draw_games": 9385
       },
@@ -5191,7 +5234,7 @@
           "Depth Defiler",
           "Twisted Riddlekeeper"
         ],
-        "pick_score": 9.999999999999998,
+        "pick_score": 10.0,
         "pick_score_raw": 8.203798675405718,
         "pair_win_rate": 0.6856634016028496,
         "pair_games": 1123,
@@ -5202,7 +5245,7 @@
           "Kozilek's Unsealing",
           "Writhing Chrysalis"
         ],
-        "pick_score": 9.894455852862604,
+        "pick_score": 9.821610036871885,
         "pick_score_raw": 7.601634468387483,
         "pair_win_rate": 0.6442663378545006,
         "pair_games": 1622,
@@ -5213,7 +5256,7 @@
           "Kozilek's Unsealing",
           "Petrifying Meddler"
         ],
-        "pick_score": 9.35428714176017,
+        "pick_score": 9.273816460041445,
         "pick_score_raw": 7.166228229912126,
         "pair_win_rate": 0.6224489795918368,
         "pair_games": 2058,
@@ -5224,7 +5267,7 @@
           "Snapping Voidcraw",
           "Warped Tusker"
         ],
-        "pick_score": 9.259949884977157,
+        "pick_score": 9.178147565750864,
         "pick_score_raw": 7.092480024632498,
         "pair_win_rate": 0.5855756506396118,
         "pair_games": 4534,
@@ -5235,7 +5278,7 @@
           "Drowner of Truth",
           "Unfathomable Truths"
         ],
-        "pick_score": 8.911454578701688,
+        "pick_score": 8.82473300024661,
         "pick_score_raw": 6.8257715558301335,
         "pair_win_rate": 0.6287744227353463,
         "pair_games": 1689,
@@ -5246,7 +5289,7 @@
           "Horrific Assault",
           "Kozilek's Unsealing"
         ],
-        "pick_score": 8.882769157162215,
+        "pick_score": 8.795642663570264,
         "pick_score_raw": 6.8042137436739365,
         "pair_win_rate": 0.6302623550945698,
         "pair_games": 1639,
@@ -5257,7 +5300,7 @@
           "Kozilek's Unsealing",
           "Warped Tusker"
         ],
-        "pick_score": 7.099854383045746,
+        "pick_score": 6.987560778738745,
         "pick_score_raw": 5.574579076523432,
         "pair_win_rate": 0.6072051133062173,
         "pair_games": 1721,
@@ -5268,7 +5311,7 @@
           "Depth Defiler",
           "Kozilek's Unsealing"
         ],
-        "pick_score": 6.472941516311595,
+        "pick_score": 6.351798590794831,
         "pick_score_raw": 5.18992978541525,
         "pair_win_rate": 0.6265286923800565,
         "pair_games": 1063,
@@ -5279,7 +5322,7 @@
           "Kozilek's Unsealing",
           "Twisted Riddlekeeper"
         ],
-        "pick_score": 6.3553443976868955,
+        "pick_score": 6.232541505161522,
         "pick_score_raw": 5.120324179556064,
         "pair_win_rate": 0.6272189349112426,
         "pair_games": 1014,
@@ -5290,7 +5333,7 @@
           "Drownyard Lurker",
           "Kozilek's Unsealing"
         ],
-        "pick_score": 6.144469366669231,
+        "pick_score": 6.018689823027546,
         "pick_score_raw": 4.997461860075716,
         "pair_win_rate": 0.5894039735099338,
         "pair_games": 2114,
@@ -5301,7 +5344,7 @@
           "Kozilek's Unsealing",
           "Wastescape Battlemage"
         ],
-        "pick_score": 5.7193830973994935,
+        "pick_score": 5.587603158586108,
         "pick_score_raw": 4.7572395381000065,
         "pair_win_rate": 0.6196623634558094,
         "pair_games": 1007,
@@ -5310,13 +5353,13 @@
       {
         "cards": [
           "Kozilek's Unsealing",
-          "Path of Annihilation"
+          "Snapping Voidcraw"
         ],
-        "pick_score": 5.4328151433250245,
-        "pick_score_raw": 4.6007494852248,
-        "pair_win_rate": 0.6218302094818081,
-        "pair_games": 907,
-        "draft_pair_events": 1942
+        "pick_score": 4.1434793465898245,
+        "pick_score_raw": 4.020439920451541,
+        "pair_win_rate": 0.5734109221128022,
+        "pair_games": 2234,
+        "draft_pair_events": 4317
       }
     ]
   },
@@ -5554,9 +5597,9 @@
         "Etherium Pteramander"
       ],
       "build_arounds": [
+        "Drossclaw",
         "Pyretic Rebirth",
-        "Furnace Hellkite",
-        "Eviscerator's Insight"
+        "Furnace Hellkite"
       ],
       "core_cards": [
         "Cranial Ram",
@@ -5586,8 +5629,8 @@
       ],
       "build_arounds": [
         "Eviscerator's Insight",
-        "Fetid Gargantua",
-        "Retrofitted Transmogrant"
+        "Retrofitted Transmogrant",
+        "Refurbished Familiar"
       ],
       "core_cards": [
         "Dreamdrinker Vampire",
@@ -5600,6 +5643,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -5705,6 +5749,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -5727,28 +5773,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -5816,16 +5853,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -5953,10 +5981,12 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
-    if (filters.topSynergies) {
+    if (filters.topSynergies && visibleEdges.length) {
+      // Guard on visibleEdges.length: with no edges at all, culling
+      // unconnected nodes would blank the entire graph.
       visibleEdges = visibleEdges.slice(0, mode === 'analysis' ? 26 : 20);
       var connected = Object.create(null);
       visibleEdges.forEach(function(edge) {
@@ -6295,15 +6325,25 @@
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
+    var hasFlowRoles = segment.nodes.some(function(node) { return node.flow_role === 'enabler' || node.flow_role === 'payoff'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
+        (hasFlowRoles
+          ? '<div class="legend-row"><div class="legend-samples"><span class="legend-flow enabler"></span></div><div><strong style="color:#2dd4bf">Enabler (sink)</strong>: teal solid ring - most synergy arrows point into it. Its partners win more than it does; it exists to make them work (fixing, engines, setup).</div></div>' +
+            '<div class="legend-row"><div class="legend-samples"><span class="legend-flow payoff"></span></div><div><strong style="color:#e879f9">Payoff (source)</strong>: pink solid ring - most synergy arrows point out of it. It is what the deck actually wins with, once the enablers put it in motion.</div></div>'
+          : '') +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -6404,6 +6444,17 @@
     }
     if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
     var ringOffset = r + 4;
+    if (node.flow_role === 'enabler' || node.flow_role === 'payoff') {
+      g.appendChild(svgEl('circle', {
+        cx: node.x,
+        cy: node.y,
+        r: ringOffset,
+        fill: 'none',
+        stroke: node.flow_role === 'enabler' ? 'rgba(45, 212, 191, 0.95)' : 'rgba(232, 121, 249, 0.95)',
+        'stroke-width': 2.4
+      }));
+      ringOffset += 6;
+    }
     if (node.is_build_around) {
       g.appendChild(svgEl('circle', {
         cx: node.x,
@@ -6426,7 +6477,13 @@
     g.style.cursor = 'pointer';
     var onNodeClick = function() {
       var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
-      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>');
+      var flowLine = '';
+      if (node.flow_role === 'enabler') {
+        flowLine = '<div style="margin-top:6px;color:#2dd4bf"><strong>Enabler (sink)</strong> - ' + (node.flow_in_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point into it: its partners win more than it does, it makes them work.</div>';
+      } else if (node.flow_role === 'payoff') {
+        flowLine = '<div style="margin-top:6px;color:#e879f9"><strong>Payoff (source)</strong> - ' + (node.flow_out_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point out of it: it is what the deck is winning with, once enabled.</div>';
+      }
+      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>' + flowLine);
       nodeDetail(node);
     };
     g.addEventListener('pointerdown', function(evt) {
@@ -6481,8 +6538,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -6599,6 +6657,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

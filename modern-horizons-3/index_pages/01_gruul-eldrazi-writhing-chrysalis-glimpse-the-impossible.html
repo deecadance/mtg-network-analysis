@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible | Modern Horizons 3 Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -758,7 +638,7 @@
         "average_taken_at": 1.7170499570239617,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 20198.54321694306,
-        "analysis_score": 10.0,
+        "analysis_score": 9.999999999999998,
         "pick_priority_score_raw": 845.696567277418,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
@@ -771,12 +651,17 @@
         "build_around_score": 0.0,
         "core_score_raw": 20231.41849282352,
         "core_score": 10.0,
+        "win_contribution_logit": 0.4610360563971839,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Writhing%20Chrysalis%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
         "community": 3,
-        "x": 900.0,
-        "y": 880.0,
+        "x": 947.8405306037577,
+        "y": 967.678231095686,
         "analysis_radius": 15.553277101392213,
         "pick_radius": 30.0,
         "radius": 15.553277101392213,
@@ -825,7 +710,7 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.7197798650355872,
-            "analysis_score": 10.0,
+            "analysis_score": 9.999999999999998,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
             "core_score": 10.0,
@@ -838,7 +723,7 @@
             "deck_prevalence": 0.424409873123369,
             "analysis_score": 9.556135579729023,
             "pick_priority_score": 10.0,
-            "build_around_score": 1.8006677632341015,
+            "build_around_score": 1.7894321349962303,
             "core_score": 9.283686440731493,
             "role": "balanced"
           },
@@ -849,7 +734,7 @@
             "deck_prevalence": 0.12468152350595264,
             "analysis_score": 0.0,
             "pick_priority_score": 9.221982148869168,
-            "build_around_score": 2.292007720763624,
+            "build_around_score": 1.2350423275294165,
             "core_score": 0.0,
             "role": "engine"
           },
@@ -860,7 +745,7 @@
             "deck_prevalence": 0.011142134139889837,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.316616958024828,
+            "build_around_score": 1.2720398441943932,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -902,7 +787,7 @@
         "average_taken_at": 6.750848070921344,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 16622.17731565589,
-        "analysis_score": 10.0,
+        "analysis_score": 9.999999999999998,
         "pick_priority_score_raw": 194.51805149289956,
         "pick_priority_score": 8.772669862725799,
         "pick_market_score_raw": 8.730990754723205,
@@ -910,17 +795,22 @@
         "pick_urgency_score_raw": 7.7048352945520335,
         "pick_urgency_score": 7.7048352945520335,
         "shell_dependence_score_raw": 12.781475343195039,
-        "shell_dependence_score": 9.4028347150313,
+        "shell_dependence_score": 9.37224417367454,
         "build_around_score_raw": 12.781475343195039,
-        "build_around_score": 9.4028347150313,
+        "build_around_score": 9.37224417367454,
         "core_score_raw": 16650.796350434095,
         "core_score": 10.0,
+        "win_contribution_logit": 0.10738902222797021,
+        "contribution_score": 3.235650874679994,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Glimpse%20the%20Impossible%22",
-        "community": 2,
-        "x": 1000.4560426989987,
-        "y": 922.4349418665013,
+        "flow_in_degree": 1,
+        "flow_out_degree": 2,
+        "flow_role": null,
+        "community": 1,
+        "x": 1415.3564899460273,
+        "y": 903.5102117331347,
         "analysis_radius": 15.9381857865102,
         "pick_radius": 30.0,
         "radius": 15.9381857865102,
@@ -997,9 +887,9 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5827145623424097,
-            "analysis_score": 10.0,
+            "analysis_score": 9.999999999999998,
             "pick_priority_score": 8.772669862725799,
-            "build_around_score": 9.4028347150313,
+            "build_around_score": 9.37224417367454,
             "core_score": 10.0,
             "role": "engine"
           }
@@ -1026,8 +916,8 @@
         "supported_win_rate": 0.5704168678577177,
         "support_delta": 0.06331534234482972,
         "standalone_delta": -0.01759623482592576,
-        "dependency_score": 0.08145122188089463,
-        "degree": 3,
+        "dependency_score": 0.09065819571755056,
+        "degree": 2,
         "signpost_score": 15128.109393225075,
         "signpost_lift": 3.66723239625306,
         "deck_prevalence": 0.4980822713527058,
@@ -1040,29 +930,34 @@
         "alsa": 4.269593967086444,
         "average_taken_at": 7.241949545799702,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 15129.57551521893,
-        "analysis_score": 9.95821789482646,
+        "analysis_score_raw": 15129.741240747991,
+        "analysis_score": 9.9582227678637,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.6191729498861,
         "pick_market_score": 8.6191729498861,
         "pick_urgency_score_raw": 4.982009596189678,
         "pick_urgency_score": 4.982009596189678,
-        "shell_dependence_score_raw": 13.849874744525422,
-        "shell_dependence_score": 9.670461856938882,
-        "build_around_score_raw": 13.849874744525422,
-        "build_around_score": 9.670461856938882,
-        "core_score_raw": 15155.149988441748,
-        "core_score": 9.932028553339629,
+        "shell_dependence_score_raw": 14.234593297349553,
+        "shell_dependence_score": 9.730379531883713,
+        "build_around_score_raw": 14.234593297349553,
+        "build_around_score": 9.730379531883713,
+        "core_score_raw": 15155.27888607546,
+        "core_score": 9.932034713616405,
+        "win_contribution_logit": -0.07121169767113034,
+        "contribution_score": 0.0,
         "is_build_around": true,
-        "role": "balanced",
+        "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Voidpouncer%22",
+        "flow_in_degree": 2,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
         "community": 0,
-        "x": 1236.9891460418219,
-        "y": 498.95196214862847,
-        "analysis_radius": 13.932243987712207,
+        "x": 1304.6159455866296,
+        "y": 503.85055802660776,
+        "analysis_radius": 14.26369504583182,
         "pick_radius": 30.0,
-        "radius": 13.932243987712207,
+        "radius": 14.26369504583182,
         "top_synergies": [
           {
             "card": "Ral and the Implicit Maze",
@@ -1081,15 +976,6 @@
             "synergy_delta_logit": 0.07181114044669462,
             "partner_pick_score": 5.022162910858911,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Skittering Precursor",
-            "quality_score": 0.05185266097384109,
-            "pair_win_rate": 0.5739910313901345,
-            "pair_games": 892,
-            "synergy_delta_logit": 0.06250250753821951,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -1136,11 +1022,11 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.4980822713527058,
-            "analysis_score": 9.95821789482646,
+            "analysis_score": 9.9582227678637,
             "pick_priority_score": 0.0,
-            "build_around_score": 9.670461856938882,
-            "core_score": 9.932028553339629,
-            "role": "balanced"
+            "build_around_score": 9.730379531883713,
+            "core_score": 9.932034713616405,
+            "role": "needs_support"
           }
         ]
       },
@@ -1180,7 +1066,7 @@
         "average_taken_at": 4.988998923573735,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 14015.022511805277,
-        "analysis_score": 9.90967251728084,
+        "analysis_score": 9.909670451399997,
         "pick_priority_score_raw": 411.8799784681892,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 9.378800463886884,
@@ -1188,17 +1074,22 @@
         "pick_urgency_score_raw": 9.05125889029997,
         "pick_urgency_score": 9.05125889029997,
         "shell_dependence_score_raw": 5.634943522110916,
-        "shell_dependence_score": 6.782786554890365,
+        "shell_dependence_score": 6.760719899577391,
         "build_around_score_raw": 5.634943522110916,
-        "build_around_score": 6.782786554890365,
+        "build_around_score": 6.760719899577391,
         "core_score_raw": 14042.298264129557,
-        "core_score": 9.853344292474304,
+        "core_score": 9.85334169863056,
+        "win_contribution_logit": 0.15508548432808264,
+        "contribution_score": 4.573283833400583,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Malevolent%20Rumble%22",
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1235.8635150646032,
-        "y": 556.2190856992924,
+        "x": 1439.5355231094616,
+        "y": 450.4348282350404,
         "analysis_radius": 16.044469593485402,
         "pick_radius": 30.0,
         "radius": 16.044469593485402,
@@ -1266,10 +1157,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5689159705910981,
-            "analysis_score": 9.90967251728084,
+            "analysis_score": 9.909670451399997,
             "pick_priority_score": 10.0,
-            "build_around_score": 6.782786554890365,
-            "core_score": 9.853344292474304,
+            "build_around_score": 6.760719899577391,
+            "core_score": 9.85334169863056,
             "role": "engine"
           },
           {
@@ -1279,7 +1170,7 @@
             "deck_prevalence": 0.4779091365905047,
             "analysis_score": 9.753508226718788,
             "pick_priority_score": 9.768742906095014,
-            "build_around_score": 4.147756368592782,
+            "build_around_score": 4.1218756095042375,
             "core_score": 9.602358809493154,
             "role": "good_alone"
           },
@@ -1288,10 +1179,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.23079225112151552,
-            "analysis_score": 7.260589173324356,
+            "analysis_score": 7.2622316978140695,
             "pick_priority_score": 9.488550488410231,
             "build_around_score": 0.0,
-            "core_score": 5.831032585747021,
+            "core_score": 5.832928022411595,
             "role": "engine"
           },
           {
@@ -1301,7 +1192,7 @@
             "deck_prevalence": 0.20613497237091286,
             "analysis_score": 0.8599427468793177,
             "pick_priority_score": 9.579510274545589,
-            "build_around_score": 2.905241214098242,
+            "build_around_score": 2.7909937639720583,
             "core_score": 0.0,
             "role": "engine"
           }
@@ -1343,7 +1234,7 @@
         "average_taken_at": 3.0035398230088495,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 11963.988327433792,
-        "analysis_score": 9.809293093753574,
+        "analysis_score": 9.809291048798942,
         "pick_priority_score_raw": 399.11671205904884,
         "pick_priority_score": 9.963449580802394,
         "pick_market_score_raw": 9.999299071618397,
@@ -1351,17 +1242,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 5.214934851193394,
-        "shell_dependence_score": 6.548390327040421,
+        "shell_dependence_score": 6.527086240433504,
         "build_around_score_raw": 5.214934851193394,
-        "build_around_score": 6.548390327040421,
+        "build_around_score": 6.527086240433504,
         "core_score_raw": 11988.841312123393,
-        "core_score": 9.690235640046774,
+        "core_score": 9.69023308914057,
+        "win_contribution_logit": 0.18565488743363437,
+        "contribution_score": 5.401852572981138,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Eldrazi%20Repurposer%22",
+        "flow_in_degree": 1,
+        "flow_out_degree": 0,
+        "flow_role": null,
         "community": 0,
-        "x": 1178.8661341625887,
-        "y": 605.7652240338176,
+        "x": 1371.4764999645158,
+        "y": 387.4906732092513,
         "analysis_radius": 17.70141981160451,
         "pick_radius": 30.0,
         "radius": 17.70141981160451,
@@ -1420,10 +1316,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5293694855485743,
-            "analysis_score": 9.809293093753574,
+            "analysis_score": 9.809291048798942,
             "pick_priority_score": 9.963449580802394,
-            "build_around_score": 6.548390327040421,
-            "core_score": 9.690235640046774,
+            "build_around_score": 6.527086240433504,
+            "core_score": 9.69023308914057,
             "role": "engine"
           },
           {
@@ -1433,7 +1329,7 @@
             "deck_prevalence": 0.48894972060165887,
             "analysis_score": 9.768840606824408,
             "pick_priority_score": 9.455001955248266,
-            "build_around_score": 3.5131221821261907,
+            "build_around_score": 3.4912013505333075,
             "core_score": 9.627157539675736,
             "role": "good_alone"
           }
@@ -1475,7 +1371,7 @@
         "average_taken_at": 3.359035811402498,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 10692.206181365642,
-        "analysis_score": 9.737996737797392,
+        "analysis_score": 9.737994707705994,
         "pick_priority_score_raw": 358.2858995308641,
         "pick_priority_score": 9.78446297031999,
         "pick_market_score_raw": 9.928455469191498,
@@ -1483,17 +1379,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 9.631877025735955,
-        "shell_dependence_score": 8.472816601732628,
+        "shell_dependence_score": 8.445251717895074,
         "build_around_score_raw": 9.631877025735955,
-        "build_around_score": 8.472816601732628,
+        "build_around_score": 8.445251717895074,
         "core_score_raw": 10716.29147185363,
-        "core_score": 9.574469224535108,
+        "core_score": 9.574466704103836,
+        "win_contribution_logit": 0.17423535700698764,
+        "contribution_score": 5.09485851505509,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Horrific%20Assault%22",
-        "community": 1,
-        "x": 1176.0959716299064,
-        "y": 619.8544713452269,
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 2,
+        "x": 891.9696942287002,
+        "y": 818.2939052286757,
         "analysis_radius": 16.893877472674166,
         "pick_radius": 30.0,
         "radius": 16.893877472674166,
@@ -1552,10 +1453,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5118133651945801,
-            "analysis_score": 9.737996737797392,
+            "analysis_score": 9.737994707705994,
             "pick_priority_score": 9.78446297031999,
-            "build_around_score": 8.472816601732628,
-            "core_score": 9.574469224535108,
+            "build_around_score": 8.445251717895074,
+            "core_score": 9.574466704103836,
             "role": "engine"
           },
           {
@@ -1565,7 +1466,7 @@
             "deck_prevalence": 0.4694641601192604,
             "analysis_score": 9.682496296861537,
             "pick_priority_score": 9.941740149178113,
-            "build_around_score": 5.715290443291223,
+            "build_around_score": 5.679628740447749,
             "core_score": 9.487732887053676,
             "role": "engine"
           },
@@ -1574,11 +1475,11 @@
             "title": "Black Base | Dreamdrinker Vampire / Wither and Bloom",
             "color_name": "Black Base",
             "deck_prevalence": 0.25338111721270906,
-            "analysis_score": 8.138752378597506,
+            "analysis_score": 8.138993635628019,
             "pick_priority_score": 9.322138561666556,
-            "build_around_score": 3.4653615036473897,
-            "core_score": 6.910502613793097,
-            "role": "balanced"
+            "build_around_score": 3.441287175886655,
+            "core_score": 6.910811456637036,
+            "role": "engine"
           },
           {
             "cluster_id": 5,
@@ -1629,7 +1530,7 @@
         "average_taken_at": 3.66968373414724,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 10471.689091237351,
-        "analysis_score": 9.724776339676431,
+        "analysis_score": 9.724774312341106,
         "pick_priority_score_raw": 63.18412654803546,
         "pick_priority_score": 6.920415885907522,
         "pick_market_score_raw": 9.86579034492453,
@@ -1637,17 +1538,22 @@
         "pick_urgency_score_raw": 8.899146239057831,
         "pick_urgency_score": 8.899146239057831,
         "shell_dependence_score_raw": 9.584810367670032,
-        "shell_dependence_score": 8.456913818340762,
+        "shell_dependence_score": 8.42940067153441,
         "build_around_score_raw": 9.584810367670032,
-        "build_around_score": 8.456913818340762,
+        "build_around_score": 8.42940067153441,
         "core_score_raw": 10496.402886255226,
-        "core_score": 9.55307993972427,
+        "core_score": 9.55307742492362,
+        "win_contribution_logit": -0.01067414345744507,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Basking%20Broodscale%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1348.0254418337772,
-        "y": 611.4833712358371,
+        "x": 1476.8995059284448,
+        "y": 563.5759391310197,
         "analysis_radius": 15.048236161536725,
         "pick_radius": 30.0,
         "radius": 15.048236161536725,
@@ -1706,10 +1612,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.4839153660735198,
-            "analysis_score": 9.724776339676431,
+            "analysis_score": 9.724774312341106,
             "pick_priority_score": 6.920415885907522,
-            "build_around_score": 8.456913818340762,
-            "core_score": 9.55307993972427,
+            "build_around_score": 8.42940067153441,
+            "core_score": 9.55307742492362,
             "role": "needs_support"
           },
           {
@@ -1717,10 +1623,10 @@
             "title": "Simic Eldrazi | Snapping Voidcraw / Drownyard Lurker",
             "color_name": "Simic Eldrazi",
             "deck_prevalence": 0.4213323517680258,
-            "analysis_score": 9.598040958517862,
+            "analysis_score": 9.59798290585771,
             "pick_priority_score": 7.710134728714346,
-            "build_around_score": 6.189986198108189,
-            "core_score": 9.351662325879623,
+            "build_around_score": 5.614562382901233,
+            "core_score": 9.35158955429849,
             "role": "balanced"
           },
           {
@@ -1730,7 +1636,7 @@
             "deck_prevalence": 0.006960357906064357,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.6705534701313145,
+            "build_around_score": 1.707191365650732,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -1759,8 +1665,8 @@
         "supported_win_rate": 0.6210219348294662,
         "support_delta": 0.06989974031575052,
         "standalone_delta": 0.032159167879836525,
-        "dependency_score": 0.07651516069541725,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 10429.9240370871,
         "signpost_lift": 3.7802923083348534,
         "deck_prevalence": 0.3427496252901768,
@@ -1773,40 +1679,35 @@
         "alsa": 1.7802601340946245,
         "average_taken_at": 2.0252770514257254,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 10435.803593482795,
-        "analysis_score": 9.722598634344743,
+        "analysis_score_raw": 10434.426320590277,
+        "analysis_score": 9.722512878778643,
         "pick_priority_score_raw": 279.9663431937075,
         "pick_priority_score": 9.375593123724856,
         "pick_market_score_raw": 10.0,
         "pick_market_score": 10.0,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 8.032198729081488,
-        "shell_dependence_score": 7.888354233578469,
-        "build_around_score_raw": 8.032198729081488,
-        "build_around_score": 7.888354233578469,
-        "core_score_raw": 10451.55175912171,
-        "core_score": 9.548662142867824,
+        "shell_dependence_score_raw": 6.149943169541027,
+        "shell_dependence_score": 7.027791277715827,
+        "build_around_score_raw": 6.149943169541027,
+        "build_around_score": 7.027791277715827,
+        "core_score_raw": 10450.480546871975,
+        "core_score": 9.548553884154456,
+        "win_contribution_logit": 0.17280673302524244,
+        "contribution_score": 5.056242518200143,
         "is_build_around": false,
-        "role": "engine",
+        "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Titans%27%20Vanguard%22",
-        "community": 1,
-        "x": 1142.0587685973455,
-        "y": 834.8544713452268,
-        "analysis_radius": 15.523300018426031,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 4,
+        "x": 767.7479964587559,
+        "y": 878.116575105622,
+        "analysis_radius": 12.76875423339101,
         "pick_radius": 30.0,
-        "radius": 15.523300018426031,
-        "top_synergies": [
-          {
-            "card": "Skittering Precursor",
-            "quality_score": 0.1521173796294561,
-            "pair_win_rate": 0.6265822784810127,
-            "pair_games": 474,
-            "synergy_delta_logit": 0.07651516069541725,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 12.76875423339101,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Voidpouncer",
@@ -1851,11 +1752,11 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.3427496252901768,
-            "analysis_score": 9.722598634344743,
+            "analysis_score": 9.722512878778643,
             "pick_priority_score": 9.375593123724856,
-            "build_around_score": 7.888354233578469,
-            "core_score": 9.548662142867824,
-            "role": "engine"
+            "build_around_score": 7.027791277715827,
+            "core_score": 9.548553884154456,
+            "role": "good_alone"
           }
         ]
       },
@@ -1895,7 +1796,7 @@
         "average_taken_at": 2.908066504011872,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 9720.149062160222,
-        "analysis_score": 9.677531205922024,
+        "analysis_score": 9.677529188435946,
         "pick_priority_score_raw": 167.98879941180206,
         "pick_priority_score": 8.530191218746163,
         "pick_market_score_raw": 10.0,
@@ -1903,17 +1804,22 @@
         "pick_urgency_score_raw": 9.572419263635245,
         "pick_urgency_score": 9.572419263635245,
         "shell_dependence_score_raw": 15.130719797891244,
-        "shell_dependence_score": 9.967007208564446,
+        "shell_dependence_score": 9.934581226883695,
         "build_around_score_raw": 15.130719797891244,
-        "build_around_score": 9.967007208564446,
+        "build_around_score": 9.934581226883695,
         "core_score_raw": 9744.106722036302,
-        "core_score": 9.476354504140742,
+        "core_score": 9.476352009537681,
+        "win_contribution_logit": -0.009201707120573763,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Nightshade%20Dryad%22",
-        "community": 2,
-        "x": 1043.7256156649864,
-        "y": 724.3419695142628,
+        "flow_in_degree": 2,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 1,
+        "x": 1248.534977498849,
+        "y": 752.8467481477696,
         "analysis_radius": 15.314184730456736,
         "pick_radius": 30.0,
         "radius": 15.314184730456736,
@@ -1990,10 +1896,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.47357490195937574,
-            "analysis_score": 9.677531205922024,
+            "analysis_score": 9.677529188435946,
             "pick_priority_score": 8.530191218746163,
-            "build_around_score": 9.967007208564446,
-            "core_score": 9.476354504140742,
+            "build_around_score": 9.934581226883695,
+            "core_score": 9.476352009537681,
             "role": "needs_support"
           },
           {
@@ -2003,7 +1909,7 @@
             "deck_prevalence": 0.46791781003664773,
             "analysis_score": 9.725033876219026,
             "pick_priority_score": 9.081855568790242,
-            "build_around_score": 5.331994311301054,
+            "build_around_score": 5.298724261672008,
             "core_score": 9.556517576837742,
             "role": "good_alone"
           }
@@ -2045,7 +1951,7 @@
         "average_taken_at": 5.941117092866756,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 9534.077091426547,
-        "analysis_score": 9.665269623931502,
+        "analysis_score": 9.66526760900161,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 9.150839033028774,
@@ -2053,17 +1959,22 @@
         "pick_urgency_score_raw": 5.794008704989398,
         "pick_urgency_score": 5.794008704989398,
         "shell_dependence_score_raw": 15.196816097951368,
-        "shell_dependence_score": 9.9816640975295,
+        "shell_dependence_score": 9.949190432125528,
         "build_around_score_raw": 15.196816097951368,
-        "build_around_score": 9.9816640975295,
+        "build_around_score": 9.949190432125528,
         "core_score_raw": 9555.290146957272,
-        "core_score": 9.456167120648425,
+        "core_score": 9.45616463135959,
+        "win_contribution_logit": -0.024721421107863385,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Warped%20Tusker%22",
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1133.0254418337772,
-        "y": 566.7902897344973,
+        "x": 1299.6899036312495,
+        "y": 423.9787864460211,
         "analysis_radius": 15.92385368581052,
         "pick_radius": 30.0,
         "radius": 15.92385368581052,
@@ -2133,7 +2044,7 @@
             "deck_prevalence": 0.44963175324000265,
             "analysis_score": 9.814151443102038,
             "pick_priority_score": 8.189671863519909,
-            "build_around_score": 6.71904531824968,
+            "build_around_score": 6.677120485223474,
             "core_score": 9.700103364355327,
             "role": "engine"
           },
@@ -2142,10 +2053,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.41846443047505294,
-            "analysis_score": 9.665269623931502,
+            "analysis_score": 9.66526760900161,
             "pick_priority_score": 0.0,
-            "build_around_score": 9.9816640975295,
-            "core_score": 9.456167120648425,
+            "build_around_score": 9.949190432125528,
+            "core_score": 9.45616463135959,
             "role": "needs_support"
           }
         ]
@@ -2171,8 +2082,8 @@
         "supported_win_rate": 0.5761160714285715,
         "support_delta": 0.11393119747899161,
         "standalone_delta": -0.01685338854822005,
-        "dependency_score": 0.09248912149795326,
-        "degree": 6,
+        "dependency_score": 0.09999030379632802,
+        "degree": 5,
         "signpost_score": 8721.31769496679,
         "signpost_lift": 2.4386752881899745,
         "deck_prevalence": 0.3948182424972522,
@@ -2185,29 +2096,34 @@
         "alsa": 4.29966621746171,
         "average_taken_at": 7.272618839820795,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8722.982499153753,
-        "analysis_score": 9.608866622690154,
+        "analysis_score_raw": 8723.117520435124,
+        "analysis_score": 9.608874438743438,
         "pick_priority_score_raw": 19.49531991878141,
         "pick_priority_score": 5.022162910858911,
         "pick_market_score_raw": 8.600397668326378,
         "pick_market_score": 8.600397668326378,
         "pick_urgency_score_raw": 6.414327467511969,
         "pick_urgency_score": 6.414327467511969,
-        "shell_dependence_score_raw": 18.600126886893925,
+        "shell_dependence_score_raw": 19.007506081716983,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 18.600126886893925,
+        "build_around_score_raw": 19.007506081716983,
         "build_around_score": 10.0,
-        "core_score_raw": 8743.14309127762,
-        "core_score": 9.36452957294015,
+        "core_score_raw": 8743.248107829795,
+        "core_score": 9.364539499237482,
+        "win_contribution_logit": -0.08080176005159796,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Colossal%20Dreadmask%22",
+        "flow_in_degree": 4,
+        "flow_out_degree": 1,
+        "flow_role": "enabler",
         "community": 0,
-        "x": 1270.8906792761732,
-        "y": 575.3992273652572,
-        "analysis_radius": 14.329608373926318,
+        "x": 1413.8913321711261,
+        "y": 522.8308455600633,
+        "analysis_radius": 14.599650936667809,
         "pick_radius": 30.0,
-        "radius": 14.329608373926318,
+        "radius": 14.599650936667809,
         "top_synergies": [
           {
             "card": "Ral and the Implicit Maze",
@@ -2299,10 +2215,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.3948182424972522,
-            "analysis_score": 9.608866622690154,
+            "analysis_score": 9.608874438743438,
             "pick_priority_score": 5.022162910858911,
             "build_around_score": 10.0,
-            "core_score": 9.36452957294015,
+            "core_score": 9.364539499237482,
             "role": "needs_support"
           },
           {
@@ -2312,7 +2228,7 @@
             "deck_prevalence": 0.005613660935752582,
             "analysis_score": 0.05626140874516611,
             "pick_priority_score": 5.397485419513302,
-            "build_around_score": 2.754775585741433,
+            "build_around_score": 2.7684504757755133,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2354,7 +2270,7 @@
         "average_taken_at": 7.904077909396921,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 8593.564286238,
-        "analysis_score": 9.599384288768267,
+        "analysis_score": 9.599382287573565,
         "pick_priority_score_raw": 93.03440862583774,
         "pick_priority_score": 7.555470013860211,
         "pick_market_score_raw": 8.326897721740833,
@@ -2362,17 +2278,22 @@
         "pick_urgency_score_raw": 6.733580524508971,
         "pick_urgency_score": 6.733580524508971,
         "shell_dependence_score_raw": 11.028464739513424,
-        "shell_dependence_score": 8.915190193360548,
+        "shell_dependence_score": 8.886186121441957,
         "build_around_score_raw": 11.028464739513424,
-        "build_around_score": 8.915190193360548,
+        "build_around_score": 8.886186121441957,
         "core_score_raw": 8611.088179459908,
-        "core_score": 9.34882875363512,
+        "core_score": 9.348826292602576,
+        "win_contribution_logit": 0.06173318313808724,
+        "contribution_score": 1.9001425684754023,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Skoa%2C%20Embermage%22",
-        "community": 2,
-        "x": 1172.9075404464688,
-        "y": 794.715762886453,
+        "flow_in_degree": 1,
+        "flow_out_degree": 2,
+        "flow_role": null,
+        "community": 1,
+        "x": 1185.3564899460273,
+        "y": 889.6112151149209,
         "analysis_radius": 15.111215005901503,
         "pick_radius": 30.0,
         "radius": 15.111215005901503,
@@ -2449,10 +2370,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.35679067661874037,
-            "analysis_score": 9.599384288768267,
+            "analysis_score": 9.599382287573565,
             "pick_priority_score": 7.555470013860211,
-            "build_around_score": 8.915190193360548,
-            "core_score": 9.34882875363512,
+            "build_around_score": 8.886186121441957,
+            "core_score": 9.348826292602576,
             "role": "needs_support"
           }
         ]
@@ -2493,7 +2414,7 @@
         "average_taken_at": 5.312986783101251,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 7722.957164727746,
-        "analysis_score": 9.531623699629987,
+        "analysis_score": 9.531621712561414,
         "pick_priority_score_raw": 126.38301253168187,
         "pick_priority_score": 8.060210482244372,
         "pick_market_score_raw": 9.380913051676494,
@@ -2501,17 +2422,22 @@
         "pick_urgency_score_raw": 8.490182982849735,
         "pick_urgency_score": 8.490182982849735,
         "shell_dependence_score_raw": 8.15823689567277,
-        "shell_dependence_score": 7.938025195841246,
+        "shell_dependence_score": 7.912200165900412,
         "build_around_score_raw": 8.15823689567277,
-        "build_around_score": 7.938025195841246,
+        "build_around_score": 7.912200165900412,
         "core_score_raw": 7741.641089823512,
-        "core_score": 9.239023217759657,
+        "core_score": 9.239020785632873,
+        "win_contribution_logit": 0.0973092310408622,
+        "contribution_score": 2.945599090038127,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Nyxborn%20Hydra%22",
-        "community": 2,
-        "x": 1125.0032607430771,
-        "y": 930.5791373124165,
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 1,
+        "x": 1302.103522011257,
+        "y": 982.5493811350923,
         "analysis_radius": 15.675980724357,
         "pick_radius": 30.0,
         "radius": 15.675980724357,
@@ -2579,10 +2505,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.4625855028866413,
-            "analysis_score": 9.717882928174058,
+            "analysis_score": 9.71799117190362,
             "pick_priority_score": 8.62345380226112,
-            "build_around_score": 1.9310999609720594,
-            "core_score": 9.567730554487168,
+            "build_around_score": 1.9956129783726069,
+            "core_score": 9.567858167936109,
             "role": "balanced"
           },
           {
@@ -2590,10 +2516,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.3907461254288164,
-            "analysis_score": 9.531623699629987,
+            "analysis_score": 9.531621712561414,
             "pick_priority_score": 8.060210482244372,
-            "build_around_score": 7.938025195841246,
-            "core_score": 9.239023217759657,
+            "build_around_score": 7.912200165900412,
+            "core_score": 9.239020785632873,
             "role": "engine"
           }
         ]
@@ -2619,8 +2545,8 @@
         "supported_win_rate": 0.5941378651899942,
         "support_delta": 0.08892176980996447,
         "standalone_delta": 0.004426582502138232,
-        "dependency_score": 0.07995660752175482,
-        "degree": 3,
+        "dependency_score": 0.1083954756813611,
+        "degree": 1,
         "signpost_score": 7575.061436180879,
         "signpost_lift": 1.975244908778153,
         "deck_prevalence": 0.42998183749450103,
@@ -2633,29 +2559,34 @@
         "alsa": 2.464744516224447,
         "average_taken_at": 3.3576545231273025,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7577.12037666657,
-        "analysis_score": 9.519530170601614,
+        "analysis_score_raw": 7577.632276293443,
+        "analysis_score": 9.519571041080761,
         "pick_priority_score_raw": 24.091624991745668,
         "pick_priority_score": 5.3586218713172515,
         "pick_market_score_raw": 9.928732496278565,
         "pick_market_score": 9.928732496278565,
         "pick_urgency_score_raw": 8.540935993245006,
         "pick_urgency_score": 8.540935993245006,
-        "shell_dependence_score_raw": 13.185648434579656,
-        "shell_dependence_score": 9.506441089090632,
-        "build_around_score_raw": 13.185648434579656,
-        "build_around_score": 9.506441089090632,
-        "core_score_raw": 7598.91614374858,
-        "core_score": 9.219826390036312,
+        "shell_dependence_score_raw": 14.322115802959924,
+        "shell_dependence_score": 9.750845664730251,
+        "build_around_score_raw": 14.322115802959924,
+        "build_around_score": 9.750845664730251,
+        "core_score_raw": 7599.314287902815,
+        "core_score": 9.2198780141034,
+        "win_contribution_logit": 0.030691898297161173,
+        "contribution_score": 0.9589212111657177,
         "is_build_around": true,
-        "role": "balanced",
+        "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fanged%20Flames%22",
-        "community": 1,
-        "x": 1215.3030332712408,
-        "y": 712.1133739308392,
-        "analysis_radius": 14.121899908400776,
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 2,
+        "x": 990.713802257921,
+        "y": 588.2939052286757,
+        "analysis_radius": 15.145699162146602,
         "pick_radius": 30.0,
-        "radius": 14.121899908400776,
+        "radius": 15.145699162146602,
         "top_synergies": [
           {
             "card": "Evolution Witness",
@@ -2664,24 +2595,6 @@
             "pair_games": 1158,
             "synergy_delta_logit": 0.1083954756813611,
             "partner_pick_score": 1.9364559534227705,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Skittering Precursor",
-            "quality_score": 0.10887195939213462,
-            "pair_win_rate": 0.5991316931982634,
-            "pair_games": 691,
-            "synergy_delta_logit": 0.076170050577482,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Colossal Dreadmask",
-            "quality_score": 0.051561582558399294,
-            "pair_win_rate": 0.5803489439853077,
-            "pair_games": 1089,
-            "synergy_delta_logit": 0.053646885413238365,
-            "partner_pick_score": 5.022162910858911,
             "partner_rarity": "common"
           }
         ],
@@ -2729,11 +2642,11 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.42998183749450103,
-            "analysis_score": 9.519530170601614,
+            "analysis_score": 9.519571041080761,
             "pick_priority_score": 5.3586218713172515,
-            "build_around_score": 9.506441089090632,
-            "core_score": 9.219826390036312,
-            "role": "balanced"
+            "build_around_score": 9.750845664730251,
+            "core_score": 9.2198780141034,
+            "role": "needs_support"
           }
         ]
       },
@@ -2758,8 +2671,8 @@
         "supported_win_rate": 0.590178278464399,
         "support_delta": 0.09572356497086848,
         "standalone_delta": 0.0004368905176259652,
-        "dependency_score": 0.10291926325330072,
-        "degree": 4,
+        "dependency_score": 0.10784205140182185,
+        "degree": 3,
         "signpost_score": 7303.459248635026,
         "signpost_lift": 2.0755912349108128,
         "deck_prevalence": 0.39347412554668865,
@@ -2772,29 +2685,34 @@
         "alsa": 3.3347578136937415,
         "average_taken_at": 5.137583608500551,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7305.372960046053,
-        "analysis_score": 9.49636140810371,
+        "analysis_score_raw": 7305.4615702327255,
+        "analysis_score": 9.496367122742795,
         "pick_priority_score_raw": 2.2044280923910797,
         "pick_priority_score": 1.9364559534227705,
         "pick_market_score_raw": 9.441246134612566,
         "pick_market_score": 9.441246134612566,
         "pick_urgency_score_raw": 6.800872192040359,
         "pick_urgency_score": 6.800872192040359,
-        "shell_dependence_score_raw": 15.315615738347493,
+        "shell_dependence_score_raw": 15.529249675325104,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 15.315615738347493,
+        "build_around_score_raw": 15.529249675325104,
         "build_around_score": 10.0,
-        "core_score_raw": 7325.397908542998,
-        "core_score": 9.182008514160023,
+        "core_score_raw": 7325.466827577077,
+        "core_score": 9.18201580284192,
+        "win_contribution_logit": -0.006073691943833873,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Evolution%20Witness%22",
-        "community": 1,
-        "x": 1183.6817320047046,
-        "y": 668.7489876428145,
-        "analysis_radius": 14.729122455588254,
+        "flow_in_degree": 3,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
+        "community": 2,
+        "x": 938.6652453323023,
+        "y": 709.5281573958083,
+        "analysis_radius": 14.906342828935014,
         "pick_radius": 30.0,
-        "radius": 14.729122455588254,
+        "radius": 14.906342828935014,
         "top_synergies": [
           {
             "card": "Horrific Assault",
@@ -2822,15 +2740,6 @@
             "synergy_delta_logit": 0.1083954756813611,
             "partner_pick_score": 5.3586218713172515,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Skittering Precursor",
-            "quality_score": 0.09030855967332867,
-            "pair_win_rate": 0.5958646616541353,
-            "pair_games": 532,
-            "synergy_delta_logit": 0.07898577032845816,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -2877,10 +2786,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.43657762336063916,
-            "analysis_score": 9.576091598437726,
+            "analysis_score": 9.576260016936923,
             "pick_priority_score": 0.0,
-            "build_around_score": 7.0715916247556105,
-            "core_score": 9.350959114748033,
+            "build_around_score": 7.327414358854145,
+            "core_score": 9.351157656454228,
             "role": "needs_support"
           },
           {
@@ -2888,10 +2797,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.39347412554668865,
-            "analysis_score": 9.49636140810371,
+            "analysis_score": 9.496367122742795,
             "pick_priority_score": 1.9364559534227705,
             "build_around_score": 10.0,
-            "core_score": 9.182008514160023,
+            "core_score": 9.18201580284192,
             "role": "needs_support"
           }
         ]
@@ -2932,7 +2841,7 @@
         "average_taken_at": 2.0962461680837525,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 7175.439824678611,
-        "analysis_score": 9.484977225236053,
+        "analysis_score": 9.484975247891924,
         "pick_priority_score_raw": 322.2075261585456,
         "pick_priority_score": 9.60849278604319,
         "pick_market_score_raw": 10.0,
@@ -2940,17 +2849,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 3.2241940965985245,
-        "shell_dependence_score": 5.164388907182217,
+        "shell_dependence_score": 5.147587436430529,
         "build_around_score_raw": 3.2241940965985245,
-        "build_around_score": 5.164388907182217,
+        "build_around_score": 5.147587436430529,
         "core_score_raw": 7186.817610583116,
-        "core_score": 9.162305352316421,
+        "core_score": 9.162302940385231,
+        "win_contribution_logit": 0.27989578732646436,
+        "contribution_score": 7.827944573320863,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Spawn-Gang%20Commander%22",
-        "community": 2,
-        "x": 957.9075404464688,
-        "y": 813.5688344754681,
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
+        "community": 1,
+        "x": 1384.6701017064745,
+        "y": 772.8729695168668,
         "analysis_radius": 17.95424954098714,
         "pick_radius": 30.0,
         "radius": 17.95424954098714,
@@ -3018,10 +2932,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.2879856095762741,
-            "analysis_score": 9.484977225236053,
+            "analysis_score": 9.484975247891924,
             "pick_priority_score": 9.60849278604319,
-            "build_around_score": 5.164388907182217,
-            "core_score": 9.162305352316421,
+            "build_around_score": 5.147587436430529,
+            "core_score": 9.162302940385231,
             "role": "engine"
           }
         ]
@@ -3062,7 +2976,7 @@
         "average_taken_at": 6.7655734756280355,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 6871.113088804813,
-        "analysis_score": 9.457485647007683,
+        "analysis_score": 9.457483675394755,
         "pick_priority_score_raw": 12.471431635716035,
         "pick_priority_score": 4.3243849514836,
         "pick_market_score_raw": 8.819956610364466,
@@ -3070,17 +2984,22 @@
         "pick_urgency_score_raw": 6.546663899897322,
         "pick_urgency_score": 6.546663899897322,
         "shell_dependence_score_raw": 9.304179432538605,
-        "shell_dependence_score": 8.36060171192954,
+        "shell_dependence_score": 8.333401900363423,
         "build_around_score_raw": 9.304179432538605,
-        "build_around_score": 8.36060171192954,
+        "build_around_score": 8.333401900363423,
         "core_score_raw": 6888.896673977754,
-        "core_score": 9.11862878201745,
+        "core_score": 9.1186263815839,
+        "win_contribution_logit": -0.05092040757718838,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Temperamental%20Oozewagg%22",
+        "flow_in_degree": 2,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
         "community": 0,
-        "x": 1159.1850933640364,
-        "y": 510.0875031215577,
+        "x": 1351.01933994821,
+        "y": 563.0692583320451,
         "analysis_radius": 15.812490892613353,
         "pick_radius": 30.0,
         "radius": 15.812490892613353,
@@ -3148,10 +3067,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.4603530742641207,
-            "analysis_score": 9.778056427779365,
+            "analysis_score": 9.778115233507663,
             "pick_priority_score": 5.492312955401413,
-            "build_around_score": 7.912889706943211,
-            "core_score": 9.659835632512209,
+            "build_around_score": 7.764440411317504,
+            "core_score": 9.65990470534854,
             "role": "needs_support"
           },
           {
@@ -3159,10 +3078,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.3522751227544422,
-            "analysis_score": 9.457485647007683,
+            "analysis_score": 9.457483675394755,
             "pick_priority_score": 4.3243849514836,
-            "build_around_score": 8.36060171192954,
-            "core_score": 9.11862878201745,
+            "build_around_score": 8.333401900363423,
+            "core_score": 9.1186263815839,
             "role": "needs_support"
           },
           {
@@ -3199,8 +3118,8 @@
         "supported_win_rate": 0.585203153426319,
         "support_delta": 0.07608461239288433,
         "standalone_delta": -0.0033408227971972737,
-        "dependency_score": 0.08433549633797736,
-        "degree": 5,
+        "dependency_score": 0.1327262305581608,
+        "degree": 1,
         "signpost_score": 5585.373743078692,
         "signpost_lift": 2.9128759243616793,
         "deck_prevalence": 0.2227847239390582,
@@ -3213,29 +3132,34 @@
         "alsa": 3.2394513307745547,
         "average_taken_at": 4.9132867132867135,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5586.891782012776,
-        "analysis_score": 9.326238516554005,
+        "analysis_score_raw": 5587.762815228739,
+        "analysis_score": 9.326335460851816,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 9.52312040826763,
         "pick_market_score": 9.52312040826763,
         "pick_urgency_score_raw": 6.362583896263288,
         "pick_urgency_score": 6.362583896263288,
-        "shell_dependence_score_raw": 9.620821852686353,
-        "shell_dependence_score": 8.469087638155347,
-        "build_around_score_raw": 9.620821852686353,
-        "build_around_score": 8.469087638155347,
-        "core_score_raw": 5598.139245672255,
-        "core_score": 8.904594160332632,
+        "shell_dependence_score_raw": 11.01331124837543,
+        "shell_dependence_score": 8.881682440153478,
+        "build_around_score_raw": 11.01331124837543,
+        "build_around_score": 8.881682440153478,
+        "core_score_raw": 5598.816715951338,
+        "core_score": 8.904716648665692,
+        "win_contribution_logit": -0.0005052202111515131,
+        "contribution_score": 0.0,
         "is_build_around": true,
-        "role": "balanced",
+        "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Skittering%20Precursor%22",
-        "community": 1,
-        "x": 1168.5011405519049,
-        "y": 764.4286957358926,
-        "analysis_radius": 14.036077868167185,
+        "flow_in_degree": 1,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 0,
+        "x": 1238.434788645679,
+        "y": 381.51099203825834,
+        "analysis_radius": 15.778144300093789,
         "pick_radius": 30.0,
-        "radius": 14.036077868167185,
+        "radius": 15.778144300093789,
         "top_synergies": [
           {
             "card": "Warped Tusker",
@@ -3243,42 +3167,6 @@
             "pair_win_rate": 0.6069565217391304,
             "pair_games": 575,
             "synergy_delta_logit": 0.1327262305581608,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Titans' Vanguard",
-            "quality_score": 0.1521173796294561,
-            "pair_win_rate": 0.6265822784810127,
-            "pair_games": 474,
-            "synergy_delta_logit": 0.07651516069541725,
-            "partner_pick_score": 9.375593123724856,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Fanged Flames",
-            "quality_score": 0.10887195939213462,
-            "pair_win_rate": 0.5991316931982634,
-            "pair_games": 691,
-            "synergy_delta_logit": 0.076170050577482,
-            "partner_pick_score": 5.3586218713172515,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Evolution Witness",
-            "quality_score": 0.09030855967332867,
-            "pair_win_rate": 0.5958646616541353,
-            "pair_games": 532,
-            "synergy_delta_logit": 0.07898577032845816,
-            "partner_pick_score": 1.9364559534227705,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Voidpouncer",
-            "quality_score": 0.05185266097384109,
-            "pair_win_rate": 0.5739910313901345,
-            "pair_games": 892,
-            "synergy_delta_logit": 0.06250250753821951,
             "partner_pick_score": 0.0,
             "partner_rarity": "common"
           }
@@ -3327,11 +3215,11 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.2227847239390582,
-            "analysis_score": 9.326238516554005,
+            "analysis_score": 9.326335460851816,
             "pick_priority_score": 0.0,
-            "build_around_score": 8.469087638155347,
-            "core_score": 8.904594160332632,
-            "role": "balanced"
+            "build_around_score": 8.881682440153478,
+            "core_score": 8.904716648665692,
+            "role": "needs_support"
           }
         ]
       },
@@ -3371,7 +3259,7 @@
         "average_taken_at": 4.259355678490075,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 3384.8320181339413,
-        "analysis_score": 9.008380606985154,
+        "analysis_score": 9.008378728997672,
         "pick_priority_score_raw": 242.1226733718749,
         "pick_priority_score": 9.13502931366015,
         "pick_market_score_raw": 9.671387050285214,
@@ -3379,17 +3267,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 6.499061635516747,
-        "shell_dependence_score": 7.221606631966935,
+        "shell_dependence_score": 7.198112349334879,
         "build_around_score_raw": 6.499061635516747,
-        "build_around_score": 7.221606631966935,
+        "build_around_score": 7.198112349334879,
         "core_score_raw": 3392.375385414969,
-        "core_score": 8.3878940932546,
+        "core_score": 8.387891885183313,
+        "win_contribution_logit": 0.1749060997364568,
+        "contribution_score": 5.112972623149199,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Ral%20and%20the%20Implicit%20Maze%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 6,
+        "flow_role": "payoff",
         "community": 0,
-        "x": 1197.1545484232222,
-        "y": 555.3033366611123,
+        "x": 1365.9470127831082,
+        "y": 461.5646277808384,
         "analysis_radius": 18.360046079058847,
         "pick_radius": 30.0,
         "radius": 18.360046079058847,
@@ -3484,10 +3377,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.1990338646932891,
-            "analysis_score": 9.008380606985154,
+            "analysis_score": 9.008378728997672,
             "pick_priority_score": 9.13502931366015,
-            "build_around_score": 7.221606631966935,
-            "core_score": 8.3878940932546,
+            "build_around_score": 7.198112349334879,
+            "core_score": 8.387891885183313,
             "role": "engine"
           }
         ]
@@ -3528,7 +3421,7 @@
         "average_taken_at": 3.5431150374495872,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -224.051621037468,
-        "analysis_score": 0.41567267732251645,
+        "analysis_score": 0.4156725906667546,
         "pick_priority_score_raw": 16.437037345569873,
         "pick_priority_score": 4.753444735748686,
         "pick_market_score_raw": 9.891410332742561,
@@ -3541,12 +3434,17 @@
         "build_around_score": 0.0,
         "core_score_raw": -224.66951226992305,
         "core_score": 0.0,
+        "win_contribution_logit": 0.07236306694378022,
+        "contribution_score": 2.216143414167485,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Warren%20Soultrader%22",
-        "community": 4,
-        "x": 740.0,
-        "y": 837.1281292110205,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 5,
+        "x": 660.4765605852476,
+        "y": 772.1992506370544,
         "analysis_radius": 11.968561714139081,
         "pick_radius": 30.0,
         "radius": 11.968561714139081,
@@ -3558,7 +3456,7 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.0067436631093082825,
-            "analysis_score": 0.41567267732251645,
+            "analysis_score": 0.4156725906667546,
             "pick_priority_score": 4.753444735748686,
             "build_around_score": 0.0,
             "core_score": 0.0,
@@ -3602,7 +3500,7 @@
         "average_taken_at": 3.0487819996280914,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -408.750589700926,
-        "analysis_score": 0.03550194146221434,
+        "analysis_score": 0.0355019340610837,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 9.99033289694285,
@@ -3610,17 +3508,22 @@
         "pick_urgency_score_raw": 7.076144788058168,
         "pick_urgency_score": 7.076144788058168,
         "shell_dependence_score_raw": 1.526828336122426,
-        "shell_dependence_score": 3.322537851994994,
+        "shell_dependence_score": 3.3117285338849585,
         "build_around_score_raw": 1.526828336122426,
-        "build_around_score": 3.322537851994994,
+        "build_around_score": 3.3117285338849585,
         "core_score_raw": -408.4121655075419,
         "core_score": 0.0,
+        "win_contribution_logit": 0.04279464730489185,
+        "contribution_score": 1.3292247614345563,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Metastatic%20Evangel%22",
-        "community": 5,
-        "x": 622.8718707889795,
-        "y": 720.0,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 6,
+        "x": 589.2986184236634,
+        "y": 636.5810125720185,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3632,10 +3535,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.30275703328715986,
-            "analysis_score": 9.48174234283575,
+            "analysis_score": 9.481832794202385,
             "pick_priority_score": 5.164991676901716,
-            "build_around_score": 6.388819832401139,
-            "core_score": 9.205221980593523,
+            "build_around_score": 6.3759059982073705,
+            "core_score": 9.20532755289898,
             "role": "needs_support"
           },
           {
@@ -3643,9 +3546,9 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.006508157565079647,
-            "analysis_score": 0.03550194146221434,
+            "analysis_score": 0.0355019340610837,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.322537851994994,
+            "build_around_score": 3.3117285338849585,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3695,17 +3598,22 @@
         "pick_urgency_score_raw": 3.4860129125637718,
         "pick_urgency_score": 3.4860129125637718,
         "shell_dependence_score_raw": 0.32357511446471704,
-        "shell_dependence_score": 1.0048154178941577,
+        "shell_dependence_score": 1.0015464199240174,
         "build_around_score_raw": 0.32357511446471704,
-        "build_around_score": 1.0048154178941577,
+        "build_around_score": 1.0015464199240174,
         "core_score_raw": -465.8221579621527,
         "core_score": 0.0,
+        "win_contribution_logit": -0.14711403925777555,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Wing%20It%22",
-        "community": 6,
-        "x": 580.0,
-        "y": 560.0,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 7,
+        "x": 589.2986184236634,
+        "y": 483.4189874279816,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3717,10 +3625,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.3661931445767794,
-            "analysis_score": 9.703113020796836,
+            "analysis_score": 9.703336808073567,
             "pick_priority_score": 6.5165460524365555,
             "build_around_score": 0.0,
-            "core_score": 9.544413328008382,
+            "core_score": 9.544678341205483,
             "role": "needs_support"
           },
           {
@@ -3728,11 +3636,11 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.34014264055447546,
-            "analysis_score": 7.154565841540814,
+            "analysis_score": 7.153558942853502,
             "pick_priority_score": 0.0,
             "build_around_score": 0.0,
-            "core_score": 7.15588717224799,
-            "role": "needs_support"
+            "core_score": 7.1551056634607395,
+            "role": "balanced"
           },
           {
             "cluster_id": 1,
@@ -3741,7 +3649,7 @@
             "deck_prevalence": 0.007586678259118471,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.0048154178941577,
+            "build_around_score": 1.0015464199240174,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3791,17 +3699,22 @@
         "pick_urgency_score_raw": 6.634895956577611,
         "pick_urgency_score": 6.634895956577611,
         "shell_dependence_score_raw": 0.749205945997775,
-        "shell_dependence_score": 2.0042147464700975,
+        "shell_dependence_score": 1.9976943708655241,
         "build_around_score_raw": 0.749205945997775,
-        "build_around_score": 2.0042147464700975,
+        "build_around_score": 1.9976943708655241,
         "core_score_raw": -442.45509067482607,
         "core_score": 0.0,
+        "win_contribution_logit": -0.1614892632417561,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Proud%20Pack-Rhino%22",
-        "community": 7,
-        "x": 622.8718707889795,
-        "y": 400.00000000000006,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 8,
+        "x": 660.4765605852476,
+        "y": 347.8007493629456,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3815,7 +3728,7 @@
             "deck_prevalence": 0.007606214370290782,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.0042147464700975,
+            "build_around_score": 1.9976943708655241,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3857,7 +3770,7 @@
         "average_taken_at": 8.470462975683473,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -242.46000449221395,
-        "analysis_score": 0.3657908761232648,
+        "analysis_score": 0.36579079986641944,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.090595919229418,
@@ -3870,12 +3783,17 @@
         "build_around_score": 0.0,
         "core_score_raw": -242.1897210789834,
         "core_score": 0.0,
+        "win_contribution_logit": -0.21185549476298754,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Tamiyo%20Meets%20the%20Story%20Circle%22",
-        "community": 8,
-        "x": 739.9999999999999,
-        "y": 282.8718707889797,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 9,
+        "x": 786.5264361463885,
+        "y": 260.7948023406673,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3887,7 +3805,7 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.005197757946741187,
-            "analysis_score": 0.3657908761232648,
+            "analysis_score": 0.36579079986641944,
             "pick_priority_score": 0.0,
             "build_around_score": 0.0,
             "core_score": 0.0,
@@ -3931,7 +3849,7 @@
         "average_taken_at": 2.8333021165012173,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": -267.4368985936974,
-        "analysis_score": 0.30382905935256915,
+        "analysis_score": 0.30382899601297514,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 10.0,
@@ -3939,17 +3857,22 @@
         "pick_urgency_score_raw": 7.09090909090909,
         "pick_urgency_score": 7.09090909090909,
         "shell_dependence_score_raw": 1.6481680781446644,
-        "shell_dependence_score": 3.4906539368067895,
+        "shell_dependence_score": 3.4792976812889367,
         "build_around_score_raw": 1.6481680781446644,
-        "build_around_score": 3.4906539368067895,
+        "build_around_score": 3.4792976812889367,
         "core_score_raw": -267.01184564072497,
         "core_score": 0.0,
+        "win_contribution_logit": -0.2440155276197998,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Amphibian%20Downpour%22",
-        "community": 9,
-        "x": 899.9999999999999,
-        "y": 240.0,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 10,
+        "x": 938.5717376817034,
+        "y": 242.3331602886227,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -3961,9 +3884,9 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.00817409524946892,
-            "analysis_score": 0.30382905935256915,
+            "analysis_score": 0.30382899601297514,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.4906539368067895,
+            "build_around_score": 3.4792976812889367,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4005,7 +3928,7 @@
         "average_taken_at": 0.4080645161290323,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 120.94839762005518,
-        "analysis_score": 6.899643335234044,
+        "analysis_score": 6.89964189685745,
         "pick_priority_score_raw": 120.82345807865546,
         "pick_priority_score": 7.986004602069548,
         "pick_market_score_raw": 10.0,
@@ -4017,13 +3940,18 @@
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
         "core_score_raw": 115.67031650465248,
-        "core_score": 4.9105783877415226,
+        "core_score": 4.910577095056253,
+        "win_contribution_logit": 0.41142495242436466,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Fury%22",
-        "community": 10,
-        "x": 1060.0,
-        "y": 282.87187078897966,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 11,
+        "x": 1059.3725005142528,
+        "y": 272.543179499223,
         "analysis_radius": 16.68964550284582,
         "pick_radius": 27.6408289082847,
         "radius": 16.68964550284582,
@@ -4035,10 +3963,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.007914699758521593,
-            "analysis_score": 6.899643335234044,
+            "analysis_score": 6.89964189685745,
             "pick_priority_score": 7.986004602069548,
             "build_around_score": 0.0,
-            "core_score": 4.9105783877415226,
+            "core_score": 4.910577095056253,
             "role": "good_alone"
           }
         ]
@@ -4079,7 +4007,7 @@
         "average_taken_at": 7.845,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 108.38528468195082,
-        "analysis_score": 6.830665572854058,
+        "analysis_score": 6.830664148857338,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.567146530614353,
@@ -4087,17 +4015,22 @@
         "pick_urgency_score_raw": 4.902551064938284,
         "pick_urgency_score": 4.902551064938284,
         "shell_dependence_score_raw": 3.1211918163258736,
-        "shell_dependence_score": 5.075906054636143,
+        "shell_dependence_score": 5.0593924479639805,
         "build_around_score_raw": 3.1211918163258736,
-        "build_around_score": 5.075906054636143,
+        "build_around_score": 5.0593924479639805,
         "core_score_raw": 108.77771455101691,
-        "core_score": 4.847748884316421,
+        "core_score": 4.847747608170704,
+        "win_contribution_logit": -0.40155443151338266,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Urza%27s%20Incubator%22",
-        "community": 11,
-        "x": 1177.1281292110202,
-        "y": 399.9999999999999,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 12,
+        "x": 1103.2234634963752,
+        "y": 376.3580939039008,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4109,10 +4042,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.007546728251270904,
-            "analysis_score": 6.830665572854058,
+            "analysis_score": 6.830664148857338,
             "pick_priority_score": 0.0,
-            "build_around_score": 5.075906054636143,
-            "core_score": 4.847748884316421,
+            "build_around_score": 5.0593924479639805,
+            "core_score": 4.847747608170704,
             "role": "balanced"
           }
         ]
@@ -4129,13 +4062,18 @@
         "synergy_delta_logit": 0.132493937269472,
         "synergy_delta_prob": 0.02931199138695617,
         "confidence_probability": 0.9584088319605211,
+        "p_value": 0.04159116803947893,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2133,
         "quality_score": 0.6408862421865494,
         "anti_quality": 0.0,
         "pick_score_raw": 5.105155708039034,
-        "pick_score": 9.807425469408647
+        "pick_score": 9.618046084129704,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Eldrazi Repurposer",
@@ -4147,13 +4085,18 @@
         "synergy_delta_logit": 0.12584972664629956,
         "synergy_delta_prob": 0.027724591105949048,
         "confidence_probability": 0.940201499390335,
+        "p_value": 0.05979850060966496,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1947,
         "quality_score": 0.583949582305562,
         "anti_quality": 0.0,
         "pick_score_raw": 4.894973212760509,
-        "pick_score": 9.496237521718518
+        "pick_score": 9.221564972917996,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Glimpse the Impossible",
@@ -4165,13 +4108,18 @@
         "synergy_delta_logit": 0.09926866504822451,
         "synergy_delta_prob": 0.021934486838444123,
         "confidence_probability": 0.9432152685449458,
+        "p_value": 0.05678473145505425,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3103,
         "quality_score": 0.5788133211712209,
         "anti_quality": 0.0,
         "pick_score_raw": 6.165164408837365,
-        "pick_score": 10.0
+        "pick_score": 10.0,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Ral and the Implicit Maze",
@@ -4183,13 +4131,18 @@
         "synergy_delta_logit": 0.1895944500538746,
         "synergy_delta_prob": 0.044054566849741184,
         "confidence_probability": 0.9636480358990746,
+        "p_value": 0.03635196410092545,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1377,
         "quality_score": 0.4850290630922077,
         "anti_quality": 0.0,
         "pick_score_raw": 2.694073792180366,
-        "pick_score": 5.344798344554258
+        "pick_score": 3.9322623816463693,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Nightshade Dryad",
@@ -4201,13 +4154,18 @@
         "synergy_delta_logit": 0.11146723124190927,
         "synergy_delta_prob": 0.025226327902611145,
         "confidence_probability": 0.9383906533470866,
+        "p_value": 0.0616093466529134,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2242,
         "quality_score": 0.4831929380329227,
         "anti_quality": 0.0,
         "pick_score_raw": 4.576193051814836,
-        "pick_score": 9.002423672364912
+        "pick_score": 8.592402226813165,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Glimpse the Impossible",
@@ -4219,13 +4177,18 @@
         "synergy_delta_logit": 0.09573274314166869,
         "synergy_delta_prob": 0.02215107822249085,
         "confidence_probability": 0.9664354122389462,
+        "p_value": 0.033564587761053755,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 4307,
         "quality_score": 0.4766643001013028,
         "anti_quality": 0.0,
         "pick_score_raw": 5.2728683830447265,
-        "pick_score": 10.0
+        "pick_score": 9.924742424904933,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Evolution Witness",
@@ -4237,13 +4200,18 @@
         "synergy_delta_logit": 0.10515228032947027,
         "synergy_delta_prob": 0.024487389795064596,
         "confidence_probability": 0.9738676984264193,
+        "p_value": 0.026132301573580707,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3621,
         "quality_score": 0.4753716087353906,
         "anti_quality": 0.0,
         "pick_score_raw": 4.783584835890015,
-        "pick_score": 9.326791435580285
+        "pick_score": 9.005675594742403,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Evolution Witness",
@@ -4255,13 +4223,18 @@
         "synergy_delta_logit": 0.10998386906896401,
         "synergy_delta_prob": 0.02600262362748529,
         "confidence_probability": 0.9822632516528534,
+        "p_value": 0.017736748347146558,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 4132,
         "quality_score": 0.42927766233962356,
         "anti_quality": 0.0,
         "pick_score_raw": 4.132562597388337,
-        "pick_score": 8.2660492554676
+        "pick_score": 7.654195753052035,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Ral and the Implicit Maze",
@@ -4273,13 +4246,18 @@
         "synergy_delta_logit": 0.1409855517834641,
         "synergy_delta_prob": 0.032649926796580186,
         "confidence_probability": 0.9391804006381295,
+        "p_value": 0.060819599361870536,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1559,
         "quality_score": 0.40871695502393013,
         "anti_quality": 0.0,
         "pick_score_raw": 3.054851271431371,
-        "pick_score": 6.172511349058352
+        "pick_score": 4.9868423363846786,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Colossal Dreadmask",
@@ -4291,13 +4269,18 @@
         "synergy_delta_logit": 0.16739443850630614,
         "synergy_delta_prob": 0.03926488413619689,
         "confidence_probability": 0.9451776832234114,
+        "p_value": 0.05482231677658855,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1612,
         "quality_score": 0.3823017039828199,
         "anti_quality": 0.0,
         "pick_score_raw": 2.4070258612962796,
-        "pick_score": 4.6262876278834355
+        "pick_score": 3.01681585012826,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Nyxborn Hydra",
@@ -4309,13 +4292,18 @@
         "synergy_delta_logit": 0.09412561552577853,
         "synergy_delta_prob": 0.022057025838268407,
         "confidence_probability": 0.9180723552731446,
+        "p_value": 0.08192764472685543,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3078,
         "quality_score": 0.30971208135759887,
         "anti_quality": 0.0,
         "pick_score_raw": 3.4789784698944892,
-        "pick_score": 7.0561563576781205
+        "pick_score": 6.112684636945463,
+        "q_value": 0.8240957204877811,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Ral and the Implicit Maze",
@@ -4327,13 +4315,18 @@
         "synergy_delta_logit": 0.11581818001121574,
         "synergy_delta_prob": 0.02736263867998301,
         "confidence_probability": 0.9294268577568654,
+        "p_value": 0.0705731422431346,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2074,
         "quality_score": 0.2990537086114211,
         "anti_quality": 0.0,
         "pick_score_raw": 2.724809520798338,
-        "pick_score": 5.418397897699883
+        "pick_score": 4.026034755648848,
+        "q_value": 0.7542504577235011,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Nightshade Dryad",
@@ -4345,13 +4338,18 @@
         "synergy_delta_logit": 0.09940422813395644,
         "synergy_delta_prob": 0.023707314373006216,
         "confidence_probability": 0.9568306845564841,
+        "p_value": 0.04316931544351588,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3600,
         "quality_score": 0.2948829470490436,
         "anti_quality": 0.0,
         "pick_score_raw": 3.1388584041732996,
-        "pick_score": 6.354656883551118
+        "pick_score": 5.218911940795752,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Colossal Dreadmask",
@@ -4363,13 +4361,18 @@
         "synergy_delta_logit": 0.12957858910204828,
         "synergy_delta_prob": 0.03150265476360792,
         "confidence_probability": 0.9915886259896258,
+        "p_value": 0.008411374010374173,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3864,
         "quality_score": 0.26561201276184476,
         "anti_quality": 0.0,
         "pick_score_raw": 2.1696375017180167,
-        "pick_score": 3.984767559952426
+        "pick_score": 2.1994622498816,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Evolution Witness",
@@ -4381,13 +4384,18 @@
         "synergy_delta_logit": 0.1083954756813611,
         "synergy_delta_prob": 0.02606122595801641,
         "confidence_probability": 0.9639656535367029,
+        "p_value": 0.03603434646329706,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2922,
         "quality_score": 0.26278840002743925,
         "anti_quality": 0.0,
         "pick_score_raw": 2.562639584999203,
-        "pick_score": 5.023000110267003
+        "pick_score": 3.5222628220129635,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Skittering Precursor",
@@ -4399,13 +4407,18 @@
         "synergy_delta_logit": 0.1327262305581608,
         "synergy_delta_prob": 0.03207142590447776,
         "confidence_probability": 0.9399669942450621,
+        "p_value": 0.06003300575493786,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1723,
         "quality_score": 0.20682864810854476,
         "anti_quality": 0.0,
         "pick_score_raw": 1.6429160178701565,
-        "pick_score": 2.3705027054033843
+        "pick_score": 0.142745310577366,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Basking Broodscale",
@@ -4417,13 +4430,18 @@
         "synergy_delta_logit": 0.11245100448713125,
         "synergy_delta_prob": 0.027453901623824106,
         "confidence_probability": 0.978395549994629,
+        "p_value": 0.021604450005371034,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3874,
         "quality_score": 0.1754571594979052,
         "anti_quality": 0.0,
         "pick_score_raw": 1.651527379114016,
-        "pick_score": 2.3993974993505436
+        "pick_score": 0.1795598469289174,
+        "q_value": 0.7023465518432128,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Skoa, Embermage",
@@ -4435,13 +4453,18 @@
         "synergy_delta_logit": 0.09482391929015593,
         "synergy_delta_prob": 0.022894977276081918,
         "confidence_probability": 0.907939826220395,
+        "p_value": 0.09206017377960496,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3046,
         "quality_score": 0.16757309204609072,
         "anti_quality": 0.0,
         "pick_score_raw": 1.8683831952485372,
-        "pick_score": 3.097678671515441
+        "pick_score": 1.069232140258977,
+        "q_value": 0.8745716509062471,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Colossal Dreadmask",
@@ -4453,67 +4476,18 @@
         "synergy_delta_logit": 0.05376358640852791,
         "synergy_delta_prob": 0.0128431653322294,
         "confidence_probability": 0.8621687544233071,
+        "p_value": 0.1378312455766929,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 4595,
         "quality_score": 0.16591096515830828,
         "anti_quality": 0.0,
         "pick_score_raw": 3.268987461471617,
-        "pick_score": 6.629631080927448
-      },
-      {
-        "from": "Skittering Precursor",
-        "to": "Titans' Vanguard",
-        "pair_games": 474,
-        "pair_win_rate": 0.6265822784810127,
-        "pair_expected_win_rate": 0.6085133045906223,
-        "pair_lift_vs_baseline": 0.04697026924313741,
-        "synergy_delta_logit": 0.07651516069541725,
-        "synergy_delta_prob": 0.018068973890390416,
-        "confidence_probability": 0.7898187274270883,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1436,
-        "quality_score": 0.1521173796294561,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.0940729891245886,
-        "pick_score": 3.770441490607643
-      },
-      {
-        "from": "Fanged Flames",
-        "to": "Skittering Precursor",
-        "pair_games": 691,
-        "pair_win_rate": 0.5991316931982634,
-        "pair_expected_win_rate": 0.5807074991188996,
-        "pair_lift_vs_baseline": 0.019519683960388168,
-        "synergy_delta_logit": 0.076170050577482,
-        "synergy_delta_prob": 0.018424194079363798,
-        "confidence_probability": 0.8367683856821924,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1839,
-        "quality_score": 0.10887195939213462,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.5074233510571706,
-        "pick_score": 1.9030390141506677
-      },
-      {
-        "from": "Evolution Witness",
-        "to": "Skittering Precursor",
-        "pair_games": 532,
-        "pair_win_rate": 0.5958646616541353,
-        "pair_expected_win_rate": 0.576709013346155,
-        "pair_lift_vs_baseline": 0.01625265241626006,
-        "synergy_delta_logit": 0.07898577032845816,
-        "synergy_delta_prob": 0.019155648307980333,
-        "confidence_probability": 0.8143414687779453,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1551,
-        "quality_score": 0.09030855967332867,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.2047883287485395,
-        "pick_score": 0.7605282760301048
+        "pick_score": 5.569253514560283,
+        "q_value": 0.9999981079159433,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Colossal Dreadmask",
@@ -4525,49 +4499,18 @@
         "synergy_delta_logit": 0.07181114044669462,
         "synergy_delta_prob": 0.017742326455634116,
         "confidence_probability": 0.8946852854551167,
+        "p_value": 0.10531471454488328,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 4098,
         "quality_score": 0.07146534958222503,
         "anti_quality": 0.0,
         "pick_score_raw": 1.0536513949334758,
-        "pick_score": 0.1297593769152066
-      },
-      {
-        "from": "Skittering Precursor",
-        "to": "Voidpouncer",
-        "pair_games": 892,
-        "pair_win_rate": 0.5739910313901345,
-        "pair_expected_win_rate": 0.558641596535238,
-        "pair_lift_vs_baseline": -0.005620977847740738,
-        "synergy_delta_logit": 0.06250250753821951,
-        "synergy_delta_prob": 0.015349434854896482,
-        "confidence_probability": 0.8220185993426122,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2385,
-        "quality_score": 0.05185266097384109,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.8760656731947117,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Colossal Dreadmask",
-        "to": "Fanged Flames",
-        "pair_games": 1089,
-        "pair_win_rate": 0.5803489439853077,
-        "pair_expected_win_rate": 0.5672301624274017,
-        "pair_lift_vs_baseline": 0.0007369347474324162,
-        "synergy_delta_logit": 0.053646885413238365,
-        "synergy_delta_prob": 0.013118781557906023,
-        "confidence_probability": 0.8088508879884099,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 3261,
-        "quality_score": 0.051561582558399294,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.0164911476107472,
-        "pick_score": 0.0
+        "pick_score": 0.0,
+        "q_value": 0.9478324309039494,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       }
     ],
     "triplets": [
@@ -4743,7 +4686,7 @@
     "communities": [
       {
         "community_id": 0,
-        "size": 8,
+        "size": 9,
         "top_cards": [
           "Voidpouncer",
           "Malevolent Rumble",
@@ -4756,22 +4699,20 @@
         "community_id": 1,
         "size": 5,
         "top_cards": [
-          "Horrific Assault",
-          "Titans' Vanguard",
-          "Fanged Flames",
-          "Evolution Witness",
-          "Skittering Precursor"
-        ]
-      },
-      {
-        "community_id": 2,
-        "size": 5,
-        "top_cards": [
           "Glimpse the Impossible",
           "Nightshade Dryad",
           "Skoa, Embermage",
           "Nyxborn Hydra",
           "Spawn-Gang Commander"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 3,
+        "top_cards": [
+          "Horrific Assault",
+          "Fanged Flames",
+          "Evolution Witness"
         ]
       },
       {
@@ -4785,53 +4726,60 @@
         "community_id": 4,
         "size": 1,
         "top_cards": [
-          "Warren Soultrader"
+          "Titans' Vanguard"
         ]
       },
       {
         "community_id": 5,
         "size": 1,
         "top_cards": [
-          "Metastatic Evangel"
+          "Warren Soultrader"
         ]
       },
       {
         "community_id": 6,
         "size": 1,
         "top_cards": [
-          "Wing It"
+          "Metastatic Evangel"
         ]
       },
       {
         "community_id": 7,
         "size": 1,
         "top_cards": [
-          "Proud Pack-Rhino"
+          "Wing It"
         ]
       },
       {
         "community_id": 8,
         "size": 1,
         "top_cards": [
-          "Tamiyo Meets the Story Circle"
+          "Proud Pack-Rhino"
         ]
       },
       {
         "community_id": 9,
         "size": 1,
         "top_cards": [
-          "Amphibian Downpour"
+          "Tamiyo Meets the Story Circle"
         ]
       },
       {
         "community_id": 10,
         "size": 1,
         "top_cards": [
-          "Fury"
+          "Amphibian Downpour"
         ]
       },
       {
         "community_id": 11,
+        "size": 1,
+        "top_cards": [
+          "Fury"
+        ]
+      },
+      {
+        "community_id": 12,
         "size": 1,
         "top_cards": [
           "Urza's Incubator"
@@ -5080,9 +5028,9 @@
       {
         "card": "Colossal Dreadmask",
         "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 18.600126886893925,
+        "shell_dependence_score_raw": 19.007506081716983,
         "build_around_score": 10.0,
-        "build_around_score_raw": 18.600126886893925,
+        "build_around_score_raw": 19.007506081716983,
         "support_delta": 0.11393119747899161,
         "supported_win_rate": 0.5761160714285715,
         "isolated_win_rate": 0.46218487394957986,
@@ -5091,9 +5039,9 @@
       {
         "card": "Evolution Witness",
         "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 15.315615738347493,
+        "shell_dependence_score_raw": 15.529249675325104,
         "build_around_score": 10.0,
-        "build_around_score_raw": 15.315615738347493,
+        "build_around_score_raw": 15.529249675325104,
         "support_delta": 0.09572356497086848,
         "supported_win_rate": 0.590178278464399,
         "isolated_win_rate": 0.4944547134935305,
@@ -5101,9 +5049,9 @@
       },
       {
         "card": "Warped Tusker",
-        "shell_dependence_score": 9.9816640975295,
+        "shell_dependence_score": 9.949190432125528,
         "shell_dependence_score_raw": 15.196816097951368,
-        "build_around_score": 9.9816640975295,
+        "build_around_score": 9.949190432125528,
         "build_around_score_raw": 15.196816097951368,
         "support_delta": 0.07740287226701226,
         "supported_win_rate": 0.5863695673993777,
@@ -5112,9 +5060,9 @@
       },
       {
         "card": "Nightshade Dryad",
-        "shell_dependence_score": 9.967007208564446,
+        "shell_dependence_score": 9.934581226883695,
         "shell_dependence_score_raw": 15.130719797891244,
-        "build_around_score": 9.967007208564446,
+        "build_around_score": 9.934581226883695,
         "build_around_score_raw": 15.130719797891244,
         "support_delta": 0.08222370952389646,
         "supported_win_rate": 0.592110715173614,
@@ -5122,32 +5070,32 @@
         "supported_games": 12067
       },
       {
-        "card": "Voidpouncer",
-        "shell_dependence_score": 9.670461856938882,
-        "shell_dependence_score_raw": 13.849874744525422,
-        "build_around_score": 9.670461856938882,
-        "build_around_score_raw": 13.849874744525422,
-        "support_delta": 0.06331534234482972,
-        "supported_win_rate": 0.5704168678577177,
-        "isolated_win_rate": 0.507101525512888,
-        "supported_games": 12426
-      },
-      {
         "card": "Fanged Flames",
-        "shell_dependence_score": 9.506441089090632,
-        "shell_dependence_score_raw": 13.185648434579656,
-        "build_around_score": 9.506441089090632,
-        "build_around_score_raw": 13.185648434579656,
+        "shell_dependence_score": 9.750845664730251,
+        "shell_dependence_score_raw": 14.322115802959924,
+        "build_around_score": 9.750845664730251,
+        "build_around_score_raw": 14.322115802959924,
         "support_delta": 0.08892176980996447,
         "supported_win_rate": 0.5941378651899942,
         "isolated_win_rate": 0.5052160953800298,
         "supported_games": 10474
       },
       {
+        "card": "Voidpouncer",
+        "shell_dependence_score": 9.730379531883713,
+        "shell_dependence_score_raw": 14.234593297349553,
+        "build_around_score": 9.730379531883713,
+        "build_around_score_raw": 14.234593297349553,
+        "support_delta": 0.06331534234482972,
+        "supported_win_rate": 0.5704168678577177,
+        "isolated_win_rate": 0.507101525512888,
+        "supported_games": 12426
+      },
+      {
         "card": "Skoa, Embermage",
-        "shell_dependence_score": 8.915190193360548,
+        "shell_dependence_score": 8.886186121441957,
         "shell_dependence_score_raw": 11.028464739513424,
-        "build_around_score": 8.915190193360548,
+        "build_around_score": 8.886186121441957,
         "build_around_score_raw": 11.028464739513424,
         "support_delta": 0.07657885659420816,
         "supported_win_rate": 0.6005821112728087,
@@ -5156,10 +5104,10 @@
       },
       {
         "card": "Skittering Precursor",
-        "shell_dependence_score": 8.469087638155347,
-        "shell_dependence_score_raw": 9.620821852686353,
-        "build_around_score": 8.469087638155347,
-        "build_around_score_raw": 9.620821852686353,
+        "shell_dependence_score": 8.881682440153478,
+        "shell_dependence_score_raw": 11.01331124837543,
+        "build_around_score": 8.881682440153478,
+        "build_around_score_raw": 11.01331124837543,
         "support_delta": 0.07608461239288433,
         "supported_win_rate": 0.585203153426319,
         "isolated_win_rate": 0.5091185410334347,
@@ -5167,9 +5115,9 @@
       },
       {
         "card": "Basking Broodscale",
-        "shell_dependence_score": 8.456913818340762,
+        "shell_dependence_score": 8.42940067153441,
         "shell_dependence_score_raw": 9.584810367670032,
-        "build_around_score": 8.456913818340762,
+        "build_around_score": 8.42940067153441,
         "build_around_score_raw": 9.584810367670032,
         "support_delta": 0.04864309991687643,
         "supported_win_rate": 0.5848378468739552,
@@ -5178,9 +5126,9 @@
       },
       {
         "card": "Temperamental Oozewagg",
-        "shell_dependence_score": 8.36060171192954,
+        "shell_dependence_score": 8.333401900363423,
         "shell_dependence_score_raw": 9.304179432538605,
-        "build_around_score": 8.36060171192954,
+        "build_around_score": 8.333401900363423,
         "build_around_score_raw": 9.304179432538605,
         "support_delta": 0.05518738680381441,
         "supported_win_rate": 0.5752255547427457,
@@ -5203,61 +5151,61 @@
       },
       {
         "card": "Voidpouncer",
-        "core_score": 9.932028553339629,
+        "core_score": 9.932034713616405,
         "deck_prevalence": 0.4980822713527058,
         "signpost_score": 15128.109393225075
       },
       {
         "card": "Malevolent Rumble",
-        "core_score": 9.853344292474304,
+        "core_score": 9.85334169863056,
         "deck_prevalence": 0.5689159705910981,
         "signpost_score": 14008.479313840302
       },
       {
         "card": "Eldrazi Repurposer",
-        "core_score": 9.690235640046774,
+        "core_score": 9.69023308914057,
         "deck_prevalence": 0.5293694855485743,
         "signpost_score": 11956.197284148207
       },
       {
         "card": "Horrific Assault",
-        "core_score": 9.574469224535108,
+        "core_score": 9.574466704103836,
         "deck_prevalence": 0.5118133651945801,
         "signpost_score": 10684.946615714005
       },
       {
         "card": "Basking Broodscale",
-        "core_score": 9.55307993972427,
+        "core_score": 9.55307742492362,
         "deck_prevalence": 0.4839153660735198,
         "signpost_score": 10469.664973156583
       },
       {
         "card": "Titans' Vanguard",
-        "core_score": 9.548662142867824,
+        "core_score": 9.548553884154456,
         "deck_prevalence": 0.3427496252901768,
         "signpost_score": 10429.9240370871
       },
       {
         "card": "Nightshade Dryad",
-        "core_score": 9.476354504140742,
+        "core_score": 9.476352009537681,
         "deck_prevalence": 0.47357490195937574,
         "signpost_score": 9717.557328473506
       },
       {
         "card": "Warped Tusker",
-        "core_score": 9.456167120648425,
+        "core_score": 9.45616463135959,
         "deck_prevalence": 0.41846443047505294,
         "signpost_score": 9531.615164583642
       },
       {
         "card": "Colossal Dreadmask",
-        "core_score": 9.36452957294015,
+        "core_score": 9.364539499237482,
         "deck_prevalence": 0.3948182424972522,
         "signpost_score": 8721.31769496679
       },
       {
         "card": "Skoa, Embermage",
-        "core_score": 9.34882875363512,
+        "core_score": 9.348826292602576,
         "deck_prevalence": 0.35679067661874037,
         "signpost_score": 8590.191461579072
       }
@@ -5356,6 +5304,12 @@
         "draw_games": 9250
       },
       {
+        "card": "Skittering Precursor",
+        "dependency_score": 0.1327262305581608,
+        "standalone_delta": -0.0033408227971972737,
+        "draw_games": 5605
+      },
+      {
         "card": "Eldrazi Repurposer",
         "dependency_score": 0.12584972664629956,
         "standalone_delta": 0.039469630042504034,
@@ -5374,6 +5328,18 @@
         "draw_games": 13525
       },
       {
+        "card": "Fanged Flames",
+        "dependency_score": 0.1083954756813611,
+        "standalone_delta": 0.004426582502138232,
+        "draw_games": 11816
+      },
+      {
+        "card": "Evolution Witness",
+        "dependency_score": 0.10784205140182185,
+        "standalone_delta": 0.0004368905176259652,
+        "draw_games": 10225
+      },
+      {
         "card": "Horrific Assault",
         "dependency_score": 0.10515228032947026,
         "standalone_delta": 0.038334461469331615,
@@ -5386,28 +5352,10 @@
         "draw_games": 7253
       },
       {
-        "card": "Evolution Witness",
-        "dependency_score": 0.10291926325330072,
-        "standalone_delta": 0.0004368905176259652,
-        "draw_games": 10225
-      },
-      {
         "card": "Glimpse the Impossible",
         "dependency_score": 0.10175197884085468,
         "standalone_delta": 0.023183900877080554,
         "draw_games": 17311
-      },
-      {
-        "card": "Skoa, Embermage",
-        "dependency_score": 0.09631228261363678,
-        "standalone_delta": 0.01170859694201054,
-        "draw_games": 10162
-      },
-      {
-        "card": "Nyxborn Hydra",
-        "dependency_score": 0.09503460305700225,
-        "standalone_delta": 0.022813363896453054,
-        "draw_games": 10720
       }
     ],
     "top_pairs": [
@@ -5805,7 +5753,7 @@
           "Glimpse the Impossible",
           "Nyxborn Hydra"
         ],
-        "pick_score": 10.0,
+        "pick_score": 9.924742424904933,
         "pick_score_raw": 5.2728683830447265,
         "pair_win_rate": 0.6473158551810237,
         "pair_games": 1602,
@@ -5816,7 +5764,7 @@
           "Malevolent Rumble",
           "Ral and the Implicit Maze"
         ],
-        "pick_score": 9.807425469408647,
+        "pick_score": 9.618046084129704,
         "pick_score_raw": 5.105155708039034,
         "pair_win_rate": 0.683944374209861,
         "pair_games": 791,
@@ -5827,7 +5775,7 @@
           "Eldrazi Repurposer",
           "Ral and the Implicit Maze"
         ],
-        "pick_score": 9.496237521718518,
+        "pick_score": 9.221564972917996,
         "pick_score_raw": 4.894973212760509,
         "pair_win_rate": 0.6859154929577465,
         "pair_games": 710,
@@ -5838,7 +5786,7 @@
           "Evolution Witness",
           "Horrific Assault"
         ],
-        "pick_score": 9.326791435580285,
+        "pick_score": 9.005675594742403,
         "pick_score_raw": 4.783584835890015,
         "pair_win_rate": 0.6428571428571429,
         "pair_games": 1484,
@@ -5849,7 +5797,7 @@
           "Nightshade Dryad",
           "Spawn-Gang Commander"
         ],
-        "pick_score": 9.002423672364912,
+        "pick_score": 8.592402226813165,
         "pick_score_raw": 4.576193051814836,
         "pair_win_rate": 0.6662790697674419,
         "pair_games": 860,
@@ -5860,7 +5808,7 @@
           "Evolution Witness",
           "Glimpse the Impossible"
         ],
-        "pick_score": 8.2660492554676,
+        "pick_score": 7.654195753052035,
         "pick_score_raw": 4.132562597388337,
         "pair_win_rate": 0.6292278238672623,
         "pair_games": 1567,
@@ -5871,7 +5819,7 @@
           "Nyxborn Hydra",
           "Skoa, Embermage"
         ],
-        "pick_score": 7.0561563576781205,
+        "pick_score": 6.112684636945463,
         "pick_score_raw": 3.4789784698944892,
         "pair_win_rate": 0.635978835978836,
         "pair_games": 945,
@@ -5882,7 +5830,7 @@
           "Colossal Dreadmask",
           "Malevolent Rumble"
         ],
-        "pick_score": 6.629631080927448,
+        "pick_score": 5.569253514560283,
         "pick_score_raw": 3.268987461471617,
         "pair_win_rate": 0.6117850953206239,
         "pair_games": 1731,
@@ -5893,7 +5841,7 @@
           "Nightshade Dryad",
           "Skoa, Embermage"
         ],
-        "pick_score": 6.354656883551118,
+        "pick_score": 5.218911940795752,
         "pick_score_raw": 3.1388584041732996,
         "pair_win_rate": 0.6188589540412044,
         "pair_games": 1262,
@@ -5904,7 +5852,7 @@
           "Ral and the Implicit Maze",
           "Warped Tusker"
         ],
-        "pick_score": 6.172511349058352,
+        "pick_score": 4.9868423363846786,
         "pick_score_raw": 3.054851271431371,
         "pair_win_rate": 0.6516007532956686,
         "pair_games": 531,
@@ -5915,7 +5863,7 @@
           "Ral and the Implicit Maze",
           "Voidpouncer"
         ],
-        "pick_score": 5.418397897699883,
+        "pick_score": 4.026034755648848,
         "pick_score_raw": 2.724809520798338,
         "pair_win_rate": 0.6305916305916306,
         "pair_games": 693,
@@ -6157,9 +6105,9 @@
         "Etherium Pteramander"
       ],
       "build_arounds": [
+        "Drossclaw",
         "Pyretic Rebirth",
-        "Furnace Hellkite",
-        "Eviscerator's Insight"
+        "Furnace Hellkite"
       ],
       "core_cards": [
         "Cranial Ram",
@@ -6189,8 +6137,8 @@
       ],
       "build_arounds": [
         "Eviscerator's Insight",
-        "Fetid Gargantua",
-        "Retrofitted Transmogrant"
+        "Retrofitted Transmogrant",
+        "Refurbished Familiar"
       ],
       "core_cards": [
         "Dreamdrinker Vampire",
@@ -6203,6 +6151,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -6308,6 +6257,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -6330,28 +6281,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -6419,16 +6361,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -6556,10 +6489,12 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
-    if (filters.topSynergies) {
+    if (filters.topSynergies && visibleEdges.length) {
+      // Guard on visibleEdges.length: with no edges at all, culling
+      // unconnected nodes would blank the entire graph.
       visibleEdges = visibleEdges.slice(0, mode === 'analysis' ? 26 : 20);
       var connected = Object.create(null);
       visibleEdges.forEach(function(edge) {
@@ -6898,15 +6833,25 @@
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
+    var hasFlowRoles = segment.nodes.some(function(node) { return node.flow_role === 'enabler' || node.flow_role === 'payoff'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
+        (hasFlowRoles
+          ? '<div class="legend-row"><div class="legend-samples"><span class="legend-flow enabler"></span></div><div><strong style="color:#2dd4bf">Enabler (sink)</strong>: teal solid ring - most synergy arrows point into it. Its partners win more than it does; it exists to make them work (fixing, engines, setup).</div></div>' +
+            '<div class="legend-row"><div class="legend-samples"><span class="legend-flow payoff"></span></div><div><strong style="color:#e879f9">Payoff (source)</strong>: pink solid ring - most synergy arrows point out of it. It is what the deck actually wins with, once the enablers put it in motion.</div></div>'
+          : '') +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -7007,6 +6952,17 @@
     }
     if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
     var ringOffset = r + 4;
+    if (node.flow_role === 'enabler' || node.flow_role === 'payoff') {
+      g.appendChild(svgEl('circle', {
+        cx: node.x,
+        cy: node.y,
+        r: ringOffset,
+        fill: 'none',
+        stroke: node.flow_role === 'enabler' ? 'rgba(45, 212, 191, 0.95)' : 'rgba(232, 121, 249, 0.95)',
+        'stroke-width': 2.4
+      }));
+      ringOffset += 6;
+    }
     if (node.is_build_around) {
       g.appendChild(svgEl('circle', {
         cx: node.x,
@@ -7029,7 +6985,13 @@
     g.style.cursor = 'pointer';
     var onNodeClick = function() {
       var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
-      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>');
+      var flowLine = '';
+      if (node.flow_role === 'enabler') {
+        flowLine = '<div style="margin-top:6px;color:#2dd4bf"><strong>Enabler (sink)</strong> - ' + (node.flow_in_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point into it: its partners win more than it does, it makes them work.</div>';
+      } else if (node.flow_role === 'payoff') {
+        flowLine = '<div style="margin-top:6px;color:#e879f9"><strong>Payoff (source)</strong> - ' + (node.flow_out_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point out of it: it is what the deck is winning with, once enabled.</div>';
+      }
+      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>' + flowLine);
       nodeDetail(node);
     };
     g.addEventListener('pointerdown', function(evt) {
@@ -7084,8 +7046,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -7202,6 +7165,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {

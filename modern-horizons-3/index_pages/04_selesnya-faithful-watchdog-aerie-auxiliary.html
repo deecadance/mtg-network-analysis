@@ -4,42 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Selesnya | Faithful Watchdog / Aerie Auxiliary | Modern Horizons 3 Learned Archetype Synergy Map</title>
+  <link rel="stylesheet" href="../_assets/mtgnet.css" />
   <style>
-    :root {
-      --bg: #09111f;
-      --bg-2: #10203a;
-      --panel: rgba(11, 18, 32, 0.92);
-      --panel-2: rgba(18, 30, 52, 0.96);
-      --text: #ecf2fb;
-      --muted: #9dafc8;
-      --line: rgba(126, 157, 197, 0.18);
-      --accent: #5cc8ff;
-      --good: #43d17a;
-      --warn: #f4c95d;
-      --engine: #c084fc;
-      --danger: #ee6c4d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--text);
-      font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #132849, var(--bg) 58%);
-      overflow: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    button.active {
-      background: rgba(92, 200, 255, 0.18);
-      border-color: rgba(92, 200, 255, 0.45);
-    }
+    body { overflow: hidden; }
     .toolbar {
       position: fixed;
       inset: 16px 16px auto 16px;
@@ -130,21 +97,6 @@
       margin-bottom: 8px;
     }
     .mini-nav .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(255,255,255,0.04);
-    }
-    .chip small {
-      color: var(--muted);
-      font-size: 11px;
-    }
     .chip-button {
       padding: 4px 8px;
       font-size: 12px;
@@ -162,65 +114,6 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .legend-panel {
-      position: fixed;
-      right: 16px;
-      top: 86px;
-      z-index: 8;
-      width: min(340px, calc(100vw - 32px));
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-    }
-    .legend-panel strong { display: block; margin-bottom: 8px; }
-    .legend-grid { display: grid; gap: 8px; }
-    .legend-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .legend-samples {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 20px;
-    }
-    .legend-node {
-      display: inline-block;
-      border-radius: 50%;
-      border: 2px solid rgba(236, 242, 251, 0.9);
-      background: rgba(92, 200, 255, 0.35);
-    }
-    .legend-node.sm { width: 10px; height: 10px; }
-    .legend-node.md { width: 16px; height: 16px; }
-    .legend-node.lg { width: 24px; height: 24px; }
-    .legend-node.pick { background: rgba(244, 201, 93, 0.42); }
-    .legend-edge {
-      display: inline-block;
-      width: 40px;
-      border-top: 2px solid rgba(92, 200, 255, 0.9);
-      border-radius: 999px;
-    }
-    .legend-edge.strong { border-top-width: 6px; }
-    .legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
-    .legend-edge.none {
-      border-top-width: 0;
-      height: 10px;
-      border: 1px dashed rgba(157, 175, 200, 0.45);
-      width: 40px;
-    }
-    .legend-area {
-      width: 38px;
-      height: 22px;
-      border-radius: 12px;
-      background: rgba(92, 200, 255, 0.14);
-      border: 1px solid rgba(92, 200, 255, 0.25);
     }
     .selection {
       position: fixed;
@@ -365,20 +258,7 @@
       margin-bottom: 10px;
     }
     .drawer-card strong { display: block; margin-bottom: 4px; }
-    .tableish .row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    }
-    .tableish .row:last-child { border-bottom: 0; }
-    .tableish .sub { color: var(--muted); font-size: 12px; }
     .rarity-title { margin-top: 12px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .muted { color: var(--muted); }
     .overlay-link {
       position: fixed;
       inset: 0;
@@ -386,7 +266,6 @@
       display: none;
       background: rgba(0, 0, 0, 0.25);
     }
-    .hidden { display: none !important; }
     .overlay-link.open { display: block; }
     @media (max-width: 900px) {
       .toolbar { inset: 10px 10px auto 10px; }
@@ -417,6 +296,7 @@
       <button id="topSynergyBtn">Top Synergies</button>
       <button id="coreBtn">Core Only</button>
       <button id="labelsBtn" class="active">Labels On</button>
+      <label class="edge-density-control">Edge density: Core <input type="range" id="edgeDensitySlider" min="0" max="100" step="1" value="0" /> All <span class="edge-density-value" id="edgeDensityValue">0%</span></label>
       <button id="quickToggleBtn">Quick Read</button>
       <button id="legendToggleBtn">Legend</button>
       <button id="drawerBtn">Open Menu</button>
@@ -766,17 +646,22 @@
         "pick_urgency_score_raw": 6.620450389987477,
         "pick_urgency_score": 6.620450389987477,
         "shell_dependence_score_raw": 5.904844987054583,
-        "shell_dependence_score": 10.0,
+        "shell_dependence_score": 9.93555322087637,
         "build_around_score_raw": 5.904844987054583,
-        "build_around_score": 10.0,
+        "build_around_score": 9.93555322087637,
         "core_score_raw": 20051.669417855755,
         "core_score": 10.0,
+        "win_contribution_logit": -0.06657963881148407,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Faithful%20Watchdog%22",
-        "community": 3,
-        "x": 706.9917717174463,
-        "y": 665.2104081126392,
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
+        "community": 2,
+        "x": 1091.3247068475075,
+        "y": 918.002454364171,
         "analysis_radius": 13.795656995109614,
         "pick_radius": 30.0,
         "radius": 13.795656995109614,
@@ -846,7 +731,7 @@
             "deck_prevalence": 0.8206498484841642,
             "analysis_score": 10.0,
             "pick_priority_score": 6.310141790888967,
-            "build_around_score": 10.0,
+            "build_around_score": 9.93555322087637,
             "core_score": 10.0,
             "role": "balanced"
           }
@@ -873,8 +758,8 @@
         "supported_win_rate": 0.5776694295465626,
         "support_delta": -0.0077342971615118605,
         "standalone_delta": 0.025674041981372353,
-        "dependency_score": 0.0568126742873547,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 9937.111217597938,
         "signpost_lift": 2.8199553599522753,
         "deck_prevalence": 0.615654506138122,
@@ -887,7 +772,7 @@
         "alsa": 3.354265643399521,
         "average_taken_at": 4.445306225960523,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9941.728211612502,
+        "analysis_score_raw": 9940.70558347533,
         "analysis_score": 10.0,
         "pick_priority_score_raw": 265.19823414592787,
         "pick_priority_score": 10.0,
@@ -899,28 +784,23 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 9972.102922925558,
+        "core_score_raw": 9971.307545485535,
         "core_score": 10.0,
+        "win_contribution_logit": 0.10254998349349953,
+        "contribution_score": 5.2907067988035505,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Aerie%20Auxiliary%22",
-        "community": 1,
-        "x": 1260.5571180883207,
-        "y": 758.790601256123,
-        "analysis_radius": 14.45732858332025,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 5,
+        "x": 475.9712925451731,
+        "y": 540.0732878416807,
+        "analysis_radius": 12.41207230897548,
         "pick_radius": 30.0,
-        "radius": 14.45732858332025,
-        "top_synergies": [
-          {
-            "card": "Golden-Tail Trainer",
-            "quality_score": 0.04463471997106729,
-            "pair_win_rate": 0.5283018867924528,
-            "pair_games": 795,
-            "synergy_delta_logit": 0.0568126742873547,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 12.41207230897548,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Hexgold Slith",
@@ -976,10 +856,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.5914657304381806,
-            "analysis_score": 9.245222782517416,
+            "analysis_score": 9.245341872891347,
             "pick_priority_score": 8.637673774935388,
             "build_around_score": 0.0,
-            "core_score": 9.246638124100894,
+            "core_score": 9.24673068699308,
             "role": "balanced"
           },
           {
@@ -987,10 +867,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.5187575906815082,
-            "analysis_score": 9.62581443595084,
+            "analysis_score": 9.625680011861506,
             "pick_priority_score": 9.87791466509763,
-            "build_around_score": 2.4579425688197336,
-            "core_score": 9.419528119126461,
+            "build_around_score": 2.374723235352146,
+            "core_score": 9.419369241225453,
             "role": "good_alone"
           }
         ]
@@ -1016,8 +896,8 @@
         "supported_win_rate": 0.5375,
         "support_delta": 0.01585497835497829,
         "standalone_delta": -0.016985456566406043,
-        "dependency_score": 0.09268493354971935,
-        "degree": 5,
+        "dependency_score": 0.09838109258627313,
+        "degree": 3,
         "signpost_score": 9411.06309366999,
         "signpost_lift": 3.226159649550126,
         "deck_prevalence": 0.5292285329340742,
@@ -1030,29 +910,34 @@
         "alsa": 4.357610600649708,
         "average_taken_at": 7.021311686638319,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 9412.731422473886,
-        "analysis_score": 9.966863891980385,
+        "analysis_score_raw": 9412.833953336543,
+        "analysis_score": 9.966932634936029,
         "pick_priority_score_raw": 18.256453587195477,
         "pick_priority_score": 5.310515154479613,
         "pick_market_score_raw": 8.639692010016901,
         "pick_market_score": 8.639692010016901,
         "pick_urgency_score_raw": 6.558224932965336,
         "pick_urgency_score": 6.558224932965336,
-        "shell_dependence_score_raw": 2.7363659236690387,
-        "shell_dependence_score": 6.907366136882641,
-        "build_around_score_raw": 2.7363659236690387,
-        "build_around_score": 6.907366136882641,
-        "core_score_raw": 9439.880566452259,
-        "core_score": 9.94903164499714,
+        "shell_dependence_score_raw": 2.781850197873828,
+        "shell_dependence_score": 6.839998969521266,
+        "build_around_score_raw": 2.781850197873828,
+        "build_around_score": 6.839998969521266,
+        "core_score_raw": 9439.96031267877,
+        "core_score": 9.949113252704933,
+        "win_contribution_logit": -0.09292482507835251,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Nyxborn%20Unicorn%22",
-        "community": 1,
-        "x": 1096.9271537629156,
-        "y": 839.164832055083,
-        "analysis_radius": 14.336657607789896,
+        "flow_in_degree": 2,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 0,
+        "x": 1289.4748115595446,
+        "y": 551.5588532725781,
+        "analysis_radius": 14.541719333105833,
         "pick_radius": 30.0,
-        "radius": 14.336657607789896,
+        "radius": 14.541719333105833,
         "top_synergies": [
           {
             "card": "Signature Slam",
@@ -1062,15 +947,6 @@
             "synergy_delta_logit": 0.09746835530627623,
             "partner_pick_score": 10.0,
             "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Malevolent Rumble",
-            "quality_score": 0.1051580637439147,
-            "pair_win_rate": 0.5897435897435898,
-            "pair_games": 390,
-            "synergy_delta_logit": 0.0680783080002399,
-            "partner_pick_score": 9.488550488410231,
-            "partner_rarity": "common"
           },
           {
             "card": "Mandibular Kite",
@@ -1087,15 +963,6 @@
             "pair_win_rate": 0.5028169014084507,
             "pair_games": 710,
             "synergy_delta_logit": 0.12776478838501737,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Guardian of the Forgotten",
-            "quality_score": 0.059108595838918594,
-            "pair_win_rate": 0.5535714285714286,
-            "pair_games": 504,
-            "synergy_delta_logit": 0.0925714706821131,
             "partner_pick_score": 0.0,
             "partner_rarity": "uncommon"
           }
@@ -1144,10 +1011,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.5292285329340742,
-            "analysis_score": 9.966863891980385,
+            "analysis_score": 9.966932634936029,
             "pick_priority_score": 5.310515154479613,
-            "build_around_score": 6.907366136882641,
-            "core_score": 9.94903164499714,
+            "build_around_score": 6.839998969521266,
+            "core_score": 9.949113252704933,
             "role": "needs_support"
           },
           {
@@ -1155,10 +1022,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.48833733763886467,
-            "analysis_score": 8.65155690044605,
+            "analysis_score": 8.651569789421144,
             "pick_priority_score": 2.9051197609891743,
-            "build_around_score": 4.90320786351358,
-            "core_score": 8.6527490557645,
+            "build_around_score": 4.840683715148093,
+            "core_score": 8.652759108618783,
             "role": "balanced"
           }
         ]
@@ -1184,8 +1051,8 @@
         "supported_win_rate": 0.5613512813875227,
         "support_delta": -0.011553425845542753,
         "standalone_delta": 0.009663408009672914,
-        "dependency_score": 0.06562357102110465,
-        "degree": 2,
+        "dependency_score": 0.07151216883031142,
+        "degree": 1,
         "signpost_score": 8173.821496576232,
         "signpost_lift": 2.8649069559970566,
         "deck_prevalence": 0.5018728217225379,
@@ -1198,8 +1065,8 @@
         "alsa": 3.9367393356258082,
         "average_taken_at": 6.169151315088915,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 8176.355597975966,
-        "analysis_score": 9.853080349985746,
+        "analysis_score_raw": 8176.461592736531,
+        "analysis_score": 9.853150081724815,
         "pick_priority_score_raw": 85.294161519706,
         "pick_priority_score": 8.003462757403826,
         "pick_market_score_raw": 8.995532168410099,
@@ -1210,27 +1077,23 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 8201.659002980921,
-        "core_score": 9.774819176560692,
+        "core_score_raw": 8201.74144335025,
+        "core_score": 9.774901525571805,
+        "win_contribution_logit": 0.04536228674887233,
+        "contribution_score": 2.404227753833544,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Dog%20Umbra%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 3,
-        "x": 707.7153541962947,
-        "y": 880.2104081126392,
-        "analysis_radius": 13.893935997291779,
+        "x": 705.6535596375566,
+        "y": 1135.1505579285592,
+        "analysis_radius": 14.105925518423222,
         "pick_radius": 30.0,
-        "radius": 13.893935997291779,
+        "radius": 14.105925518423222,
         "top_synergies": [
-          {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.12304726251972914,
-            "pair_win_rate": 0.6024096385542169,
-            "pair_games": 498,
-            "synergy_delta_logit": 0.05788525525627003,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
-          },
           {
             "card": "Evolution Witness",
             "quality_score": 0.11789889632215678,
@@ -1285,10 +1148,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.5018728217225379,
-            "analysis_score": 9.853080349985746,
+            "analysis_score": 9.853150081724815,
             "pick_priority_score": 8.003462757403826,
             "build_around_score": 0.0,
-            "core_score": 9.774819176560692,
+            "core_score": 9.774901525571805,
             "role": "balanced"
           },
           {
@@ -1296,21 +1159,21 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.45894998275479887,
-            "analysis_score": 7.878331881213852,
+            "analysis_score": 7.878291360193115,
             "pick_priority_score": 5.935700282661391,
             "build_around_score": 10.0,
-            "core_score": 7.880741886066049,
-            "role": "balanced"
+            "core_score": 7.880710563625565,
+            "role": "needs_support"
           },
           {
             "cluster_id": 0,
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.42697402737408774,
-            "analysis_score": 9.487101493056485,
+            "analysis_score": 9.486998228640688,
             "pick_priority_score": 7.507724936674977,
             "build_around_score": 0.0,
-            "core_score": 9.203658624299912,
+            "core_score": 9.203538626262912,
             "role": "balanced"
           }
         ]
@@ -1351,7 +1214,7 @@
         "average_taken_at": 6.635563145987668,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 8167.611234174849,
-        "analysis_score": 9.852215735291546,
+        "analysis_score": 9.85227498701769,
         "pick_priority_score_raw": 123.719162881973,
         "pick_priority_score": 8.664712941352892,
         "pick_market_score_raw": 8.716821871482374,
@@ -1363,13 +1226,18 @@
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
         "core_score_raw": 8193.58742458881,
-        "core_score": 9.773599233268543,
+        "core_score": 9.77366911957364,
+        "win_contribution_logit": -0.000793480948218132,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Mandibular%20Kite%22",
-        "community": 0,
-        "x": 1207.5594670885414,
-        "y": 588.0463726288812,
+        "flow_in_degree": 0,
+        "flow_out_degree": 5,
+        "flow_role": "payoff",
+        "community": 1,
+        "x": 1369.063413277585,
+        "y": 838.7023447811644,
         "analysis_radius": 15.98541202214233,
         "pick_radius": 30.0,
         "radius": 15.98541202214233,
@@ -1464,10 +1332,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.5762571849592341,
-            "analysis_score": 9.562972807497161,
+            "analysis_score": 9.563148740445596,
             "pick_priority_score": 7.48883366696152,
             "build_around_score": 0.0,
-            "core_score": 9.563561037507283,
+            "core_score": 9.56369763104929,
             "role": "needs_support"
           },
           {
@@ -1475,10 +1343,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.515655616971152,
-            "analysis_score": 9.852215735291546,
+            "analysis_score": 9.85227498701769,
             "pick_priority_score": 8.664712941352892,
             "build_around_score": 0.0,
-            "core_score": 9.773599233268543,
+            "core_score": 9.77366911957364,
             "role": "needs_support"
           }
         ]
@@ -1506,8 +1374,8 @@
         "supported_win_rate": 0.49380569441425776,
         "support_delta": 0.056782793650899,
         "standalone_delta": -0.06485840192402492,
-        "dependency_score": 0.08931063899605458,
-        "degree": 10,
+        "dependency_score": 0.11571487939086492,
+        "degree": 3,
         "signpost_score": 7978.884876597128,
         "signpost_lift": 10.031245601767049,
         "deck_prevalence": 0.34377679708678344,
@@ -1520,29 +1388,34 @@
         "alsa": 4.589925933644186,
         "average_taken_at": 7.889337967827985,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7980.492468099057,
-        "analysis_score": 9.833488812051762,
+        "analysis_score_raw": 7980.967744426163,
+        "analysis_score": 9.833596071276078,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 8.335566374988957,
         "pick_market_score": 8.335566374988957,
         "pick_urgency_score_raw": 4.548865009074043,
         "pick_urgency_score": 4.548865009074043,
-        "shell_dependence_score_raw": 13.72564962553682,
+        "shell_dependence_score_raw": 14.793742725593804,
         "shell_dependence_score": 10.0,
-        "build_around_score_raw": 13.72564962553682,
+        "build_around_score_raw": 14.793742725593804,
         "build_around_score": 10.0,
-        "core_score_raw": 7998.011618991585,
-        "core_score": 9.743666599924431,
+        "core_score_raw": 7998.381278357112,
+        "core_score": 9.743793536043093,
+        "win_contribution_logit": -0.2821911703273815,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Golden-Tail%20Trainer%22",
-        "community": 1,
-        "x": 1151.1256461970002,
-        "y": 783.0826404463731,
-        "analysis_radius": 14.215183003857966,
+        "flow_in_degree": 4,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
+        "community": 2,
+        "x": 1007.8088447731031,
+        "y": 921.2653163489942,
+        "analysis_radius": 15.165735658071137,
         "pick_radius": 30.0,
-        "radius": 14.215183003857966,
+        "radius": 15.165735658071137,
         "top_synergies": [
           {
             "card": "Nyxborn Hydra",
@@ -1578,15 +1451,6 @@
             "pair_games": 569,
             "synergy_delta_logit": 0.11444625645205331,
             "partner_pick_score": 0.0,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Wing It",
-            "quality_score": 0.05504667887351315,
-            "pair_win_rate": 0.512087912087912,
-            "pair_games": 455,
-            "synergy_delta_logit": 0.09302107681504651,
-            "partner_pick_score": 6.5165460524365555,
             "partner_rarity": "common"
           }
         ],
@@ -1634,10 +1498,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.34377679708678344,
-            "analysis_score": 9.833488812051762,
+            "analysis_score": 9.833596071276078,
             "pick_priority_score": 0.0,
             "build_around_score": 10.0,
-            "core_score": 9.743666599924431,
+            "core_score": 9.743793536043093,
             "role": "needs_support"
           }
         ]
@@ -1663,8 +1527,8 @@
         "supported_win_rate": 0.5757417331067834,
         "support_delta": 0.011724073062633344,
         "standalone_delta": 0.021642007097828597,
-        "dependency_score": 0.09767267766365274,
-        "degree": 1,
+        "dependency_score": 0.0,
+        "degree": 0,
         "signpost_score": 7933.20942130428,
         "signpost_lift": 2.675998656372954,
         "deck_prevalence": 0.51417688663132,
@@ -1677,40 +1541,35 @@
         "alsa": 4.210307233367925,
         "average_taken_at": 6.561860332270196,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 7937.997410495922,
-        "analysis_score": 9.829174734052,
+        "analysis_score_raw": 7936.239302297976,
+        "analysis_score": 9.829054866751077,
         "pick_priority_score_raw": 190.19253546214256,
         "pick_priority_score": 9.431737058862913,
         "pick_market_score_raw": 8.80377917328089,
         "pick_market_score": 8.80377917328089,
         "pick_urgency_score_raw": 8.00773169995275,
         "pick_urgency_score": 8.00773169995275,
-        "shell_dependence_score_raw": 1.3789212752032112,
-        "shell_dependence_score": 4.541527933500027,
-        "build_around_score_raw": 1.3789212752032112,
-        "build_around_score": 4.541527933500027,
-        "core_score_raw": 7963.153607499716,
-        "core_score": 9.738254867030665,
+        "shell_dependence_score_raw": 0.9915369856422929,
+        "shell_dependence_score": 3.542379911610741,
+        "build_around_score_raw": 0.9915369856422929,
+        "build_around_score": 3.542379911610741,
+        "core_score_raw": 7961.786190012424,
+        "core_score": 9.738111723958411,
+        "win_contribution_logit": 0.08873371162622228,
+        "contribution_score": 4.607302496660041,
         "is_build_around": false,
-        "role": "engine",
+        "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Thraben%20Charm%22",
-        "community": 2,
-        "x": 1006.4699994247412,
-        "y": 1000.6849111131794,
-        "analysis_radius": 15.706526786272072,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 6,
+        "x": 630.4427432679718,
+        "y": 349.88555706437984,
+        "analysis_radius": 12.190310390380573,
         "pick_radius": 30.0,
-        "radius": 15.706526786272072,
-        "top_synergies": [
-          {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.2652715617451122,
-            "pair_win_rate": 0.6234309623430963,
-            "pair_games": 478,
-            "synergy_delta_logit": 0.09767267766365273,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
-          }
-        ],
+        "radius": 12.190310390380573,
+        "top_synergies": [],
         "top_anti_synergies": [
           {
             "card": "Wing It",
@@ -1755,32 +1614,32 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.538385826921343,
-            "analysis_score": 8.913686332815905,
+            "analysis_score": 8.913855640558776,
             "pick_priority_score": 6.456021983701276,
             "build_around_score": 0.0,
-            "core_score": 8.915166323285884,
-            "role": "balanced"
+            "core_score": 8.915297822505865,
+            "role": "needs_support"
           },
           {
             "cluster_id": 4,
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.51417688663132,
-            "analysis_score": 9.829174734052,
+            "analysis_score": 9.829054866751077,
             "pick_priority_score": 9.431737058862913,
-            "build_around_score": 4.541527933500027,
-            "core_score": 9.738254867030665,
-            "role": "engine"
+            "build_around_score": 3.542379911610741,
+            "core_score": 9.738111723958411,
+            "role": "balanced"
           },
           {
             "cluster_id": 0,
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.47184742557979037,
-            "analysis_score": 9.573215853957155,
+            "analysis_score": 9.573082164404784,
             "pick_priority_score": 9.08784475122762,
-            "build_around_score": 4.871227370298752,
-            "core_score": 9.337473718801816,
+            "build_around_score": 4.7063006954171716,
+            "core_score": 9.33731622490123,
             "role": "engine"
           }
         ]
@@ -1821,7 +1680,7 @@
         "average_taken_at": 6.7655734756280355,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 7451.362018703747,
-        "analysis_score": 9.778056427779365,
+        "analysis_score": 9.778115233507663,
         "pick_priority_score_raw": 20.308452858263063,
         "pick_priority_score": 5.492312955401413,
         "pick_market_score_raw": 8.819956610364466,
@@ -1829,17 +1688,22 @@
         "pick_urgency_score_raw": 6.88642477376432,
         "pick_urgency_score": 6.88642477376432,
         "shell_dependence_score_raw": 3.5267069203463497,
-        "shell_dependence_score": 7.912889706943211,
+        "shell_dependence_score": 7.764440411317504,
         "build_around_score_raw": 3.5267069203463497,
-        "build_around_score": 7.912889706943211,
+        "build_around_score": 7.764440411317504,
         "core_score_raw": 7474.759433764715,
-        "core_score": 9.659835632512209,
+        "core_score": 9.65990470534854,
+        "win_contribution_logit": -0.06541063319448143,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Temperamental%20Oozewagg%22",
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 4,
-        "x": 687.5,
-        "y": 454.1233847380292,
+        "x": 864.2193282206922,
+        "y": 495.2114875578637,
         "analysis_radius": 15.868503206889631,
         "pick_radius": 30.0,
         "radius": 15.868503206889631,
@@ -1907,10 +1771,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.4603530742641207,
-            "analysis_score": 9.778056427779365,
+            "analysis_score": 9.778115233507663,
             "pick_priority_score": 5.492312955401413,
-            "build_around_score": 7.912889706943211,
-            "core_score": 9.659835632512209,
+            "build_around_score": 7.764440411317504,
+            "core_score": 9.65990470534854,
             "role": "needs_support"
           },
           {
@@ -1918,10 +1782,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.3522751227544422,
-            "analysis_score": 9.457485647007683,
+            "analysis_score": 9.457483675394755,
             "pick_priority_score": 4.3243849514836,
-            "build_around_score": 8.36060171192954,
-            "core_score": 9.11862878201745,
+            "build_around_score": 8.333401900363423,
+            "core_score": 9.1186263815839,
             "role": "needs_support"
           },
           {
@@ -1958,8 +1822,8 @@
         "supported_win_rate": 0.5704738760631834,
         "support_delta": 0.003686872453075196,
         "standalone_delta": 0.017202285870985157,
-        "dependency_score": 0.11897156247026076,
-        "degree": 7,
+        "dependency_score": 0.14265515024104397,
+        "degree": 4,
         "signpost_score": 6912.056396370886,
         "signpost_lift": 2.594050706739919,
         "deck_prevalence": 0.4625855028866413,
@@ -1972,29 +1836,34 @@
         "alsa": 3.39754425131558,
         "average_taken_at": 5.312986783101251,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6916.6062045172885,
-        "analysis_score": 9.717882928174058,
+        "analysis_score_raw": 6917.032509097163,
+        "analysis_score": 9.71799117190362,
         "pick_priority_score_raw": 120.88573801464365,
         "pick_priority_score": 8.62345380226112,
         "pick_market_score_raw": 9.380913051676494,
         "pick_market_score": 9.380913051676494,
         "pick_urgency_score_raw": 8.654035585036425,
         "pick_urgency_score": 8.654035585036425,
-        "shell_dependence_score_raw": 0.44557393920797594,
-        "shell_dependence_score": 1.9310999609720594,
-        "build_around_score_raw": 0.44557393920797594,
-        "build_around_score": 1.9310999609720594,
-        "core_score_raw": 6939.238638694608,
-        "core_score": 9.567730554487168,
+        "shell_dependence_score_raw": 0.4741744888735245,
+        "shell_dependence_score": 1.9956129783726069,
+        "build_around_score_raw": 0.4741744888735245,
+        "build_around_score": 1.9956129783726069,
+        "core_score_raw": 6939.570208923399,
+        "core_score": 9.567858167936109,
+        "win_contribution_logit": 0.06902780383130222,
+        "contribution_score": 3.6174174406675506,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Nyxborn%20Hydra%22",
-        "community": 1,
-        "x": 1077.2038137619186,
-        "y": 760.306196450319,
-        "analysis_radius": 16.229101971833572,
+        "flow_in_degree": 2,
+        "flow_out_degree": 2,
+        "flow_role": null,
+        "community": 2,
+        "x": 927.5142652038968,
+        "y": 924.4076996838182,
+        "analysis_radius": 17.081711131581766,
         "pick_radius": 30.0,
-        "radius": 16.229101971833572,
+        "radius": 17.081711131581766,
         "top_synergies": [
           {
             "card": "Malevolent Rumble",
@@ -2024,20 +1893,11 @@
             "partner_rarity": "uncommon"
           },
           {
-            "card": "Strength of the Harvest",
-            "quality_score": 0.16699878090317624,
-            "pair_win_rate": 0.6003787878787878,
-            "pair_games": 528,
-            "synergy_delta_logit": 0.07844044948605972,
-            "partner_pick_score": 7.900449106344336,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Guardian of the Forgotten",
-            "quality_score": 0.15235393272169048,
-            "pair_win_rate": 0.590027700831025,
-            "pair_games": 361,
-            "synergy_delta_logit": 0.10317997367896448,
+            "card": "Golden-Tail Trainer",
+            "quality_score": 0.11572864633397774,
+            "pair_win_rate": 0.5478547854785478,
+            "pair_games": 606,
+            "synergy_delta_logit": 0.1701439167355803,
             "partner_pick_score": 0.0,
             "partner_rarity": "uncommon"
           }
@@ -2086,10 +1946,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.4625855028866413,
-            "analysis_score": 9.717882928174058,
+            "analysis_score": 9.71799117190362,
             "pick_priority_score": 8.62345380226112,
-            "build_around_score": 1.9310999609720594,
-            "core_score": 9.567730554487168,
+            "build_around_score": 1.9956129783726069,
+            "core_score": 9.567858167936109,
             "role": "balanced"
           },
           {
@@ -2097,10 +1957,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.3907461254288164,
-            "analysis_score": 9.531623699629987,
+            "analysis_score": 9.531621712561414,
             "pick_priority_score": 8.060210482244372,
-            "build_around_score": 7.938025195841246,
-            "core_score": 9.239023217759657,
+            "build_around_score": 7.912200165900412,
+            "core_score": 9.239020785632873,
             "role": "engine"
           }
         ]
@@ -2126,8 +1986,8 @@
         "supported_win_rate": 0.5472216353264314,
         "support_delta": -0.06139595892850569,
         "standalone_delta": 0.0008277984540469019,
-        "dependency_score": 0.11368746279536292,
-        "degree": 4,
+        "dependency_score": 0.19094357466381495,
+        "degree": 1,
         "signpost_score": 6789.159854823512,
         "signpost_lift": 3.4671749244725962,
         "deck_prevalence": 0.3661931445767794,
@@ -2140,8 +2000,8 @@
         "alsa": 5.229109686959385,
         "average_taken_at": 9.4719165085389,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 6791.322120937395,
-        "analysis_score": 9.703113020796836,
+        "analysis_score_raw": 6792.712730951028,
+        "analysis_score": 9.703336808073567,
         "pick_priority_score_raw": 36.69699296660393,
         "pick_priority_score": 6.5165460524365555,
         "pick_market_score_raw": 7.639651311797708,
@@ -2152,17 +2012,22 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 6809.863885689234,
-        "core_score": 9.544413328008382,
+        "core_score_raw": 6810.9454712553925,
+        "core_score": 9.544678341205483,
+        "win_contribution_logit": 0.0002448093272501275,
+        "contribution_score": 0.013265526779523504,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Wing%20It%22",
-        "community": 0,
-        "x": 1321.9923525821132,
-        "y": 517.77099627072,
-        "analysis_radius": 15.138277575605645,
+        "flow_in_degree": 1,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 1,
+        "x": 1454.1332906723687,
+        "y": 988.4269404368476,
+        "analysis_radius": 17.919497602869917,
         "pick_radius": 30.0,
-        "radius": 15.138277575605645,
+        "radius": 17.919497602869917,
         "top_synergies": [
           {
             "card": "Guardian of the Forgotten",
@@ -2170,33 +2035,6 @@
             "pair_win_rate": 0.5951557093425606,
             "pair_games": 289,
             "synergy_delta_logit": 0.19094357466381495,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.13882974915089472,
-            "pair_win_rate": 0.6014760147601476,
-            "pair_games": 271,
-            "synergy_delta_logit": 0.08981602849927284,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Legion Leadership",
-            "quality_score": 0.07557890396344376,
-            "pair_win_rate": 0.6048387096774194,
-            "pair_games": 124,
-            "synergy_delta_logit": 0.07062247413910211,
-            "partner_pick_score": 8.620898324738958,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Golden-Tail Trainer",
-            "quality_score": 0.05504667887351315,
-            "pair_win_rate": 0.512087912087912,
-            "pair_games": 455,
-            "synergy_delta_logit": 0.09302107681504651,
             "partner_pick_score": 0.0,
             "partner_rarity": "uncommon"
           }
@@ -2245,10 +2083,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.3661931445767794,
-            "analysis_score": 9.703113020796836,
+            "analysis_score": 9.703336808073567,
             "pick_priority_score": 6.5165460524365555,
             "build_around_score": 0.0,
-            "core_score": 9.544413328008382,
+            "core_score": 9.544678341205483,
             "role": "needs_support"
           },
           {
@@ -2256,11 +2094,11 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.34014264055447546,
-            "analysis_score": 7.154565841540814,
+            "analysis_score": 7.153558942853502,
             "pick_priority_score": 0.0,
             "build_around_score": 0.0,
-            "core_score": 7.15588717224799,
-            "role": "needs_support"
+            "core_score": 7.1551056634607395,
+            "role": "balanced"
           },
           {
             "cluster_id": 1,
@@ -2269,7 +2107,7 @@
             "deck_prevalence": 0.007586678259118471,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.0048154178941577,
+            "build_around_score": 1.0015464199240174,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -2298,8 +2136,8 @@
         "supported_win_rate": 0.5639478764478765,
         "support_delta": -0.003619691119691071,
         "standalone_delta": 0.011465922400299422,
-        "dependency_score": 0.08385196479985563,
-        "degree": 6,
+        "dependency_score": 0.11124613765594965,
+        "degree": 1,
         "signpost_score": 5987.260160437406,
         "signpost_lift": 3.504353079931353,
         "deck_prevalence": 0.3217555324462907,
@@ -2312,8 +2150,8 @@
         "alsa": 3.200547835549274,
         "average_taken_at": 4.849663624858456,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5990.374724939845,
-        "analysis_score": 9.601716806561136,
+        "analysis_score_raw": 5990.867820051255,
+        "analysis_score": 9.601841058248354,
         "pick_priority_score_raw": 80.48227288157067,
         "pick_priority_score": 7.900449106344336,
         "pick_market_score_raw": 9.550397854368928,
@@ -2324,36 +2162,23 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 6006.139979035836,
-        "core_score": 9.388813653063032,
+        "core_score_raw": 6006.523497455822,
+        "core_score": 9.388959897660223,
+        "win_contribution_logit": 0.05055509427320935,
+        "contribution_score": 2.6727675438582357,
         "is_build_around": false,
-        "role": "balanced",
+        "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Strength%20of%20the%20Harvest%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 0,
-        "x": 1201.459256413601,
-        "y": 479.26548878907505,
-        "analysis_radius": 14.649296464811272,
+        "x": 1201.9935166224147,
+        "y": 372.17586660122197,
+        "analysis_radius": 15.635486687630657,
         "pick_radius": 30.0,
-        "radius": 14.649296464811272,
+        "radius": 15.635486687630657,
         "top_synergies": [
-          {
-            "card": "Nyxborn Hydra",
-            "quality_score": 0.16699878090317624,
-            "pair_win_rate": 0.6003787878787878,
-            "pair_games": 528,
-            "synergy_delta_logit": 0.07844044948605972,
-            "partner_pick_score": 8.62345380226112,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.12482595050407347,
-            "pair_win_rate": 0.6088709677419355,
-            "pair_games": 248,
-            "synergy_delta_logit": 0.07761069693453654,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
-          },
           {
             "card": "Inspired Inventor",
             "quality_score": 0.12061927429446793,
@@ -2362,24 +2187,6 @@
             "synergy_delta_logit": 0.11124613765594965,
             "partner_pick_score": 2.9504008890193623,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Guardian of the Forgotten",
-            "quality_score": 0.1089986436768086,
-            "pair_win_rate": 0.5833333333333334,
-            "pair_games": 264,
-            "synergy_delta_logit": 0.09894005307559578,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Glyph Elemental",
-            "quality_score": 0.07733018661367017,
-            "pair_win_rate": 0.5723684210526315,
-            "pair_games": 304,
-            "synergy_delta_logit": 0.0832275105825322,
-            "partner_pick_score": 7.686961630821081,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -2426,11 +2233,11 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.3217555324462907,
-            "analysis_score": 9.601716806561136,
+            "analysis_score": 9.601841058248354,
             "pick_priority_score": 7.900449106344336,
             "build_around_score": 0.0,
-            "core_score": 9.388813653063032,
-            "role": "balanced"
+            "core_score": 9.388959897660223,
+            "role": "needs_support"
           }
         ]
       },
@@ -2455,8 +2262,8 @@
         "supported_win_rate": 0.5479080166081124,
         "support_delta": 0.01750698167926379,
         "standalone_delta": -0.00687403802921327,
-        "dependency_score": 0.16737172087185773,
-        "degree": 8,
+        "dependency_score": 0.21159815799970766,
+        "degree": 5,
         "signpost_score": 5800.357804017373,
         "signpost_lift": 2.302963853459316,
         "deck_prevalence": 0.43657762336063916,
@@ -2469,29 +2276,34 @@
         "alsa": 3.3347578136937415,
         "average_taken_at": 5.137583608500551,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5803.370494993067,
-        "analysis_score": 9.576091598437726,
+        "analysis_score_raw": 5804.166570861368,
+        "analysis_score": 9.576260016936923,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 9.441246134612566,
         "pick_market_score": 9.441246134612566,
         "pick_urgency_score_raw": 6.237539551044645,
         "pick_urgency_score": 6.237539551044645,
-        "shell_dependence_score_raw": 2.855312833502831,
-        "shell_dependence_score": 7.0715916247556105,
-        "build_around_score_raw": 2.855312833502831,
-        "build_around_score": 7.0715916247556105,
-        "core_score_raw": 5825.4030445243325,
-        "core_score": 9.350959114748033,
+        "shell_dependence_score_raw": 3.1578736137288272,
+        "shell_dependence_score": 7.327414358854145,
+        "build_around_score_raw": 3.1578736137288272,
+        "build_around_score": 7.327414358854145,
+        "core_score_raw": 5826.022214644122,
+        "core_score": 9.351157656454228,
+        "win_contribution_logit": -0.0204562915924711,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Evolution%20Witness%22",
+        "flow_in_degree": 4,
+        "flow_out_degree": 2,
+        "flow_role": null,
         "community": 3,
-        "x": 662.4013196807366,
-        "y": 802.8599269820121,
-        "analysis_radius": 17.025381951386876,
+        "x": 577.5320040569802,
+        "y": 1035.2697197361347,
+        "analysis_radius": 18.617533687989475,
         "pick_radius": 30.0,
-        "radius": 17.025381951386876,
+        "radius": 18.617533687989475,
         "top_synergies": [
           {
             "card": "Metastatic Evangel",
@@ -2583,10 +2395,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.43657762336063916,
-            "analysis_score": 9.576091598437726,
+            "analysis_score": 9.576260016936923,
             "pick_priority_score": 0.0,
-            "build_around_score": 7.0715916247556105,
-            "core_score": 9.350959114748033,
+            "build_around_score": 7.327414358854145,
+            "core_score": 9.351157656454228,
             "role": "needs_support"
           },
           {
@@ -2594,10 +2406,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.39347412554668865,
-            "analysis_score": 9.49636140810371,
+            "analysis_score": 9.496367122742795,
             "pick_priority_score": 1.9364559534227705,
             "build_around_score": 10.0,
-            "core_score": 9.182008514160023,
+            "core_score": 9.18201580284192,
             "role": "needs_support"
           }
         ]
@@ -2638,7 +2450,7 @@
         "average_taken_at": 4.596809997533503,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 5673.108653264548,
-        "analysis_score": 9.557749185113781,
+        "analysis_score": 9.557806665903126,
         "pick_priority_score_raw": 30.189550892090104,
         "pick_priority_score": 6.176322912671441,
         "pick_market_score_raw": 9.624715178883974,
@@ -2650,13 +2462,18 @@
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
         "core_score_raw": 5686.545126860545,
-        "core_score": 9.32106955644778,
+        "core_score": 9.321136206930914,
+        "win_contribution_logit": 0.02658087084207411,
+        "contribution_score": 1.421706216751922,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Envoy%20of%20the%20Ancestors%22",
-        "community": 2,
-        "x": 914.4205915810968,
-        "y": 833.8815226963987,
+        "flow_in_degree": 3,
+        "flow_out_degree": 1,
+        "flow_role": "enabler",
+        "community": 0,
+        "x": 1380.5262137275665,
+        "y": 481.84475497240464,
         "analysis_radius": 18.950754553432066,
         "pick_radius": 30.0,
         "radius": 18.950754553432066,
@@ -2742,10 +2559,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.2788010188177668,
-            "analysis_score": 9.557749185113781,
+            "analysis_score": 9.557806665903126,
             "pick_priority_score": 6.176322912671441,
             "build_around_score": 0.0,
-            "core_score": 9.32106955644778,
+            "core_score": 9.321136206930914,
             "role": "needs_support"
           }
         ]
@@ -2771,8 +2588,8 @@
         "supported_win_rate": 0.5296654018627113,
         "support_delta": -0.02312052189095437,
         "standalone_delta": -0.020759636491926137,
-        "dependency_score": 0.09154436427855049,
-        "degree": 4,
+        "dependency_score": 0.1110234268204464,
+        "degree": 2,
         "signpost_score": 5423.019445754223,
         "signpost_lift": 2.342429997575181,
         "deck_prevalence": 0.40349123906674655,
@@ -2785,8 +2602,8 @@
         "alsa": 4.178051187933281,
         "average_taken_at": 6.699528919131118,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5424.667244311237,
-        "analysis_score": 9.521567625840394,
+        "analysis_score_raw": 5425.017867436991,
+        "analysis_score": 9.5216771107256,
         "pick_priority_score_raw": 4.172270710075922,
         "pick_priority_score": 2.9504008890193623,
         "pick_market_score_raw": 8.783503803293618,
@@ -2797,17 +2614,22 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 5445.282611285594,
-        "core_score": 9.267358288285862,
+        "core_score_raw": 5445.55531816118,
+        "core_score": 9.267486600194896,
+        "win_contribution_logit": -0.1027383845518276,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Inspired%20Inventor%22",
-        "community": 2,
-        "x": 791.4699994247412,
-        "y": 867.3202695266284,
-        "analysis_radius": 14.295597114027817,
+        "flow_in_degree": 2,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
+        "community": 0,
+        "x": 1256.403526577517,
+        "y": 423.40091948501157,
+        "analysis_radius": 14.996843365536071,
         "pick_radius": 30.0,
-        "radius": 14.295597114027817,
+        "radius": 14.996843365536071,
         "top_synergies": [
           {
             "card": "Signature Slam",
@@ -2819,30 +2641,12 @@
             "partner_rarity": "uncommon"
           },
           {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.12747099699070585,
-            "pair_win_rate": 0.5818639798488665,
-            "pair_games": 397,
-            "synergy_delta_logit": 0.09563090170287974,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
-          },
-          {
             "card": "Strength of the Harvest",
             "quality_score": 0.12061927429446793,
             "pair_win_rate": 0.5710955710955711,
             "pair_games": 429,
             "synergy_delta_logit": 0.11124613765594965,
             "partner_pick_score": 7.900449106344336,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Golden-Tail Trainer",
-            "quality_score": 0.03132781006010613,
-            "pair_win_rate": 0.480083857442348,
-            "pair_games": 477,
-            "synergy_delta_logit": 0.05195718723178236,
-            "partner_pick_score": 0.0,
             "partner_rarity": "uncommon"
           }
         ],
@@ -2890,10 +2694,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.5285010698492933,
-            "analysis_score": 9.133202293406924,
+            "analysis_score": 9.133346430060453,
             "pick_priority_score": 2.9522453900180285,
             "build_around_score": 10.0,
-            "core_score": 9.133957198313547,
+            "core_score": 9.134069095969235,
             "role": "needs_support"
           },
           {
@@ -2901,10 +2705,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.40349123906674655,
-            "analysis_score": 9.521567625840394,
+            "analysis_score": 9.5216771107256,
             "pick_priority_score": 2.9504008890193623,
             "build_around_score": 0.0,
-            "core_score": 9.267358288285862,
+            "core_score": 9.267486600194896,
             "role": "needs_support"
           },
           {
@@ -2912,11 +2716,11 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.39906644460947177,
-            "analysis_score": 9.393600302601888,
+            "analysis_score": 9.393542280060123,
             "pick_priority_score": 0.0,
-            "build_around_score": 7.073044503787446,
-            "core_score": 9.058641439314636,
-            "role": "balanced"
+            "build_around_score": 7.038354845734622,
+            "core_score": 9.058576830280467,
+            "role": "needs_support"
           }
         ]
       },
@@ -2941,8 +2745,8 @@
         "supported_win_rate": 0.5416359616801769,
         "support_delta": 0.01701069401422406,
         "standalone_delta": -0.012972989848220595,
-        "dependency_score": 0.14789417567881238,
-        "degree": 5,
+        "dependency_score": 0.15976321817912256,
+        "degree": 4,
         "signpost_score": 5161.101795846669,
         "signpost_lift": 3.112700984648676,
         "deck_prevalence": 0.30275703328715986,
@@ -2955,29 +2759,34 @@
         "alsa": 2.463229493539961,
         "average_taken_at": 3.0487819996280914,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5163.763891008888,
-        "analysis_score": 9.48174234283575,
+        "analysis_score_raw": 5163.977533773893,
+        "analysis_score": 9.481832794202385,
         "pick_priority_score_raw": 16.75722920066614,
         "pick_priority_score": 5.164991676901716,
         "pick_market_score_raw": 9.99033289694285,
         "pick_market_score": 9.99033289694285,
         "pick_urgency_score_raw": 8.578687821338669,
         "pick_urgency_score": 8.578687821338669,
-        "shell_dependence_score_raw": 2.384346101578925,
-        "shell_dependence_score": 6.388819832401139,
-        "build_around_score_raw": 2.384346101578925,
-        "build_around_score": 6.388819832401139,
-        "core_score_raw": 5178.915680037105,
-        "core_score": 9.205221980593523,
+        "shell_dependence_score_raw": 2.4554703022958853,
+        "shell_dependence_score": 6.3759059982073705,
+        "build_around_score_raw": 2.4554703022958853,
+        "build_around_score": 6.3759059982073705,
+        "core_score_raw": 5179.081846632109,
+        "core_score": 9.20532755289898,
+        "win_contribution_logit": -0.0630002830048094,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Metastatic%20Evangel%22",
+        "flow_in_degree": 3,
+        "flow_out_degree": 1,
+        "flow_role": "enabler",
         "community": 3,
-        "x": 677.1146252358885,
-        "y": 759.6521511247456,
-        "analysis_radius": 16.324190324437247,
+        "x": 475.65355963755655,
+        "y": 1078.761988157243,
+        "analysis_radius": 16.75147585444841,
         "pick_radius": 30.0,
-        "radius": 16.324190324437247,
+        "radius": 16.75147585444841,
         "top_synergies": [
           {
             "card": "Evolution Witness",
@@ -3014,15 +2823,6 @@
             "synergy_delta_logit": 0.10617657148192189,
             "partner_pick_score": 5.492312955401413,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Guardian of the Forgotten",
-            "quality_score": 0.035172009915029785,
-            "pair_win_rate": 0.5538461538461539,
-            "pair_games": 260,
-            "synergy_delta_logit": 0.07754059632373131,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -3069,10 +2869,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.30275703328715986,
-            "analysis_score": 9.48174234283575,
+            "analysis_score": 9.481832794202385,
             "pick_priority_score": 5.164991676901716,
-            "build_around_score": 6.388819832401139,
-            "core_score": 9.205221980593523,
+            "build_around_score": 6.3759059982073705,
+            "core_score": 9.20532755289898,
             "role": "needs_support"
           },
           {
@@ -3080,9 +2880,9 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.006508157565079647,
-            "analysis_score": 0.03550194146221434,
+            "analysis_score": 0.0355019340610837,
             "pick_priority_score": 0.0,
-            "build_around_score": 3.322537851994994,
+            "build_around_score": 3.3117285338849585,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -3109,8 +2909,8 @@
         "supported_win_rate": 0.5148514851485149,
         "support_delta": 0.0013763078435503617,
         "standalone_delta": -0.03815476029672038,
-        "dependency_score": 0.07045098360493732,
-        "degree": 2,
+        "dependency_score": 0.07532241924388697,
+        "degree": 1,
         "signpost_score": 5121.311110154634,
         "signpost_lift": 2.200506571779372,
         "deck_prevalence": 0.4069918857024678,
@@ -3123,29 +2923,34 @@
         "alsa": 3.7701632362121407,
         "average_taken_at": 5.543884856442143,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5122.579227859523,
-        "analysis_score": 9.47527244586763,
+        "analysis_score_raw": 5122.666913701024,
+        "analysis_score": 9.475343260883006,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 9.19644687827951,
         "pick_market_score": 9.19644687827951,
         "pick_urgency_score_raw": 5.863664323190523,
         "pick_urgency_score": 5.863664323190523,
-        "shell_dependence_score_raw": 0.16420183591303794,
-        "shell_dependence_score": 0.7967193293315514,
-        "build_around_score_raw": 0.16420183591303794,
-        "build_around_score": 0.7967193293315514,
-        "core_score_raw": 5143.461001981631,
-        "core_score": 9.196711316006914,
+        "shell_dependence_score_raw": 0.16669800136851326,
+        "shell_dependence_score": 0.7927857523422216,
+        "build_around_score_raw": 0.16669800136851326,
+        "build_around_score": 0.7927857523422216,
+        "core_score_raw": 5143.529202080576,
+        "core_score": 9.19679350461067,
+        "win_contribution_logit": -0.1938546716776885,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Hexgold%20Slith%22",
-        "community": 0,
-        "x": 1172.1835770621053,
-        "y": 694.2654887890751,
-        "analysis_radius": 13.536235409777744,
+        "flow_in_degree": 1,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 1,
+        "x": 1265.5316692360961,
+        "y": 815.3037843757423,
+        "analysis_radius": 13.71160709277993,
         "pick_radius": 30.0,
-        "radius": 13.536235409777744,
+        "radius": 13.71160709277993,
         "top_synergies": [
           {
             "card": "Mandibular Kite",
@@ -3155,15 +2960,6 @@
             "synergy_delta_logit": 0.07532241924388697,
             "partner_pick_score": 8.664712941352892,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.03941895784090605,
-            "pair_win_rate": 0.5567567567567567,
-            "pair_games": 370,
-            "synergy_delta_logit": 0.06295107616285187,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -3221,10 +3017,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.4751373757373675,
-            "analysis_score": 9.609855586945406,
+            "analysis_score": 9.610045220240277,
             "pick_priority_score": 0.0,
-            "build_around_score": 9.016893461564178,
-            "core_score": 9.394497280563122,
+            "build_around_score": 9.339096279778934,
+            "core_score": 9.394729424733162,
             "role": "needs_support"
           },
           {
@@ -3232,10 +3028,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.4069918857024678,
-            "analysis_score": 9.47527244586763,
+            "analysis_score": 9.475343260883006,
             "pick_priority_score": 0.0,
-            "build_around_score": 0.7967193293315514,
-            "core_score": 9.196711316006914,
+            "build_around_score": 0.7927857523422216,
+            "core_score": 9.19679350461067,
             "role": "balanced"
           }
         ]
@@ -3261,8 +3057,8 @@
         "supported_win_rate": 0.5396171553186334,
         "support_delta": -0.006941549134807934,
         "standalone_delta": -0.01249917232004305,
-        "dependency_score": 0.12222907640863152,
-        "degree": 3,
+        "dependency_score": 0.13852157790351816,
+        "degree": 2,
         "signpost_score": 4998.221995196096,
         "signpost_lift": 2.964022590111264,
         "deck_prevalence": 0.3046824613699074,
@@ -3275,8 +3071,8 @@
         "alsa": 1.78737866284753,
         "average_taken_at": 2.085973122150228,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 5000.422118571451,
-        "analysis_score": 9.45577176849085,
+        "analysis_score_raw": 5000.715383598359,
+        "analysis_score": 9.455876019971337,
         "pick_priority_score_raw": 71.34724775947001,
         "pick_priority_score": 7.686961630821081,
         "pick_market_score_raw": 10.0,
@@ -3287,17 +3083,22 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 5015.776690257053,
-        "core_score": 9.165567928325924,
+        "core_score_raw": 5016.004785277981,
+        "core_score": 9.165689805528647,
+        "win_contribution_logit": -0.060407793971788644,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Glyph%20Elemental%22",
-        "community": 0,
-        "x": 1154.5750463009203,
-        "y": 545.5843125675525,
-        "analysis_radius": 15.400246750710735,
+        "flow_in_degree": 2,
+        "flow_out_degree": 0,
+        "flow_role": "enabler",
+        "community": 1,
+        "x": 1398.2220447874395,
+        "y": 758.4269404368476,
+        "analysis_radius": 15.986776804526654,
         "pick_radius": 30.0,
-        "radius": 15.400246750710735,
+        "radius": 15.986776804526654,
         "top_synergies": [
           {
             "card": "Mandibular Kite",
@@ -3315,15 +3116,6 @@
             "pair_games": 303,
             "synergy_delta_logit": 0.16285348683559975,
             "partner_pick_score": 5.164991676901716,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Strength of the Harvest",
-            "quality_score": 0.07733018661367017,
-            "pair_win_rate": 0.5723684210526315,
-            "pair_games": 304,
-            "synergy_delta_logit": 0.0832275105825322,
-            "partner_pick_score": 7.900449106344336,
             "partner_rarity": "uncommon"
           }
         ],
@@ -3371,10 +3163,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.3046824613699074,
-            "analysis_score": 9.45577176849085,
+            "analysis_score": 9.455876019971337,
             "pick_priority_score": 7.686961630821081,
             "build_around_score": 0.0,
-            "core_score": 9.165567928325924,
+            "core_score": 9.165689805528647,
             "role": "needs_support"
           }
         ]
@@ -3400,8 +3192,8 @@
         "supported_win_rate": 0.5516804058338618,
         "support_delta": 0.041476324201208725,
         "standalone_delta": -0.00524616286197177,
-        "dependency_score": 0.11050335058303075,
-        "degree": 7,
+        "dependency_score": 0.16157597689337272,
+        "degree": 2,
         "signpost_score": 4961.603309509875,
         "signpost_lift": 4.167519035893463,
         "deck_prevalence": 0.24076311962585967,
@@ -3414,29 +3206,34 @@
         "alsa": 3.8557514909683785,
         "average_taken_at": 6.131390387247404,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4963.59236982037,
-        "analysis_score": 9.449798883047132,
+        "analysis_score_raw": 4964.511677093956,
+        "analysis_score": 9.450005343171085,
         "pick_priority_score_raw": 0.0,
         "pick_priority_score": 0.0,
         "pick_market_score_raw": 9.033759657859818,
         "pick_market_score": 9.033759657859818,
         "pick_urgency_score_raw": 5.615196568367721,
         "pick_urgency_score": 5.615196568367721,
-        "shell_dependence_score_raw": 5.27402875204566,
-        "shell_dependence_score": 9.623463128264756,
-        "build_around_score_raw": 5.27402875204566,
-        "build_around_score": 9.623463128264756,
-        "core_score_raw": 4975.670038638582,
-        "core_score": 9.155621767019383,
+        "shell_dependence_score_raw": 6.021202111648567,
+        "shell_dependence_score": 10.0,
+        "build_around_score_raw": 6.021202111648567,
+        "build_around_score": 10.0,
+        "core_score_raw": 4976.385055406926,
+        "core_score": 9.155865255513936,
+        "win_contribution_logit": -0.019508189798914482,
+        "contribution_score": 0.0,
         "is_build_around": true,
         "role": "needs_support",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Guardian%20of%20the%20Forgotten%22",
-        "community": 0,
-        "x": 1262.2303005527187,
-        "y": 535.0673409546962,
-        "analysis_radius": 14.978120620989106,
+        "flow_in_degree": 1,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 1,
+        "x": 1415.630537943971,
+        "y": 921.190507128083,
+        "analysis_radius": 16.81673516816142,
         "pick_radius": 30.0,
-        "radius": 14.978120620989106,
+        "radius": 16.81673516816142,
         "top_synergies": [
           {
             "card": "Wing It",
@@ -3454,33 +3251,6 @@
             "pair_games": 436,
             "synergy_delta_logit": 0.1376662783767908,
             "partner_pick_score": 8.664712941352892,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Nyxborn Hydra",
-            "quality_score": 0.15235393272169048,
-            "pair_win_rate": 0.590027700831025,
-            "pair_games": 361,
-            "synergy_delta_logit": 0.10317997367896448,
-            "partner_pick_score": 8.62345380226112,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Strength of the Harvest",
-            "quality_score": 0.1089986436768086,
-            "pair_win_rate": 0.5833333333333334,
-            "pair_games": 264,
-            "synergy_delta_logit": 0.09894005307559578,
-            "partner_pick_score": 7.900449106344336,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Nyxborn Unicorn",
-            "quality_score": 0.059108595838918594,
-            "pair_win_rate": 0.5535714285714286,
-            "pair_games": 504,
-            "synergy_delta_logit": 0.0925714706821131,
-            "partner_pick_score": 5.310515154479613,
             "partner_rarity": "common"
           }
         ],
@@ -3528,10 +3298,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.24076311962585967,
-            "analysis_score": 9.449798883047132,
+            "analysis_score": 9.450005343171085,
             "pick_priority_score": 0.0,
-            "build_around_score": 9.623463128264756,
-            "core_score": 9.155621767019383,
+            "build_around_score": 10.0,
+            "core_score": 9.155865255513936,
             "role": "needs_support"
           }
         ]
@@ -3572,7 +3342,7 @@
         "average_taken_at": 2.5650323558561183,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 4174.361958141895,
-        "analysis_score": 9.309889237417563,
+        "analysis_score": 9.309945227564587,
         "pick_priority_score_raw": 265.36038212392566,
         "pick_priority_score": 10.0,
         "pick_market_score_raw": 10.0,
@@ -3580,17 +3350,22 @@
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
         "shell_dependence_score_raw": 0.7435589728067635,
-        "shell_dependence_score": 2.913255341245166,
+        "shell_dependence_score": 2.8586013880874215,
         "build_around_score_raw": 0.7435589728067635,
-        "build_around_score": 2.913255341245166,
+        "build_around_score": 2.8586013880874215,
         "core_score_raw": 4185.874959019547,
-        "core_score": 8.941489638221004,
+        "core_score": 8.941553574510793,
+        "win_contribution_logit": 0.19564070425335497,
+        "contribution_score": 9.683469199601085,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Signature%20Slam%22",
-        "community": 2,
-        "x": 856.0825459181932,
-        "y": 787.5284182365233,
+        "flow_in_degree": 0,
+        "flow_out_degree": 3,
+        "flow_role": "payoff",
+        "community": 0,
+        "x": 1306.2446200282577,
+        "y": 478.50926607157237,
         "analysis_radius": 18.725828622965885,
         "pick_radius": 30.0,
         "radius": 18.725828622965885,
@@ -3667,10 +3442,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.28106983984290396,
-            "analysis_score": 9.309889237417563,
+            "analysis_score": 9.309945227564587,
             "pick_priority_score": 10.0,
-            "build_around_score": 2.913255341245166,
-            "core_score": 8.941489638221004,
+            "build_around_score": 2.8586013880874215,
+            "core_score": 8.941553574510793,
             "role": "engine"
           },
           {
@@ -3678,10 +3453,10 @@
             "title": "Black Base | Dreamdrinker Vampire / Wither and Bloom",
             "color_name": "Black Base",
             "deck_prevalence": 0.14547896755482898,
-            "analysis_score": 8.40030599418386,
+            "analysis_score": 8.400455416089441,
             "pick_priority_score": 9.359502666190615,
-            "build_around_score": 3.971873877248316,
-            "core_score": 7.336254213472356,
+            "build_around_score": 3.9009483842451127,
+            "core_score": 7.336447340187489,
             "role": "engine"
           }
         ]
@@ -3707,8 +3482,8 @@
         "supported_win_rate": 0.5819774718397998,
         "support_delta": -0.06673447195411131,
         "standalone_delta": 0.03698426989490966,
-        "dependency_score": 0.10365443594212265,
-        "degree": 3,
+        "dependency_score": 0.14003424497055972,
+        "degree": 1,
         "signpost_score": 322.6080466425115,
         "signpost_lift": 1.087900989272059,
         "deck_prevalence": 0.23079225112151552,
@@ -3721,8 +3496,8 @@
         "alsa": 3.599326149279597,
         "average_taken_at": 4.988998923573735,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 329.65162427475707,
-        "analysis_score": 7.260589173324356,
+        "analysis_score_raw": 330.3064608372689,
+        "analysis_score": 7.2622316978140695,
         "pick_priority_score_raw": 196.33935392402796,
         "pick_priority_score": 9.488550488410231,
         "pick_market_score_raw": 9.378800463886884,
@@ -3733,17 +3508,22 @@
         "shell_dependence_score": 0.0,
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
-        "core_score_raw": 339.20406874508734,
-        "core_score": 5.831032585747021,
+        "core_score_raw": 339.71338607148544,
+        "core_score": 5.832928022411595,
+        "win_contribution_logit": 0.14528119441376153,
+        "contribution_score": 7.35140087528872,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Malevolent%20Rumble%22",
-        "community": 1,
-        "x": 1045.5571180883207,
-        "y": 790.026579690578,
-        "analysis_radius": 16.765694538136447,
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
+        "community": 2,
+        "x": 856.024857311085,
+        "y": 927.2090287890434,
+        "analysis_radius": 18.07536766316018,
         "pick_radius": 30.0,
-        "radius": 16.765694538136447,
+        "radius": 18.07536766316018,
         "top_synergies": [
           {
             "card": "Nyxborn Hydra",
@@ -3752,24 +3532,6 @@
             "pair_games": 405,
             "synergy_delta_logit": 0.14003424497055972,
             "partner_pick_score": 8.62345380226112,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.20679882771371488,
-            "pair_win_rate": 0.6390243902439025,
-            "pair_games": 205,
-            "synergy_delta_logit": 0.1015900645144896,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Nyxborn Unicorn",
-            "quality_score": 0.1051580637439147,
-            "pair_win_rate": 0.5897435897435898,
-            "pair_games": 390,
-            "synergy_delta_logit": 0.0680783080002399,
-            "partner_pick_score": 5.310515154479613,
             "partner_rarity": "common"
           }
         ],
@@ -3817,10 +3579,10 @@
             "title": "Gruul Eldrazi | Writhing Chrysalis / Glimpse the Impossible",
             "color_name": "Gruul Eldrazi",
             "deck_prevalence": 0.5689159705910981,
-            "analysis_score": 9.90967251728084,
+            "analysis_score": 9.909670451399997,
             "pick_priority_score": 10.0,
-            "build_around_score": 6.782786554890365,
-            "core_score": 9.853344292474304,
+            "build_around_score": 6.760719899577391,
+            "core_score": 9.85334169863056,
             "role": "engine"
           },
           {
@@ -3830,7 +3592,7 @@
             "deck_prevalence": 0.4779091365905047,
             "analysis_score": 9.753508226718788,
             "pick_priority_score": 9.768742906095014,
-            "build_around_score": 4.147756368592782,
+            "build_around_score": 4.1218756095042375,
             "core_score": 9.602358809493154,
             "role": "good_alone"
           },
@@ -3839,10 +3601,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.23079225112151552,
-            "analysis_score": 7.260589173324356,
+            "analysis_score": 7.2622316978140695,
             "pick_priority_score": 9.488550488410231,
             "build_around_score": 0.0,
-            "core_score": 5.831032585747021,
+            "core_score": 5.832928022411595,
             "role": "engine"
           },
           {
@@ -3852,7 +3614,7 @@
             "deck_prevalence": 0.20613497237091286,
             "analysis_score": 0.8599427468793177,
             "pick_priority_score": 9.579510274545589,
-            "build_around_score": 2.905241214098242,
+            "build_around_score": 2.7909937639720583,
             "core_score": 0.0,
             "role": "engine"
           }
@@ -3894,7 +3656,7 @@
         "average_taken_at": 0.6505322924059617,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 955.8797948127408,
-        "analysis_score": 8.119305798168233,
+        "analysis_score": 8.119354628085944,
         "pick_priority_score_raw": 250.24849689245883,
         "pick_priority_score": 9.922171061371357,
         "pick_market_score_raw": 10.0,
@@ -3906,13 +3668,18 @@
         "build_around_score_raw": 0.0,
         "build_around_score": 0.0,
         "core_score_raw": 957.0791345816064,
-        "core_score": 7.114024225693634,
+        "core_score": 7.11407509465763,
+        "win_contribution_logit": 0.20498825579356536,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Guide%20of%20Souls%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 3,
-        "x": 614.4060792711578,
-        "y": 823.43795556644,
+        "x": 594.9070233698026,
+        "y": 911.375432468951,
         "analysis_radius": 22.529710151324537,
         "pick_radius": 30.0,
         "radius": 22.529710151324537,
@@ -3971,10 +3738,10 @@
             "title": "Azorius | Riddle Gate Gargoyle / Emissary of Soulfire",
             "color_name": "Azorius",
             "deck_prevalence": 0.1351609808438094,
-            "analysis_score": 8.665612828250497,
+            "analysis_score": 8.665926797939681,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 7.920685767333231,
+            "core_score": 7.92107865020447,
             "role": "engine"
           },
           {
@@ -3982,21 +3749,21 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.12742611519371114,
-            "analysis_score": 1.5860047690184715,
+            "analysis_score": 1.5824986421454803,
             "pick_priority_score": 10.0,
             "build_around_score": 0.0,
-            "core_score": 1.584894492323818,
-            "role": "engine"
+            "core_score": 1.58217092563892,
+            "role": "good_alone"
           },
           {
             "cluster_id": 4,
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.09604364137974385,
-            "analysis_score": 8.119305798168233,
+            "analysis_score": 8.119354628085944,
             "pick_priority_score": 9.922171061371357,
             "build_around_score": 0.0,
-            "core_score": 7.114024225693634,
+            "core_score": 7.11407509465763,
             "role": "engine"
           }
         ]
@@ -4022,8 +3789,8 @@
         "supported_win_rate": 0.5815972222222222,
         "support_delta": 0.027878213957759357,
         "standalone_delta": 0.026088966497027744,
-        "dependency_score": 0.10338724649386755,
-        "degree": 12,
+        "dependency_score": 0.1932302332240185,
+        "degree": 2,
         "signpost_score": 4159.461362936738,
         "signpost_lift": 2.8531762165182526,
         "deck_prevalence": 0.2631697503454848,
@@ -4036,29 +3803,34 @@
         "alsa": 2.9229694348836524,
         "average_taken_at": 3.7775709054800473,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 4164.974788683212,
-        "analysis_score": 9.308070356975346,
+        "analysis_score_raw": 4166.591962444354,
+        "analysis_score": 9.308439977560193,
         "pick_priority_score_raw": 160.75663087794686,
         "pick_priority_score": 9.131567779582307,
         "pick_market_score_raw": 9.843853940851021,
         "pick_market_score": 9.843853940851021,
         "pick_urgency_score_raw": 10.0,
         "pick_urgency_score": 10.0,
-        "shell_dependence_score_raw": 2.1796132343439534,
-        "shell_dependence_score": 6.061816440523146,
-        "build_around_score_raw": 2.1796132343439534,
-        "build_around_score": 6.061816440523146,
-        "core_score_raw": 4176.811173557865,
-        "core_score": 8.93880421833578,
+        "shell_dependence_score_raw": 2.733744615238095,
+        "shell_dependence_score": 6.774172164197745,
+        "build_around_score_raw": 2.733744615238095,
+        "build_around_score": 6.774172164197745,
+        "core_score_raw": 4178.068975372086,
+        "core_score": 8.939241147776501,
+        "win_contribution_logit": 0.11014300332108902,
+        "contribution_score": 5.662648411222663,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Ajani%20Fells%20the%20Godsire%22",
-        "community": 2,
-        "x": 931.5568636512276,
-        "y": 910.5848784272702,
-        "analysis_radius": 16.156834031115757,
+        "flow_in_degree": 0,
+        "flow_out_degree": 2,
+        "flow_role": "payoff",
+        "community": 0,
+        "x": 1454.8666199203205,
+        "y": 480.41028454065076,
+        "analysis_radius": 19.39118155340119,
         "pick_radius": 30.0,
-        "radius": 16.156834031115757,
+        "radius": 19.39118155340119,
         "top_synergies": [
           {
             "card": "Envoy of the Ancestors",
@@ -4076,33 +3848,6 @@
             "pair_games": 396,
             "synergy_delta_logit": 0.11711613458478465,
             "partner_pick_score": 8.62345380226112,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Legion Leadership",
-            "quality_score": 0.27921508519838123,
-            "pair_win_rate": 0.6534653465346535,
-            "pair_games": 101,
-            "synergy_delta_logit": 0.17638341787411593,
-            "partner_pick_score": 8.620898324738958,
-            "partner_rarity": "uncommon"
-          },
-          {
-            "card": "Thraben Charm",
-            "quality_score": 0.2652715617451122,
-            "pair_win_rate": 0.6234309623430963,
-            "pair_games": 478,
-            "synergy_delta_logit": 0.09767267766365273,
-            "partner_pick_score": 9.431737058862913,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Malevolent Rumble",
-            "quality_score": 0.20679882771371488,
-            "pair_win_rate": 0.6390243902439025,
-            "pair_games": 205,
-            "synergy_delta_logit": 0.1015900645144896,
-            "partner_pick_score": 9.488550488410231,
             "partner_rarity": "common"
           }
         ],
@@ -4132,10 +3877,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.2631697503454848,
-            "analysis_score": 9.308070356975346,
+            "analysis_score": 9.308439977560193,
             "pick_priority_score": 9.131567779582307,
-            "build_around_score": 6.061816440523146,
-            "core_score": 8.93880421833578,
+            "build_around_score": 6.774172164197745,
+            "core_score": 8.939241147776501,
             "role": "engine"
           }
         ]
@@ -4163,8 +3908,8 @@
         "supported_win_rate": 0.587116564417178,
         "support_delta": 0.0009096678654538781,
         "standalone_delta": 0.03417042290967798,
-        "dependency_score": 0.10959755272574973,
-        "degree": 5,
+        "dependency_score": 0.18100741536930348,
+        "degree": 1,
         "signpost_score": 374.0916141659463,
         "signpost_lift": 1.202486024961458,
         "deck_prevalence": 0.13013825925413158,
@@ -4177,39 +3922,35 @@
         "alsa": 3.375407061569886,
         "average_taken_at": 5.037529636269011,
         "wheel_likelihood": 0.0,
-        "analysis_score_raw": 380.84822932236466,
-        "analysis_score": 7.376924192713046,
+        "analysis_score_raw": 382.13360684994865,
+        "analysis_score": 7.379684294016445,
         "pick_priority_score_raw": 120.71237563445773,
         "pick_priority_score": 8.620898324738958,
         "pick_market_score_raw": 9.448389005475633,
         "pick_market_score": 9.448389005475633,
         "pick_urgency_score_raw": 8.756346357377753,
         "pick_urgency_score": 8.756346357377753,
-        "shell_dependence_score_raw": 0.035398680586345516,
-        "shell_dependence_score": 0.18229344649150866,
-        "build_around_score_raw": 0.035398680586345516,
-        "build_around_score": 0.18229344649150866,
-        "core_score_raw": 385.2976553326443,
-        "core_score": 5.988481499738775,
+        "shell_dependence_score_raw": 0.042428247109457605,
+        "shell_dependence_score": 0.213666034945071,
+        "build_around_score_raw": 0.042428247109457605,
+        "build_around_score": 0.213666034945071,
+        "core_score_raw": 386.29739340965403,
+        "core_score": 5.991727106787023,
+        "win_contribution_logit": 0.12290596945869295,
+        "contribution_score": 6.282143387058158,
         "is_build_around": false,
         "role": "engine",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Legion%20Leadership%22",
+        "flow_in_degree": 0,
+        "flow_out_degree": 1,
+        "flow_role": null,
         "community": 4,
-        "x": 472.5,
-        "y": 665.8766152619708,
-        "analysis_radius": 16.82488515815928,
+        "x": 634.2193282206922,
+        "y": 705.9103281233162,
+        "analysis_radius": 19.395640213327212,
         "pick_radius": 30.0,
-        "radius": 16.82488515815928,
+        "radius": 19.395640213327212,
         "top_synergies": [
-          {
-            "card": "Ajani Fells the Godsire",
-            "quality_score": 0.27921508519838123,
-            "pair_win_rate": 0.6534653465346535,
-            "pair_games": 101,
-            "synergy_delta_logit": 0.17638341787411593,
-            "partner_pick_score": 9.131567779582307,
-            "partner_rarity": "uncommon"
-          },
           {
             "card": "Temperamental Oozewagg",
             "quality_score": 0.27512783547382397,
@@ -4218,33 +3959,6 @@
             "synergy_delta_logit": 0.18100741536930348,
             "partner_pick_score": 5.492312955401413,
             "partner_rarity": "common"
-          },
-          {
-            "card": "Nyxborn Hydra",
-            "quality_score": 0.10226753053971904,
-            "pair_win_rate": 0.6188118811881188,
-            "pair_games": 202,
-            "synergy_delta_logit": 0.06294002324757186,
-            "partner_pick_score": 8.62345380226112,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Wing It",
-            "quality_score": 0.07557890396344376,
-            "pair_win_rate": 0.6048387096774194,
-            "pair_games": 124,
-            "synergy_delta_logit": 0.07062247413910211,
-            "partner_pick_score": 6.5165460524365555,
-            "partner_rarity": "common"
-          },
-          {
-            "card": "Golden-Tail Trainer",
-            "quality_score": 0.017302093772840796,
-            "pair_win_rate": 0.5378151260504201,
-            "pair_games": 119,
-            "synergy_delta_logit": 0.06008958576920015,
-            "partner_pick_score": 0.0,
-            "partner_rarity": "uncommon"
           }
         ],
         "top_anti_synergies": [
@@ -4291,10 +4005,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.13013825925413158,
-            "analysis_score": 7.376924192713046,
+            "analysis_score": 7.379684294016445,
             "pick_priority_score": 8.620898324738958,
-            "build_around_score": 0.18229344649150866,
-            "core_score": 5.988481499738775,
+            "build_around_score": 0.213666034945071,
+            "core_score": 5.991727106787023,
             "role": "engine"
           }
         ]
@@ -4343,17 +4057,22 @@
         "pick_urgency_score_raw": 6.4451812325239946,
         "pick_urgency_score": 6.4451812325239946,
         "shell_dependence_score_raw": 0.5813877328482536,
-        "shell_dependence_score": 2.4016635531911,
+        "shell_dependence_score": 2.356607287274956,
         "build_around_score_raw": 0.5813877328482536,
-        "build_around_score": 2.4016635531911,
+        "build_around_score": 2.356607287274956,
         "core_score_raw": -315.52692295016016,
         "core_score": 0.0,
+        "win_contribution_logit": -0.04437021521498282,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Reckless%20Pyrosurfer%22",
-        "community": 5,
-        "x": 673.7258300203048,
-        "y": 333.7258300203048,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 7,
+        "x": 801.1145618000168,
+        "y": 255.6619147855509,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4365,10 +4084,10 @@
             "title": "Boros | Conduit Goblin / Hexgold Slith",
             "color_name": "Boros",
             "deck_prevalence": 0.33294535074076403,
-            "analysis_score": 7.1708914615462716,
+            "analysis_score": 7.17063947301102,
             "pick_priority_score": 5.741856688254668,
             "build_around_score": 0.0,
-            "core_score": 7.171805743027606,
+            "core_score": 7.171610045859892,
             "role": "needs_support"
           },
           {
@@ -4378,7 +4097,7 @@
             "deck_prevalence": 0.008764085710410215,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 2.4016635531911,
+            "build_around_score": 2.356607287274956,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4428,17 +4147,22 @@
         "pick_urgency_score_raw": 6.050062802187494,
         "pick_urgency_score": 6.050062802187494,
         "shell_dependence_score_raw": 0.44618607186722853,
-        "shell_dependence_score": 1.9333185302131362,
+        "shell_dependence_score": 1.8970486231805086,
         "build_around_score_raw": 0.44618607186722853,
-        "build_around_score": 1.9333185302131362,
+        "build_around_score": 1.8970486231805086,
         "core_score_raw": -334.9066553539972,
         "core_score": 0.0,
+        "win_contribution_logit": -0.15605050253376207,
+        "contribution_score": 0.0,
         "is_build_around": false,
         "role": "balanced",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Pinnacle%20Monk%22",
-        "community": 6,
-        "x": 899.9999999999999,
-        "y": 240.0,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 8,
+        "x": 998.8854381999831,
+        "y": 255.66191478555083,
         "analysis_radius": 11.0,
         "pick_radius": 30.0,
         "radius": 11.0,
@@ -4452,7 +4176,7 @@
             "deck_prevalence": 0.009685682304118468,
             "analysis_score": 0.0,
             "pick_priority_score": 0.0,
-            "build_around_score": 1.9333185302131362,
+            "build_around_score": 1.8970486231805086,
             "core_score": 0.0,
             "role": "balanced"
           }
@@ -4494,7 +4218,7 @@
         "average_taken_at": 0.5925925925925926,
         "wheel_likelihood": 0.0,
         "analysis_score_raw": 92.93056864901757,
-        "analysis_score": 6.243564589125343,
+        "analysis_score": 6.243602138240094,
         "pick_priority_score_raw": 67.97435145498633,
         "pick_priority_score": 7.601244430039791,
         "pick_market_score_raw": 10.0,
@@ -4502,17 +4226,22 @@
         "pick_urgency_score_raw": 9.302180197829754,
         "pick_urgency_score": 9.302180197829754,
         "shell_dependence_score_raw": 0.5338919896763414,
-        "shell_dependence_score": 2.2418620096974267,
+        "shell_dependence_score": 2.1998036911115384,
         "build_around_score_raw": 0.5338919896763414,
-        "build_around_score": 2.2418620096974267,
+        "build_around_score": 2.1998036911115384,
         "core_score_raw": 88.60568391508168,
-        "core_score": 4.17785616126265,
+        "core_score": 4.17788603510169,
+        "win_contribution_logit": 0.30927144950759106,
+        "contribution_score": 10.0,
         "is_build_around": false,
         "role": "good_alone",
         "scryfall_search": "https://scryfall.com/search?q=%21%22Solitude%22",
-        "community": 7,
-        "x": 1126.2741699796952,
-        "y": 333.7258300203047,
+        "flow_in_degree": 0,
+        "flow_out_degree": 0,
+        "flow_role": null,
+        "community": 9,
+        "x": 1097.6128212738772,
+        "y": 319.85821026926357,
         "analysis_radius": 15.75672232040814,
         "pick_radius": 25.287446388276656,
         "radius": 15.75672232040814,
@@ -4524,10 +4253,10 @@
             "title": "Selesnya | Faithful Watchdog / Aerie Auxiliary",
             "color_name": "Selesnya",
             "deck_prevalence": 0.00830456897062043,
-            "analysis_score": 6.243564589125343,
+            "analysis_score": 6.243602138240094,
             "pick_priority_score": 7.601244430039791,
-            "build_around_score": 2.2418620096974267,
-            "core_score": 4.17785616126265,
+            "build_around_score": 2.1998036911115384,
+            "core_score": 4.17788603510169,
             "role": "good_alone"
           }
         ]
@@ -4544,13 +4273,18 @@
         "synergy_delta_logit": 0.3350772294394159,
         "synergy_delta_prob": 0.08173820607321591,
         "confidence_probability": 0.9997717314924754,
+        "p_value": 0.00022826850752455385,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1477,
         "quality_score": 0.8047235071461316,
         "anti_quality": 0.0,
         "pick_score_raw": 2.530023564589624,
-        "pick_score": 9.402888713101865
+        "pick_score": 8.77210350598408,
+        "q_value": 0.05546924732846659,
+        "fdr_significant": true,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Envoy of the Ancestors",
@@ -4562,13 +4296,18 @@
         "synergy_delta_logit": 0.2517282176138522,
         "synergy_delta_prob": 0.058483493325171665,
         "confidence_probability": 0.9775137197611733,
+        "p_value": 0.022486280238826706,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 851,
         "quality_score": 0.7244605191061487,
         "anti_quality": 0.0,
         "pick_score_raw": 3.0231505645542907,
-        "pick_score": 10.0
+        "pick_score": 10.0,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Ajani Fells the Godsire",
@@ -4580,13 +4319,18 @@
         "synergy_delta_logit": 0.2914105034659762,
         "synergy_delta_prob": 0.06872904389773593,
         "confidence_probability": 0.9839235217823173,
+        "p_value": 0.016076478217682655,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 870,
         "quality_score": 0.7124684879062039,
         "anti_quality": 0.0,
         "pick_score_raw": 2.568551934087142,
-        "pick_score": 9.523806439021119
+        "pick_score": 8.902355748888954,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Evolution Witness",
@@ -4598,13 +4342,18 @@
         "synergy_delta_logit": 0.24171189276385685,
         "synergy_delta_prob": 0.0565161451957682,
         "confidence_probability": 0.9075635734507921,
+        "p_value": 0.09243642654920792,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 475,
         "quality_score": 0.44228248027588596,
         "anti_quality": 0.0,
         "pick_score_raw": 1.916023591105999,
-        "pick_score": 7.274407621583115
+        "pick_score": 6.479309508716344,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Malevolent Rumble",
@@ -4616,13 +4365,18 @@
         "synergy_delta_logit": 0.14003424497055972,
         "synergy_delta_prob": 0.03287168903991766,
         "confidence_probability": 0.9119897288050968,
+        "p_value": 0.08801027119490323,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1670,
         "quality_score": 0.41206872421072077,
         "anti_quality": 0.0,
         "pick_score_raw": 3.10190489362158,
-        "pick_score": 10.0
+        "pick_score": 10.0,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Envoy of the Ancestors",
@@ -4634,13 +4388,18 @@
         "synergy_delta_logit": 0.20821106240866394,
         "synergy_delta_prob": 0.050831122270152185,
         "confidence_probability": 0.9830860948335733,
+        "p_value": 0.016913905166426657,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1323,
         "quality_score": 0.3981720172921921,
         "anti_quality": 0.0,
         "pick_score_raw": 2.01347014131776,
-        "pick_score": 7.640562006429345
+        "pick_score": 6.873730008383395,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Envoy of the Ancestors",
@@ -4652,13 +4411,18 @@
         "synergy_delta_logit": 0.13713802870764874,
         "synergy_delta_prob": 0.0331534618180247,
         "confidence_probability": 0.9200056769143633,
+        "p_value": 0.0799943230856367,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1369,
         "quality_score": 0.28958690190522207,
         "anti_quality": 0.0,
         "pick_score_raw": 2.2236959199295243,
-        "pick_score": 8.391734169195358
+        "pick_score": 7.682890603028673,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Ajani Fells the Godsire",
@@ -4670,31 +4434,18 @@
         "synergy_delta_logit": 0.11711613458478465,
         "synergy_delta_prob": 0.027857745749156115,
         "confidence_probability": 0.8705602982068645,
+        "p_value": 0.12943970179313546,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1351,
         "quality_score": 0.28814808910178136,
         "anti_quality": 0.0,
         "pick_score_raw": 2.590740679307288,
-        "pick_score": 9.592852721784565
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Legion Leadership",
-        "pair_games": 101,
-        "pair_win_rate": 0.6534653465346535,
-        "pair_expected_win_rate": 0.6125214008403692,
-        "pair_lift_vs_baseline": 0.10060694461062858,
-        "synergy_delta_logit": 0.17638341787411593,
-        "synergy_delta_prob": 0.04094394569428428,
-        "confidence_probability": 0.800535322939683,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 454,
-        "quality_score": 0.27921508519838123,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.6571839579615002,
-        "pick_score": 6.2389927670707275
+        "pick_score": 8.976732215414538,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Guardian of the Forgotten",
@@ -4706,13 +4457,18 @@
         "synergy_delta_logit": 0.19094357466381495,
         "synergy_delta_prob": 0.04671389224539868,
         "confidence_probability": 0.9444600145974398,
+        "p_value": 0.05553998540256022,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1568,
         "quality_score": 0.27661814945585833,
         "anti_quality": 0.0,
         "pick_score_raw": 1.5266177975394477,
-        "pick_score": 5.6777504686213724
+        "pick_score": 4.759394800245449,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Legion Leadership",
@@ -4724,31 +4480,18 @@
         "synergy_delta_logit": 0.18100741536930348,
         "synergy_delta_prob": 0.04356089309761224,
         "confidence_probability": 0.8829833209391375,
+        "p_value": 0.11701667906086255,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 701,
         "quality_score": 0.27512783547382397,
         "anti_quality": 0.0,
         "pick_score_raw": 1.5950121195104237,
-        "pick_score": 5.975268953971932
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Thraben Charm",
-        "pair_games": 478,
-        "pair_win_rate": 0.6234309623430963,
-        "pair_expected_win_rate": 0.6002397000000507,
-        "pair_lift_vs_baseline": 0.07057256041907134,
-        "synergy_delta_logit": 0.09767267766365273,
-        "synergy_delta_prob": 0.023191262343045582,
-        "confidence_probability": 0.849589405660191,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1686,
-        "quality_score": 0.2652715617451122,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.86306730399135,
-        "pick_score": 10.0
+        "pick_score": 5.0798808971180405,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Nyxborn Unicorn",
@@ -4760,13 +4503,18 @@
         "synergy_delta_logit": 0.09746835530627623,
         "synergy_delta_prob": 0.023501558525023003,
         "confidence_probability": 0.8775571759634316,
+        "p_value": 0.12244282403656837,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1761,
         "quality_score": 0.23811643834949545,
         "anti_quality": 0.0,
         "pick_score_raw": 2.57593439878836,
-        "pick_score": 9.546826517800703
+        "pick_score": 8.927152914648508,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Guardian of the Forgotten",
@@ -4778,13 +4526,18 @@
         "synergy_delta_logit": 0.1376662783767908,
         "synergy_delta_prob": 0.033722206219356066,
         "confidence_probability": 0.9215059288147098,
+        "p_value": 0.07849407118529017,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1651,
         "quality_score": 0.21390753980466534,
         "anti_quality": 0.0,
         "pick_score_raw": 1.6378213398842258,
-        "pick_score": 6.157526859958492
+        "pick_score": 5.276208613847907,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Inspired Inventor",
@@ -4796,31 +4549,18 @@
         "synergy_delta_logit": 0.11078679224834326,
         "synergy_delta_prob": 0.02675378153573016,
         "confidence_probability": 0.8544280298486497,
+        "p_value": 0.14557197015135026,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1394,
         "quality_score": 0.2129778046321673,
         "anti_quality": 0.0,
         "pick_score_raw": 2.024608106214903,
-        "pick_score": 7.681656523611915
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Malevolent Rumble",
-        "pair_games": 205,
-        "pair_win_rate": 0.6390243902439025,
-        "pair_expected_win_rate": 0.6152753873781355,
-        "pair_lift_vs_baseline": 0.08616598831987754,
-        "synergy_delta_logit": 0.1015900645144896,
-        "synergy_delta_prob": 0.023749002865766977,
-        "confidence_probability": 0.7575975864389874,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 882,
-        "quality_score": 0.20679882771371488,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.1387315909073,
-        "pick_score": 8.094214361593988
+        "pick_score": 6.917996909645638,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Glyph Elemental",
@@ -4832,31 +4572,18 @@
         "synergy_delta_logit": 0.12111406830837451,
         "synergy_delta_prob": 0.029816777124272664,
         "confidence_probability": 0.9273437295690167,
+        "p_value": 0.07265627043098333,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1939,
         "quality_score": 0.17530788192524177,
         "anti_quality": 0.0,
         "pick_score_raw": 1.5269512791435327,
-        "pick_score": 5.6792205790477865
-      },
-      {
-        "from": "Nyxborn Hydra",
-        "to": "Strength of the Harvest",
-        "pair_games": 528,
-        "pair_win_rate": 0.6003787878787878,
-        "pair_expected_win_rate": 0.5814194729121038,
-        "pair_lift_vs_baseline": 0.047520385954762934,
-        "synergy_delta_logit": 0.07844044948605972,
-        "synergy_delta_prob": 0.018959314966684016,
-        "confidence_probability": 0.81134521129881,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1709,
-        "quality_score": 0.16699878090317624,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.244485610423345,
-        "pick_score": 8.463339210746554
+        "pick_score": 4.760978399166969,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Evolution Witness",
@@ -4868,49 +4595,18 @@
         "synergy_delta_logit": 0.09583802713480477,
         "synergy_delta_prob": 0.023567199250334347,
         "confidence_probability": 0.9093087873127523,
+        "p_value": 0.09069121268724767,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.15748622356110772,
         "draft_pair_events": 2572,
         "quality_score": 0.16464606614924568,
         "anti_quality": 0.0,
         "pick_score_raw": 1.7925995961608148,
-        "pick_score": 6.792668198620748
-      },
-      {
-        "from": "Guardian of the Forgotten",
-        "to": "Nyxborn Hydra",
-        "pair_games": 361,
-        "pair_win_rate": 0.590027700831025,
-        "pair_expected_win_rate": 0.5648574987639322,
-        "pair_lift_vs_baseline": 0.03716929890700005,
-        "synergy_delta_logit": 0.10317997367896448,
-        "synergy_delta_prob": 0.02517020206709275,
-        "confidence_probability": 0.8325245770785377,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1322,
-        "quality_score": 0.15235393272169048,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.5546578650092153,
-        "pick_score": 5.800688707668936
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Wing It",
-        "pair_games": 271,
-        "pair_win_rate": 0.6014760147601476,
-        "pair_expected_win_rate": 0.5797635807553304,
-        "pair_lift_vs_baseline": 0.04861761283612265,
-        "synergy_delta_logit": 0.08981602849927284,
-        "synergy_delta_prob": 0.02171243400481715,
-        "confidence_probability": 0.7654345444561372,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1583,
-        "quality_score": 0.13882974915089472,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.6289371885138129,
-        "pick_score": 6.119947512380691
+        "pick_score": 5.960381122828163,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Glyph Elemental",
@@ -4922,67 +4618,18 @@
         "synergy_delta_logit": 0.16285348683559975,
         "synergy_delta_prob": 0.040323126873566206,
         "confidence_probability": 0.9198927991104329,
+        "p_value": 0.08010720088956713,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1003,
         "quality_score": 0.1327361142645302,
         "anti_quality": 0.0,
         "pick_score_raw": 0.8569312418096893,
-        "pick_score": 2.247424435970799
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Inspired Inventor",
-        "pair_games": 397,
-        "pair_win_rate": 0.5818639798488665,
-        "pair_expected_win_rate": 0.5584315543296,
-        "pair_lift_vs_baseline": 0.029005577924841597,
-        "synergy_delta_logit": 0.09563090170287974,
-        "synergy_delta_prob": 0.023432425519266498,
-        "confidence_probability": 0.826355236219187,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1483,
-        "quality_score": 0.12747099699070585,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.4042514772202859,
-        "pick_score": 5.1247775393589015
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Strength of the Harvest",
-        "pair_games": 248,
-        "pair_win_rate": 0.6088709677419355,
-        "pair_expected_win_rate": 0.5902401330163294,
-        "pair_lift_vs_baseline": 0.05601256581791059,
-        "synergy_delta_logit": 0.07761069693453654,
-        "synergy_delta_prob": 0.018630834725606116,
-        "confidence_probability": 0.7245608609231523,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 964,
-        "quality_score": 0.12482595050407347,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.6906227376367604,
-        "pick_score": 6.378294545453049
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Dog Umbra",
-        "pair_games": 498,
-        "pair_win_rate": 0.6024096385542169,
-        "pair_expected_win_rate": 0.5884666487649626,
-        "pair_lift_vs_baseline": 0.04955123663019201,
-        "synergy_delta_logit": 0.05788525525627003,
-        "synergy_delta_prob": 0.013942989789254345,
-        "confidence_probability": 0.7363681028693034,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1621,
-        "quality_score": 0.12304726251972914,
-        "anti_quality": 0.0,
-        "pick_score_raw": 2.240432051327483,
-        "pick_score": 8.4494137882399
+        "pick_score": 1.064257000961314,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Inspired Inventor",
@@ -4994,13 +4641,18 @@
         "synergy_delta_logit": 0.11124613765594965,
         "synergy_delta_prob": 0.027437950431467573,
         "confidence_probability": 0.8729352551080997,
+        "p_value": 0.12706474489190034,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1604,
         "quality_score": 0.12061927429446793,
         "anti_quality": 0.0,
         "pick_score_raw": 1.1427109466551864,
-        "pick_score": 3.8419343763302534
+        "pick_score": 2.781858737902885,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Dog Umbra",
@@ -5012,13 +4664,18 @@
         "synergy_delta_logit": 0.07151216883031142,
         "synergy_delta_prob": 0.01757887755654919,
         "confidence_probability": 0.8501924181778445,
+        "p_value": 0.14980758182215548,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2521,
         "quality_score": 0.11789889632215678,
         "anti_quality": 0.0,
         "pick_score_raw": 1.7414490927042767,
-        "pick_score": 6.586749594115919
+        "pick_score": 5.738566166512276,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Golden-Tail Trainer",
@@ -5030,49 +4687,18 @@
         "synergy_delta_logit": 0.1701439167355803,
         "synergy_delta_prob": 0.04238926673315013,
         "confidence_probability": 0.9814475592445372,
+        "p_value": 0.018552440755462807,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2059,
         "quality_score": 0.11572864633397774,
         "anti_quality": 0.0,
         "pick_score_raw": 0.7177488386411334,
-        "pick_score": 1.3795776935879345
-      },
-      {
-        "from": "Guardian of the Forgotten",
-        "to": "Strength of the Harvest",
-        "pair_games": 264,
-        "pair_win_rate": 0.5833333333333334,
-        "pair_expected_win_rate": 0.5591054053723145,
-        "pair_lift_vs_baseline": 0.03047493140930846,
-        "synergy_delta_logit": 0.09894005307559578,
-        "synergy_delta_prob": 0.024227927961018914,
-        "confidence_probability": 0.7859800859159692,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 958,
-        "quality_score": 0.1089986436768086,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.157972069497249,
-        "pick_score": 3.9209889787495196
-      },
-      {
-        "from": "Malevolent Rumble",
-        "to": "Nyxborn Unicorn",
-        "pair_games": 390,
-        "pair_win_rate": 0.5897435897435898,
-        "pair_expected_win_rate": 0.5731774950481351,
-        "pair_lift_vs_baseline": 0.036885187819564846,
-        "synergy_delta_logit": 0.0680783080002399,
-        "synergy_delta_prob": 0.01656609469545467,
-        "confidence_probability": 0.7457909257646618,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1807,
-        "quality_score": 0.1051580637439147,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.6289174678288978,
-        "pick_score": 6.119863954060756
+        "pick_score": 0.12941486897694993,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Mandibular Kite",
@@ -5084,49 +4710,18 @@
         "synergy_delta_logit": 0.0764589457636449,
         "synergy_delta_prob": 0.01891212260038566,
         "confidence_probability": 0.90603443884403,
+        "p_value": 0.09396556115596999,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3656,
         "quality_score": 0.10390788093893055,
         "anti_quality": 0.0,
         "pick_score_raw": 1.438066507240838,
-        "pick_score": 5.280352540719596
-      },
-      {
-        "from": "Legion Leadership",
-        "to": "Nyxborn Hydra",
-        "pair_games": 202,
-        "pair_win_rate": 0.6188118811881188,
-        "pair_expected_win_rate": 0.6038584674424156,
-        "pair_lift_vs_baseline": 0.0659534792640939,
-        "synergy_delta_logit": 0.06294002324757186,
-        "synergy_delta_prob": 0.014953413745703248,
-        "confidence_probability": 0.6680234305990662,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 735,
-        "quality_score": 0.10226753053971904,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.7054835101471633,
-        "pick_score": 6.4396478943910855
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Evolution Witness",
-        "pair_games": 360,
-        "pair_win_rate": 0.5888888888888889,
-        "pair_expected_win_rate": 0.5721640284008834,
-        "pair_lift_vs_baseline": 0.036030486964863995,
-        "synergy_delta_logit": 0.06868816589590121,
-        "synergy_delta_prob": 0.016724860488005477,
-        "confidence_probability": 0.739320862931603,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1261,
-        "quality_score": 0.09909338512854053,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.5185662848445367,
-        "pick_score": 5.6421973979990225
+        "pick_score": 4.331318841642647,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Golden-Tail Trainer",
@@ -5138,13 +4733,18 @@
         "synergy_delta_logit": 0.12776478838501737,
         "synergy_delta_prob": 0.031908273443568336,
         "confidence_probability": 0.9556384438564302,
+        "p_value": 0.04436155614356985,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2519,
         "quality_score": 0.09475125944078167,
         "anti_quality": 0.0,
         "pick_score_raw": 0.783345080656306,
-        "pick_score": 1.797025617240042
+        "pick_score": 0.5790886280416789,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Faithful Watchdog",
@@ -5156,31 +4756,18 @@
         "synergy_delta_logit": 0.08398493460822076,
         "synergy_delta_prob": 0.020861880062413407,
         "confidence_probability": 0.9302718406676529,
+        "p_value": 0.0697281593323471,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2832,
         "quality_score": 0.08302286931019376,
         "anti_quality": 0.0,
         "pick_score_raw": 1.0447758311680126,
-        "pick_score": 3.320811096375404
-      },
-      {
-        "from": "Glyph Elemental",
-        "to": "Strength of the Harvest",
-        "pair_games": 304,
-        "pair_win_rate": 0.5723684210526315,
-        "pair_expected_win_rate": 0.551885876172256,
-        "pair_lift_vs_baseline": 0.019510019128606615,
-        "synergy_delta_logit": 0.0832275105825322,
-        "synergy_delta_prob": 0.020482544880375486,
-        "confidence_probability": 0.7635968763044021,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1069,
-        "quality_score": 0.07733018661367017,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.9771944137441285,
-        "pick_score": 2.946437162538402
+        "pick_score": 2.2205061692200223,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Faithful Watchdog",
@@ -5192,49 +4779,18 @@
         "synergy_delta_logit": 0.07173032402031264,
         "synergy_delta_prob": 0.017916862240547227,
         "confidence_probability": 0.9121780409642285,
+        "p_value": 0.0878219590357715,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 3612,
         "quality_score": 0.07636475574585247,
         "anti_quality": 0.0,
         "pick_score_raw": 1.1264812600929905,
-        "pick_score": 3.757242296462932
-      },
-      {
-        "from": "Legion Leadership",
-        "to": "Wing It",
-        "pair_games": 124,
-        "pair_win_rate": 0.6048387096774194,
-        "pair_expected_win_rate": 0.5878405239964608,
-        "pair_lift_vs_baseline": 0.05198030775339446,
-        "synergy_delta_logit": 0.07062247413910211,
-        "synergy_delta_prob": 0.016998185680958566,
-        "confidence_probability": 0.6496843787935223,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 814,
-        "quality_score": 0.07557890396344376,
-        "anti_quality": 0.0,
-        "pick_score_raw": 1.1239106998917718,
-        "pick_score": 3.7437689607085742
-      },
-      {
-        "from": "Evolution Witness",
-        "to": "Golden-Tail Trainer",
-        "pair_games": 569,
-        "pair_win_rate": 0.5096660808435852,
-        "pair_expected_win_rate": 0.48106478108214995,
-        "pair_lift_vs_baseline": -0.04319232108043969,
-        "synergy_delta_logit": 0.11444625645205331,
-        "synergy_delta_prob": 0.028601299761435273,
-        "confidence_probability": 0.9138309477694093,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1902,
-        "quality_score": 0.07521388764781087,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.693223102323316,
-        "pick_score": 1.2193905438151713
+        "pick_score": 2.6906286616247077,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Hexgold Slith",
@@ -5246,13 +4802,18 @@
         "synergy_delta_logit": 0.07532241924388697,
         "synergy_delta_prob": 0.018760761773137125,
         "confidence_probability": 0.8668984088855827,
+        "p_value": 0.13310159111441733,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 2912,
         "quality_score": 0.06240569860560156,
         "anti_quality": 0.0,
         "pick_score_raw": 0.8757603714585422,
-        "pick_score": 2.3598041959536378
+        "pick_score": 1.1853121703634473,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Metastatic Evangel",
@@ -5264,193 +4825,41 @@
         "synergy_delta_logit": 0.10617657148192189,
         "synergy_delta_prob": 0.026370673327314686,
         "confidence_probability": 0.8696687798193755,
+        "p_value": 0.13033122018062449,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
         "draft_pair_events": 1567,
         "quality_score": 0.061907494328792376,
         "anti_quality": 0.0,
         "pick_score_raw": 0.6144235072608865,
-        "pick_score": 0.6885509027996716
-      },
-      {
-        "from": "Guardian of the Forgotten",
-        "to": "Nyxborn Unicorn",
-        "pair_games": 504,
-        "pair_win_rate": 0.5535714285714286,
-        "pair_expected_win_rate": 0.5305967000668544,
-        "pair_lift_vs_baseline": 0.0007130266474036917,
-        "synergy_delta_logit": 0.0925714706821131,
-        "synergy_delta_prob": 0.02297472850457416,
-        "confidence_probability": 0.8492286247173761,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1741,
-        "quality_score": 0.059108595838918594,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.6732209311094127,
-        "pick_score": 1.0870212859424102
-      },
-      {
-        "from": "Golden-Tail Trainer",
-        "to": "Wing It",
-        "pair_games": 455,
-        "pair_win_rate": 0.512087912087912,
-        "pair_expected_win_rate": 0.4888368540807343,
-        "pair_lift_vs_baseline": -0.040770489836112866,
-        "synergy_delta_logit": 0.09302107681504651,
-        "synergy_delta_prob": 0.02325105800717775,
-        "confidence_probability": 0.8393557983811397,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2303,
-        "quality_score": 0.05504667887351315,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.6247958754292704,
-        "pick_score": 0.7598879825716622
+        "pick_score": 0.0,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "core"
       },
       {
         "from": "Evolution Witness",
-        "to": "Guardian of the Forgotten",
-        "pair_games": 386,
-        "pair_win_rate": 0.5595854922279793,
-        "pair_expected_win_rate": 0.5407245491847554,
-        "pair_lift_vs_baseline": 0.006727090303954353,
-        "synergy_delta_logit": 0.07622011345329466,
-        "synergy_delta_prob": 0.018860943043223832,
-        "confidence_probability": 0.7713826718797943,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1277,
-        "quality_score": 0.05433799056762938,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.7504697733068966,
-        "pick_score": 1.5897659288377675
-      },
-      {
-        "from": "Aerie Auxiliary",
         "to": "Golden-Tail Trainer",
-        "pair_games": 795,
-        "pair_win_rate": 0.5283018867924528,
-        "pair_expected_win_rate": 0.5141252432161018,
-        "pair_lift_vs_baseline": -0.024556515131572088,
-        "synergy_delta_logit": 0.0568126742873547,
-        "synergy_delta_prob": 0.014176643576351067,
-        "confidence_probability": 0.7880442654925857,
+        "pair_games": 569,
+        "pair_win_rate": 0.5096660808435852,
+        "pair_expected_win_rate": 0.48106478108214995,
+        "pair_lift_vs_baseline": -0.04319232108043969,
+        "synergy_delta_logit": 0.11444625645205331,
+        "synergy_delta_prob": 0.028601299761435273,
+        "confidence_probability": 0.9138309477694093,
+        "p_value": 0.08616905223059068,
         "deck_pair_log_lift": 0.0,
         "triplet_bonus": 0.0,
-        "draft_pair_events": 2601,
-        "quality_score": 0.04463471997106729,
+        "draft_pair_events": 1902,
+        "quality_score": 0.07521388764781087,
         "anti_quality": 0.0,
-        "pick_score_raw": 0.8299936940898027,
-        "pick_score": 2.0846531589513466
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Hexgold Slith",
-        "pair_games": 370,
-        "pair_win_rate": 0.5567567567567567,
-        "pair_expected_win_rate": 0.5411712349450585,
-        "pair_lift_vs_baseline": 0.0038983548327318207,
-        "synergy_delta_logit": 0.06295107616285187,
-        "synergy_delta_prob": 0.015585521811698255,
-        "confidence_probability": 0.7262567304484857,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1398,
-        "quality_score": 0.03941895784090605,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.659482015476769,
-        "pick_score": 0.9951807111608318
-      },
-      {
-        "from": "Guardian of the Forgotten",
-        "to": "Metastatic Evangel",
-        "pair_games": 260,
-        "pair_win_rate": 0.5538461538461539,
-        "pair_expected_win_rate": 0.5346151668172783,
-        "pair_lift_vs_baseline": 0.0009877519221289655,
-        "synergy_delta_logit": 0.07754059632373131,
-        "synergy_delta_prob": 0.0192309870288756,
-        "confidence_probability": 0.7328700982767793,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 903,
-        "quality_score": 0.035172009915029785,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.4766302726338278,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Golden-Tail Trainer",
-        "to": "Inspired Inventor",
-        "pair_games": 477,
-        "pair_win_rate": 0.480083857442348,
-        "pair_expected_win_rate": 0.4671314862028739,
-        "pair_lift_vs_baseline": -0.07277454448167692,
-        "synergy_delta_logit": 0.05195718723178236,
-        "synergy_delta_prob": 0.01295237123947407,
-        "confidence_probability": 0.7146193889428637,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 2012,
-        "quality_score": 0.03132781006010613,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.6361838552508161,
-        "pick_score": 0.8376874522681802
-      },
-      {
-        "from": "Ajani Fells the Godsire",
-        "to": "Golden-Tail Trainer",
-        "pair_games": 263,
-        "pair_win_rate": 0.532319391634981,
-        "pair_expected_win_rate": 0.5145503696339025,
-        "pair_lift_vs_baseline": -0.020539010289043924,
-        "synergy_delta_logit": 0.07124015098219819,
-        "synergy_delta_prob": 0.01776902200107844,
-        "confidence_probability": 0.7178453179332522,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1138,
-        "quality_score": 0.03123746328679063,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.46130828033066185,
-        "pick_score": 0.0
-      },
-      {
-        "from": "Golden-Tail Trainer",
-        "to": "Strength of the Harvest",
-        "pair_games": 380,
-        "pair_win_rate": 0.5131578947368421,
-        "pair_expected_win_rate": 0.4996238028390154,
-        "pair_lift_vs_baseline": -0.039700507187182765,
-        "synergy_delta_logit": 0.05414852241331253,
-        "synergy_delta_prob": 0.013534091897826728,
-        "confidence_probability": 0.701108633940821,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 1428,
-        "quality_score": 0.028779259331000395,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.5598105682279022,
-        "pick_score": 0.3052183165812679
-      },
-      {
-        "from": "Golden-Tail Trainer",
-        "to": "Legion Leadership",
-        "pair_games": 119,
-        "pair_win_rate": 0.5378151260504201,
-        "pair_expected_win_rate": 0.5228491525676585,
-        "pair_lift_vs_baseline": -0.015043275873604767,
-        "synergy_delta_logit": 0.06008958576920015,
-        "synergy_delta_prob": 0.01496597348276163,
-        "confidence_probability": 0.6280946929785348,
-        "deck_pair_log_lift": 0.0,
-        "triplet_bonus": 0.0,
-        "draft_pair_events": 598,
-        "quality_score": 0.017302093772840796,
-        "anti_quality": 0.0,
-        "pick_score_raw": 0.30189112349866615,
-        "pick_score": 0.0
+        "pick_score_raw": 0.693223102323316,
+        "pick_score": 0.0,
+        "q_value": 0.9792286414846826,
+        "fdr_significant": false,
+        "is_eligible": true,
+        "display_tier": "extended"
       }
     ],
     "triplets": [
@@ -5516,40 +4925,38 @@
         "community_id": 0,
         "size": 6,
         "top_cards": [
-          "Mandibular Kite",
-          "Wing It",
+          "Nyxborn Unicorn",
           "Strength of the Harvest",
-          "Hexgold Slith",
-          "Glyph Elemental"
+          "Envoy of the Ancestors",
+          "Inspired Inventor",
+          "Signature Slam"
         ]
       },
       {
         "community_id": 1,
         "size": 5,
         "top_cards": [
-          "Aerie Auxiliary",
-          "Nyxborn Unicorn",
+          "Mandibular Kite",
+          "Wing It",
+          "Hexgold Slith",
+          "Glyph Elemental",
+          "Guardian of the Forgotten"
+        ]
+      },
+      {
+        "community_id": 2,
+        "size": 4,
+        "top_cards": [
+          "Faithful Watchdog",
           "Golden-Tail Trainer",
           "Nyxborn Hydra",
           "Malevolent Rumble"
         ]
       },
       {
-        "community_id": 2,
-        "size": 5,
-        "top_cards": [
-          "Thraben Charm",
-          "Envoy of the Ancestors",
-          "Inspired Inventor",
-          "Signature Slam",
-          "Ajani Fells the Godsire"
-        ]
-      },
-      {
         "community_id": 3,
-        "size": 5,
+        "size": 4,
         "top_cards": [
-          "Faithful Watchdog",
           "Dog Umbra",
           "Evolution Witness",
           "Metastatic Evangel",
@@ -5568,18 +4975,32 @@
         "community_id": 5,
         "size": 1,
         "top_cards": [
-          "Reckless Pyrosurfer"
+          "Aerie Auxiliary"
         ]
       },
       {
         "community_id": 6,
         "size": 1,
         "top_cards": [
-          "Pinnacle Monk"
+          "Thraben Charm"
         ]
       },
       {
         "community_id": 7,
+        "size": 1,
+        "top_cards": [
+          "Reckless Pyrosurfer"
+        ]
+      },
+      {
+        "community_id": 8,
+        "size": 1,
+        "top_cards": [
+          "Pinnacle Monk"
+        ]
+      },
+      {
+        "community_id": 9,
         "size": 1,
         "top_cards": [
           "Solitude"
@@ -5816,9 +5237,9 @@
       {
         "card": "Golden-Tail Trainer",
         "shell_dependence_score": 10.0,
-        "shell_dependence_score_raw": 13.72564962553682,
+        "shell_dependence_score_raw": 14.793742725593804,
         "build_around_score": 10.0,
-        "build_around_score_raw": 13.72564962553682,
+        "build_around_score_raw": 14.793742725593804,
         "support_delta": 0.056782793650899,
         "supported_win_rate": 0.49380569441425776,
         "isolated_win_rate": 0.43702290076335876,
@@ -5826,10 +5247,10 @@
       },
       {
         "card": "Guardian of the Forgotten",
-        "shell_dependence_score": 9.623463128264756,
-        "shell_dependence_score_raw": 5.27402875204566,
-        "build_around_score": 9.623463128264756,
-        "build_around_score_raw": 5.27402875204566,
+        "shell_dependence_score": 10.0,
+        "shell_dependence_score_raw": 6.021202111648567,
+        "build_around_score": 10.0,
+        "build_around_score_raw": 6.021202111648567,
         "support_delta": 0.041476324201208725,
         "supported_win_rate": 0.5516804058338618,
         "isolated_win_rate": 0.5102040816326531,
@@ -5837,9 +5258,9 @@
       },
       {
         "card": "Temperamental Oozewagg",
-        "shell_dependence_score": 7.912889706943211,
+        "shell_dependence_score": 7.764440411317504,
         "shell_dependence_score_raw": 3.5267069203463497,
-        "build_around_score": 7.912889706943211,
+        "build_around_score": 7.764440411317504,
         "build_around_score_raw": 3.5267069203463497,
         "support_delta": 0.021488375833575657,
         "supported_win_rate": 0.5419344724878508,
@@ -5862,61 +5283,61 @@
       },
       {
         "card": "Nyxborn Unicorn",
-        "core_score": 9.94903164499714,
+        "core_score": 9.949113252704933,
         "deck_prevalence": 0.5292285329340742,
         "signpost_score": 9411.06309366999
       },
       {
         "card": "Dog Umbra",
-        "core_score": 9.774819176560692,
+        "core_score": 9.774901525571805,
         "deck_prevalence": 0.5018728217225379,
         "signpost_score": 8173.821496576232
       },
       {
         "card": "Mandibular Kite",
-        "core_score": 9.773599233268543,
+        "core_score": 9.77366911957364,
         "deck_prevalence": 0.515655616971152,
         "signpost_score": 8164.465081375357
       },
       {
         "card": "Golden-Tail Trainer",
-        "core_score": 9.743666599924431,
+        "core_score": 9.743793536043093,
         "deck_prevalence": 0.34377679708678344,
         "signpost_score": 7978.884876597128
       },
       {
         "card": "Thraben Charm",
-        "core_score": 9.738254867030665,
+        "core_score": 9.738111723958411,
         "deck_prevalence": 0.51417688663132,
         "signpost_score": 7933.20942130428
       },
       {
         "card": "Temperamental Oozewagg",
-        "core_score": 9.659835632512209,
+        "core_score": 9.65990470534854,
         "deck_prevalence": 0.4603530742641207,
         "signpost_score": 7448.927767100302
       },
       {
         "card": "Nyxborn Hydra",
-        "core_score": 9.567730554487168,
+        "core_score": 9.567858167936109,
         "deck_prevalence": 0.4625855028866413,
         "signpost_score": 6912.056396370886
       },
       {
         "card": "Wing It",
-        "core_score": 9.544413328008382,
+        "core_score": 9.544678341205483,
         "deck_prevalence": 0.3661931445767794,
         "signpost_score": 6789.159854823512
       },
       {
         "card": "Strength of the Harvest",
-        "core_score": 9.388813653063032,
+        "core_score": 9.388959897660223,
         "deck_prevalence": 0.3217555324462907,
         "signpost_score": 5987.260160437406
       },
       {
         "card": "Evolution Witness",
-        "core_score": 9.350959114748033,
+        "core_score": 9.351157656454228,
         "deck_prevalence": 0.43657762336063916,
         "signpost_score": 5800.357804017373
       }
@@ -6010,13 +5431,37 @@
       },
       {
         "card": "Evolution Witness",
-        "dependency_score": 0.16737172087185773,
+        "dependency_score": 0.21159815799970766,
         "standalone_delta": -0.00687403802921327,
         "draw_games": 7035
       },
       {
+        "card": "Ajani Fells the Godsire",
+        "dependency_score": 0.1932302332240185,
+        "standalone_delta": 0.026088966497027744,
+        "draw_games": 3819
+      },
+      {
+        "card": "Wing It",
+        "dependency_score": 0.19094357466381495,
+        "standalone_delta": 0.0008277984540469019,
+        "draw_games": 5290
+      },
+      {
+        "card": "Legion Leadership",
+        "dependency_score": 0.18100741536930348,
+        "standalone_delta": 0.03417042290967798,
+        "draw_games": 1804
+      },
+      {
+        "card": "Guardian of the Forgotten",
+        "dependency_score": 0.16157597689337272,
+        "standalone_delta": -0.00524616286197177,
+        "draw_games": 3497
+      },
+      {
         "card": "Metastatic Evangel",
-        "dependency_score": 0.14789417567881238,
+        "dependency_score": 0.15976321817912256,
         "standalone_delta": -0.012972989848220595,
         "draw_games": 4538
       },
@@ -6027,46 +5472,22 @@
         "draw_games": 4364
       },
       {
-        "card": "Temperamental Oozewagg",
-        "dependency_score": 0.13523620019137864,
-        "standalone_delta": -0.013337110524080598,
-        "draw_games": 7186
-      },
-      {
-        "card": "Mandibular Kite",
-        "dependency_score": 0.12960969855007556,
-        "standalone_delta": 0.005808415897083807,
-        "draw_games": 8821
-      },
-      {
-        "card": "Glyph Elemental",
-        "dependency_score": 0.12222907640863152,
-        "standalone_delta": -0.01249917232004305,
-        "draw_games": 4621
-      },
-      {
         "card": "Nyxborn Hydra",
-        "dependency_score": 0.11897156247026076,
+        "dependency_score": 0.14265515024104397,
         "standalone_delta": 0.017202285870985157,
         "draw_games": 7415
       },
       {
-        "card": "Wing It",
-        "dependency_score": 0.11368746279536292,
-        "standalone_delta": 0.0008277984540469019,
-        "draw_games": 5290
+        "card": "Malevolent Rumble",
+        "dependency_score": 0.14003424497055972,
+        "standalone_delta": 0.03698426989490966,
+        "draw_games": 3623
       },
       {
-        "card": "Guardian of the Forgotten",
-        "dependency_score": 0.11050335058303075,
-        "standalone_delta": -0.00524616286197177,
-        "draw_games": 3497
-      },
-      {
-        "card": "Legion Leadership",
-        "dependency_score": 0.10959755272574973,
-        "standalone_delta": 0.03417042290967798,
-        "draw_games": 1804
+        "card": "Glyph Elemental",
+        "dependency_score": 0.13852157790351816,
+        "standalone_delta": -0.01249917232004305,
+        "draw_games": 4621
       }
     ],
     "top_pairs": [
@@ -6152,16 +5573,6 @@
       },
       {
         "cards": [
-          "Ajani Fells the Godsire",
-          "Legion Leadership"
-        ],
-        "quality_score": 0.27921508519838123,
-        "pair_win_rate": 0.6534653465346535,
-        "pair_games": 101,
-        "synergy_delta_logit": 0.17638341787411593
-      },
-      {
-        "cards": [
           "Guardian of the Forgotten",
           "Wing It"
         ],
@@ -6182,13 +5593,23 @@
       },
       {
         "cards": [
-          "Ajani Fells the Godsire",
-          "Thraben Charm"
+          "Nyxborn Unicorn",
+          "Signature Slam"
         ],
-        "quality_score": 0.2652715617451122,
-        "pair_win_rate": 0.6234309623430963,
-        "pair_games": 478,
-        "synergy_delta_logit": 0.09767267766365273
+        "quality_score": 0.23811643834949545,
+        "pair_win_rate": 0.6057046979865772,
+        "pair_games": 596,
+        "synergy_delta_logit": 0.09746835530627623
+      },
+      {
+        "cards": [
+          "Guardian of the Forgotten",
+          "Mandibular Kite"
+        ],
+        "quality_score": 0.21390753980466534,
+        "pair_win_rate": 0.5871559633027523,
+        "pair_games": 436,
+        "synergy_delta_logit": 0.1376662783767908
       }
     ],
     "top_anti_pairs": [
@@ -6473,20 +5894,9 @@
       {
         "cards": [
           "Ajani Fells the Godsire",
-          "Thraben Charm"
-        ],
-        "pick_score": 10.0,
-        "pick_score_raw": 2.86306730399135,
-        "pair_win_rate": 0.6234309623430963,
-        "pair_games": 478,
-        "draft_pair_events": 1686
-      },
-      {
-        "cards": [
-          "Ajani Fells the Godsire",
           "Nyxborn Hydra"
         ],
-        "pick_score": 9.592852721784565,
+        "pick_score": 8.976732215414538,
         "pick_score_raw": 2.590740679307288,
         "pair_win_rate": 0.6237373737373737,
         "pair_games": 396,
@@ -6497,7 +5907,7 @@
           "Nyxborn Unicorn",
           "Signature Slam"
         ],
-        "pick_score": 9.546826517800703,
+        "pick_score": 8.927152914648508,
         "pick_score_raw": 2.57593439878836,
         "pair_win_rate": 0.6057046979865772,
         "pair_games": 596,
@@ -6508,7 +5918,7 @@
           "Ajani Fells the Godsire",
           "Envoy of the Ancestors"
         ],
-        "pick_score": 9.523806439021119,
+        "pick_score": 8.902355748888954,
         "pick_score_raw": 2.568551934087142,
         "pair_win_rate": 0.6512605042016807,
         "pair_games": 238,
@@ -6519,7 +5929,7 @@
           "Evolution Witness",
           "Metastatic Evangel"
         ],
-        "pick_score": 9.402888713101865,
+        "pick_score": 8.77210350598408,
         "pick_score_raw": 2.530023564589624,
         "pair_win_rate": 0.6147186147186147,
         "pair_games": 462,
@@ -6527,32 +5937,10 @@
       },
       {
         "cards": [
-          "Nyxborn Hydra",
-          "Strength of the Harvest"
-        ],
-        "pick_score": 8.463339210746554,
-        "pick_score_raw": 2.244485610423345,
-        "pair_win_rate": 0.6003787878787878,
-        "pair_games": 528,
-        "draft_pair_events": 1709
-      },
-      {
-        "cards": [
-          "Ajani Fells the Godsire",
-          "Dog Umbra"
-        ],
-        "pick_score": 8.4494137882399,
-        "pick_score_raw": 2.240432051327483,
-        "pair_win_rate": 0.6024096385542169,
-        "pair_games": 498,
-        "draft_pair_events": 1621
-      },
-      {
-        "cards": [
           "Envoy of the Ancestors",
           "Nyxborn Hydra"
         ],
-        "pick_score": 8.391734169195358,
+        "pick_score": 7.682890603028673,
         "pick_score_raw": 2.2236959199295243,
         "pair_win_rate": 0.6068181818181818,
         "pair_games": 440,
@@ -6560,25 +5948,58 @@
       },
       {
         "cards": [
-          "Ajani Fells the Godsire",
-          "Malevolent Rumble"
-        ],
-        "pick_score": 8.094214361593988,
-        "pick_score_raw": 2.1387315909073,
-        "pair_win_rate": 0.6390243902439025,
-        "pair_games": 205,
-        "draft_pair_events": 882
-      },
-      {
-        "cards": [
           "Inspired Inventor",
           "Signature Slam"
         ],
-        "pick_score": 7.681656523611915,
+        "pick_score": 6.917996909645638,
         "pick_score_raw": 2.024608106214903,
         "pair_win_rate": 0.6052631578947368,
         "pair_games": 380,
         "draft_pair_events": 1394
+      },
+      {
+        "cards": [
+          "Envoy of the Ancestors",
+          "Evolution Witness"
+        ],
+        "pick_score": 6.873730008383395,
+        "pick_score_raw": 2.01347014131776,
+        "pair_win_rate": 0.6004618937644342,
+        "pair_games": 433,
+        "draft_pair_events": 1323
+      },
+      {
+        "cards": [
+          "Evolution Witness",
+          "Guide of Souls"
+        ],
+        "pick_score": 6.479309508716344,
+        "pick_score_raw": 1.916023591105999,
+        "pair_win_rate": 0.6541353383458647,
+        "pair_games": 133,
+        "draft_pair_events": 475
+      },
+      {
+        "cards": [
+          "Evolution Witness",
+          "Mandibular Kite"
+        ],
+        "pick_score": 5.960381122828163,
+        "pick_score_raw": 1.7925995961608148,
+        "pair_win_rate": 0.5753768844221105,
+        "pair_games": 796,
+        "draft_pair_events": 2572
+      },
+      {
+        "cards": [
+          "Dog Umbra",
+          "Evolution Witness"
+        ],
+        "pick_score": 5.738566166512276,
+        "pick_score_raw": 1.7414490927042767,
+        "pair_win_rate": 0.5732558139534883,
+        "pair_games": 860,
+        "draft_pair_events": 2521
       }
     ]
   },
@@ -6816,9 +6237,9 @@
         "Etherium Pteramander"
       ],
       "build_arounds": [
+        "Drossclaw",
         "Pyretic Rebirth",
-        "Furnace Hellkite",
-        "Eviscerator's Insight"
+        "Furnace Hellkite"
       ],
       "core_cards": [
         "Cranial Ram",
@@ -6848,8 +6269,8 @@
       ],
       "build_arounds": [
         "Eviscerator's Insight",
-        "Fetid Gargantua",
-        "Retrofitted Transmogrant"
+        "Retrofitted Transmogrant",
+        "Refurbished Familiar"
       ],
       "core_cards": [
         "Dreamdrinker Vampire",
@@ -6862,6 +6283,7 @@
   "index_href": "../index.html",
   "config_href": "../site-config.json"
 }</script>
+<script src="../_assets/mtgnet.js"></script>
 <script>
 (function() {
   var payloadText = document.getElementById('payloadData').textContent;
@@ -6967,6 +6389,8 @@
   var labelsBtn = document.getElementById('labelsBtn');
   var quickToggleBtn = document.getElementById('quickToggleBtn');
   var legendToggleBtn = document.getElementById('legendToggleBtn');
+  var edgeDensitySlider = document.getElementById('edgeDensitySlider');
+  var edgeDensityValue = document.getElementById('edgeDensityValue');
   var drawerBtn = document.getElementById('drawerBtn');
   var zoomOutBtn = document.getElementById('zoomOutBtn');
   var resetViewBtn = document.getElementById('resetViewBtn');
@@ -6989,28 +6413,19 @@
   var hasGameData = !!(payload.meta && payload.meta.has_game_data);
   var performanceLabel = hasGameData ? 'game WR' : 'draft match WR';
   var performanceRowLabel = hasGameData ? 'games' : 'matches';
+  var edgeDensitySlug = 'cluster-' + (payload.meta.format || '') + '-' + segment.cluster_id;
+  var edgeDensity = MTGNET.loadEdgeDensity(edgeDensitySlug);
   pageTitle.textContent = segment.title;
   pageSubtitle.textContent = segment.deck_count + ' decks | ' + segment.games + ' ' + performanceRowLabel + ' | ' + (100 * segment.win_rate).toFixed(2) + '% ' + performanceLabel;
 
-  function pct(x) { return (100 * x).toFixed(2) + '%'; }
+  var pct = MTGNET.pct;
   function pp(x) { return (100 * x).toFixed(2) + ' pp'; }
-  function esc(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  var esc = MTGNET.esc;
   function premiumMessage(feature) {
     setSelection('<strong>Premium feature</strong><div class="muted" style="margin-top:8px">' + feature + ' is available in the premium version.</div>');
   }
-  function svgEl(name, attrs) {
-    var node = document.createElementNS('http://www.w3.org/2000/svg', name);
-    attrs = attrs || {};
-    Object.keys(attrs).forEach(function(key) { node.setAttribute(key, String(attrs[key])); });
-    return node;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var svgEl = MTGNET.svgEl;
+  var clear = MTGNET.clear;
   function shouldSuppressClick() {
     return Date.now() < suppressClickUntil;
   }
@@ -7078,16 +6493,7 @@
     viewState = { scale: 1.0, tx: 0.0, ty: 0.0 };
     applyViewportTransform();
   }
-  function polarArc(cx, cy, r, startDeg, endDeg) {
-    var start = (Math.PI / 180) * startDeg;
-    var end = (Math.PI / 180) * endDeg;
-    var x1 = cx + r * Math.cos(start);
-    var y1 = cy + r * Math.sin(start);
-    var x2 = cx + r * Math.cos(end);
-    var y2 = cy + r * Math.sin(end);
-    var large = (endDeg - startDeg) <= 180 ? 0 : 1;
-    return ['M', cx, cy, 'L', x1, y1, 'A', r, r, 0, large, 1, x2, y2, 'Z'].join(' ');
-  }
+  var polarArc = MTGNET.polarArc;
   function openDrawer() {
     closeModal();
     drawer.classList.add('open');
@@ -7215,10 +6621,12 @@
     visibleNodeMap = Object.create(null);
     radiusById = Object.create(null);
     visibleNodes.forEach(function(node) { visibleNodeMap[node.id] = node; });
-    visibleEdges = segment.edges
+    visibleEdges = MTGNET.filterEdgesByDensity(segment.edges, edgeDensity)
       .filter(function(edge) { return visibleNodeMap[edge.from] && visibleNodeMap[edge.to] && currentEdgeScore(edge) > 0; })
       .sort(function(a, b) { return currentEdgeScore(b) - currentEdgeScore(a); });
-    if (filters.topSynergies) {
+    if (filters.topSynergies && visibleEdges.length) {
+      // Guard on visibleEdges.length: with no edges at all, culling
+      // unconnected nodes would blank the entire graph.
       visibleEdges = visibleEdges.slice(0, mode === 'analysis' ? 26 : 20);
       var connected = Object.create(null);
       visibleEdges.forEach(function(edge) {
@@ -7557,15 +6965,25 @@
       : 'Showing ' + shown + ' of ' + total + ' cards. Cards with non-positive projected win lift are hidden in pick-focused view.';
     var edgeClass = mode === 'analysis' ? 'legend-edge' : 'legend-edge pick';
     var nodeClass = mode === 'analysis' ? 'legend-node' : 'legend-node pick';
+    var hasContribution = segment.nodes.some(function(node) { return typeof node.contribution_score === 'number'; });
+    var hasFlowRoles = segment.nodes.some(function(node) { return node.flow_role === 'enabler' || node.flow_role === 'payoff'; });
     legendBox.innerHTML =
       '<strong>View Legend</strong>' +
       '<div class="legend-grid">' +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-area"></span></div><div>Shaded box = learned synergy knot. It groups cards that repeatedly cohere inside the archetype.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' sm"></span><span class="' + nodeClass + ' md"></span><span class="' + nodeClass + ' lg"></span></div><div>' + sizeText + '</div></div>' +
-        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + '</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + '"></span></div><div>Node color = the card\'s color identity (split fill for multicolor); the ring color marks its community within the archetype.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="' + edgeClass + '"></span><span class="' + edgeClass + ' strong"></span></div><div>' + edgeText + ' Solid edges are core, statistically robust links.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples"><span class="legend-edge extended"></span></div><div>Faded/thin edges = extended, weaker or less certain synergies revealed by the edge-density slider.</div></div>' +
+        '<div class="legend-row"><div class="legend-samples">&#8594;</div><div>Arrow A&rarr;B = A has the higher supported win rate of the pair; B leans on the pairing more than A does.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="chip">Build-Around</span></div><div>Gold dashed rings mark flagged build-arounds. Shell dependence lives in the card spotlight and does not automatically mean true build-around status.</div></div>' +
+        (hasFlowRoles
+          ? '<div class="legend-row"><div class="legend-samples"><span class="legend-flow enabler"></span></div><div><strong style="color:#2dd4bf">Enabler (sink)</strong>: teal solid ring - most synergy arrows point into it. Its partners win more than it does; it exists to make them work (fixing, engines, setup).</div></div>' +
+            '<div class="legend-row"><div class="legend-samples"><span class="legend-flow payoff"></span></div><div><strong style="color:#e879f9">Payoff (source)</strong>: pink solid ring - most synergy arrows point out of it. It is what the deck actually wins with, once the enablers put it in motion.</div></div>'
+          : '') +
         '<div class="legend-row"><div class="legend-samples"><span class="legend-edge none"></span></div><div>No edge = the pair did not clear the support and positive-signal filters for this view.</div></div>' +
         '<div class="legend-row"><div class="legend-samples"><span class="' + nodeClass + ' md"></span></div><div>Isolated node = the card may be good alone, or there is not enough evidence for a reliable positive pair link.</div></div>' +
+        (hasContribution ? '<div class="legend-row"><div class="legend-samples"></div><div>Win contribution: regression-based estimate controlling for deck context.</div></div>' : '') +
         '<div class="legend-row"><div class="legend-samples"></div><div>' + visibilityText + '</div></div>' +
       '</div>';
   }
@@ -7666,6 +7084,17 @@
     }
     if ((node.color_identity || '') === 'B') g.lastChild.setAttribute('stroke', '#f8fafc');
     var ringOffset = r + 4;
+    if (node.flow_role === 'enabler' || node.flow_role === 'payoff') {
+      g.appendChild(svgEl('circle', {
+        cx: node.x,
+        cy: node.y,
+        r: ringOffset,
+        fill: 'none',
+        stroke: node.flow_role === 'enabler' ? 'rgba(45, 212, 191, 0.95)' : 'rgba(232, 121, 249, 0.95)',
+        'stroke-width': 2.4
+      }));
+      ringOffset += 6;
+    }
     if (node.is_build_around) {
       g.appendChild(svgEl('circle', {
         cx: node.x,
@@ -7688,7 +7117,13 @@
     g.style.cursor = 'pointer';
     var onNodeClick = function() {
       var shellScore = node.shell_dependence_score != null ? node.shell_dependence_score : (node.build_around_score || 0);
-      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>');
+      var flowLine = '';
+      if (node.flow_role === 'enabler') {
+        flowLine = '<div style="margin-top:6px;color:#2dd4bf"><strong>Enabler (sink)</strong> - ' + (node.flow_in_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point into it: its partners win more than it does, it makes them work.</div>';
+      } else if (node.flow_role === 'payoff') {
+        flowLine = '<div style="margin-top:6px;color:#e879f9"><strong>Payoff (source)</strong> - ' + (node.flow_out_degree || 0) + ' of its ' + ((node.flow_in_degree || 0) + (node.flow_out_degree || 0)) + ' synergy arrows point out of it: it is what the deck is winning with, once enabled.</div>';
+      }
+      setSelection('<strong>' + node.id + '</strong><div class="muted">' + segment.title + '</div><div style="margin-top:8px">Analysis ' + node.analysis_score.toFixed(1) + ' / 10 | Pick ' + node.pick_priority_score.toFixed(1) + ' / 10 | Shell dependence ' + shellScore.toFixed(1) + ' / 10</div>' + flowLine);
       nodeDetail(node);
     };
     g.addEventListener('pointerdown', function(evt) {
@@ -7743,8 +7178,9 @@
       if (!direction) return;
       var signal = Math.pow(Math.max(0.0, currentEdgeScore(edge)) / maxEdge, 0.62);
       var confidence = Math.max(0.0, Math.min(1.0, Number(edge.confidence_probability || 0.0)));
-      var width = 1.0 + 2.4 * confidence + 4.8 * signal;
-      var alpha = 0.12 + 0.76 * confidence;
+      var isExtended = MTGNET.edgeTier(edge) === 'extended';
+      var width = (1.0 + 2.4 * confidence + 4.8 * signal) * (isExtended ? 0.45 : 1.0);
+      var alpha = (0.12 + 0.76 * confidence) * (isExtended ? 0.5 : 1.0);
       var fromNode = nodeMap[edge.from];
       var toNode = nodeMap[edge.to];
       var isCrossCommunity = fromNode && toNode && fromNode.community !== toNode.community;
@@ -7861,6 +7297,16 @@
   zoomInBtn.addEventListener('click', function() { zoomAt(1.18); });
   quickToggleBtn.addEventListener('click', toggleQuickRead);
   legendToggleBtn.addEventListener('click', toggleLegend);
+  if (edgeDensitySlider) {
+    edgeDensitySlider.value = String(Math.round(edgeDensity * 100));
+    if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+    edgeDensitySlider.addEventListener('input', function() {
+      edgeDensity = Math.max(0, Math.min(1, Number(edgeDensitySlider.value) / 100));
+      if (edgeDensityValue) edgeDensityValue.textContent = edgeDensitySlider.value + '%';
+      MTGNET.saveEdgeDensity(edgeDensitySlug, edgeDensity);
+      draw();
+    });
+  }
   drawerBtn.addEventListener('click', toggleDrawer);
   drawerOverlay.addEventListener('click', closeDrawer);
   window.addEventListener('pointermove', function(evt) {
