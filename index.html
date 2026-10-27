@@ -193,9 +193,11 @@
     }
     .format-card {
       padding: 20px;
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 14px;
     }
+    .format-card .btn-row { margin-top: auto; }
     .format-card h3 {
       margin: 0;
       font-size: 24px;
@@ -258,7 +260,7 @@
       <div class="panel hero-copy">
         <div class="kicker">Interactive Limited Analysis</div>
         <h1>Learn limited archetypes and pick priorities fast.</h1>
-        <div class="lead">Interactive archetype maps built from 17Lands game and draft data. See what people are playing, what cards need support, and which picks actually move win rate inside each lane.</div>
+        <div class="lead">Archetype maps learned from 17Lands Premier Draft data. See what each deck is built around, which cards win on their own, which pairs win more together, and which picks raise win rate inside each deck.</div>
         <div class="search-wrap">
           <div class="search-row">
             <input id="cardSearchInput" class="search-input" type="search" placeholder="Search a card name" autocomplete="off" spellcheck="false" />
@@ -268,16 +270,16 @@
         </div>
         <div class="bullet-grid">
           <div class="bullet">
-            <strong>Data-driven archetypes</strong>
-            Archetypes are learned from full deck builds, not hard-coded by color pair.
+            <strong>Learned archetypes</strong>
+            Clustered from full deck lists. Colour pairs (or clans) seed them, and decks that cut across colours get their own archetype.
           </div>
           <div class="bullet">
-            <strong>Card synergy networks</strong>
-            Links show which cards repeatedly outperform together inside the same shell.
+            <strong>Verified synergies</strong>
+            A pair is linked only when it wins more together than the two cards' separate effects predict, with false discoveries controlled.
           </div>
           <div class="bullet">
-            <strong>Build-arounds, glue, traps</strong>
-            Separate cards that are strong alone from cards that only shine with support.
+            <strong>Core cards and bombs</strong>
+            Core cards define the deck. Bombs win on their own; those not already part of the deck sit in a separate island.
           </div>
         </div>
         <div class="btn-row">
@@ -287,16 +289,20 @@
       <div class="panel hero-side">
         <strong>What You Get</strong>
         <div class="mini-card">
-          <h2>Analysis View</h2>
-          <p>See what defines each archetype: signposts, core cards, synergy knots, and the shells people actually draft.</p>
+          <h2>Core view</h2>
+          <p>Each archetype as an onion: core cards in the centre, support and periphery cards further out. Bombs, strong on their own, sit in a separate island unless they are core or support cards.</p>
         </div>
         <div class="mini-card">
-          <h2>Pick-Focused View</h2>
-          <p>See which cards increase wins once you are in an archetype, split by rarity with urgency and wheel context.</p>
+          <h2>Synergy view</h2>
+          <p>Pairs that win more together than their separate effects predict, tested per archetype with false-discovery control. Arrows point from payoff to engine.</p>
         </div>
         <div class="mini-card">
-          <h2>Card Spotlight</h2>
-          <p>Click a card to open its card page: win rate alone, win rate when supported, top synergies, anti-synergies, ALSA, and wheel likelihood.</p>
+          <h2>Picks view</h2>
+          <p>Cards ranked by how much they raise draft win rate in the deck, with pick urgency, average last-seen pick, and wheel chance.</p>
+        </div>
+        <div class="mini-card">
+          <h2>Splash guide and report</h2>
+          <p>Per set: how decks that splashed each colour did against the same colours without a splash, plus a PDF report of the format.</p>
         </div>
         <div class="btn-row">
           <a class="btn secondary" href="about/index.html">About the method</a>
@@ -310,42 +316,48 @@
     <div class="section-title">How Do I Use This Website?</div>
     <section class="step-grid">
       <article class="panel step-card">
-        <strong>1. Start in Analysis View</strong>
-        Use this to answer “what are people playing?” The network shows the learned archetypes, the cards that define them, and which groups of cards naturally cluster together.
+        <strong>1. Pick a set, then an archetype</strong>
+        The set page lists its archetypes, largest first, with deck share, win rate, core cards and bombs.
       </article>
       <article class="panel step-card">
-        <strong>2. Switch to Pick-Focused View</strong>
-        Use this to answer “what wins when I am in this lane?” Node size shifts toward cards that raise projected wins inside the archetype, not just cards that are common there.
+        <strong>2. Start in the Core view</strong>
+        Use it to answer “what is this deck built from?” Core cards sit in the centre, support and periphery cards further out. The island beside the rings holds bombs: strong on their own, often worth a splash.
       </article>
       <article class="panel step-card">
-        <strong>3. Click cards to learn more about them</strong>
-        Clicking on a node tells you which cards are most synergistic with it, which cards pull against it, and how much the shell matters.
+        <strong>3. Check the Synergy view</strong>
+        Use it to answer “which pairs win more together?” Only pairs that pass the statistical test are drawn. Many archetypes have few: their cards mostly win on their own.
       </article>
       <article class="panel step-card">
-        <strong>4. Read isolated nodes carefully</strong>
-        In pick view, a card with few or no links is often a splashable bomb: it wins because it is strong on its own, not because it needs a dedicated synergy shell.
+        <strong>4. Draft with the Picks view</strong>
+        Use it to answer “what should I take for this deck?” Bigger cards raise draft win rate more; cards that do not are faded.
       </article>
       <article class="panel step-card">
-        <strong>5. Learn how to support cards that need it</strong>
-        Nodes with large connections are often the ones that gain the most when the right cards are played together. Use them to spot synergy packages and real build-arounds in the set.
+        <strong>5. Click a card to learn more about it</strong>
+        The spotlight shows its win rate in hand, verified synergy partners, the cards it is played with most, pick score, ALSA, and wheel chance.
+      </article>
+      <article class="panel step-card">
+        <strong>6. Thinking of a splash? Open the Splash guide</strong>
+        It compares decks that splashed each colour with decks of the same colours that did not, and lists the fixing that set offers.
       </article>
     </section>
 
-    <div class="section-title">Try The Latest Formats</div>
+    <div class="section-title">Formats</div>
     <section class="grid">
       <article class="panel format-card" data-format-card data-format="FRA">
         <div>
           <h3>Reality Fracture</h3>
-          <p>Azorius leads the format at 57.3%, with Dimir and Golgari Wolf close behind. Gruul is the most-drafted shell, and eleven distinct archetypes survive the unsupervised pass.</p>
+          <p>All ten colour pairs: Azorius leads at 57.0% with Golgari and Dimir right behind, Dimir is the most-drafted pair, and Boros trails at 53.3%.</p>
         </div>
         <div class="tags">
-          <span class="tag">11 archetypes</span>
+          <span class="tag">10 archetypes</span>
           <span class="tag">298k games</span>
+          <span class="tag">All ten pairs</span>
           <span class="tag">Latest set</span>
         </div>
         <div class="status"><span class="dot"></span><span>Latest public set. Built from 17Lands game and draft data.</span></div>
         <div class="btn-row">
           <a class="btn" href="reality-fracture/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="reality-fracture/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/fra_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -353,15 +365,16 @@
       <article class="panel format-card" data-format-card data-format="SOS">
         <div>
           <h3>Secrets of Strixhaven</h3>
-          <p>Boros Spirit and Orzhov tie at the top with a 57.2% win rate, three distinct Izzet shells split the blue-red lane, and Simic Fractal and Golgari Pest round out seven college-themed archetypes.</p>
+          <p>Lorehold (Boros) and Silverquill (Orzhov) tie at the top near 57%, Prismari (Izzet), Temur and Witherbloom (Golgari) follow, and Quandrix (Simic) trails at 53.3%.</p>
         </div>
         <div class="tags">
-          <span class="tag">7 archetypes</span>
-          <span class="tag">College themes</span>
+          <span class="tag">6 archetypes</span>
           <span class="tag">583k games</span>
+          <span class="tag">College themes</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="secrets-of-strixhaven/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="secrets-of-strixhaven/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/sos_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -369,14 +382,16 @@
       <article class="panel format-card" data-format-card data-format="TMT">
         <div>
           <h3>Teenage Mutant Ninja Turtles</h3>
-          <p>Two Orzhov shells at the top — Leonardo control and Shredder aggro — with Izzet artifact-token as the format's largest archetype, two Golgari midrange splits, and Boros Raphael beating things down on the right.</p>
+          <p>Izzet Robots is a quarter of all decks, Orzhov wins 58.6%, and a five-colour Pizza deck tops the format at 60.3%; Simic trails at 52.1%.</p>
         </div>
         <div class="tags">
-          <span class="tag">7 archetypes</span>
-          <span class="tag">Mutant tribal</span>
+          <span class="tag">6 archetypes</span>
+          <span class="tag">180k games</span>
+          <span class="tag">Five-colour Pizza</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="tmnt/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="tmnt/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/tmt_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -384,15 +399,16 @@
       <article class="panel format-card" data-format-card data-format="Cube - Powered">
         <div>
           <h3>Powered Cube</h3>
-          <p>Storm, reanimator, artifacts, white control, and the broad macro-archetypes of powered cube.</p>
+          <p>Boros tokens tops the cube at 60.7% and is a quarter of all decks; green ramp, reanimator, blue artifacts, Azorius control, storm and Rakdos midrange fill out seven macro-archetypes.</p>
         </div>
         <div class="tags">
-          <span class="tag">Base-color labels</span>
-          <span class="tag">Combo shells</span>
-          <span class="tag">Draft priority view</span>
+          <span class="tag">7 archetypes</span>
+          <span class="tag">266k games</span>
+          <span class="tag">Macro-archetypes</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="cube/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="cube/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/cube_powered_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -400,15 +416,16 @@
       <article class="panel format-card" data-format-card data-format="ECL">
         <div>
           <h3>Lorwyn Eclipsed</h3>
-          <p>Merfolk, Kithkin, Elves, Goblins, and the tribal decks that actually hold together in the data.</p>
+          <p>Golgari Elves, Azorius Merfolk and Selesnya Kithkin lead; Izzet Elementals and Rakdos Goblins follow, plus a five-colour Great Forest Druid pile and a small Dimir Faeries deck.</p>
         </div>
         <div class="tags">
-          <span class="tag">Tribal splits</span>
-          <span class="tag">Card spotlight</span>
-          <span class="tag">Anti-synergies</span>
+          <span class="tag">7 archetypes</span>
+          <span class="tag">537k games</span>
+          <span class="tag">Tribal decks</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="lorwyn/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="lorwyn/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/ecl_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -416,15 +433,16 @@
       <article class="panel format-card" data-format-card data-format="TLA">
         <div>
           <h3>Avatar: The Last Airbender</h3>
-          <p>White-based aggro, blue tempo, Fire Nation pressure, and slower black-based attrition shells.</p>
+          <p>A white-based deck that cuts across pairs leads at 58.4%, Boros Rebels and Dimir follow, Azorius is the most-drafted pair and Rakdos sits at the bottom.</p>
         </div>
         <div class="tags">
-          <span class="tag">8 archetypes</span>
-          <span class="tag">Support cards</span>
-          <span class="tag">Synergy map</span>
+          <span class="tag">11 archetypes</span>
+          <span class="tag">563k games</span>
+          <span class="tag">All ten pairs</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="avatar/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="avatar/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/tla_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -432,15 +450,16 @@
       <article class="panel format-card" data-format-card data-format="FIN">
         <div>
           <h3>Final Fantasy</h3>
-          <p>Equipment decks, multicolor value shells, and several distinct human-heavy archetypes.</p>
+          <p>All ten colour pairs plus a white-based deck that cuts across them and wins 59.5%; Izzet is the most-drafted pair and Gruul trails at 53.2%.</p>
         </div>
         <div class="tags">
           <span class="tag">11 archetypes</span>
-          <span class="tag">Card spotlight</span>
-          <span class="tag">Pick priorities</span>
+          <span class="tag">770k games</span>
+          <span class="tag">All ten pairs</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="final-fantasy/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="final-fantasy/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/fin_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -448,30 +467,50 @@
       <article class="panel format-card" data-format-card data-format="EOE">
         <div>
           <h3>Edge of Eternities</h3>
-          <p>Simic Insect leads the format, with Gruul Kavu, Orzhov Humans, Azorius Jellyfish, and multiple robot shells all surviving the unsupervised pass.</p>
+          <p>Simic leads at 57.0% and is the most-drafted pair, Gruul and Orzhov follow, Izzet Robots sits at the bottom, and a small black-based deck forms an eleventh archetype.</p>
         </div>
         <div class="tags">
-          <span class="tag">9 archetypes</span>
-          <span class="tag">Robot shells</span>
+          <span class="tag">11 archetypes</span>
+          <span class="tag">563k games</span>
+          <span class="tag">All ten pairs</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="edge-of-eternities/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="edge-of-eternities/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/eoe_synergy_report.pdf">Read report</a>
+        </div>
+      </article>
+
+      <article class="panel format-card" data-format-card data-format="TDM">
+        <div>
+          <h3>Tarkir: Dragonstorm</h3>
+          <p>Five three-colour clans plus Boros go-wide (the best deck at 57.8%) and a separate five-colour Dragons lane; Temur is the most-drafted clan.</p>
+        </div>
+        <div class="tags">
+          <span class="tag">7 archetypes</span>
+          <span class="tag">552k games</span>
+          <span class="tag">Three-colour clans</span>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="tarkir/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="tarkir/splash/index.html">Splash guide</a>
+          <a class="btn secondary" data-report-link href="reports/tarkir_tdm_synergy_report.pdf">Read report</a>
         </div>
       </article>
 
       <article class="panel format-card" data-format-card data-format="DSK">
         <div>
           <h3>Duskmourn</h3>
-          <p>Boros Toys and Azorius Humans sit at the top, with Rakdos sacrifice, Simic manifest, and two separate Gruul branches behind them.</p>
+          <p>Boros Toys (56.8%) and Azorius lead all ten colour pairs, Selesnya Survivors is a real tribe, and Dimir trails at 51.1%.</p>
         </div>
         <div class="tags">
-          <span class="tag">11 archetypes</span>
-          <span class="tag">Toy aggro</span>
-          <span class="tag">Manifest shells</span>
+          <span class="tag">10 archetypes</span>
+          <span class="tag">1.0M games</span>
+          <span class="tag">All ten pairs</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="duskmourn/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="duskmourn/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/dsk_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -479,30 +518,33 @@
       <article class="panel format-card" data-format-card data-format="MH3">
         <div>
           <h3>Modern Horizons 3</h3>
-          <p>Boros energy and Gruul Eldrazi lead the format. Nine archetypes spanning Eldrazi tribal, Zombies, energy-based aggro, and slower Simic and Dimir control shells.</p>
+          <p>Boros aggro (58.6%) and Gruul Eldrazi lead, Simic Eldrazi is the most-drafted deck, Rakdos zombies and a Jeskai clan round out eleven archetypes, and Orzhov sits at the bottom.</p>
         </div>
         <div class="tags">
-          <span class="tag">9 archetypes</span>
-          <span class="tag">Eldrazi tribal</span>
-          <span class="tag">Energy aggro</span>
+          <span class="tag">11 archetypes</span>
+          <span class="tag">768k games</span>
+          <span class="tag">Eldrazi decks</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="modern-horizons-3/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="modern-horizons-3/splash/index.html">Splash guide</a>
+          <a class="btn secondary" data-report-link href="reports/mh3_synergy_report.pdf">Read report</a>
         </div>
       </article>
 
       <article class="panel format-card" data-format-card data-format="STX">
         <div>
           <h3>Strixhaven: School of Mages</h3>
-          <p>Silverquill's Orzhov Bird shell tops the format at 60.0%, Simic is the most-drafted pairing, and Prismari splits into two Izzet builds alongside Lorehold spirits, Orzhov humans, and Witherbloom Golgari.</p>
+          <p>The five colleges: Silverquill (Orzhov) leads at 57.5%, Quandrix (Simic) is the most-drafted, Lorehold spirits sit mid-table and Prismari (Izzet) trails at 53.0%.</p>
         </div>
         <div class="tags">
-          <span class="tag">7 archetypes</span>
-          <span class="tag">College themes</span>
+          <span class="tag">5 archetypes</span>
           <span class="tag">465k games</span>
+          <span class="tag">College themes</span>
         </div>
         <div class="btn-row">
           <a class="btn" href="strixhaven/index.html">Open interactive map</a>
+          <a class="btn secondary" data-splash-link href="strixhaven/splash/index.html">Splash guide</a>
           <a class="btn secondary" data-report-link href="reports/stx_synergy_report.pdf">Read report</a>
         </div>
       </article>
@@ -677,7 +719,7 @@
     }
     Array.prototype.slice.call(document.querySelectorAll('a.btn[href$="index.html"]')).forEach(function(link) {
       var href = link.getAttribute('href') || '';
-      if (!/^(reality-fracture|secrets-of-strixhaven|strixhaven|tmnt|cube|lorwyn|avatar|final-fantasy|edge-of-eternities|duskmourn|modern-horizons-3)\/index\.html$/.test(href)) return;
+      if (!/^(reality-fracture|secrets-of-strixhaven|strixhaven|tmnt|cube|lorwyn|avatar|final-fantasy|edge-of-eternities|tarkir|duskmourn|modern-horizons-3)\/index\.html$/.test(href)) return;
       link.addEventListener('click', function() {
         trackEvent('homepage_format_open', { target_href: href });
       });
@@ -685,6 +727,11 @@
     Array.prototype.slice.call(document.querySelectorAll('[data-report-link]')).forEach(function(link) {
       link.addEventListener('click', function() {
         trackEvent('homepage_report_open', { target_href: link.getAttribute('href') || '' });
+      });
+    });
+    Array.prototype.slice.call(document.querySelectorAll('[data-splash-link]')).forEach(function(link) {
+      link.addEventListener('click', function() {
+        trackEvent('homepage_splash_open', { target_href: link.getAttribute('href') || '' });
       });
     });
     Array.prototype.slice.call(document.querySelectorAll('a[href="about/index.html"], a[href="privacy/index.html"], [data-trivia-link]')).forEach(function(link) {

@@ -1,39 +1,73 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <script>(function(){try{var t=localStorage.getItem('mtgnet_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
   <title>Secrets of Strixhaven | Format Overview</title>
   <style>
     :root {
-      --bg: #08101d; --text: #ecf2fb; --muted: #9bb0cd; --line: rgba(126,157,197,0.18);
+      color-scheme: dark;
+      --bg: #08101d; --bg-top: #0a1220; --glow: rgba(37,99,235,0.22);
+      --text: #ecf2fb; --muted: #9bb0cd; --line: rgba(126,157,197,0.18);
       --panel: rgba(13,20,34,0.92); --accent: #5cc8ff; --good: #43d17a;
+      --btn-bg: rgba(92,200,255,0.16); --btn-line: rgba(92,200,255,0.34);
+      --chip-bg: rgba(92,200,255,0.12); --chip-line: rgba(92,200,255,0.22);
+      --soft: rgba(255,255,255,0.04); --track: rgba(255,255,255,0.06);
+      --table-line: rgba(148,163,184,0.14); --shadow: 0 24px 64px rgba(0,0,0,0.28);
+      --bar-1: rgba(92,200,255,0.85); --bar-2: rgba(67,209,122,0.85);
+    }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+      color-scheme: light;
+      --bg: #f5f7fa; --bg-top: #eef2f7; --glow: rgba(11,99,193,0.10);
+      --text: #0f1a2a; --muted: #4b5b70; --line: rgba(15,26,42,0.14);
+      --panel: rgba(255,255,255,0.96); --accent: #0b63c1; --good: #15803d;
+      --btn-bg: rgba(11,99,193,0.10); --btn-line: rgba(11,99,193,0.35);
+      --chip-bg: rgba(11,99,193,0.08); --chip-line: rgba(11,99,193,0.25);
+      --soft: rgba(15,26,42,0.04); --track: rgba(15,26,42,0.06);
+      --table-line: rgba(15,26,42,0.10); --shadow: 0 10px 30px rgba(15,26,42,0.12);
+      --bar-1: rgba(11,99,193,0.85); --bar-2: rgba(21,128,61,0.85);
+      }
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f5f7fa; --bg-top: #eef2f7; --glow: rgba(11,99,193,0.10);
+      --text: #0f1a2a; --muted: #4b5b70; --line: rgba(15,26,42,0.14);
+      --panel: rgba(255,255,255,0.96); --accent: #0b63c1; --good: #15803d;
+      --btn-bg: rgba(11,99,193,0.10); --btn-line: rgba(11,99,193,0.35);
+      --chip-bg: rgba(11,99,193,0.08); --chip-line: rgba(11,99,193,0.25);
+      --soft: rgba(15,26,42,0.04); --track: rgba(15,26,42,0.06);
+      --table-line: rgba(15,26,42,0.10); --shadow: 0 10px 30px rgba(15,26,42,0.12);
+      --bar-1: rgba(11,99,193,0.85); --bar-2: rgba(21,128,61,0.85);
     }
     * { box-sizing: border-box; }
     body { margin: 0; color: var(--text); font: 16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background: radial-gradient(circle at top, rgba(37,99,235,0.22), transparent 34%), linear-gradient(180deg, #0a1220, #08101d 62%);
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at top, var(--glow), transparent 34%), linear-gradient(180deg, var(--bg-top), var(--bg) 62%);
       min-height: 100vh; }
     a { color: inherit; text-decoration: none; }
     .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
-    .hero, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 24px 64px rgba(0,0,0,0.28); }
+    .hero, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); }
     .hero { padding: 26px; display: grid; gap: 14px; margin-bottom: 22px; }
     .topbar { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 10px 14px; border: 1px solid rgba(92,200,255,0.34); background: rgba(92,200,255,0.16); font-weight: 600; min-height: 42px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 10px 14px; border: 1px solid var(--btn-line); background: var(--btn-bg); font-weight: 600; min-height: 42px; }
     h1 { margin: 0; font-size: clamp(34px, 6vw, 52px); line-height: 0.98; }
     .lead, .muted { color: var(--muted); }
     .summary { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-    .stat { padding: 14px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 18px; }
+    .stat { padding: 14px 16px; background: var(--soft); border: 1px solid var(--line); border-radius: 18px; }
     .stat strong { display:block; font-size: 24px; }
     .section-title { margin: 26px 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
     .grid { display:grid; gap: 14px; }
     .panel { padding: 18px; overflow: auto; }
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid rgba(148,163,184,0.14); }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--table-line); }
     th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
     .bar-row { display:grid; gap: 6px; margin-bottom: 10px; }
     .bar-meta { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-    .bar-track { height: 12px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); overflow: hidden; }
-    .bar-fill { height: 100%; background: linear-gradient(90deg, rgba(92,200,255,0.85), rgba(67,209,122,0.85)); }
+    .bar-track { height: 12px; border-radius: 999px; background: var(--track); border: 1px solid var(--line); overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--bar-1), var(--bar-2)); }
     @media (max-width: 700px) { .bar-meta { flex-direction: column; } }
   </style>
 </head>
@@ -46,16 +80,16 @@
         <a class="btn" href="../../privacy/index.html">Privacy</a>
       </div>
       <h1>Secrets of Strixhaven</h1>
-      <div class="lead">Lorehold spirits and Silverquill attrition tie at the top, Prismari splits into three distinct Izzet shells, with Quandrix fractals and Witherbloom pests behind them.</div>
+      <div class="lead">Six archetypes: Lorehold (Boros) and Silverquill (Orzhov) tie at the top near 57%, Prismari (Izzet), Temur and Witherbloom (Golgari) follow, and Quandrix (Simic) trails at 53.3%.</div>
       <div class="summary">
         <div class="stat"><div class="muted">Games</div><strong>582,914</strong></div>
-        <div class="stat"><div class="muted">Archetypes</div><strong>7</strong></div>
+        <div class="stat"><div class="muted">Archetypes</div><strong>6</strong></div>
         <div class="stat"><div class="muted">17Lands user WR</div><strong>55.38%</strong></div>
         <div class="stat"><div class="muted">On the play</div><strong>57.99%</strong></div>
         <div class="stat"><div class="muted">On the draw</div><strong>52.77%</strong></div>
         <div class="stat"><div class="muted">Turns / player</div><strong>4.63</strong></div>
         <div class="stat"><div class="muted">Turn spread / player</div><strong>± 1.40</strong></div>
-        <div class="stat"><div class="muted">Best deck</div><strong>Boros Spirit | Pursue the Past / Wilt in the Heat</strong></div>
+        <div class="stat"><div class="muted">Best deck</div><strong>Boros | Pursue the Past / Wilt in the Heat</strong></div>
       </div>
     </section>
 
@@ -72,19 +106,19 @@
     <section class="panel"><table><thead><tr><th>Color</th><th>Card</th><th>Win rate</th><th>Games</th></tr></thead><tbody><tr><td>White</td><td>Repel Calamity</td><td>60.85%</td><td>20,009</td></tr><tr><td>Blue</td><td>Stock Up</td><td>61.95%</td><td>21,798</td></tr><tr><td>Black</td><td>Arcane Omens</td><td>61.50%</td><td>16,770</td></tr><tr><td>Red</td><td>Impractical Joke</td><td>60.05%</td><td>23,165</td></tr><tr><td>Green</td><td>Snarl Song</td><td>64.16%</td><td>24,258</td></tr></tbody></table></section>
 
     <div class="section-title">3. Top 10 Synergies</div>
-    <section class="panel"><table><thead><tr><th>Pair</th><th>Archetype</th><th>Delta</th><th>Confidence</th><th>Games</th></tr></thead><tbody><tr><td>Emeritus of Ideation + Fractal Tender</td><td>Simic Fractal | Studious First-Year / Embrace the Paradox</td><td>0.463</td><td>98.22%</td><td>125</td></tr><tr><td>Emeritus of Ideation + Stadium Tidalmage</td><td>Izzet Elementals | Elemental Mascot / Stadium Tidalmage</td><td>0.348</td><td>97.70%</td><td>166</td></tr><tr><td>Emeritus of Ideation + Muse Seeker</td><td>Izzet Elementals | Elemental Mascot / Stadium Tidalmage</td><td>0.341</td><td>94.07%</td><td>104</td></tr><tr><td>Emeritus of Ideation + Fractal Mascot</td><td>Simic Fractal | Studious First-Year / Embrace the Paradox</td><td>0.335</td><td>97.94%</td><td>222</td></tr><tr><td>Traumatic Critique + Wisdom of Ages</td><td>Izzet | Essence Scatter / Visionary's Dance</td><td>0.323</td><td>97.29%</td><td>213</td></tr><tr><td>Emeritus of Ideation + Vibrant Outburst</td><td>Izzet Elementals | Elemental Mascot / Stadium Tidalmage</td><td>0.261</td><td>88.02%</td><td>108</td></tr><tr><td>Colorstorm Stallion + Rapturous Moment</td><td>Izzet Elementals | Elemental Mascot / Stadium Tidalmage</td><td>0.251</td><td>97.84%</td><td>302</td></tr><tr><td>Vibrant Outburst + Wisdom of Ages</td><td>Izzet | Essence Scatter / Visionary's Dance</td><td>0.235</td><td>98.97%</td><td>500</td></tr><tr><td>Disdainful Stroke + Wisdom of Ages</td><td>Izzet | Essence Scatter / Visionary's Dance</td><td>0.230</td><td>97.10%</td><td>346</td></tr><tr><td>Lluwen, Exchange Student + Professor Dellian Fel</td><td>Golgari Pest | Grapple with Death / Bogwater Lumaret</td><td>0.227</td><td>89.94%</td><td>157</td></tr></tbody></table></section>
+    <section class="panel"><table><thead><tr><th>Pair</th><th>Archetype</th><th>Delta</th><th>Confidence</th><th>Games</th></tr></thead><tbody><tr><td>Resonating Lute + Together as One</td><td>Izzet Sorcerer | Visionary's Dance / Elemental Mascot</td><td>0.407</td><td>99.94%</td><td>390</td></tr><tr><td>Divergent Equation + Resonating Lute</td><td>Izzet Sorcerer | Visionary's Dance / Elemental Mascot</td><td>0.388</td><td>100.00%</td><td>1,132</td></tr><tr><td>Geometer's Arthropod + Pterafractyl</td><td>Simic | Pterafractyl / Fractal Mascot</td><td>0.299</td><td>100.00%</td><td>1,572</td></tr><tr><td>Divergent Equation + Exhibition Tidecaller</td><td>Izzet Sorcerer | Visionary's Dance / Elemental Mascot</td><td>0.273</td><td>99.99%</td><td>1,121</td></tr><tr><td>Blech, Loafing Pest + Teacher's Pest</td><td>Golgari | Grapple with Death / Bogwater Lumaret</td><td>0.261</td><td>99.99%</td><td>1,220</td></tr><tr><td>Shared Roots + Transcendent Archaic</td><td>Temur | Potioner's Trove / Snarl Song</td><td>0.244</td><td>99.98%</td><td>1,430</td></tr><tr><td>Dig Site Inventory + Stirring Hopesinger</td><td>Boros | Pursue the Past / Wilt in the Heat</td><td>0.237</td><td>99.94%</td><td>1,126</td></tr><tr><td>Brush Off + Splatter Technique</td><td>Izzet Sorcerer | Visionary's Dance / Elemental Mascot</td><td>0.234</td><td>99.98%</td><td>1,356</td></tr><tr><td>Resonating Lute + Visionary's Dance</td><td>Izzet Sorcerer | Visionary's Dance / Elemental Mascot</td><td>0.231</td><td>100.00%</td><td>2,742</td></tr><tr><td>Lluwen, Exchange Student + Root Manipulation</td><td>Golgari | Grapple with Death / Bogwater Lumaret</td><td>0.230</td><td>99.90%</td><td>983</td></tr></tbody></table></section>
 
     <div class="section-title">4. Average Win Rate Per Card Rarity</div>
     <section class="panel"><table><thead><tr><th>Rarity</th><th>Weighted WR</th><th>Games</th><th>Cards</th></tr></thead><tbody><tr><td>Common</td><td>56.83%</td><td>2,028,959</td><td>99</td></tr><tr><td>Uncommon</td><td>57.92%</td><td>1,317,258</td><td>123</td></tr><tr><td>Rare</td><td>59.86%</td><td>403,047</td><td>73</td></tr><tr><td>Mythic</td><td>60.38%</td><td>84,020</td><td>34</td></tr></tbody></table></section>
 
     <div class="section-title">5. Win Rate Per Archetype</div>
-    <section class="panel"><div class="bar-row"><div class="bar-meta"><strong>Boros Spirit | Pursue the Past / Wilt in the Heat</strong><span>57.20% | 27,411 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:100.0%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Orzhov | Render Speechless / Melancholic Poet</strong><span>57.17% | 23,241 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:99.9%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Izzet | Potioner's Trove / Snarl Song</strong><span>56.04% | 15,218 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:98.0%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Izzet | Essence Scatter / Visionary's Dance</strong><span>55.73% | 10,960 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:97.4%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Simic Fractal | Studious First-Year / Embrace the Paradox</strong><span>53.87% | 23,796 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:94.2%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Golgari Pest | Grapple with Death / Bogwater Lumaret</strong><span>53.86% | 19,353 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:94.2%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Izzet Elementals | Elemental Mascot / Stadium Tidalmage</strong><span>51.60% | 12,923 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:90.2%"></div></div></div></section>
+    <section class="panel"><div class="bar-row"><div class="bar-meta"><strong>Boros | Pursue the Past / Wilt in the Heat</strong><span>57.15% | 28,041 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:100.0%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Orzhov | Render Speechless / Melancholic Poet</strong><span>57.15% | 23,259 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:100.0%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Temur | Potioner's Trove / Snarl Song</strong><span>55.78% | 19,123 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:97.6%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Golgari | Grapple with Death / Bogwater Lumaret</strong><span>53.92% | 19,201 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:94.3%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Izzet Sorcerer | Visionary's Dance / Elemental Mascot</strong><span>53.74% | 27,551 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:94.0%"></div></div></div><div class="bar-row"><div class="bar-meta"><strong>Simic | Pterafractyl / Fractal Mascot</strong><span>53.29% | 15,727 decks</span></div><div class="bar-track"><div class="bar-fill" style="width:93.3%"></div></div></div></section>
 
     <div class="section-title">6. Most Wanted Card</div>
-    <section class="panel"><table><thead><tr><th>Rarity</th><th>Card</th><th>ALSA</th><th>Occurrences</th></tr></thead><tbody><tr><td>Common</td><td>Burst Lightning</td><td>1.85</td><td>39,250</td></tr><tr><td>Uncommon</td><td>Murmuring Mystic</td><td>1.70</td><td>1,907</td></tr><tr><td>Rare</td><td>Stirring Hopesinger</td><td>0.60</td><td>9,386</td></tr><tr><td>Mythic</td><td>Professor Dellian Fel</td><td>0.35</td><td>4,028</td></tr></tbody></table></section>
+    <section class="panel"><table><thead><tr><th>Rarity</th><th>Card</th><th>ALSA</th><th>Occurrences</th></tr></thead><tbody><tr><td>Common</td><td>Burst Lightning</td><td>2.86</td><td>38,885</td></tr><tr><td>Uncommon</td><td>Foolish Fate</td><td>2.70</td><td>37,474</td></tr><tr><td>Rare</td><td>Stirring Hopesinger</td><td>1.60</td><td>9,402</td></tr><tr><td>Mythic</td><td>Professor Dellian Fel</td><td>1.35</td><td>4,029</td></tr></tbody></table><div class="muted" style="margin-top:12px">ALSA = average pick number (1 = first pick) at which drafters last saw the card. Packs rotate around an 8-player pod, so a card that wheels is counted at its second sighting, eight picks later.</div></section>
 
     <div class="section-title">7. Least Wanted Piece Of Junk</div>
-    <section class="panel"><table><thead><tr><th>Rarity</th><th>Card</th><th>ALSA</th><th>Occurrences</th></tr></thead><tbody><tr><td>Common</td><td>Biblioplex Tomekeeper</td><td>5.75</td><td>307,925</td></tr><tr><td>Uncommon</td><td>Borrowed Knowledge</td><td>5.36</td><td>128,202</td></tr><tr><td>Rare</td><td>Petrified Hamlet</td><td>4.64</td><td>56,027</td></tr><tr><td>Mythic</td><td>Ad Nauseam</td><td>3.76</td><td>4,400</td></tr></tbody></table></section>
+    <section class="panel"><table><thead><tr><th>Rarity</th><th>Card</th><th>ALSA</th><th>Occurrences</th></tr></thead><tbody><tr><td>Common</td><td>Biblioplex Tomekeeper</td><td>8.65</td><td>218,549</td></tr><tr><td>Uncommon</td><td>Borrowed Knowledge</td><td>7.89</td><td>92,212</td></tr><tr><td>Rare</td><td>Petrified Hamlet</td><td>6.56</td><td>43,936</td></tr><tr><td>Mythic</td><td>Ad Nauseam</td><td>5.17</td><td>3,799</td></tr></tbody></table></section>
   </div>
   <script>
   (function() {

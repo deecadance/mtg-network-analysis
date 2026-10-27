@@ -43,7 +43,7 @@
     h3 { margin: 20px 0 8px; font-size: 18px; }
     p { margin: 0 0 14px; color: var(--muted); }
     strong { color: var(--text); }
-    ul { margin: 0 0 16px 22px; color: var(--muted); }
+    ul, ol { margin: 0 0 16px 22px; padding: 0; color: var(--muted); }
     li { margin: 0 0 8px; }
     .eq {
       margin: 14px 0;
@@ -53,6 +53,9 @@
       background: var(--math);
       overflow-x: auto;
     }
+    .eq mjx-container[display="true"] { margin: 0.4em 0; }
+    /* Maths scales down to its box instead of pushing the page wider than a phone screen. */
+    mjx-container svg { max-width: 100%; height: auto; }
     .defs {
       margin: 0 0 18px;
       padding-left: 18px;
@@ -66,17 +69,19 @@
       margin-top: 16px;
     }
     .card {
+      min-width: 0;
       padding: 16px 18px;
       border: 1px solid var(--line);
       border-radius: 16px;
       background: rgba(255,255,255,0.04);
     }
-    .card strong { display: block; margin-bottom: 6px; }
+    .card > strong { display: block; margin-bottom: 6px; }
     .card .eq { margin: 10px 0; }
+    .card p:last-child { margin-bottom: 0; }
+    .table-wrap { overflow-x: auto; margin: 14px 0 18px; }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 14px 0 18px;
       color: var(--muted);
     }
     th, td {
@@ -107,12 +112,14 @@
       color: var(--text);
       outline: none;
     }
+    /* The tooltip is only laid out while shown, so a hidden one never widens the page. */
     .term::after {
       content: attr(data-tip);
+      display: none;
       position: absolute;
-      left: 50%;
+      /* Left-aligned with the term (it starts a line), so the tip never runs off the left edge. */
+      left: 0;
       bottom: calc(100% + 10px);
-      transform: translateX(-50%);
       width: min(340px, calc(100vw - 48px));
       padding: 10px 12px;
       border-radius: 12px;
@@ -120,9 +127,7 @@
       background: var(--tip);
       color: var(--text);
       box-shadow: 0 18px 40px rgba(0,0,0,0.35);
-      opacity: 0;
       pointer-events: none;
-      transition: opacity 0.12s ease;
       white-space: normal;
       z-index: 20;
       font-size: 14px;
@@ -130,7 +135,7 @@
     }
     .term:hover::after,
     .term:focus::after {
-      opacity: 1;
+      display: block;
     }
     .mjx-container { color: var(--text) !important; }
     code {
@@ -138,11 +143,14 @@
       border-radius: 6px;
       padding: 0 6px;
       color: var(--text);
+      overflow-wrap: anywhere;
     }
     @media (max-width: 640px) {
+      .wrap { padding-left: 14px; padding-right: 14px; }
       .panel { padding: 22px 18px; border-radius: 22px; }
       h2 { font-size: 22px; }
-      .term::after { left: 0; transform: none; }
+      /* On phones the tooltip becomes a sheet pinned to the bottom of the screen. */
+      .term::after { position: fixed; left: 16px; right: 16px; bottom: 16px; width: auto; }
     }
   </style>
   <script>
@@ -160,268 +168,221 @@
   <div class="wrap">
     <section class="panel">
       <div class="kicker">About the Method</div>
-      <h1>Archetypes first. Then synergy, uncertainty, and draft pressure.</h1>
-      <p>The method presented in this website aims at constructing directional graph networks for MTG limited data. It tries to learn archetypes from decklists, then measures single-card strength, pair synergy, triplet motifs, and draft urgency inside each learned shell.</p>
-      <p>The formulas below describe the current implementation directly.</p>
+      <h1>Archetypes first. Then core cards, bombs, synergy and picks.</h1>
+      <p>This site turns 17Lands Premier Draft data into one page per learned archetype. It first learns the archetypes from deck lists. Then, inside each archetype, it asks four questions: which cards the deck is built from, which cards win on their own, which pairs win more together than their separate effects predict, and which picks raise draft win rate.</p>
+      <p>The sections below describe the current implementation (analysis version 3).</p>
 
-      <h2>1. Archetypes from full decklists</h2>
-      <p>Let \(X\) be the deck-by-card matrix built from the <code>deck_*</code> columns of the game export. Each row is one deck build and each column is one card. Cards that appear in more than 55% of decks are removed before clustering because they are too common to separate one archetype from another. A card that appears in almost every deck contributes very little information about which shell a deck belongs to.</p>
-      <p>The weighting used before clustering is a classic <strong>TF-IDF</strong> transform. TF-IDF means <em>term frequency - inverse document frequency</em>. Here the “term” is a card and the “document” is a deck. The first factor rewards cards that appear in a deck; the second factor downweights cards that are common across many decks.</p>
+      <h2>1. Data</h2>
+      <p>All statistics come from two 17Lands Premier Draft exports: the game export (one row per game, with the deck list and the cards in the opening hand and drawn) and the draft export (one row per pick). A card is <strong>in hand</strong> in a game when it was in the opening hand or drawn. Every “win rate in hand” on the site counts those games.</p>
+
+      <h2>2. Archetypes from full deck lists</h2>
+      <p>Let \(X\) be the deck-by-card matrix built from the <code>deck_*</code> columns of the game export. Each row is one deck build and each column is one card. Cards in more than 55% of decks, or in fewer than 250 decks, are removed before clustering: a card that almost every deck plays says little about which archetype a deck belongs to, and very rare cards add noise.</p>
+      <p>The remaining counts are weighted with <strong>TF-IDF</strong> (term frequency - inverse document frequency). Here the “term” is a card and the “document” is a deck. The first factor rewards cards that a deck plays; the second down-weights cards that many decks play.</p>
       <div class="eq">\[
-      w(d,c) = (1 + \log x(d,c)) \cdot \log\!\left(\frac{1 + D}{1 + df(c)}\right)
+      w(d,c) = \bigl(1 + \ln x(d,c)\bigr)\left(\ln\frac{1 + D}{1 + df(c)} + 1\right)
       \]</div>
       <ul class="defs">
-        <li>\(d\): one deck build.</li>
-        <li>\(c\): one card.</li>
-        <li>\(D\): total number of deck builds in the dataset.</li>
-        <li>\(x(d,c)\): number of copies of card \(c\) in deck \(d\).</li>
-        <li>\(df(c)\): number of deck builds that contain card \(c\).</li>
-        <li>\(w(d,c)\): weighted deck feature used by the clustering model.</li>
+        <li>\(d\): one deck build; \(c\): one card.</li>
+        <li>\(x(d,c)\): copies of card \(c\) in deck \(d\).</li>
+        <li>\(D\): number of deck builds; \(df(c)\): number of deck builds that contain \(c\).</li>
       </ul>
-      <p>The weighted matrix is reduced with truncated SVD and then clustered with MiniBatch K-means.</p>
+      <p>Each weighted deck row is scaled to unit length and reduced with truncated SVD (at most 48 components). The reduced rows are scaled to unit length again, so k-means compares decks by the direction of their composition (cosine geometry) rather than by deck size. Clustering is plain k-means with fixed seeds, so a rerun gives the same archetypes.</p>
+      <p>How many archetypes a set gets is decided by rules, not by a fixed number:</p>
+      <ul>
+        <li><strong>Colour-seeded (most sets).</strong> One cluster is seeded for every 17Lands main-colour group (a colour pair, or a three-colour clan in sets built around them) that covers at least 3% of decks. A colour group that no cluster clearly owns is dropped. So is a group whose cluster nearly duplicates another one (centroid cosine above 0.85).</li>
+        <li><strong>Decks that cut across colours.</strong> Up to three extra clusters (for example Tarkir's five-colour Dragons, Lorwyn's Faeries or the TMNT Pizza deck) are added one at a time. Each is kept only if every cluster still holds at least 4% of decks, no two clusters are near-duplicates, and every cluster is stable: refitting on four 80% subsamples must find it again, with an average best-match Jaccard overlap of at least 0.75.</li>
+        <li><strong>Colour-free search.</strong> Where colours do not organise the decks (Powered Cube), the number of clusters starts at 7 and grows, up to 11, while every cluster passes the same size, redundancy and stability checks; the last number that passes is used. Silhouette scores are recorded but do not choose the number.</li>
+        <li><strong>Exports without colour columns</strong> (Strixhaven: School of Mages) get each deck's main colours from its contents: a colour counts when the deck has at least 4 nonland cards of it.</li>
+      </ul>
 
-      <h2>2. Signposts</h2>
-      <p>For archetype \(k\), the signpost statistic asks whether a card appears much more often inside that archetype than outside it.</p>
+      <h2>3. Signposts</h2>
+      <p>For archetype \(k\), the signpost statistic asks whether a card appears much more often inside that archetype than outside it. Signposts name the archetype (its two title cards) and supply part of the cards shown.</p>
       <div class="eq">\[
-      \ell(c) = \log\!\left(\frac{a_c + \alpha_c}{N_k - a_c + \beta_c}\right)
-      - \log\!\left(\frac{b_c + \alpha_c}{N_{\neg k} - b_c + \beta_c}\right)
+      \ell(c) = \ln\frac{a_c + \alpha_c}{N_k - a_c + \beta_c}
+      - \ln\frac{b_c + \alpha_c}{N_{\neg k} - b_c + \beta_c}
       \]</div>
       <ul class="defs">
-        <li>\(c\): one card.</li>
-        <li>\(a_c\): number of decks inside archetype \(k\) that contain card \(c\).</li>
-        <li>\(b_c\): number of decks outside archetype \(k\) that contain card \(c\).</li>
-        <li>\(N_k\): number of decks inside archetype \(k\).</li>
-        <li>\(N_{\neg k}\): number of decks outside archetype \(k\).</li>
-        <li>\(\ell(c)\): smoothed log-odds contrast for card \(c\).</li>
+        <li>\(a_c\), \(b_c\): decks inside and outside archetype \(k\) that contain card \(c\).</li>
+        <li>\(N_k\), \(N_{\neg k}\): decks inside and outside archetype \(k\).</li>
+        <li>\(\ell(c)\): smoothed log-odds contrast. A positive value means the card is concentrated in the archetype.</li>
       </ul>
-      <p>A positive value of \(\ell(c)\) means the card is concentrated inside the archetype. A larger value means that concentration is stronger.</p>
-      <p>The prior is centered on the card's global prevalence. In plain terms, the method starts from the card's average frequency in the whole format and then asks how much the archetype deviates from that average. This keeps the statistic stable when sample sizes are modest.</p>
+      <p>The prior is centred on the card's prevalence across the whole format, which keeps the statistic stable for small samples. A rarity weight \(w_c\) slightly lowers the prior for rares and mythics.</p>
       <div class="eq">\[
-      p_{0,c} = \frac{a_c + b_c}{D}, \qquad
+      p_{0,c} = \frac{a_c + b_c}{D}
+      \]</div>
+      <div class="eq">\[
       \alpha_c = 1 + 28\,p_{0,c}\,w_c, \qquad
       \beta_c = 1 + 28\,(1-p_{0,c})
       \]</div>
-      <ul class="defs">
-        <li>\(p_{0,c}\): global deck prevalence of card \(c\).</li>
-        <li>\(D\): total number of deck builds in the whole dataset.</li>
-        <li>\(\alpha_c\) and \(\beta_c\): prior pseudo-counts that smooth the in-archetype and out-of-archetype log-odds.</li>
-        <li>\(w_c\): rarity weight used inside the prior.</li>
-      </ul>
-      <p>The rarity weight slightly decreases the influence of rare and mythic cards. The practical goal is to reduce the chance that a rare card rises to the top of the signpost list mainly because it is scarce and powerful.</p>
       <div class="eq">\[
       z(c) = \frac{\ell(c)}{\sqrt{\mathrm{Var}(\ell(c))}}, \qquad
-      signpost\_score(c) = z(c)\sqrt{a_c}
+      signpost(c) = z(c)\sqrt{a_c}
+      \]</div>
+
+      <h2>4. The cards shown</h2>
+      <p>Each archetype page shows up to 32 cards, chosen in this order (lands are skipped):</p>
+      <ol>
+        <li>staples: up to 10 cards played in at least 25% of the archetype's decks;</li>
+        <li>the 16 strongest signposts;</li>
+        <li>up to 4 bomb slots: this archetype's bombs (section 9), strongest first, kept even when few decks play them;</li>
+        <li>cards with the highest win rate in hand, then cards often played with the leading signposts;</li>
+        <li>the most-played remaining cards.</li>
+      </ol>
+      <p>Apart from the bomb slots, a card must be played in at least 5% of the archetype's decks. Every card shown needs at least 110 games in hand in the archetype.</p>
+
+      <h2>5. Played together</h2>
+      <p>The grey “played together” lines show which cards end up in the same finished decks more often than independent inclusion would predict.</p>
+      <div class="eq">\[
+      E(a,b) = N_k\,\pi(a)\,\pi(b), \qquad
+      L_{ab} = \log_2\frac{O(a,b)+1}{E(a,b)+1}
       \]</div>
       <ul class="defs">
-        <li>\(z(c)\): standardized signpost strength.</li>
-        <li>\(signpost\_score(c)\): final signpost score used in the exported data.</li>
+        <li>\(\pi(a)\): share of the archetype's decks that contain card \(a\).</li>
+        <li>\(O(a,b)\): decks of the archetype that contain both cards; \(E(a,b)\): the count expected if the two were included independently.</li>
+      </ul>
+      <p>A pair qualifies when at least 50 decks play both cards and \(L_{ab} &gt; 0\). Its strength is \(L_{ab}\sqrt{O(a,b)}\), and each card keeps its 3 strongest pairs. These lines are a drafting signal (the cards are drafted into the same decks), not a claim that they win more together.</p>
+
+      <h2>6. Synergy: verified pairs</h2>
+      <p>For every pair of an archetype's cards, each game of the archetype falls in one cell of a 2&times;2 table (both cards in hand, only \(a\), only \(b\), neither) and in one stratum: game-length quintile &times; on the play or on the draw. The strata matter because card effects change with game length; without them, simulated data with no synergy at all produce false links.</p>
+      <div class="eq">\[
+      \operatorname{logit} P(\text{win}) = \alpha_s + \beta_{a,s}\,h_a + \beta_{b,s}\,h_b + \gamma\,h_a h_b
+      \]</div>
+      <ul class="defs">
+        <li><span class="term" tabindex="0" data-tip="logit(p) = ln(p / (1 - p)). It turns a probability into log-odds, where independent effects add up.">logit</span>: log-odds of winning.</li>
+        <li>\(h_a\), \(h_b\): 1 when card \(a\) (or \(b\)) is in hand, else 0.</li>
+        <li>\(\alpha_s\), \(\beta_{a,s}\), \(\beta_{b,s}\): baseline and each card's own effect, free to differ in every stratum \(s\).</li>
+        <li>\(\gamma\): the interaction. \(\gamma &gt; 0\) means the pair wins more often together than the two cards' separate effects, in the same kind of game, predict. The card spotlight shows it as a change in the odds of winning, \((e^{\gamma} - 1)\times 100\%\) (for example “+17% odds”).</li>
+      </ul>
+      <p>\(\gamma\) and its standard error come from maximum likelihood. A pair is tested only when at least 90 games have both cards in hand and every other cell has at least 30 games; a stratum where one of the four cells has fewer than 5 games is left out of that pair's fit.</p>
+      <p>All tested pairs of an archetype then go through one Benjamini-Hochberg correction, which controls the <strong>false discovery rate</strong>: the expected share of false links among the links reported. Each pair gets a q-value.</p>
+      <ul>
+        <li><strong>Verified synergy</strong>: \(q \le 0.10\) and \(\gamma &gt; 0.05\). These are the solid links in the Synergy view.</li>
+        <li><strong>Tentative</strong>: \(q \le 0.25\) and \(\gamma &gt; 0.05\), not verified. Drawn fainter and marked as tentative: treat them as leads.</li>
+        <li><strong>Anti-synergy</strong>: \(q \le 0.10\) and \(\gamma &lt; -0.05\).</li>
+      </ul>
+      <p>A calibration check re-runs the whole gate on shuffled outcomes and on outcomes simulated from a model with no interactions. It fails if those produce more false links than the larger of 2 and 10% of the real ones.</p>
+      <p>What a verified synergy does not mean:</p>
+      <ul>
+        <li>It mixes in-game and deck-level effects: a deck that runs both cards may simply be a better deck (a better drafter, a better curve).</li>
+        <li>Pairwise tables do not adjust for third cards: two cards that share a strong partner can look linked.</li>
+        <li>True interactions are small, so verified links are sparse and some archetypes have none. Their cards mostly win on their own.</li>
       </ul>
 
-      <h2>3. Deck-level pairs and triplets</h2>
-      <p>Once the archetypes are learned, the method asks which cards co-occur in completed decklists more often than independence would predict.</p>
+      <h2>7. Arrows: payoff and engine</h2>
+      <p>The interaction \(\gamma\) has no direction. The arrows compare the two cards inside the pair's own games, using the games where only one of them was in hand:</p>
       <div class="eq">\[
-      E_{\mathrm{deck}}(a,b) = N_k\,\pi(a)\,\pi(b), \qquad
-      L^{\mathrm{deck}}_{ab} = \log_2\!\left(\frac{O_{\mathrm{deck}}(a,b)+1}{E_{\mathrm{deck}}(a,b)+1}\right)
+      d_{ab} = \operatorname{logit} p_{a\,\text{only}} - \operatorname{logit} p_{b\,\text{only}}
       \]</div>
       <div class="eq">\[
-      E_{\mathrm{deck}}(a,b,c) = N_k\,\pi(a)\,\pi(b)\,\pi(c), \qquad
-      L^{\mathrm{deck}}_{abc} = \log_2\!\left(\frac{O_{\mathrm{deck}}(a,b,c)+1}{E_{\mathrm{deck}}(a,b,c)+1}\right)
+      z_{ab} = \frac{d_{ab}}{SE(d_{ab})}
       \]</div>
       <ul class="defs">
-        <li>\(a,b,c\): cards.</li>
-        <li>\(\pi(a)\): fraction of decks in archetype \(k\) that contain card \(a\). The same definition applies to \(\pi(b)\) and \(\pi(c)\).</li>
-        <li>\(O_{\mathrm{deck}}(a,b)\): observed number of decks in archetype \(k\) that contain both \(a\) and \(b\).</li>
-        <li>\(O_{\mathrm{deck}}(a,b,c)\): observed number of decks in archetype \(k\) that contain all three cards.</li>
-        <li>\(E_{\mathrm{deck}}\): independence expectation inside the archetype.</li>
-        <li>\(L^{\mathrm{deck}}_{ab}\) and \(L^{\mathrm{deck}}_{abc}\): deck-level log-lift for the pair or triplet.</li>
+        <li>\(p_{a\,\text{only}}\): win rate of the archetype's games with \(a\) in hand and \(b\) not; \(p_{b\,\text{only}}\) likewise.</li>
       </ul>
-      <p>A positive deck-level lift means the cards appear together in finished decklists more often than independent deck inclusion would predict.</p>
-      <p>When the code finds a strong deck triplet, it pushes part of that information back into the pair graph. For each retained triplet, it computes a triplet quality score and then gives each of the three pairs inside that triplet a bonus equal to 12% of that quality. If several triplets contain the same pair, the code keeps the largest bonus for that pair.</p>
+      <p>When \(|z_{ab}| \ge 1.96\), the arrow points from the card that wins more without its partner (the <strong>payoff</strong>) to the partner (the <strong>engine</strong>); otherwise no arrow is drawn. This describes standalone strength within the pair, not which card causes the synergy.</p>
+      <p>Payoff and engine rings are decided by synergy arrows only (verified and tentative). A card with at least two synergy arrows, at least 70% of them pointing out of it, is ringed as a payoff; at least 70% pointing into it, as an engine. Other cards get no ring. Played-together lines carry faint arrows for context, but they do not decide roles.</p>
 
-      <h2>4. Game-level pair synergy</h2>
-      <p>The game-side statistics use the chosen game zone from the 17Lands game export. In the current implementation the chosen zone is the <code>drawn</code> zone, taken from the <code>drawn_*</code> columns. So the card-level rate here is a drawn-zone win rate, which is very close in spirit to a game-in-hand style statistic.</p>
+      <h2>8. Core, support, periphery</h2>
+      <p>The Core view lays each archetype out as an onion: core cards in the centre, support and periphery cards further out. Position follows <strong>coreness</strong>, which answers “how central is this card to the deck?”</p>
       <div class="eq">\[
-      standalone\_delta(a) = p_a - p_k
+      coreness(c) = M(c)\,\bigl(0.5 + 0.5\,G(c)\bigr)
+      \]</div>
+      <div class="eq">\[
+      M(c) = \sqrt{\min\!\left(1, \frac{P_c}{0.60}\right)\cdot \left(\frac{\ln lift_c}{\ln 4}\right)_{[0,1]}}
+      \]</div>
+      <div class="eq">\[
+      G(c) = 1 - \exp\!\left(-\left(\frac{S^{co}_c}{ref_{co}} + 0.5\,\frac{S^{syn}_c}{0.10}\right)\right)
       \]</div>
       <ul class="defs">
-        <li>\(p_k\): baseline game win rate of archetype \(k\).</li>
-        <li>\(p_a\): win rate of games in archetype \(k\) where card \(a\) appears in the chosen game zone.</li>
-        <li>\(standalone\_delta(a)\): card-level lift above the archetype baseline.</li>
+        <li>\(M(c)\), membership: \(P_c\) is the share of the archetype's decks that play the card, \(lift_c\) its play rate here divided by its play rate in all decks. A card must be both widely played here and characteristic of here; below 5% play, \(M = 0\).</li>
+        <li>\(G(c)\), connectivity: \(S^{co}_c\) counts the card's played-together lines (\(ref_{co}\) is the archetype's median count), and \(S^{syn}_c\) sums the shrunk strength of its synergies (tentative ones at half weight). A card with no links keeps only half its membership, so it cannot reach the core.</li>
       </ul>
-      <p>The expected pair win rate is computed in <span class="term" tabindex="0" data-tip="logit(p) = log(p/(1-p)). It converts a probability into log-odds. Independent multiplicative probability effects become additive after taking the logarithm of the odds.">logit</span> space. The reason is that independent probability factors multiply, so after moving to odds and then taking a logarithm they add cleanly.</p>
-      <div class="eq">\[
-      \operatorname{logit}(\hat p_{ab}) = \operatorname{logit}(p_a) + \operatorname{logit}(p_b) - \operatorname{logit}(p_k)
-      \]</div>
-      <div class="eq">\[
-      synergy\_delta\_logit(a,b) = \operatorname{logit}(p_{ab}) - \operatorname{logit}(\hat p_{ab})
-      \]</div>
-      <ul class="defs">
-        <li>\(p_{ab}\): win rate of games in archetype \(k\) where both cards \(a\) and \(b\) appear in the drawn zone.</li>
-        <li>\(\hat p_{ab}\): expected pair win rate under the additive log-odds model.</li>
-        <li>\(synergy\_delta\_logit(a,b)\): amount by which the observed pair beats or trails its expectation in logit space.</li>
+      <p>Rings: <strong>core</strong> needs coreness at least 0.55 (the core holds at most 30% of the cards), <strong>support</strong> at least 0.30, and the rest is <strong>periphery</strong>. If fewer than 3 cards reach the core, the support cards with the highest coreness that have at least one link are promoted so the centre is never empty.</p>
+      <p>Separately from the rings, a card played in at least 15% of this archetype's decks, and at that rate in at most one other archetype of the set, is tagged <strong>signature</strong>. A card played in at least 25% of decks here and in at least 15% of decks in three or more archetypes is tagged <strong>staple</strong>. Other cards get no tag.</p>
+
+      <h2>9. Bombs: strong on their own</h2>
+      <p>Bombs answer a different question: does drawing this card win games on its own in this archetype? The estimate compares, within the decks that play the card, games where it was in hand with games where it stayed in the library, so the deck's own strength cancels out. It is taken relative to the archetype's typical card (the precision-weighted average of all card effects there).</p>
+      <p>Most cards are played in few games of any one archetype, so the estimate is shrunk with a two-level empirical-Bayes prior: first toward the card's effect in the set's other archetypes, then toward the set-wide spread of card effects. A card whose effect clearly depends on the archetype keeps its own estimate.</p>
+      <ul>
+        <li>A card is a <strong>bomb</strong> when the shrunk estimate adds at least 5 win-rate points over a typical card of the deck, with a probability of at least 90% that it is better than typical. It needs at least 200 games in hand in decks that play it, and at least 50 where it was not seen.</li>
+        <li>The prior borrows strength from other archetypes, so three checks keep a card that this archetype barely plays from becoming one of its bombs: the archetype's own estimate must be positive with probability at least 75%, at least 1% of its decks must play the card, and the card may add at most one colour to the archetype's colours.</li>
+        <li>Bombs that are core or support cards keep their ring (with a star); the others sit in the separate island <strong>“Bombs - strong on their own”</strong> beside the rings.</li>
       </ul>
 
-      <h2>5. Standard deviation and confidence</h2>
-      <p>The uncertainty model starts from the usual binomial variance and propagates it to the synergy statistic.</p>
-      <div class="eq">\[
-      \mathrm{Var}(p) = \frac{p(1-p)}{n}, \qquad
-      \mathrm{Var}(\operatorname{logit}(p)) = \frac{1}{n\,p(1-p)}
-      \]</div>
-      <div class="eq">\[
-      SE_{ab} = \sqrt{\mathrm{Var}(\operatorname{logit}(p_{ab})) + \mathrm{Var}(\operatorname{logit}(\hat p_{ab}))}
-      \]</div>
-      <div class="eq">\[
-      \sigma_{ab} = \frac{|synergy\_delta\_logit(a,b)|}{SE_{ab}}, \qquad
-      confidence(a,b) = \operatorname{erf}\!\left(\frac{\sigma_{ab}}{\sqrt{2}}\right)
-      \]</div>
-      <ul class="defs">
-        <li>\(n\): number of samples supporting the corresponding rate.</li>
-        <li>\(SE_{ab}\): standard error of the pair-synergy statistic.</li>
-        <li>\(\sigma_{ab}\): signal-to-noise ratio for the pair effect.</li>
-        <li><span class="term" tabindex="0" data-tip="erf(x), the Gaussian error function, maps a sigma-like signal-to-noise ratio to the central probability mass of a standard normal distribution.">erf</span>: function used to express confidence on a 0-100% scale.</li>
-      </ul>
-      <p>The percentage shown on the site is the Gaussian central probability corresponding to the estimated signal-to-noise ratio. Higher confidence means the estimated effect is large compared with its estimated standard deviation.</p>
-
-      <h2>6. Pair quality, triplet quality, and draft corroboration</h2>
-      <p>The graph needs one ranking score to decide which links deserve visual emphasis. The score is a product of several terms. Each term measures a different ingredient: game-level lift, support, deck-level corroboration, triplet structure, draft corroboration, and confidence. A pair receives a large score when several of these signals agree.</p>
-      <div class="eq">\[
-      pair\_quality_{raw}(a,b) = \max(0, synergy\_delta\_logit(a,b))
-      \sqrt{n_{ab}}
-      (0.02 + \max(0, p_{ab} - p_k))
-      (1 + 0.25\max(0, L^{\mathrm{deck}}_{ab}))
-      (1 + 0.18\max(0, triplet\_bonus(a,b)))
-      (1 + 0.05\log(1 + draft\_pair\_events(a,b)))
-      \]</div>
-      <div class="eq">\[
-      pair\_quality(a,b) = pair\_quality_{raw}(a,b) \cdot \min(1, \sigma_{ab})
-      \]</div>
-      <div class="eq">\[
-      triplet\_quality_{raw}(a,b,c) = synergy\_delta\_logit(a,b,c)
-      \sqrt{n_{abc}}
-      (1 + 0.20\max(0, L^{\mathrm{deck}}_{abc}))
-      (1 + 0.06\log(1 + draft\_triplet\_events(a,b,c)))
-      \]</div>
-      <ul class="defs">
-        <li>\(n_{ab}\): number of games where both cards appear in the drawn zone inside archetype \(k\).</li>
-        <li>\(n_{abc}\): number of games where all three cards appear in the drawn zone inside archetype \(k\).</li>
-        <li>\(triplet\_bonus(a,b)\): best bonus inherited by pair \((a,b)\) from retained deck triplets.</li>
-        <li>\(draft\_pair\_events(a,b)\): number of projected drafts in archetype \(k\) that contain both cards.</li>
-        <li>\(draft\_triplet\_events(a,b,c)\): number of projected drafts in archetype \(k\) that contain all three cards.</li>
-      </ul>
-
-      <h2>7. Draft pressure, ALSA, and wheeling</h2>
-      <p>ALSA is measured globally across the whole draft table.</p>
-      <div class="eq">\[
-      ALSA(c) = \frac{1}{N_c}\sum_i last\_seen_i(c)
-      \]</div>
-      <div class="eq">\[
-      ALSA_{sd}(c) = \max\!\left(0.65, \sqrt{\frac{1}{N_c}\sum_i last\_seen_i(c)^2 - ALSA(c)^2}\right)
-      \]</div>
-      <div class="eq">\[
-      \tau(c) = \max\!\left(1.1, 0.60\,ALSA(c) + 0.80\,ALSA_{sd}(c)\right)
-      \]</div>
-      <div class="eq">\[
-      wheel\_model(c) = \frac{1}{4}\sum_{s=1}^{4} \exp\!\left(-\frac{\max(0, (s+8)-ALSA(c))}{\tau(c)}\right)
-      \]</div>
-      <ul class="defs">
-        <li>\(N_c\): number of drafts where card \(c\) was observed.</li>
-        <li>\(last\_seen_i(c)\): last pick at which card \(c\) was seen in draft \(i\).</li>
-        <li>\(ALSA(c)\): average last seen at for card \(c\).</li>
-        <li>\(ALSA_{sd}(c)\): empirical spread of the last-seen positions.</li>
-        <li>\(\tau(c)\): decay scale used by the wheel model.</li>
-        <li>\(wheel\_model(c)\): model-based probability that the card comes back when first seen on picks 1 through 4.</li>
-      </ul>
-
-      <h2>8. Exported scores</h2>
+      <h2>10. Picks</h2>
+      <p>The Picks view sizes cards by pick score and fades cards that do not raise draft win rate. Draft statistics come from the draft export: each draft is assigned to the archetype its picks match best.</p>
       <div class="score-list">
         <div class="card">
-          <strong>Dependency score</strong>
-          <p>Weighted mean of positive incident pair synergy and triplet bonus. A high value means the card usually gains value from neighboring cards in the same shell.</p>
-        </div>
-        <div class="card">
-          <strong>Analysis score</strong>
+          <strong>Pick score (0-10)</strong>
           <div class="eq">\[
-          analysis_{raw}(c) = signpost\_score(c) + 18\,dependency(c) + 140\max(0, standalone\_delta(c))
+          pick_{raw}(c) = 100\,W(c)\,\sqrt{\max(1,n_{draft}(c))}\;B(c)
+          \]</div>
+          <div class="eq">\[
+          W(c) = \max(0,\Delta_{draft}(c)) + 0.55\max(0,\Delta_{hand}(c))
+          \]</div>
+          <div class="eq">\[
+          B(c) = 1 + 0.10\max(0, lift_c-1)
           \]</div>
           <ul class="defs">
-            <li>\(signpost\_score(c)\): signpost strength of card \(c\).</li>
-            <li>\(dependency(c)\): dependency score of card \(c\).</li>
-            <li>\(standalone\_delta(c)\): win-rate lift of card \(c\) above the archetype baseline.</li>
+            <li>\(\Delta_{draft}(c)\): match win rate of the archetype's drafts that took the card, smoothed with 14 prior matches, minus the archetype's draft win rate.</li>
+            <li>\(\Delta_{hand}(c)\): win rate in hand minus the archetype's win rate.</li>
+            <li>\(n_{draft}(c)\): the archetype's drafts that took the card; \(lift_c\): signpost lift.</li>
           </ul>
-          <p>The raw score is transformed with \(\operatorname{sign}(x)\log(1+|x|)\), clipped between the 5th and 95th percentiles inside the archetype, and rescaled to 0-10.</p>
+          <p>The raw value is transformed with \(\ln(1+x)\), clipped between the 5th and 95th percentiles of the archetype's cards, and rescaled to 0-10.</p>
         </div>
         <div class="card">
-          <strong>Pick priority score</strong>
+          <strong>ALSA, wheel chance and pick urgency</strong>
+          <p><strong>ALSA</strong> (average last seen at) is the average pick at which the card was last seen in a pack, over the whole draft table. <strong>Wheel chance</strong> is the share of copies a drafter saw and passed that were still in the pack when it came back eight picks later.</p>
           <div class="eq">\[
-          pick\_priority_{raw}(c) = 100\big(\max(0,draft\_win\_lift(c)) + 0.55\max(0,standalone\_delta(c))\big)
-          \sqrt{\max(1,draft\_drafts(c))}
-          \big(1 + 0.10\max(0, signpost\_lift(c)-1)\big)
+          \begin{aligned}
+          market(c) = 10\,\bigl(&amp;0.48\,A_c^{0.58} + 0.22\,T_c^{0.72} \\
+          &amp;+ 0.30\,(1 - wheel_c)\bigr)
+          \end{aligned}
+          \]</div>
+          <div class="eq">\[
+          u(c) = 0.084\,market(c) + 0.016\,pick(c)
+          \]</div>
+          <div class="eq">\[
+          urgency(c) = 10\left(\frac{u(c) - 0.45}{0.55}\right)_{[0,1]}
           \]</div>
           <ul class="defs">
-            <li>\(draft\_win\_lift(c)\): smoothed draft match win-rate lift of card \(c\) inside projected drafts of the archetype.</li>
-            <li>\(draft\_drafts(c)\): number of projected drafts in the archetype that contain card \(c\).</li>
-            <li>\(signpost\_lift(c)\): ratio between the card's prevalence inside the archetype and its global deck prevalence.</li>
+            <li>\(A_c = \left(\tfrac{11 - ALSA(c)}{8}\right)_{[0,1]}\) and \(T_c = \left(\tfrac{11 - ATA(c)}{8}\right)_{[0,1]}\), where ATA is the average pick at which the card was taken; \((\cdot)_{[0,1]}\) clamps to the interval from 0 to 1.</li>
+            <li>\(market(c)\): how early the whole table takes the card, 0-10; \(pick(c)\): the pick score above.</li>
           </ul>
-          <p>The raw value is transformed with \(\log(1+x)\), clipped between the 5th and 95th percentiles inside the archetype, and rescaled to 0-10.</p>
+          <p>Pick urgency mostly reflects how early the table takes the card; 10 means take it now. Cards that the table takes very early and that also raise win rate in the deck are set to 10.</p>
         </div>
         <div class="card">
-          <strong>Pick urgency</strong>
-          <div class="eq">\[
-          pick\_urgency(c) = 10\left(\frac{0.90\,market(c) + 0.10\,pick\_priority(c) - 0.58}{0.42}\right)_{[0,1]}^{1.15}
-          \]</div>
-          <ul class="defs">
-            <li>\(market(c)\): normalized market-pressure score derived from ALSA, average taken-at, and wheel probability.</li>
-            <li>\(pick\_priority(c)\): normalized archetype performance score from the previous formula.</li>
-            <li>\((\cdot)_{[0,1]}\): clamp to the interval from 0 to 1.</li>
-          </ul>
-          <p>This score is a recommendation scale. Higher values mean the table values the card and the archetype also gains from it.</p>
-        </div>
-        <div class="card">
-          <strong>Shell dependence</strong>
-          <div class="eq">\[
-          shell\_dependence_{raw}(c) = \frac{\max(0,support\_delta(c))\sqrt{\max(1,supported\_games(c))}(1 + 4\,dependency(c))(1 + 0.18\max(0,signpost\_lift(c)-1))}{1 + 16\max(0,standalone\_delta(c))}
-          \]</div>
-          <ul class="defs">
-            <li>\(support\_delta(c)\): supported win rate minus solo-drawn win rate for card \(c\).</li>
-            <li>\(supported\_games(c)\): games in the archetype where card \(c\) appears with at least one other mapped card in the drawn zone.</li>
-            <li>\(dependency(c)\), \(signpost\_lift(c)\), and \(standalone\_delta(c)\): same quantities defined above.</li>
-          </ul>
-          <p>The raw value is transformed with \(\log(1+x)\), clipped, and rescaled to 0-10.</p>
-        </div>
-        <div class="card">
-          <strong>Build-around detector</strong>
-          <p>A card is flagged as a build-around when all four conditions hold: supported games at least 80, support delta at least 1.8 percentage points, dependency at least 0.075, and standalone delta at most 1.4 percentage points.</p>
-        </div>
-        <div class="card">
-          <strong>Core score</strong>
-          <div class="eq">\[
-          core_{raw}(c) = signpost\_score(c) + 52\,deck\_prevalence(c) + 85\max(0,standalone\_delta(c)) + 14\,dependency(c)
-          \]</div>
-          <ul class="defs">
-            <li>\(deck\_prevalence(c)\): fraction of decks in the archetype that contain card \(c\).</li>
-          </ul>
-          <p>The raw value is transformed with \(\log(1+x)\), clipped, and rescaled to 0-10.</p>
+          <strong>Shell dependence (0-10)</strong>
+          <p>Shown in the card spotlight. It is high when the card wins clearly more when drawn together with other cards of the deck than when drawn alone, and it is scaled down for cards that are already strong on their own.</p>
         </div>
       </div>
 
-      <h2>9. Network construction rules</h2>
-      <table>
-        <thead>
-          <tr><th>Object</th><th>Current rule</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Candidate card pool</td><td>Up to 18 cards with the highest signpost score, then cards with the largest standalone lift, then cards that appear frequently in games of the archetype, then anchor neighbors: cards that co-occur strongly in deck motifs with the leading signposts. Lands are removed and the final list is truncated to 28 cards.</td></tr>
-          <tr><td>Node support floor</td><td>At least 110 appearances in the chosen game zone inside the specific cluster archetype.</td></tr>
-          <tr><td>Pair support floor</td><td>At least 90 games inside the specific cluster archetype where both cards appear in the chosen game zone.</td></tr>
-          <tr><td>Triplet support floor</td><td>At least 30 games inside the specific cluster archetype where all three cards appear in the chosen game zone.</td></tr>
-          <tr><td>Edge threshold</td><td><code>synergy_delta_logit &gt;= 0.05</code>.</td></tr>
-          <tr><td>Base confidence threshold</td><td>Seed edges use a confidence level around 90%.</td></tr>
-          <tr><td>Knot threshold</td><td>Retained knots use a confidence level around 80%.</td></tr>
-          <tr><td>Knot promotion</td><td>Once a knot is established, nearby edges can enter at a lower confidence threshold when they reinforce that knot and stay within the same established structure.</td></tr>
-          <tr><td>Displayed solo/support stats</td><td>At least 30 supporting games are required in the relevant bucket.</td></tr>
-          <tr><td>Arrow direction</td><td>The directed graph points from the higher-win-rate card to the lower-win-rate card. The symmetric pair statistic stays unchanged.</td></tr>
-        </tbody>
-      </table>
+      <h2>11. Splash guide</h2>
+      <p>Each set has a splash guide. It compares decks that splashed one off colour with decks of the same main colours that did not splash. The deck build is the sampling unit, so standard errors account for several games played with one deck. Each cell is shrunk toward the format-average splash effect (empirical Bayes) and labelled with a descriptive cost tier: gain, no measurable cost, small cost or large cost. Lands and splashed cards are a drill-down, not the evidence. When colours are inferred from deck contents (Strixhaven: School of Mages), the tiers are not shown.</p>
+      <p>These are observational comparisons. Drafters choose to splash for a reason, such as a bomb or a thin pool, so a splash cost is a description of what happened, not advice.</p>
+
+      <h2>12. Summary of the rules</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Object</th><th>Current rule</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Clustering features</td><td>Cards in at least 250 decks and at most 55% of decks; TF-IDF, truncated SVD (at most 48 components), unit-length rows, k-means with fixed seeds.</td></tr>
+            <tr><td>Number of archetypes</td><td>One per owned, non-redundant main-colour group (at least 3% of decks), plus up to 3 stable extra clusters; colour-free search between 7 and 11 for Cube.</td></tr>
+            <tr><td>Cards per archetype</td><td>Up to 32: staples, signposts, up to 4 bomb slots, then standalone and co-occurrence picks. At least 5% play rate (bomb slots exempt) and 110 games in hand.</td></tr>
+            <tr><td>Played together</td><td>At least 50 decks with both cards and a positive deck-level log-lift; each card keeps its 3 strongest pairs.</td></tr>
+            <tr><td>Synergy test</td><td>Games in hand, 5 game-length bins &times; play/draw; at least 90 games with both cards and 30 in every other cell.</td></tr>
+            <tr><td>Verified synergy</td><td>Benjamini-Hochberg \(q \le 0.10\) per archetype and \(\gamma &gt; 0.05\) logit. Tentative: \(q \le 0.25\). Anti-synergy: \(q \le 0.10\), \(\gamma &lt; -0.05\).</td></tr>
+            <tr><td>Arrows</td><td>From payoff to engine when \(|z| \ge 1.96\). Payoff/engine rings from synergy arrows only: at least 2 arrows, at least 70% pointing out (payoff) or in (engine).</td></tr>
+            <tr><td>Rings</td><td>Core: coreness at least 0.55 (at most 30% of cards); support: at least 0.30; periphery: the rest.</td></tr>
+            <tr><td>Signature / staple tags</td><td>Signature: at least 15% play here and at that rate in at most one other archetype. Staple: at least 25% here and at least 15% in three or more archetypes.</td></tr>
+            <tr><td>Bombs</td><td>Shrunk within-deck lift at least +5 win-rate points over a typical card, probability at least 90%; this archetype's own estimate positive with probability at least 75%, played in at least 1% of its decks, adding at most one colour.</td></tr>
+            <tr><td>Bomb island</td><td>Bombs that are not core or support cards.</td></tr>
+            <tr><td>0-10 scores</td><td>\(\ln(1+x)\), clipped to the archetype's 5th-95th percentiles, rescaled to 0-10.</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <div class="actions">
         <a class="btn" href="../index.html">Back to formats</a>

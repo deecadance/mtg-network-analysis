@@ -1,40 +1,94 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
   <title>MTG Card Explorer</title>
+  <script>(function(){try{var t=localStorage.getItem('mtgnet_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
   <style>
+    /* Dark tokens by default; light via prefers-color-scheme or the site-wide
+       data-theme choice (localStorage 'mtgnet_theme', shared with the set pages). */
     :root {
+      color-scheme: dark;
       --bg: #08101d;
+      --bg-top: #0a1220;
+      --glow-1: rgba(37,99,235,0.22);
+      --glow-2: rgba(244,201,93,0.10);
       --text: #ecf2fb;
       --muted: #9bb0cd;
       --line: rgba(126,157,197,0.18);
+      --line-strong: rgba(126,157,197,0.30);
       --panel: rgba(13,20,34,0.92);
       --panel-2: rgba(20,31,51,0.92);
+      --popover: rgba(7,14,26,0.98);
+      --field: rgba(255,255,255,0.05);
+      --chip: rgba(255,255,255,0.04);
+      --hover: rgba(92,200,255,0.08);
+      --table-line: rgba(148,163,184,0.14);
+      --placeholder: rgba(155,176,205,0.75);
       --accent: #5cc8ff;
+      --accent-soft: rgba(92,200,255,0.16);
+      --accent-line: rgba(92,200,255,0.34);
       --gold: #f4c95d;
       --good: #43d17a;
       --bad: #fb7185;
+      --bomb: #c4a1ff;
+      --bomb-line: rgba(181,140,255,0.55);
+      --focus: #f8fafc;
+      --shot-1: rgba(20,31,51,0.95);
+      --shot-2: rgba(10,16,29,0.95);
+      --shadow: 0 24px 64px rgba(0,0,0,0.28);
+      --shadow-pop: 0 24px 48px rgba(0,0,0,0.35);
+    }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        color-scheme: light;
+        --bg: #f5f7fa; --bg-top: #eef2f7; --glow-1: rgba(11,99,193,0.10); --glow-2: rgba(161,98,7,0.06);
+        --text: #0f1a2a; --muted: #4b5b70; --line: rgba(15,26,42,0.14); --line-strong: rgba(15,26,42,0.24);
+        --panel: rgba(255,255,255,0.96); --panel-2: #f0f3f7; --popover: #ffffff; --field: #ffffff;
+        --chip: rgba(15,26,42,0.04); --hover: rgba(11,99,193,0.08); --table-line: rgba(15,26,42,0.10);
+        --placeholder: #6b7a8f; --accent: #0b63c1; --accent-soft: rgba(11,99,193,0.10); --accent-line: rgba(11,99,193,0.35);
+        --gold: #a16207; --good: #15803d; --bad: #be123c; --bomb: #7c3aed; --bomb-line: rgba(124,58,237,0.45);
+        --focus: #0f172a; --shot-1: #eef2f7; --shot-2: #e3e9f1;
+        --shadow: 0 10px 30px rgba(15,26,42,0.12); --shadow-pop: 0 16px 36px rgba(15,26,42,0.18);
+      }
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f5f7fa; --bg-top: #eef2f7; --glow-1: rgba(11,99,193,0.10); --glow-2: rgba(161,98,7,0.06);
+      --text: #0f1a2a; --muted: #4b5b70; --line: rgba(15,26,42,0.14); --line-strong: rgba(15,26,42,0.24);
+      --panel: rgba(255,255,255,0.96); --panel-2: #f0f3f7; --popover: #ffffff; --field: #ffffff;
+      --chip: rgba(15,26,42,0.04); --hover: rgba(11,99,193,0.08); --table-line: rgba(15,26,42,0.10);
+      --placeholder: #6b7a8f; --accent: #0b63c1; --accent-soft: rgba(11,99,193,0.10); --accent-line: rgba(11,99,193,0.35);
+      --gold: #a16207; --good: #15803d; --bad: #be123c; --bomb: #7c3aed; --bomb-line: rgba(124,58,237,0.45);
+      --focus: #0f172a; --shot-1: #eef2f7; --shot-2: #e3e9f1;
+      --shadow: 0 10px 30px rgba(15,26,42,0.12); --shadow-pop: 0 16px 36px rgba(15,26,42,0.18);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       color: var(--text);
       font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(37,99,235,0.22), transparent 34%),
-        radial-gradient(circle at 80% 18%, rgba(244,201,93,0.10), transparent 24%),
-        linear-gradient(180deg, #0a1220, #08101d 62%);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(circle at top, var(--glow-1), transparent 34%),
+        radial-gradient(circle at 80% 18%, var(--glow-2), transparent 24%),
+        linear-gradient(180deg, var(--bg-top), var(--bg) 62%);
+      background-repeat: no-repeat;
       min-height: 100vh;
     }
     a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
     .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 28px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+      box-shadow: var(--shadow);
     }
     .hero {
       padding: 26px;
@@ -43,6 +97,7 @@
       margin-bottom: 22px;
     }
     .topbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .topbar .theme-btn { margin-left: auto; }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -50,11 +105,15 @@
       gap: 8px;
       border-radius: 999px;
       padding: 10px 14px;
-      border: 1px solid rgba(92,200,255,0.34);
-      background: rgba(92,200,255,0.16);
+      border: 1px solid var(--accent-line);
+      background: var(--accent-soft);
       color: var(--text);
+      font: inherit;
       font-weight: 600;
       min-height: 42px;
+      cursor: pointer;
+      max-width: 100%;
+      overflow-wrap: anywhere;
     }
     h1 { margin: 0; font-size: clamp(32px, 6vw, 54px); line-height: 0.98; }
     .lead { color: var(--muted); max-width: 62ch; }
@@ -65,12 +124,12 @@
       min-width: 0;
       padding: 14px 16px;
       border-radius: 16px;
-      border: 1px solid rgba(126,157,197,0.28);
-      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line-strong);
+      background: var(--field);
       color: var(--text);
       font: inherit;
     }
-    .search-input::placeholder { color: rgba(155,176,205,0.75); }
+    .search-input::placeholder { color: var(--placeholder); }
     .suggestions {
       position: absolute;
       left: 0;
@@ -78,31 +137,32 @@
       top: calc(100% + 8px);
       display: none;
       z-index: 12;
-      background: rgba(7, 14, 26, 0.98);
-      border: 1px solid rgba(126,157,197,0.25);
+      background: var(--popover);
+      border: 1px solid var(--line-strong);
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 24px 48px rgba(0,0,0,0.35);
+      box-shadow: var(--shadow-pop);
     }
     .suggestion {
       padding: 12px 14px;
       display: grid;
       gap: 3px;
       cursor: pointer;
-      border-bottom: 1px solid rgba(126,157,197,0.10);
+      border-bottom: 1px solid var(--line);
     }
     .suggestion:last-child { border-bottom: 0; }
-    .suggestion:hover, .suggestion.active { background: rgba(92,200,255,0.08); }
+    .suggestion:hover, .suggestion.active { background: var(--hover); }
     .suggestion small { color: var(--muted); }
     .hero-grid, .table-grid, .meta-grid { display: grid; gap: 18px; }
     .hero-grid { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); }
-    .table-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
-    .meta-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .table-grid { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
+    .meta-grid { grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); }
     .card-shot, .summary, .table-card, .empty-state {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 24px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+      box-shadow: var(--shadow);
+      min-width: 0;
     }
     .card-shot {
       min-height: 420px;
@@ -110,11 +170,11 @@
       place-items: center;
       overflow: hidden;
       padding: 18px;
-      background: linear-gradient(180deg, rgba(20,31,51,0.95), rgba(10,16,29,0.95));
+      background: linear-gradient(180deg, var(--shot-1), var(--shot-2));
     }
-    .card-shot img { width: 100%; max-width: 300px; border-radius: 18px; box-shadow: 0 20px 44px rgba(0,0,0,0.35); }
+    .card-shot img { width: 100%; max-width: 300px; border-radius: 18px; box-shadow: var(--shadow-pop); }
     .summary { padding: 22px; display: grid; gap: 14px; }
-    .summary h2 { margin: 0; font-size: clamp(28px, 4vw, 42px); }
+    .summary h2 { margin: 0; font-size: clamp(28px, 4vw, 42px); overflow-wrap: anywhere; }
     .muted { color: var(--muted); }
     .chips { display: flex; gap: 8px; flex-wrap: wrap; }
     .chip {
@@ -124,43 +184,49 @@
       border-radius: 999px;
       padding: 6px 10px;
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.04);
+      background: var(--chip);
       color: var(--muted);
       font-size: 12px;
     }
     .metric {
       padding: 12px 14px;
-      background: rgba(255,255,255,0.04);
+      background: var(--chip);
       border: 1px solid var(--line);
       border-radius: 16px;
       display: grid;
       gap: 4px;
+      min-width: 0;
     }
-    .metric strong { font-size: 26px; }
+    .metric strong { font-size: 26px; overflow-wrap: anywhere; }
     .section-title { margin: 28px 0 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 12px; }
     .table-card { padding: 18px; overflow: auto; }
     table { width: 100%; border-collapse: collapse; min-width: 680px; }
-    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid rgba(148,163,184,0.14); vertical-align: top; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--table-line); vertical-align: top; }
     th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
     .linkish { color: var(--accent); }
+    .linkish:hover { text-decoration: underline; }
     .good { color: var(--good); }
     .bad { color: var(--bad); }
+    .bomb { color: var(--bomb); font-weight: 600; }
+    .chip.bomb { border-color: var(--bomb-line); color: var(--bomb); }
     .empty-state { padding: 24px; display: grid; gap: 10px; }
-    .empty-state strong { font-size: 28px; }
+    .empty-state strong { font-size: 28px; overflow-wrap: anywhere; }
     .help-inline {
       position: relative;
       display: inline-block;
       margin-left: 8px;
+      text-transform: none;
+      letter-spacing: normal;
     }
     .help-inline summary {
       list-style: none;
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       display: grid;
       place-items: center;
       border-radius: 999px;
-      border: 1px solid rgba(126,157,197,0.32);
-      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line-strong);
+      background: var(--field);
       color: var(--accent);
       font-size: 12px;
       font-weight: 700;
@@ -169,8 +235,8 @@
     }
     .help-inline summary::-webkit-details-marker { display: none; }
     .help-inline[open] summary {
-      background: rgba(92,200,255,0.14);
-      border-color: rgba(92,200,255,0.4);
+      background: var(--accent-soft);
+      border-color: var(--accent-line);
     }
     .help-pop {
       position: absolute;
@@ -179,58 +245,154 @@
       width: min(320px, calc(100vw - 48px));
       padding: 12px 14px;
       border-radius: 16px;
-      border: 1px solid rgba(126,157,197,0.25);
-      background: rgba(7, 14, 26, 0.98);
+      border: 1px solid var(--line-strong);
+      background: var(--popover);
       color: var(--muted);
-      box-shadow: 0 24px 48px rgba(0,0,0,0.35);
+      box-shadow: var(--shadow-pop);
       z-index: 20;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.5;
+      text-transform: none;
+      letter-spacing: normal;
+      text-align: left;
     }
     .help-pop strong { color: var(--text); }
     .help-pop p { margin: 0 0 8px; }
     .help-pop p:last-child { margin-bottom: 0; }
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
     @media (max-width: 880px) {
       .hero-grid { grid-template-columns: 1fr; }
       .search-row { flex-direction: column; }
       table { min-width: 0; }
-      .wrap { padding-left: 14px; padding-right: 14px; }
+      .wrap { padding-left: 16px; padding-right: 16px; }
+      .hero { padding: 20px; }
+      .card-shot { min-height: 0; }
+      /* Popovers become a bottom sheet so they never widen the page. */
+      .help-pop {
+        position: fixed;
+        top: auto;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        width: auto;
+        max-height: 60vh;
+        overflow: auto;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <section class="panel hero">
-      <div class="topbar">
+    <header class="panel hero">
+      <nav class="topbar" aria-label="Site">
         <a class="btn" href="../index.html">Back to Home</a>
         <a class="btn" href="../about/index.html">About the method</a>
-      </div>
+        <button id="themeBtn" class="btn theme-btn" type="button" aria-label="Switch colour theme">Light theme</button>
+      </nav>
       <h1>Search for a card, then read the format around it.</h1>
       <div class="lead">Find where a card fits best, what supports it, what drags it down, which synergy knots it belongs to, and which archetypes use it most effectively.</div>
-      <div class="search-wrap">
+      <div class="search-wrap" role="search">
         <div class="search-row">
-          <input id="cardSearchInput" class="search-input" type="search" placeholder="Search a card name" autocomplete="off" spellcheck="false" />
+          <label class="visually-hidden" for="cardSearchInput">Card name</label>
+          <input id="cardSearchInput" class="search-input" type="search" placeholder="Search a card name" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" />
           <button id="cardSearchBtn" class="btn" type="button">Open card page</button>
         </div>
-        <div id="suggestions" class="suggestions"></div>
+        <div id="suggestions" class="suggestions" role="listbox" aria-label="Matching cards"></div>
       </div>
-    </section>
+    </header>
 
-    <div id="content"></div>
+    <div id="status" class="visually-hidden" role="status" aria-live="polite"></div>
+    <main id="content"></main>
   </div>
-  <script src="./card_index.js"></script>
+  <script src="./card_search_index.js?v=484a7658"></script>
   <script>
   (function() {
-    var data = window.__MTG_CARD_EXPLORER_DATA || { cards: {}, search: [], popular: [] };
+    // Search rows load up front (small); card details live in shards that are
+    // fetched on demand (window.__MTG_CARD_SHARD_FILES maps shard id -> file).
+    var searchRows = window.__MTG_CARD_SEARCH_INDEX || [];
+    var shardFiles = window.__MTG_CARD_SHARD_FILES || {};
+    var archetypeTable = window.__MTG_CARD_ARCHETYPES || [];
+    var setList = window.__MTG_CARD_SETS || [];
+    var preloaded = (window.__MTG_CARD_EXPLORER_DATA || {}).cards || null;
+    var cardsLoaded = Object.create(null);
+    var shardOfCard = Object.create(null);
+    var shardState = Object.create(null);
+    var shardWaiters = Object.create(null);
     var cardLookup = Object.create(null);
-    Object.keys(data.cards || {}).forEach(function(name) {
-      cardLookup[String(name).trim().toLowerCase()] = name;
+    searchRows.forEach(function(row) {
+      var name = String(row.name || '');
+      cardLookup[name.trim().toLowerCase()] = name;
+      shardOfCard[name] = row.shard || '';
     });
+    if (preloaded) {
+      Object.keys(preloaded).forEach(function(name) { cardsLoaded[name] = preloaded[name]; });
+    }
+    var data = { search: searchRows, popular: computePopular(searchRows) };
     var searchInput = document.getElementById('cardSearchInput');
     var searchBtn = document.getElementById('cardSearchBtn');
     var suggestionsEl = document.getElementById('suggestions');
     var content = document.getElementById('content');
+    var statusEl = document.getElementById('status');
+    var themeBtn = document.getElementById('themeBtn');
     var activeSuggestion = -1;
     var currentSuggestions = [];
     var imageCache = Object.create(null);
+    var pendingCard = '';
+
+    function computePopular(rows) {
+      return rows.slice().sort(function(a, b) {
+        if (b.archetype_count !== a.archetype_count) return b.archetype_count - a.archetype_count;
+        if (b.format_count !== a.format_count) return b.format_count - a.format_count;
+        return a.name < b.name ? 1 : (a.name > b.name ? -1 : 0);
+      }).slice(0, 18);
+    }
+    function flushShard(id, ok) {
+      var waiters = shardWaiters[id] || [];
+      shardWaiters[id] = [];
+      waiters.forEach(function(fn) { fn(ok); });
+    }
+    function loadShard(id, done) {
+      done = done || function() {};
+      if (!id || !shardFiles[id]) { done(false); return; }
+      if (shardState[id] === 'loaded') { done(true); return; }
+      (shardWaiters[id] = shardWaiters[id] || []).push(done);
+      if (shardState[id] === 'loading') return;
+      shardState[id] = 'loading';
+      var script = document.createElement('script');
+      script.src = './' + shardFiles[id];
+      script.async = true;
+      script.onload = function() {
+        var shard = (window.__MTG_CARD_SHARDS || {})[id] || {};
+        Object.keys(shard).forEach(function(name) { cardsLoaded[name] = hydrateCard(shard[name]); });
+        shardState[id] = 'loaded';
+        flushShard(id, true);
+      };
+      script.onerror = function() {
+        shardState[id] = '';
+        if (script.parentNode) script.parentNode.removeChild(script);
+        flushShard(id, false);
+      };
+      document.head.appendChild(script);
+    }
+    function hydrateCard(card) {
+      // Shard rows reference the shared archetype table by index (row.a).
+      ['archetypes', 'synergies', 'anti_synergies', 'knots'].forEach(function(key) {
+        (card[key] || []).forEach(function(row) {
+          var src = row.a != null ? archetypeTable[row.a] : null;
+          if (!src) return;
+          Object.keys(src).forEach(function(field) { if (row[field] == null) row[field] = src[field]; });
+        });
+      });
+      return card;
+    }
+    function withCard(name, callback) {
+      if (cardsLoaded[name]) { callback(cardsLoaded[name]); return; }
+      loadShard(shardOfCard[name], function(ok) { callback(ok ? (cardsLoaded[name] || null) : null); });
+    }
 
     function bootAnalytics(config) {
       var analytics = config || {};
@@ -271,8 +433,50 @@
         .replace(/'/g, '&#39;');
     }
     function pct(value) { return (100 * Number(value || 0)).toFixed(2) + '%'; }
-    function pp(value) { return (100 * Number(value || 0)).toFixed(2) + ' pp'; }
-    function confidence(value) { return (100 * Number(value || 0)).toFixed(1) + '%'; }
+    function pct0(value) { return (100 * Number(value || 0)).toFixed(0) + '%'; }
+    function pp(value) { var v = 100 * Number(value || 0); return (v > 0 ? '+' : '') + v.toFixed(1) + ' pp'; }
+    function confidence(value) { return value == null ? '&mdash;' : (100 * Number(value || 0)).toFixed(1) + '%'; }
+    function oddsPct(lam) { var v = 100 * (Math.exp(Number(lam || 0)) - 1); return (v > 0 ? '+' : '') + v.toFixed(0) + '%'; }
+    function oddsCi(row) {
+      if (row.ci_low == null || row.ci_high == null) return '&mdash;';
+      return '[' + oddsPct(row.ci_low) + ', ' + oddsPct(row.ci_high) + ']';
+    }
+    function tierLabel(row) {
+      if (row.tier === 'core') return '<span class="good">Verified</span>';
+      if (row.tier === 'tentative') return 'Tentative';
+      return '<span class="muted">Unverified (older analysis)</span>';
+    }
+    function ringLabel(row) {
+      if (row && (row.bomb || row.ring === 'island')) return '<span class="bomb">Bomb</span>';
+      if (!row || !row.ring) return '&mdash;';
+      var ring = String(row.ring);
+      var label = esc(ring.charAt(0).toUpperCase() + ring.slice(1));
+      // core_kind tag exactly as the payload sets it ('signature' | 'staple'); nothing otherwise
+      if (row.core_kind === 'signature' || row.core_kind === 'staple') label += ' &middot; ' + row.core_kind;
+      return label;
+    }
+    function ringPhrase(row) {
+      // 'Core ring · signature card' / 'Bomb: strong on its own' for the summary metric.
+      if (row.bomb || row.ring === 'island') return '<span class="bomb">Bomb</span>: strong on its own';
+      var ring = String(row.ring || '');
+      var kind = (row.core_kind === 'signature' || row.core_kind === 'staple') ? row.core_kind : '';
+      return esc(ring.charAt(0).toUpperCase() + ring.slice(1)) + ' ring' + (kind ? ' &middot; ' + kind + ' card' : '');
+    }
+    function flowLabel(row) {
+      // v3 amendment: significance-gated synergy arrows only; payoff = wins more when drawn.
+      if (row.flow_role === 'payoff') return '<span title="Wins more when drawn than the synergy partners its arrows point to">payoff</span>';
+      if (row.flow_role === 'enabler') return '<span title="The engine its payoffs reward: its synergy partners win more when drawn">enabler</span>';
+      return '';
+    }
+    function corenessText(row) {
+      if (!row) return '0';
+      if (row.coreness != null) return String(Math.round(100 * Number(row.coreness))) + ' / 100';
+      return Number(row.core_score || 0).toFixed(1) + ' / 10';
+    }
+    function cardLink(href, name) {
+      // Archetype pages open the card spotlight from #card=<name>.
+      return href ? href + '#card=' + encodeURIComponent(name) : '';
+    }
     function roleChip(role) {
       var label = role === 'good_alone' ? 'Good Alone' : role === 'needs_support' ? 'Needs Support' : role === 'engine' ? 'Engine' : 'Balanced';
       return '<span class="chip">' + esc(label) + '</span>';
@@ -310,39 +514,71 @@
       });
       return ordered.slice(0, 10);
     }
+    function showSuggestions(open) {
+      suggestionsEl.style.display = open ? 'block' : 'none';
+      searchInput.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (!open) searchInput.removeAttribute('aria-activedescendant');
+    }
+    function announce(text) {
+      if (statusEl) statusEl.textContent = text;
+    }
     function renderSuggestions(rows) {
       currentSuggestions = rows || [];
       activeSuggestion = -1;
       if (!currentSuggestions.length) {
-        suggestionsEl.style.display = 'none';
+        showSuggestions(false);
         suggestionsEl.innerHTML = '';
         return;
       }
       suggestionsEl.innerHTML = currentSuggestions.map(function(row, idx) {
-        return '<div class="suggestion" data-idx="' + idx + '"><strong>' + esc(row.name) + '</strong><small>' + esc(row.best_format || '') + (row.best_archetype ? ' | ' + esc(row.best_archetype) : '') + ' | ' + row.archetype_count + ' archetypes</small></div>';
+        return '<div class="suggestion" role="option" aria-selected="false" id="cardSuggestion' + idx + '" data-idx="' + idx + '"><strong>' + esc(row.name) + '</strong><small>' + esc(row.best_format || '') + (row.best_archetype ? ' | ' + esc(row.best_archetype) : '') + ' | ' + esc(row.archetype_count) + ' archetypes</small></div>';
       }).join('');
-      suggestionsEl.style.display = 'block';
+      showSuggestions(true);
       Array.prototype.slice.call(suggestionsEl.querySelectorAll('.suggestion')).forEach(function(node) {
+        var row = currentSuggestions[Number(node.getAttribute('data-idx') || 0)];
+        node.addEventListener('mouseenter', function() { loadShard(shardOfCard[row.name]); });
         node.addEventListener('mousedown', function(evt) {
           evt.preventDefault();
-          var idx = Number(node.getAttribute('data-idx') || 0);
-          chooseCard(currentSuggestions[idx].name);
+          chooseCard(row.name);
         });
       });
     }
     function updateSuggestionHighlight() {
       Array.prototype.slice.call(suggestionsEl.querySelectorAll('.suggestion')).forEach(function(node, idx) {
         node.classList.toggle('active', idx === activeSuggestion);
+        node.setAttribute('aria-selected', idx === activeSuggestion ? 'true' : 'false');
       });
+      var row = currentSuggestions[activeSuggestion];
+      if (row) {
+        searchInput.setAttribute('aria-activedescendant', 'cardSuggestion' + activeSuggestion);
+        loadShard(shardOfCard[row.name]);
+      }
     }
     function searchInputChanged() { renderSuggestions(findSuggestions(searchInput.value)); }
+    function openCard(resolved) {
+      pendingCard = resolved;
+      content.innerHTML = '<section class="empty-state"><strong>' + esc(resolved) + '</strong><div class="muted">Loading card data&hellip;</div></section>';
+      withCard(resolved, function(card) {
+        if (pendingCard !== resolved) return;
+        if (card) { renderCard(card); announce(resolved + ' loaded.'); }
+        else {
+          content.innerHTML = '<section class="empty-state"><strong>' + esc(resolved) + '</strong><div class="muted">The card data could not be loaded. Check your connection and try again.</div></section>';
+          announce('The card data could not be loaded.');
+        }
+      });
+    }
     function chooseCard(cardName) {
       var resolved = resolveCardName(cardName);
-      if (!resolved || !data.cards[resolved]) return;
+      if (!resolved && String(cardName || '').trim()) {
+        // Enter on a partial name opens the best match.
+        var matches = findSuggestions(cardName);
+        if (matches.length) resolved = matches[0].name;
+      }
+      if (!resolved) { announce(String(cardName || '').trim() ? 'No card matches that name.' : ''); return; }
       searchInput.value = resolved;
       setCardName(resolved);
-      suggestionsEl.style.display = 'none';
-      renderCard(resolved);
+      showSuggestions(false);
+      openCard(resolved);
       trackEvent('card_search_open', { card_name: resolved });
     }
     function currentRoleSummary(card) {
@@ -350,7 +586,35 @@
       roles.sort(function(a, b) { return (card.roles[b] || 0) - (card.roles[a] || 0); });
       return roles.map(function(role) { return roleChip(role) + '<span class="chip">' + (card.roles[role] || 0) + '</span>'; }).join('');
     }
+    function qsSetCode() {
+      return new URLSearchParams(window.location.search).get('set') || '';
+    }
+    function findSet(code) {
+      var wanted = String(code || '').trim().toLowerCase();
+      if (!wanted) return null;
+      for (var i = 0; i < setList.length; i += 1) {
+        var row = setList[i];
+        if (String(row.code).toLowerCase() === wanted || String(row.slug).toLowerCase() === wanted) return row;
+      }
+      return null;
+    }
+    function renderSetIntro(set) {
+      // "Cards in this set" (linked from every set page as ?set=<code>).
+      pendingCard = '';
+      var rows = data.search.filter(function(row) { return (row.sets || []).indexOf(set.code) !== -1; });
+      rows.sort(function(a, b) {
+        if (b.archetype_count !== a.archetype_count) return b.archetype_count - a.archetype_count;
+        return String(a.name).localeCompare(String(b.name));
+      });
+      content.innerHTML = '<section class="empty-state"><strong>Cards in ' + esc(set.title) + '</strong><div class="muted">' + rows.length + ' cards tracked in this format, most widely played across its archetypes first. Pick one to see where it fits. <a class="linkish" href="' + esc(set.href) + '">Back to the ' + esc(set.title) + ' archetypes</a></div><div class="chips">' + rows.map(function(row) { return '<button type="button" class="btn" data-card="' + esc(row.name) + '">' + esc(row.name) + '</button>'; }).join('') + '</div></section>';
+      Array.prototype.slice.call(content.querySelectorAll('[data-card]')).forEach(function(btn) {
+        btn.addEventListener('click', function() { chooseCard(btn.getAttribute('data-card')); });
+      });
+    }
     function renderIntro() {
+      var set = findSet(qsSetCode());
+      if (set) { renderSetIntro(set); return; }
+      pendingCard = '';
       content.innerHTML = '<section class="empty-state"><strong>Start from any card.</strong><div class="muted">Search above to open a card-centric page. You can look up a single card and see where it fits best, which partners support it, which archetypes want it, and which knots it belongs to.</div><div class="chips">' + (data.popular || []).slice(0, 12).map(function(row) { return '<button type="button" class="btn" data-card="' + esc(row.name) + '">' + esc(row.name) + '</button>'; }).join('') + '</div></section>';
       Array.prototype.slice.call(content.querySelectorAll('[data-card]')).forEach(function(btn) {
         btn.addEventListener('click', function() { chooseCard(btn.getAttribute('data-card')); });
@@ -364,17 +628,26 @@
         onReady(dataObj || null);
       }).catch(function() { onReady(null); });
     }
-    function renderCard(cardName) {
-      var card = data.cards[cardName];
+    function renderCard(card) {
       if (!card) { renderIntro(); return; }
       var best = (card.archetypes || [])[0] || null;
-      var roleHelp = '<details class="help-inline"><summary aria-label="Explain role labels">?</summary><div class="help-pop"><p><strong>Role labels</strong></p><p><strong>Good Alone</strong>: the card keeps a strong win rate even without specific partners.</p><p><strong>Balanced</strong>: the card is solid in the shell, but neither highly self-sufficient nor highly dependent.</p><p><strong>Needs Support</strong>: the card improves meaningfully when the shell gives it the right partners or structure.</p><p><strong>Engine</strong>: the card does not just benefit from support; it tends to organize the shell around itself and create repeated synergy with multiple partners.</p></div></details>';
-      var knotRows = (card.knots || []).slice(0, 10).map(function(row) {
-        return '<tr><td>' + esc(row.format) + '</td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td>Knot ' + row.community_id + '</td><td>' + row.size + '</td><td>' + confidence(row.confidence_probability) + '</td><td>' + esc((row.top_cards || []).slice(0, 4).join(', ')) + '</td></tr>';
-      }).join('') || '<tr><td colspan="6" class="muted">This card does not currently sit inside a retained knot.</td></tr>';
+      var hasCoreness = (card.archetypes || []).some(function(row) { return row.coreness != null; });
+      var roleHelp = '<details class="help-inline"><summary aria-label="Explain role labels">?</summary><div class="help-pop"><p><strong>Role labels</strong></p><p><strong>Good Alone</strong>: the card keeps a strong win rate even without specific partners.</p><p><strong>Balanced</strong>: the card is solid in the shell, but neither highly self-sufficient nor highly dependent.</p><p><strong>Needs Support</strong>: the card improves meaningfully when the shell gives it the right partners or structure.</p><p><strong>Engine</strong>: the card does not just benefit from support; it tends to organize the shell around itself and create repeated synergy with multiple partners.</p><p><strong>payoff / enabler</strong> (newer analysis): among synergy pairs with a significant direction, a payoff is the card that wins more when drawn; an enabler is the engine its payoffs reward.</p></div></details>';
+      var corenessHelp = '<details class="help-inline"><summary aria-label="Explain coreness">?</summary><div class="help-pop"><p><strong>Coreness</strong> is how central the card is to an archetype: played in many of its decks, characteristic of it, and connected to the rest of the deck. Cards fall into Core, Support and Periphery rings.</p><p><strong>signature</strong>: played in at least 15% of the archetype&rsquo;s decks and in at most one other archetype at that rate. <strong>staple</strong>: at least 25% of its decks and at least 15% in three or more archetypes.</p><p><strong>Bomb</strong>: strong on its own. Within the decks that play it, it wins clearly more when in hand than a typical card of the archetype; bombs that are core or support cards keep their ring, the others sit in a separate island beside the rings.</p><p>Formats from the older analysis show the legacy core score out of 10 instead.</p></div></details>';
+      var synergyHelp = '<details class="help-inline"><summary aria-label="Explain synergies">?</summary><div class="help-pop"><p>These two cards win more often when drawn together than their separate effects predict (games-in-hand, adjusted for game length and play/draw, false-discovery controlled).</p><p><strong>Effect</strong> is the change in the odds of winning, with its 95% confidence interval. <strong>Verified</strong>: q &le; 0.10. <strong>Tentative</strong>: q &le; 0.25. Rows from the older analysis are heuristic and unverified.</p></div></details>';
+      // v3 communities carry no confidence; the column is shown only when some row has one.
+      var knotList = (card.knots || []).slice(0, 10);
+      var knotConf = knotList.some(function(row) { return row.confidence_probability != null; });
+      var knotRows = knotList.map(function(row) {
+        return '<tr><td>' + esc(row.format) + '</td><td><a class="linkish" href="' + esc(cardLink(row.href, card.name)) + '">' + esc(row.archetype_name || row.archetype) + '</a></td><td>Knot ' + esc(row.community_id) + '</td><td>' + esc(row.size) + '</td>' + (knotConf ? '<td>' + confidence(row.confidence_probability) + '</td>' : '') + '<td>' + esc((row.top_cards || []).slice(0, 4).join(', ')) + '</td></tr>';
+      }).join('') || '<tr><td colspan="' + (knotConf ? 6 : 5) + '" class="muted">This card does not currently sit inside a retained knot.</td></tr>';
+      var knotHead = '<tr><th>Format</th><th>Archetype</th><th>Knot</th><th>Size</th>' + (knotConf ? '<th>Confidence</th>' : '') + '<th>Top Cards</th></tr>';
+      var fourthMetric = card.bomb_count
+        ? '<div class="metric"><div class="muted">Bomb In</div><strong>' + card.bomb_count + '</strong><div class="muted">Archetypes where it is strong on its own.</div></div>'
+        : '<div class="metric"><div class="muted">Core In</div><strong>' + (card.core_count || 0) + '</strong><div class="muted">Archetypes where it sits in the core ring.</div></div>';
       content.innerHTML = '' +
         '<section class="hero-grid">' +
-          '<div class="card-shot" id="cardShot"><div class="muted">Loading card image…</div></div>' +
+          '<div class="card-shot" id="cardShot"><div class="muted">Loading card image&hellip;</div></div>' +
           '<div class="summary">' +
             '<div><h2>' + esc(card.name) + '</h2></div>' +
             '<div class="chips">' +
@@ -383,42 +656,44 @@
               (card.types ? '<span class="chip">' + esc(card.types) + '</span>' : '') +
               '<span class="chip">' + card.format_count + ' formats</span>' +
               '<span class="chip">' + card.archetypes.length + ' archetype fits</span>' +
+              (card.core_count ? '<span class="chip">Core in ' + card.core_count + '</span>' : '') +
+              (card.bomb_count ? '<span class="chip bomb">Bomb in ' + card.bomb_count + '</span>' : '') +
             '</div>' +
             '<div class="meta-grid">' +
-              '<div class="metric"><div class="muted">Best Archetype</div><strong>' + (best ? esc(best.archetype) : 'None') + '</strong><div class="muted">' + (best ? esc(best.format) : '') + '</div></div>' +
-              '<div class="metric"><div class="muted">Best Core Score</div><strong>' + (best ? best.core_score.toFixed(1) + ' / 10' : '0.0 / 10') + '</strong><div class="muted">How central the card is in that shell.</div></div>' +
-              '<div class="metric"><div class="muted">Best Pick Urgency</div><strong>' + (best ? best.pick_urgency_score.toFixed(1) + ' / 10' : '0.0 / 10') + '</strong><div class="muted">Highest recommendation score across archetypes.</div></div>' +
-              '<div class="metric"><div class="muted">Role Summary</div><strong>' + Object.keys(card.roles || {}).length + '</strong><div class="muted">Distinct role labels across archetypes.</div></div>' +
+              '<div class="metric"><div class="muted">Best Archetype</div><strong>' + (best ? esc(best.archetype_name || best.archetype) : 'None') + '</strong><div class="muted">' + (best ? esc(best.format) : '') + '</div></div>' +
+              '<div class="metric"><div class="muted">' + (hasCoreness ? 'Coreness There' : 'Best Core Score') + corenessHelp + '</div><strong>' + corenessText(best) + '</strong><div class="muted">' + (best && (best.ring || best.bomb) ? ringPhrase(best) : 'How central the card is in that shell.') + '</div></div>' +
+              '<div class="metric"><div class="muted">Best Pick Urgency</div><strong>' + (best ? Number(best.pick_urgency_score || 0).toFixed(1) + ' / 10' : '0.0 / 10') + '</strong><div class="muted">Highest recommendation score across archetypes.</div></div>' +
+              fourthMetric +
             '</div>' +
             '<div><strong>Roles across archetypes</strong>' + roleHelp + '<div class="chips" style="margin-top:8px">' + currentRoleSummary(card) + '</div></div>' +
           '</div>' +
         '</section>' +
         '<div class="section-title">Best Archetypes</div>' +
-        '<section class="table-card"><table><thead><tr><th>Format</th><th>Archetype</th><th>Role</th><th>Analysis</th><th>Pick</th><th>Urgency</th><th>Core</th><th>Shell</th><th>Knot</th></tr></thead><tbody>' +
+        '<section class="table-card"><table><thead><tr><th>Format</th><th>Archetype</th><th>Ring</th><th>Coreness</th><th>Play rate</th><th>GIH WR vs deck</th><th>Pick</th><th>Urgency</th><th>Role</th></tr></thead><tbody>' +
         card.archetypes.slice(0, 14).map(function(row) {
-          return '<tr><td>' + esc(row.format) + '</td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td>' + esc(row.role.replace('_', ' ')) + (row.is_build_around ? ' | build-around' : '') + '</td><td>' + row.analysis_score.toFixed(1) + '</td><td>' + row.pick_priority_score.toFixed(1) + '</td><td>' + row.pick_urgency_score.toFixed(1) + '</td><td>' + row.core_score.toFixed(1) + '</td><td>' + row.shell_dependence_score.toFixed(1) + '</td><td>' + (row.knot ? 'Knot ' + row.knot.community_id : 'None') + '</td></tr>';
+          return '<tr><td>' + esc(row.format) + '</td><td><a class="linkish" href="' + esc(cardLink(row.href, card.name)) + '" title="' + esc(row.archetype) + '">' + esc(row.archetype_name || row.archetype) + '</a></td><td>' + ringLabel(row) + '</td><td>' + corenessText(row) + '</td><td>' + pct0(row.play_rate) + '</td><td>' + pp(row.standalone_delta) + ' <span class="muted">(' + Number(row.draw_games || 0).toLocaleString() + ' games)</span></td><td>' + Number(row.pick_priority_score || 0).toFixed(1) + '</td><td>' + Number(row.pick_urgency_score || 0).toFixed(1) + '</td><td>' + esc(String(row.role || '').replace('_', ' ')) + (row.is_build_around ? ' | build-around' : '') + (flowLabel(row) ? ' | ' + flowLabel(row) : '') + '</td></tr>';
         }).join('') + '</tbody></table></section>' +
         '<div class="table-grid">' +
-          '<section class="table-card"><div class="section-title" style="margin-top:0">Top Synergies</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Quality</th><th>Pair WR</th><th>Games</th><th>Confidence</th></tr></thead><tbody>' +
+          '<section class="table-card"><div class="section-title" style="margin-top:0">Synergies' + synergyHelp + '</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Effect (odds)</th><th>95% CI</th><th>Status</th><th>Pair WR</th><th>Games</th></tr></thead><tbody>' +
           ((card.synergies || []).slice(0, 12).map(function(row) {
-            return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td class="good">' + row.quality_score.toFixed(2) + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td><td>' + confidence(row.confidence_probability) + '</td></tr>';
-          }).join('') || '<tr><td colspan="6" class="muted">No supported positive pair rows were exported for this card.</td></tr>') +
+            return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '" title="' + esc(row.archetype) + '">' + esc(row.archetype_name || row.archetype) + '</a></td><td class="good">' + oddsPct(row.lam) + '</td><td>' + oddsCi(row) + '</td><td>' + tierLabel(row) + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td></tr>';
+          }).join('') || '<tr><td colspan="7" class="muted">No pair with this card passed the synergy test.</td></tr>') +
           '</tbody></table></section>' +
-          '<section class="table-card"><div class="section-title" style="margin-top:0">Top Anti-Synergies</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Delta</th><th>Pair WR</th><th>Games</th><th>Confidence</th></tr></thead><tbody>' +
+          '<section class="table-card"><div class="section-title" style="margin-top:0">Anti-Synergies</div><table><thead><tr><th>Partner</th><th>Archetype</th><th>Effect (odds)</th><th>95% CI</th><th>Status</th><th>Pair WR</th><th>Games</th></tr></thead><tbody>' +
           ((card.anti_synergies || []).slice(0, 10).map(function(row) {
-            return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '">' + esc(row.archetype) + '</a></td><td class="bad">' + row.synergy_delta_logit.toFixed(3) + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td><td>' + confidence(row.confidence_probability) + '</td></tr>';
-          }).join('') || '<tr><td colspan="6" class="muted">No supported anti-synergy rows were exported for this card.</td></tr>') +
+            return '<tr><td><a class="linkish" href="?card=' + encodeURIComponent(row.partner) + '">' + esc(row.partner) + '</a></td><td><a class="linkish" href="' + esc(row.href) + '" title="' + esc(row.archetype) + '">' + esc(row.archetype_name || row.archetype) + '</a></td><td class="bad">' + oddsPct(row.lam) + '</td><td>' + oddsCi(row) + '</td><td>' + (row.verified ? 'Verified' : '<span class="muted">Not verified</span>') + '</td><td>' + pct(row.pair_win_rate) + '</td><td>' + row.pair_games + '</td></tr>';
+          }).join('') || '<tr><td colspan="7" class="muted">No supported anti-synergy rows were exported for this card.</td></tr>') +
           '</tbody></table></section>' +
         '</div>' +
         '<div class="section-title">Synergy Knots</div>' +
-        '<section class="table-card"><table><thead><tr><th>Format</th><th>Archetype</th><th>Knot</th><th>Size</th><th>Confidence</th><th>Top Cards</th></tr></thead><tbody>' + knotRows + '</tbody></table></section>';
+        '<section class="table-card"><table><thead>' + knotHead + '</thead><tbody>' + knotRows + '</tbody></table></section>';
       fetchCardImage(card.name, function(cardData) {
         var shot = document.getElementById('cardShot');
         if (!shot) return;
         var img = null;
         if (cardData && cardData.image_uris && cardData.image_uris.normal) img = cardData.image_uris.normal;
         if (!img && cardData && cardData.card_faces && cardData.card_faces[0] && cardData.card_faces[0].image_uris) img = cardData.card_faces[0].image_uris.normal;
-        shot.innerHTML = img ? '<img src="' + img + '" alt="' + esc(card.name) + '" />' : '<div class="muted">Card image unavailable.</div>';
+        shot.innerHTML = img ? '<img src="' + esc(img) + '" alt="' + esc(card.name) + '" />' : '<div class="muted">Card image unavailable.</div>';
       });
     }
 
@@ -440,19 +715,39 @@
         if (activeSuggestion >= 0 && currentSuggestions[activeSuggestion]) chooseCard(currentSuggestions[activeSuggestion].name);
         else chooseCard(searchInput.value.trim());
       } else if (evt.key === 'Escape') {
-        suggestionsEl.style.display = 'none';
+        showSuggestions(false);
       }
     });
     document.addEventListener('click', function(evt) {
-      if (!suggestionsEl.contains(evt.target) && evt.target !== searchInput) suggestionsEl.style.display = 'none';
+      if (!suggestionsEl.contains(evt.target) && evt.target !== searchInput) showSuggestions(false);
     });
     searchBtn.addEventListener('click', function() { chooseCard(searchInput.value.trim()); });
+    // Theme: same key as the set pages (mtgnet.js), so the choice follows the reader.
+    function currentTheme() {
+      var t = document.documentElement.getAttribute('data-theme');
+      if (t === 'light' || t === 'dark') return t;
+      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    }
+    function syncThemeBtn() {
+      if (!themeBtn) return;
+      var next = currentTheme() === 'light' ? 'dark' : 'light';
+      themeBtn.textContent = next === 'light' ? 'Light theme' : 'Dark theme';
+      themeBtn.setAttribute('aria-label', 'Switch to the ' + next + ' theme');
+    }
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function() {
+        var next = currentTheme() === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('mtgnet_theme', next); } catch (err) {}
+        syncThemeBtn();
+      });
+      syncThemeBtn();
+    }
 
-    var initialCard = qsCardName();
-    var initialResolved = resolveCardName(initialCard);
-    if (initialResolved && data.cards[initialResolved]) {
+    var initialResolved = resolveCardName(qsCardName());
+    if (initialResolved) {
       searchInput.value = initialResolved;
-      renderCard(initialResolved);
+      openCard(initialResolved);
     } else {
       renderIntro();
     }
