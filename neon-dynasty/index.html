@@ -1,0 +1,1665 @@
+<!doctype html>
+<html lang="en" class="mtg-themed">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Kamigawa: Neon Dynasty Learned Archetype Synergy Map</title>
+  <meta name="description" content="Kamigawa: Neon Dynasty draft archetypes learned from 17Lands data: core cards, bombs and how the decks relate." />
+  <script>(function(){try{var t=localStorage.getItem('mtgnet_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <link rel="stylesheet" href="_assets/mtgnet.css?v=d775e0a104" />
+  <style>
+    /* Page tokens: shared mtgnet.css tokens with literal fallbacks; light values below. */
+    :root {
+      --lp-bg: var(--bg, #09111f);
+      --lp-panel: var(--panel, rgba(11, 18, 32, 0.92));
+      --lp-panel-2: var(--panel-2, rgba(18, 30, 52, 0.96));
+      --lp-text: var(--text, #ecf2fb);
+      --lp-muted: var(--muted, #9dafc8);
+      --lp-line: var(--line, rgba(126, 157, 197, 0.18));
+      --lp-accent: var(--accent, #5cc8ff);
+      --lp-edge: var(--edge, 92, 200, 255);
+      --lp-good: var(--good, #43d17a);
+      --lp-bad: var(--danger, #ee6c4d);
+      --lp-sig: var(--sig, #f4c95d);
+      --lp-focus: var(--focus, #ffd166);
+      --lp-halo: var(--halo, #09111f);
+      --lp-node-stroke: var(--node-stroke, rgba(255, 255, 255, 0.55));
+      --lp-chip: rgba(255, 255, 255, 0.05);
+      --lp-chip-hover: rgba(92, 200, 255, 0.16);
+      --lp-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+      --lp-font: var(--font, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+      /* mana tints and the bomb colour follow the shared tokens (same as the archetype pages) */
+      --lp-W: var(--mana-w, #f1e7b8); --lp-U: var(--mana-u, #7fb4e6); --lp-B: var(--mana-b, #a497a8);
+      --lp-R: var(--mana-r, #e57c62); --lp-G: var(--mana-g, #79b886);
+      --lp-multi: var(--mana-m, #d8b65a); --lp-colorless: var(--mana-c, #b3bcc9);
+      --lp-bomb: var(--bomb, #c4a1ff);
+    }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --lp-bg: #f7f8fb; --lp-panel: #ffffff; --lp-panel-2: #f0f3f7; --lp-text: #0f172a; --lp-muted: #475569;
+        --lp-line: rgba(15, 23, 42, 0.14); --lp-accent: #0369a1; --lp-edge: 3, 105, 161; --lp-good: #15803d;
+        --lp-bad: #b91c1c; --lp-sig: #b45309; --lp-focus: #b45309; --lp-halo: #ffffff;
+        --lp-node-stroke: rgba(15, 23, 42, 0.55); --lp-chip: rgba(15, 23, 42, 0.04);
+        --lp-chip-hover: rgba(3, 105, 161, 0.10); --lp-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        --lp-bomb: var(--bomb, #7c3aed);
+      }
+    }
+    :root[data-theme="light"] {
+      --lp-bg: #f7f8fb; --lp-panel: #ffffff; --lp-panel-2: #f0f3f7; --lp-text: #0f172a; --lp-muted: #475569;
+      --lp-line: rgba(15, 23, 42, 0.14); --lp-accent: #0369a1; --lp-edge: 3, 105, 161; --lp-good: #15803d;
+      --lp-bad: #b91c1c; --lp-sig: #b45309; --lp-focus: #b45309; --lp-halo: #ffffff;
+      --lp-node-stroke: rgba(15, 23, 42, 0.55); --lp-chip: rgba(15, 23, 42, 0.04);
+      --lp-chip-hover: rgba(3, 105, 161, 0.10); --lp-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --lp-bomb: var(--bomb, #7c3aed);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; } /* .map-key / .theme-btn set display, which would beat the UA rule */
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--lp-bg);
+      color: var(--lp-text);
+      font: 15px/1.5 var(--lp-font);
+      overflow-x: hidden;
+    }
+    a { color: inherit; }
+    a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--lp-focus);
+      outline-offset: 2px;
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .skip { position: absolute; left: 12px; top: -48px; z-index: 20; background: var(--lp-panel); padding: 8px 12px; border-radius: 8px; }
+    .skip:focus { top: 12px; }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+    .muted { color: var(--lp-muted); }
+
+    /* ── set header + sub-nav ─────────────────────────────────────────── */
+    .set-head { padding-top: 20px; padding-bottom: 8px; }
+    .head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .crumbs { font-size: 13px; color: var(--lp-muted); display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; }
+    .theme-btn {
+      flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
+      border-radius: 999px; border: 1px solid var(--lp-line); background: var(--lp-chip); color: var(--lp-text);
+      font: inherit; font-size: 13px; cursor: pointer;
+    }
+    .theme-btn:hover { border-color: var(--lp-accent); }
+    .crumbs a { text-decoration: none; }
+    .crumbs a:hover { text-decoration: underline; }
+    h1 { margin: 6px 0 6px; font-size: clamp(28px, 6vw, 40px); line-height: 1.1; letter-spacing: -0.01em; }
+    .lede { margin: 0; max-width: 70ch; color: var(--lp-muted); }
+    .stats { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; }
+    .stats li { display: flex; flex-direction: column; }
+    .stat-num { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .stat-label { font-size: 12px; color: var(--lp-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .set-nav { margin: 18px 0 0; border-bottom: 1px solid var(--lp-line); }
+    .set-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 4px; }
+    .set-nav a {
+      display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px;
+      text-decoration: none; color: var(--lp-muted); border-bottom: 3px solid transparent; margin-bottom: -1px;
+    }
+    .set-nav a:hover { color: var(--lp-text); }
+    .set-nav a[aria-current="page"] { color: var(--lp-text); border-bottom-color: var(--lp-accent); font-weight: 600; }
+
+    /* ── sections ─────────────────────────────────────────────────────── */
+    main section { margin-top: 28px; }
+    .section-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+    h2 { margin: 0; font-size: 22px; }
+    .section-note { margin: 6px 0 14px; color: var(--lp-muted); max-width: 80ch; font-size: 14px; }
+    .section-note strong { color: var(--lp-text); }
+
+    /* ── archetype grid ───────────────────────────────────────────────── */
+    .arch-grid {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    }
+    .arch {
+      background: var(--lp-panel);
+      border: 1px solid var(--lp-line);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      box-shadow: var(--lp-shadow);
+      min-width: 0;
+    }
+    .arch-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .rank { font-size: 12px; color: var(--lp-muted); font-variant-numeric: tabular-nums; }
+    .pips { display: inline-flex; gap: 3px; }
+    .pip {
+      width: 16px; height: 16px; border-radius: 50%; display: inline-block;
+      border: 1px solid var(--lp-node-stroke); background: var(--lp-colorless);
+    }
+    .pip-W { background: var(--lp-W); } .pip-U { background: var(--lp-U); } .pip-B { background: var(--lp-B); }
+    .pip-R { background: var(--lp-R); } .pip-G { background: var(--lp-G); }
+    .pips.small .pip { width: 11px; height: 11px; }
+    .arch h3 { margin: 0; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; }
+    .arch-sub { margin: 2px 0 0; color: var(--lp-muted); font-size: 13px; overflow-wrap: anywhere; }
+    .arch-stats { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .arch-stats div { min-width: 0; }
+    .arch-stats dt { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--lp-muted); }
+    .arch-stats dd { margin: 2px 0 0; font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; }
+    .arch-stats dd small { display: block; font-weight: 500; font-size: 12px; color: var(--lp-muted); }
+    .arch-stats .wr-good small { color: var(--lp-good); }
+    .arch-stats .wr-bad small { color: var(--lp-bad); }
+    .share-bar { display: block; height: 4px; margin-top: 5px; border-radius: 2px; background: var(--lp-line); overflow: hidden; }
+    .share-bar i { display: block; height: 100%; background: var(--lp-accent); border-radius: 2px; }
+    .chip-block h4 { margin: 0 0 5px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--lp-muted); font-weight: 600; }
+    .chip-block h4 .loose { text-transform: none; letter-spacing: 0; font-weight: 500; }
+    .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+    a.chip {
+      display: inline-flex; align-items: center; gap: 6px; min-height: 32px;
+      padding: 4px 10px; border-radius: 999px; border: 1px solid var(--lp-line);
+      background: var(--lp-chip); color: var(--lp-text); text-decoration: none; font-size: 13px;
+      max-width: 100%; overflow-wrap: anywhere;
+    }
+    a.chip:hover { background: var(--lp-chip-hover); border-color: var(--lp-accent); }
+    a.chip.bomb { border-style: dashed; border-color: var(--lp-bomb); }
+    .cta {
+      margin-top: auto; align-self: flex-start;
+      display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px;
+      border-radius: 999px; background: var(--lp-accent); color: var(--lp-bg);
+      font-weight: 700; text-decoration: none;
+    }
+    .cta:hover { filter: brightness(1.08); }
+
+    /* ── set bombs ────────────────────────────────────────────────────── */
+    .bomb-list {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    }
+    .bomb-list li {
+      background: var(--lp-panel); border: 1px solid var(--lp-line); border-radius: 14px; padding: 10px 12px;
+      display: grid; gap: 2px; min-width: 0;
+    }
+    .bomb-name { display: flex; align-items: center; gap: 8px; font-weight: 650; text-decoration: none; overflow-wrap: anywhere; }
+    .bomb-name:hover { text-decoration: underline; }
+    .bomb-meta { font-size: 13px; color: var(--lp-muted); }
+    .bomb-meta .lift { color: var(--lp-good); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .bomb-meta a { text-decoration: underline; text-decoration-color: var(--lp-line); }
+    .more-bombs { margin-top: 10px; }
+    .more-bombs summary {
+      display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; cursor: pointer;
+      border-radius: 999px; border: 1px solid var(--lp-line); background: var(--lp-chip); font-weight: 600;
+    }
+    .more-bombs summary:hover { border-color: var(--lp-accent); }
+    .more-bombs[open] summary { margin-bottom: 10px; }
+
+    /* ── archetype bubble map ─────────────────────────────────────────── */
+    .map-frame, .graph-frame {
+      background: var(--lp-panel); border: 1px solid var(--lp-line); border-radius: 18px; overflow: hidden;
+    }
+    #archMap { display: block; width: 100%; height: auto; max-height: 72vh; }
+    .am-link { stroke: rgba(var(--lp-edge), 0.42); stroke-linecap: round; transition: opacity 120ms; }
+    .am-link.on { stroke: rgba(var(--lp-edge), 0.9); }
+    .am-link.dim, .am-bubble.dim { opacity: 0.18; }
+    .am-bubble { cursor: pointer; outline: none; transition: opacity 120ms; }
+    .am-slice { fill-opacity: 0.85; }
+    .am-outline { fill: none; stroke: var(--lp-node-stroke); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    .am-bubble:hover .am-outline, .am-bubble.on .am-outline { stroke: var(--lp-accent); stroke-width: 3; }
+    .am-bubble:focus-visible .am-outline { stroke: var(--lp-focus); stroke-width: 4; }
+    .am-label { fill: #10151f; font-weight: 700; pointer-events: none; }
+    .am-label .am-share { font-weight: 500; }
+    .am-label.outside { fill: var(--lp-text); paint-order: stroke; stroke: var(--lp-halo); stroke-width: 4px; stroke-linejoin: round; }
+    .map-key { list-style: none; margin: 10px 2px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--lp-muted); }
+    .map-key-n { color: var(--lp-text); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .map-info { min-height: 3em; margin: 10px 2px 0; font-size: 14px; color: var(--lp-muted); }
+    .map-info strong { color: var(--lp-text); }
+
+    /* ── card-level graph ─────────────────────────────────────────────── */
+    .toggle {
+      display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px;
+      border-radius: 999px; border: 1px solid var(--lp-line); background: var(--lp-chip); color: var(--lp-text);
+      font: inherit; font-weight: 600; cursor: pointer;
+    }
+    .toggle:hover { border-color: var(--lp-accent); }
+    .toggle[aria-pressed="true"] { background: var(--lp-chip-hover); border-color: var(--lp-accent); }
+    .graph-tools { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 12px 0; }
+    .graph-tools .find { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--lp-muted); flex: 1 1 260px; min-width: 0; max-width: 460px; }
+    .graph-tools input[type="search"] {
+      flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 12px;
+      border: 1px solid var(--lp-line); background: var(--lp-panel); color: var(--lp-text); font: inherit;
+    }
+    .zoom { display: inline-flex; gap: 4px; }
+    .zoom button {
+      min-width: 44px; min-height: 44px; border-radius: 12px; border: 1px solid var(--lp-line);
+      background: var(--lp-chip); color: var(--lp-text); font: inherit; font-size: 18px; cursor: pointer;
+    }
+    .zoom button.text { font-size: 14px; padding: 0 12px; }
+    #cardGraph { display: block; width: 100%; height: auto; max-height: 78vh; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+    #cardGraph.dragging { cursor: grabbing; }
+    .wf-cluster { fill: var(--lp-panel-2); fill-opacity: 0.92; stroke: var(--lp-line); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    .wf-cluster-label { fill: var(--lp-text); font-weight: 700; paint-order: stroke; stroke: var(--lp-halo); stroke-width: 4px; stroke-linejoin: round; text-decoration: none; }
+    a:hover > .wf-cluster-label, a:focus-visible > .wf-cluster-label { fill: var(--lp-accent); }
+    .wf-bridge { fill: none; stroke: rgba(var(--lp-edge), 0.22); stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    .wf-syn { stroke: rgba(var(--lp-edge), 0.85); stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    .wf-coplay { stroke: var(--lp-muted); stroke-opacity: 0.38; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; }
+    .wf-node { cursor: pointer; }
+    .wf-disc { stroke: var(--lp-node-stroke); stroke-width: 1; vector-effect: non-scaling-stroke; }
+    .wf-bomb { fill: none; stroke: var(--lp-bomb); stroke-width: 2; vector-effect: non-scaling-stroke; }
+    .wf-node.sel .wf-disc { stroke: var(--lp-focus); stroke-width: 3; }
+    .wf-out .wf-disc { fill-opacity: 0.55; }
+    .wf-label { fill: var(--lp-text); paint-order: stroke; stroke: var(--lp-halo); stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }
+    .dimmed .wf-node:not(.near), .dimmed .wf-syn:not(.near), .dimmed .wf-coplay:not(.near), .dimmed .wf-label:not(.near) { opacity: 0.16; }
+    .legend { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--lp-muted); }
+    .legend li { display: inline-flex; align-items: center; gap: 8px; }
+    .lg-line { width: 30px; height: 0; border-top: 3px solid rgba(var(--lp-edge), 0.85); display: inline-block; }
+    .lg-line.dashed { border-top: 2px dashed var(--lp-muted); opacity: 0.7; }
+    .lg-arc { width: 30px; height: 12px; border: 3px solid rgba(var(--lp-edge), 0.35); border-color: rgba(var(--lp-edge), 0.35) transparent transparent; border-radius: 50%; display: inline-block; }
+    .lg-ring { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--lp-bomb); display: inline-block; }
+    .lg-line.tentative { border-top: 2px dashed rgba(var(--lp-edge), 0.85); }
+    .lg-disc { border-radius: 50%; background: var(--lp-colorless); border: 1px solid var(--lp-node-stroke); display: inline-block; }
+    .detail {
+      margin-top: 12px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--lp-line);
+      background: var(--lp-panel); min-height: 64px; font-size: 14px; overflow-wrap: anywhere;
+    }
+    .detail h3 { margin: 0 0 4px; font-size: 17px; }
+    .detail p { margin: 4px 0; }
+    .detail ul { margin: 4px 0 0; padding-left: 18px; }
+    .detail a { text-decoration: underline; }
+
+    .site-foot { margin-top: 40px; padding-top: 16px; padding-bottom: 32px; border-top: 1px solid var(--lp-line); font-size: 13px; color: var(--lp-muted); }
+    .site-foot ul { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+    .site-foot a { display: inline-flex; min-height: 44px; align-items: center; }
+    .noscript { padding: 12px; color: var(--lp-muted); }
+
+    @media (max-width: 520px) {
+      .arch { padding: 14px; }
+      .arch-stats dd { font-size: 15px; }
+      .stat-num { font-size: 19px; }
+      .set-nav a { padding: 0 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .am-link, .am-bubble { transition: none; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip" href="#archetypes">Skip to archetypes</a>
+<header class="wrap set-head">
+  <div class="head-row">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">MTGNET</a><span aria-hidden="true">/</span>
+      <span aria-current="page">Kamigawa: Neon Dynasty</span>
+    </nav>
+    <button type="button" class="theme-btn" id="themeBtn" aria-pressed="false" hidden><span aria-hidden="true">&#9680;</span><span id="themeBtnText">Light theme</span></button>
+  </div>
+  <h1>Kamigawa: Neon Dynasty</h1>
+  <p class="lede">Draft archetypes learned from 17Lands Premier Draft data: what each deck is built around, which cards win on their own, and how the decks overlap.</p>
+  <ul class="stats" aria-label="Data behind this page">
+    <li><span class="stat-num" data-num="138326">138,326</span><span class="stat-label">deck builds</span></li>
+    <li><span class="stat-num" data-num="630450">630,450</span><span class="stat-label">games</span></li>
+    <li><span class="stat-num" data-num="13">13</span><span class="stat-label">archetypes</span></li>
+    <li><span class="stat-num">55.6%</span><span class="stat-label">average win rate</span></li>
+  </ul>
+  <nav class="set-nav" aria-label="Kamigawa: Neon Dynasty pages">
+    <ul>
+      
+      <li><a href="#archetypes" aria-current="page">Archetypes</a></li>
+      
+      <li><a href="splash/index.html">Splash guide</a></li>
+      
+      <li><a href="../trivia/kamigawa-neon-dynasty/index.html">Format overview</a></li>
+      
+      <li><a href="../cards/index.html?set=NEO">Cards</a></li>
+      
+      <li><a href="../reports/neo_synergy_report.pdf">Report (PDF)</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section id="archetypes" aria-labelledby="archetypesTitle">
+    <h2 id="archetypesTitle">Archetypes</h2>
+    <p class="section-note">Largest first. <strong>Core</strong>: the cards at the centre of the deck &mdash; played in many of its decks, characteristic of it, and connected to the rest. <strong>Bombs</strong>: strong on their own, often worth a splash. Select a card to open it inside its archetype.</p>
+    <ol class="arch-grid">
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: White, Green"><span class="pip pip-W"></span><span class="pip pip-G"></span></span>
+          <span class="rank" aria-hidden="true">#1</span>
+        </div>
+        <div>
+          <h3>Selesnya</h3>
+          <p class="arch-sub">Jukai Naturalist / Spirited Companion</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>13.8%<span class="share-bar" aria-hidden="true"><i style="width: 100.0%"></i></span></dd></div>
+          <div class="wr-even"><dt>Win rate</dt><dd>56.3%<small>+0.7 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="19115">19,115</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/selesnya.html#card=Spirited%20Companion">Spirited Companion</a></li><li><a class="chip" href="index_pages/selesnya.html#card=Era%20of%20Enlightenment">Era of Enlightenment</a></li><li><a class="chip" href="index_pages/selesnya.html#card=Jukai%20Naturalist">Jukai Naturalist</a></li><li><a class="chip" href="index_pages/selesnya.html#card=Season%20of%20Renewal">Season of Renewal</a></li><li><a class="chip" href="index_pages/selesnya.html#card=Befriending%20the%20Moths">Befriending the Moths</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/selesnya.html#card=Jugan%20Defends%20the%20Temple">Jugan Defends the Temple</a></li><li><a class="chip bomb" href="index_pages/selesnya.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/selesnya.html#card=The%20Wandering%20Emperor">The Wandering Emperor</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/selesnya.html">Open archetype<span class="sr-only">: Selesnya (Jukai Naturalist / Spirited Companion)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Black, Green"><span class="pip pip-B"></span><span class="pip pip-G"></span></span>
+          <span class="rank" aria-hidden="true">#2</span>
+        </div>
+        <div>
+          <h3>Golgari</h3>
+          <p class="arch-sub">Gloomshrieker / Geothermal Kami</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>12.3%<span class="share-bar" aria-hidden="true"><i style="width: 89.2%"></i></span></dd></div>
+          <div class="wr-even"><dt>Win rate</dt><dd>56.4%<small>+0.8 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="17049">17,049</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/golgari.html#card=Geothermal%20Kami">Geothermal Kami</a></li><li><a class="chip" href="index_pages/golgari.html#card=Okiba%20Reckoner%20Raid">Okiba Reckoner Raid</a></li><li><a class="chip" href="index_pages/golgari.html#card=Jukai%20Preserver">Jukai Preserver</a></li><li><a class="chip" href="index_pages/golgari.html#card=Season%20of%20Renewal">Season of Renewal</a></li><li><a class="chip" href="index_pages/golgari.html#card=Fade%20into%20Antiquity">Fade into Antiquity</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/golgari.html#card=Jugan%20Defends%20the%20Temple">Jugan Defends the Temple</a></li><li><a class="chip bomb" href="index_pages/golgari.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/golgari.html#card=Tatsunari%2C%20Toad%20Rider">Tatsunari, Toad Rider</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/golgari.html">Open archetype<span class="sr-only">: Golgari (Gloomshrieker / Geothermal Kami)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Blue, Black"><span class="pip pip-U"></span><span class="pip pip-B"></span></span>
+          <span class="rank" aria-hidden="true">#3</span>
+        </div>
+        <div>
+          <h3>Dimir</h3>
+          <p class="arch-sub">Network Disruptor / Moon-Circuit Hacker</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>9.7%<span class="share-bar" aria-hidden="true"><i style="width: 69.9%"></i></span></dd></div>
+          <div class="wr-good"><dt>Win rate</dt><dd>58.8%<small>+3.2 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="13355">13,355</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/dimir.html#card=Moon-Circuit%20Hacker">Moon-Circuit Hacker</a></li><li><a class="chip" href="index_pages/dimir.html#card=Network%20Disruptor">Network Disruptor</a></li><li><a class="chip" href="index_pages/dimir.html#card=Silver-Fur%20Master">Silver-Fur Master</a></li><li><a class="chip" href="index_pages/dimir.html#card=Inkrise%20Infiltrator">Inkrise Infiltrator</a></li><li><a class="chip" href="index_pages/dimir.html#card=Moonsnare%20Specialist">Moonsnare Specialist</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/dimir.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/dimir.html#card=Kairi%2C%20the%20Swirling%20Sky">Kairi, the Swirling Sky</a></li><li><a class="chip bomb" href="index_pages/dimir.html#card=Inventive%20Iteration">Inventive Iteration</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/dimir.html">Open archetype<span class="sr-only">: Dimir (Network Disruptor / Moon-Circuit Hacker)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Black, Red"><span class="pip pip-B"></span><span class="pip pip-R"></span></span>
+          <span class="rank" aria-hidden="true">#4</span>
+        </div>
+        <div>
+          <h3>Rakdos</h3>
+          <p class="arch-sub">Oni-Cult Anvil / Experimental Synthesizer</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>8.5%<span class="share-bar" aria-hidden="true"><i style="width: 61.3%"></i></span></dd></div>
+          <div class="wr-even"><dt>Win rate</dt><dd>56.3%<small>+0.7 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="11713">11,713</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/rakdos.html#card=Oni-Cult%20Anvil">Oni-Cult Anvil</a></li><li><a class="chip" href="index_pages/rakdos.html#card=Experimental%20Synthesizer">Experimental Synthesizer</a></li><li><a class="chip" href="index_pages/rakdos.html#card=Towashi%20Songshaper">Towashi Songshaper</a></li><li><a class="chip" href="index_pages/rakdos.html#card=Scrapyard%20Steelbreaker">Scrapyard Steelbreaker</a></li><li><a class="chip" href="index_pages/rakdos.html#card=Sokenzan%20Smelter">Sokenzan Smelter</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/rakdos.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/rakdos.html#card=Junji%2C%20the%20Midnight%20Sky">Junji, the Midnight Sky</a></li><li><a class="chip bomb" href="index_pages/rakdos.html#card=Thundering%20Raiju">Thundering Raiju</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/rakdos.html">Open archetype<span class="sr-only">: Rakdos (Oni-Cult Anvil / Experimental Synthesizer)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: White, Black"><span class="pip pip-W"></span><span class="pip pip-B"></span></span>
+          <span class="rank" aria-hidden="true">#5</span>
+        </div>
+        <div>
+          <h3>Orzhov</h3>
+          <p class="arch-sub">Naomi, Pillar of Order / Kami of Terrible Secrets</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>8.2%<span class="share-bar" aria-hidden="true"><i style="width: 59.1%"></i></span></dd></div>
+          <div class="wr-even"><dt>Win rate</dt><dd>55.9%<small>+0.3 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="11304">11,304</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/orzhov.html#card=Kami%20of%20Terrible%20Secrets">Kami of Terrible Secrets</a></li><li><a class="chip" href="index_pages/orzhov.html#card=Era%20of%20Enlightenment">Era of Enlightenment</a></li><li><a class="chip" href="index_pages/orzhov.html#card=Naomi%2C%20Pillar%20of%20Order">Naomi, Pillar of Order</a></li><li><a class="chip" href="index_pages/orzhov.html#card=Okiba%20Reckoner%20Raid">Okiba Reckoner Raid</a></li><li><a class="chip" href="index_pages/orzhov.html#card=Spirited%20Companion">Spirited Companion</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/orzhov.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/orzhov.html#card=The%20Wandering%20Emperor">The Wandering Emperor</a></li><li><a class="chip bomb" href="index_pages/orzhov.html#card=Farewell">Farewell</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/orzhov.html">Open archetype<span class="sr-only">: Orzhov (Naomi, Pillar of Order / Kami of Terrible Secrets)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Blue, Green"><span class="pip pip-U"></span><span class="pip pip-G"></span></span>
+          <span class="rank" aria-hidden="true">#6</span>
+        </div>
+        <div>
+          <h3>Simic</h3>
+          <p class="arch-sub">The Modern Age / Colossal Skyturtle</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>8.1%<span class="share-bar" aria-hidden="true"><i style="width: 58.3%"></i></span></dd></div>
+          <div class="wr-even"><dt>Win rate</dt><dd>55.7%<small>+0.1 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="11152">11,152</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/simic.html#card=The%20Modern%20Age">The Modern Age</a></li><li><a class="chip" href="index_pages/simic.html#card=Colossal%20Skyturtle">Colossal Skyturtle</a></li><li><a class="chip" href="index_pages/simic.html#card=Season%20of%20Renewal">Season of Renewal</a></li><li><a class="chip" href="index_pages/simic.html#card=Master&#39;s%20Rebuke">Master&#39;s Rebuke</a></li><li><a class="chip" href="index_pages/simic.html#card=Fang%20of%20Shigeki">Fang of Shigeki</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/simic.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/simic.html#card=Jugan%20Defends%20the%20Temple">Jugan Defends the Temple</a></li><li><a class="chip bomb" href="index_pages/simic.html#card=Inventive%20Iteration">Inventive Iteration</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/simic.html">Open archetype<span class="sr-only">: Simic (The Modern Age / Colossal Skyturtle)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Blue, Red"><span class="pip pip-U"></span><span class="pip pip-R"></span></span>
+          <span class="rank" aria-hidden="true">#7</span>
+        </div>
+        <div>
+          <h3>Izzet</h3>
+          <p class="arch-sub">Enthusiastic Mechanaut / Voltage Surge</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>6.6%<span class="share-bar" aria-hidden="true"><i style="width: 47.6%"></i></span></dd></div>
+          <div class="wr-bad"><dt>Win rate</dt><dd>53.8%<small>-1.8 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="9106">9,106</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/izzet.html#card=Enthusiastic%20Mechanaut">Enthusiastic Mechanaut</a></li><li><a class="chip" href="index_pages/izzet.html#card=Towashi%20Songshaper">Towashi Songshaper</a></li><li><a class="chip" href="index_pages/izzet.html#card=Dragonspark%20Reactor">Dragonspark Reactor</a></li><li><a class="chip" href="index_pages/izzet.html#card=Skyswimmer%20Koi">Skyswimmer Koi</a></li><li><a class="chip" href="index_pages/izzet.html#card=Experimental%20Synthesizer">Experimental Synthesizer</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/izzet.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/izzet.html#card=Inventive%20Iteration">Inventive Iteration</a></li><li><a class="chip bomb" href="index_pages/izzet.html#card=Kairi%2C%20the%20Swirling%20Sky">Kairi, the Swirling Sky</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/izzet.html">Open archetype<span class="sr-only">: Izzet (Enthusiastic Mechanaut / Voltage Surge)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: White, Blue"><span class="pip pip-W"></span><span class="pip pip-U"></span></span>
+          <span class="rank" aria-hidden="true">#8</span>
+        </div>
+        <div>
+          <h3>Azorius</h3>
+          <p class="arch-sub">Prodigy&#39;s Prototype / Kitsune Ace</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>6.3%<span class="share-bar" aria-hidden="true"><i style="width: 45.7%"></i></span></dd></div>
+          <div class="wr-even"><dt>Win rate</dt><dd>54.6%<small>-1.0 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="8730">8,730</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/azorius.html#card=Prodigy&#39;s%20Prototype">Prodigy&#39;s Prototype</a></li><li><a class="chip" href="index_pages/azorius.html#card=The%20Modern%20Age">The Modern Age</a></li><li><a class="chip" href="index_pages/azorius.html#card=Kitsune%20Ace">Kitsune Ace</a></li><li><a class="chip" href="index_pages/azorius.html#card=Mothrider%20Patrol">Mothrider Patrol</a></li><li><a class="chip" href="index_pages/azorius.html#card=Skyswimmer%20Koi">Skyswimmer Koi</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/azorius.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/azorius.html#card=The%20Wandering%20Emperor">The Wandering Emperor</a></li><li><a class="chip bomb" href="index_pages/azorius.html#card=Farewell">Farewell</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/azorius.html">Open archetype<span class="sr-only">: Azorius (Prodigy&#39;s Prototype / Kitsune Ace)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: White, Blue, Black, Red, Green"><span class="pip pip-W"></span><span class="pip pip-U"></span><span class="pip pip-B"></span><span class="pip pip-R"></span><span class="pip pip-G"></span></span>
+          <span class="rank" aria-hidden="true">#9</span>
+        </div>
+        <div>
+          <h3>Five-Color</h3>
+          <p class="arch-sub">Grafted Growth / Network Terminal</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>6.3%<span class="share-bar" aria-hidden="true"><i style="width: 45.4%"></i></span></dd></div>
+          <div class="wr-even"><dt>Win rate</dt><dd>54.7%<small>-0.9 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="8672">8,672</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/five-color.html#card=Grafted%20Growth">Grafted Growth</a></li><li><a class="chip" href="index_pages/five-color.html#card=Network%20Terminal">Network Terminal</a></li><li><a class="chip" href="index_pages/five-color.html#card=Commune%20with%20Spirits">Commune with Spirits</a></li><li><a class="chip" href="index_pages/five-color.html#card=Season%20of%20Renewal">Season of Renewal</a></li><li><a class="chip" href="index_pages/five-color.html#card=Ecologist&#39;s%20Terrarium">Ecologist&#39;s Terrarium</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/five-color.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/five-color.html#card=Jugan%20Defends%20the%20Temple">Jugan Defends the Temple</a></li><li><a class="chip bomb" href="index_pages/five-color.html#card=The%20Kami%20War">The Kami War</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/five-color.html">Open archetype<span class="sr-only">: Five-Color (Grafted Growth / Network Terminal)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: White, Red"><span class="pip pip-W"></span><span class="pip pip-R"></span></span>
+          <span class="rank" aria-hidden="true">#10</span>
+        </div>
+        <div>
+          <h3>Boros</h3>
+          <p class="arch-sub">Imperial Subduer / Eiganjo Exemplar</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>5.8%<span class="share-bar" aria-hidden="true"><i style="width: 42.3%"></i></span></dd></div>
+          <div class="wr-bad"><dt>Win rate</dt><dd>52.1%<small>-3.5 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="8091">8,091</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/boros.html#card=Imperial%20Subduer">Imperial Subduer</a></li><li><a class="chip" href="index_pages/boros.html#card=Eiganjo%20Exemplar">Eiganjo Exemplar</a></li><li><a class="chip" href="index_pages/boros.html#card=Peerless%20Samurai">Peerless Samurai</a></li><li><a class="chip" href="index_pages/boros.html#card=Ancestral%20Katana">Ancestral Katana</a></li><li><a class="chip" href="index_pages/boros.html#card=Mothrider%20Patrol">Mothrider Patrol</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/boros.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/boros.html#card=The%20Wandering%20Emperor">The Wandering Emperor</a></li><li><a class="chip bomb" href="index_pages/boros.html#card=Raiyuu%2C%20Storm&#39;s%20Edge">Raiyuu, Storm&#39;s Edge</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/boros.html">Open archetype<span class="sr-only">: Boros (Imperial Subduer / Eiganjo Exemplar)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Blue, Black"><span class="pip pip-U"></span><span class="pip pip-B"></span></span>
+          <span class="rank" aria-hidden="true">#11</span>
+        </div>
+        <div>
+          <h3>Dimir</h3>
+          <p class="arch-sub">Skyswimmer Koi / Armguard Familiar</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>5.4%<span class="share-bar" aria-hidden="true"><i style="width: 39.0%"></i></span></dd></div>
+          <div class="wr-bad"><dt>Win rate</dt><dd>52.6%<small>-3.0 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="7453">7,453</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/dimir-2.html#card=Skyswimmer%20Koi">Skyswimmer Koi</a></li><li><a class="chip" href="index_pages/dimir-2.html#card=Armguard%20Familiar">Armguard Familiar</a></li><li><a class="chip" href="index_pages/dimir-2.html#card=The%20Modern%20Age">The Modern Age</a></li><li><a class="chip" href="index_pages/dimir-2.html#card=Moonfolk%20Puzzlemaker">Moonfolk Puzzlemaker</a></li><li><a class="chip" href="index_pages/dimir-2.html#card=Mirrorshell%20Crab">Mirrorshell Crab</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/dimir-2.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/dimir-2.html#card=Kairi%2C%20the%20Swirling%20Sky">Kairi, the Swirling Sky</a></li><li><a class="chip bomb" href="index_pages/dimir-2.html#card=Inventive%20Iteration">Inventive Iteration</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/dimir-2.html">Open archetype<span class="sr-only">: Dimir (Skyswimmer Koi / Armguard Familiar)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Red"><span class="pip pip-R"></span></span>
+          <span class="rank" aria-hidden="true">#12</span>
+        </div>
+        <div>
+          <h3>Red Base</h3>
+          <p class="arch-sub">Towashi Songshaper / Simian Sling</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>4.6%<span class="share-bar" aria-hidden="true"><i style="width: 33.1%"></i></span></dd></div>
+          <div class="wr-good"><dt>Win rate</dt><dd>56.7%<small>+1.1 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="6330">6,330</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/red-base.html#card=Unstoppable%20Ogre">Unstoppable Ogre</a></li><li><a class="chip" href="index_pages/red-base.html#card=Kumano%20Faces%20Kakkazan">Kumano Faces Kakkazan</a></li><li><a class="chip" href="index_pages/red-base.html#card=Towashi%20Songshaper">Towashi Songshaper</a></li><li><a class="chip" href="index_pages/red-base.html#card=Simian%20Sling">Simian Sling</a></li><li><a class="chip" href="index_pages/red-base.html#card=Experimental%20Synthesizer">Experimental Synthesizer</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/red-base.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/red-base.html#card=Thundering%20Raiju">Thundering Raiju</a></li><li><a class="chip bomb" href="index_pages/red-base.html#card=Life%20of%20Toshiro%20Umezawa">Life of Toshiro Umezawa</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/red-base.html">Open archetype<span class="sr-only">: Red Base (Towashi Songshaper / Simian Sling)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+      <li class="arch">
+        <div class="arch-top">
+          <span class="pips" role="img" aria-label="Colours: Red, Green"><span class="pip pip-R"></span><span class="pip pip-G"></span></span>
+          <span class="rank" aria-hidden="true">#13</span>
+        </div>
+        <div>
+          <h3>Gruul</h3>
+          <p class="arch-sub">Invigorating Hot Spring / Akki Ember-Keeper</p>
+        </div>
+        <dl class="arch-stats">
+          <div><dt>Deck share</dt><dd>4.5%<span class="share-bar" aria-hidden="true"><i style="width: 32.7%"></i></span></dd></div>
+          <div class="wr-bad"><dt>Win rate</dt><dd>53.3%<small>-2.3 pp<span class="sr-only"> versus the format average</span></small></dd></div>
+          <div><dt>Decks</dt><dd data-num="6256">6,256</dd></div>
+        </dl>
+        
+        <div class="chip-block">
+          <h4>Core</h4>
+          <ul class="chips"><li><a class="chip" href="index_pages/gruul.html#card=Akki%20Ember-Keeper">Akki Ember-Keeper</a></li><li><a class="chip" href="index_pages/gruul.html#card=Invigorating%20Hot%20Spring">Invigorating Hot Spring</a></li><li><a class="chip" href="index_pages/gruul.html#card=Coiling%20Stalker">Coiling Stalker</a></li><li><a class="chip" href="index_pages/gruul.html#card=Heir%20of%20the%20Ancient%20Fang">Heir of the Ancient Fang</a></li><li><a class="chip" href="index_pages/gruul.html#card=Voltage%20Surge">Voltage Surge</a></li></ul>
+        </div>
+        
+        
+        <div class="chip-block">
+          <h4>Bombs</h4>
+          <ul class="chips"><li><a class="chip bomb" href="index_pages/gruul.html#card=Fable%20of%20the%20Mirror-Breaker">Fable of the Mirror-Breaker</a></li><li><a class="chip bomb" href="index_pages/gruul.html#card=Jugan%20Defends%20the%20Temple">Jugan Defends the Temple</a></li><li><a class="chip bomb" href="index_pages/gruul.html#card=Invoke%20the%20Ancients">Invoke the Ancients</a></li></ul>
+        </div>
+        
+        <a class="cta" href="index_pages/gruul.html">Open archetype<span class="sr-only">: Gruul (Invigorating Hot Spring / Akki Ember-Keeper)</span><span aria-hidden="true">&rarr;</span></a>
+      </li>
+      
+    </ol>
+  </section>
+
+  
+  <section id="bombs" aria-labelledby="bombsTitle">
+    <h2 id="bombsTitle">Bombs across the set</h2>
+    <p class="section-note">Cards that win clearly more than their archetype's average when drawn (games in hand; small samples shrunk toward zero). They sit outside the core rings because they do not need the deck around them.</p>
+    <ul class="bomb-list">
+      
+      <li>
+        <a class="bomb-name" href="index_pages/izzet.html#card=Fable%20of%20the%20Mirror-Breaker"><span class="pips small" aria-hidden="true"><span class="pip pip-R"></span></span>Fable of the Mirror-Breaker</a>
+        <span class="bomb-meta"><span class="lift">+14.3 pp</span> win rate when drawn &middot; rare</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/izzet.html#card=Fable%20of%20the%20Mirror-Breaker">Izzet</a>, <a href="index_pages/rakdos.html#card=Fable%20of%20the%20Mirror-Breaker">Rakdos</a>, <a href="index_pages/boros.html#card=Fable%20of%20the%20Mirror-Breaker">Boros</a>, <a href="index_pages/simic.html#card=Fable%20of%20the%20Mirror-Breaker">Simic</a>, <a href="index_pages/dimir-2.html#card=Fable%20of%20the%20Mirror-Breaker">Dimir · Skyswimmer Koi</a>, <a href="index_pages/five-color.html#card=Fable%20of%20the%20Mirror-Breaker">Five-Color</a>, <a href="index_pages/gruul.html#card=Fable%20of%20the%20Mirror-Breaker">Gruul</a>, <a href="index_pages/azorius.html#card=Fable%20of%20the%20Mirror-Breaker">Azorius</a>, <a href="index_pages/selesnya.html#card=Fable%20of%20the%20Mirror-Breaker">Selesnya</a>, <a href="index_pages/orzhov.html#card=Fable%20of%20the%20Mirror-Breaker">Orzhov</a>, <a href="index_pages/golgari.html#card=Fable%20of%20the%20Mirror-Breaker">Golgari</a>, <a href="index_pages/red-base.html#card=Fable%20of%20the%20Mirror-Breaker">Red Base</a>, <a href="index_pages/dimir.html#card=Fable%20of%20the%20Mirror-Breaker">Dimir · Network Disruptor</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/simic.html#card=Jugan%20Defends%20the%20Temple"><span class="pips small" aria-hidden="true"><span class="pip pip-G"></span></span>Jugan Defends the Temple</a>
+        <span class="bomb-meta"><span class="lift">+13.4 pp</span> win rate when drawn &middot; mythic</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/simic.html#card=Jugan%20Defends%20the%20Temple">Simic</a>, <a href="index_pages/selesnya.html#card=Jugan%20Defends%20the%20Temple">Selesnya</a>, <a href="index_pages/golgari.html#card=Jugan%20Defends%20the%20Temple">Golgari</a>, <a href="index_pages/five-color.html#card=Jugan%20Defends%20the%20Temple">Five-Color</a>, <a href="index_pages/gruul.html#card=Jugan%20Defends%20the%20Temple">Gruul</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/five-color.html#card=The%20Kami%20War"><span class="pips small" aria-hidden="true"><span class="pip pip-W"></span><span class="pip pip-U"></span><span class="pip pip-B"></span><span class="pip pip-R"></span><span class="pip pip-G"></span></span>The Kami War</a>
+        <span class="bomb-meta"><span class="lift">+12.7 pp</span> win rate when drawn &middot; mythic</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/five-color.html#card=The%20Kami%20War">Five-Color</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/boros.html#card=The%20Wandering%20Emperor"><span class="pips small" aria-hidden="true"><span class="pip pip-W"></span></span>The Wandering Emperor</a>
+        <span class="bomb-meta"><span class="lift">+12.0 pp</span> win rate when drawn &middot; mythic</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/boros.html#card=The%20Wandering%20Emperor">Boros</a>, <a href="index_pages/azorius.html#card=The%20Wandering%20Emperor">Azorius</a>, <a href="index_pages/orzhov.html#card=The%20Wandering%20Emperor">Orzhov</a>, <a href="index_pages/selesnya.html#card=The%20Wandering%20Emperor">Selesnya</a>, <a href="index_pages/five-color.html#card=The%20Wandering%20Emperor">Five-Color</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/golgari.html#card=Tatsunari%2C%20Toad%20Rider"><span class="pips small" aria-hidden="true"><span class="pip pip-U"></span><span class="pip pip-B"></span><span class="pip pip-G"></span></span>Tatsunari, Toad Rider</a>
+        <span class="bomb-meta"><span class="lift">+11.9 pp</span> win rate when drawn &middot; rare</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/golgari.html#card=Tatsunari%2C%20Toad%20Rider">Golgari</a>, <a href="index_pages/dimir.html#card=Tatsunari%2C%20Toad%20Rider">Dimir · Network Disruptor</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/gruul.html#card=Invoke%20the%20Ancients"><span class="pips small" aria-hidden="true"><span class="pip pip-G"></span></span>Invoke the Ancients</a>
+        <span class="bomb-meta"><span class="lift">+10.9 pp</span> win rate when drawn &middot; rare</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/gruul.html#card=Invoke%20the%20Ancients">Gruul</a>, <a href="index_pages/golgari.html#card=Invoke%20the%20Ancients">Golgari</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/orzhov.html#card=Farewell"><span class="pips small" aria-hidden="true"><span class="pip pip-W"></span></span>Farewell</a>
+        <span class="bomb-meta"><span class="lift">+9.9 pp</span> win rate when drawn &middot; rare</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/orzhov.html#card=Farewell">Orzhov</a>, <a href="index_pages/azorius.html#card=Farewell">Azorius</a>, <a href="index_pages/five-color.html#card=Farewell">Five-Color</a>, <a href="index_pages/selesnya.html#card=Farewell">Selesnya</a>, <a href="index_pages/boros.html#card=Farewell">Boros</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/dimir-2.html#card=Kairi%2C%20the%20Swirling%20Sky"><span class="pips small" aria-hidden="true"><span class="pip pip-U"></span></span>Kairi, the Swirling Sky</a>
+        <span class="bomb-meta"><span class="lift">+9.8 pp</span> win rate when drawn &middot; mythic</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/dimir-2.html#card=Kairi%2C%20the%20Swirling%20Sky">Dimir · Skyswimmer Koi</a>, <a href="index_pages/izzet.html#card=Kairi%2C%20the%20Swirling%20Sky">Izzet</a>, <a href="index_pages/simic.html#card=Kairi%2C%20the%20Swirling%20Sky">Simic</a>, <a href="index_pages/dimir.html#card=Kairi%2C%20the%20Swirling%20Sky">Dimir · Network Disruptor</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/azorius.html#card=Inventive%20Iteration"><span class="pips small" aria-hidden="true"><span class="pip pip-U"></span></span>Inventive Iteration</a>
+        <span class="bomb-meta"><span class="lift">+9.6 pp</span> win rate when drawn &middot; rare</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/azorius.html#card=Inventive%20Iteration">Azorius</a>, <a href="index_pages/izzet.html#card=Inventive%20Iteration">Izzet</a>, <a href="index_pages/simic.html#card=Inventive%20Iteration">Simic</a>, <a href="index_pages/dimir.html#card=Inventive%20Iteration">Dimir · Network Disruptor</a>, <a href="index_pages/dimir-2.html#card=Inventive%20Iteration">Dimir · Skyswimmer Koi</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/boros.html#card=Raiyuu%2C%20Storm&#39;s%20Edge"><span class="pips small" aria-hidden="true"><span class="pip pip-W"></span><span class="pip pip-R"></span></span>Raiyuu, Storm&#39;s Edge</a>
+        <span class="bomb-meta"><span class="lift">+9.3 pp</span> win rate when drawn &middot; rare</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/boros.html#card=Raiyuu%2C%20Storm&#39;s%20Edge">Boros</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/orzhov.html#card=Ao%2C%20the%20Dawn%20Sky"><span class="pips small" aria-hidden="true"><span class="pip pip-W"></span></span>Ao, the Dawn Sky</a>
+        <span class="bomb-meta"><span class="lift">+9.1 pp</span> win rate when drawn &middot; mythic</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/orzhov.html#card=Ao%2C%20the%20Dawn%20Sky">Orzhov</a>, <a href="index_pages/boros.html#card=Ao%2C%20the%20Dawn%20Sky">Boros</a></span>
+      </li>
+      
+      <li>
+        <a class="bomb-name" href="index_pages/dimir-2.html#card=Junji%2C%20the%20Midnight%20Sky"><span class="pips small" aria-hidden="true"><span class="pip pip-B"></span></span>Junji, the Midnight Sky</a>
+        <span class="bomb-meta"><span class="lift">+8.6 pp</span> win rate when drawn &middot; mythic</span>
+        <span class="bomb-meta">Bomb in <a href="index_pages/dimir-2.html#card=Junji%2C%20the%20Midnight%20Sky">Dimir · Skyswimmer Koi</a>, <a href="index_pages/rakdos.html#card=Junji%2C%20the%20Midnight%20Sky">Rakdos</a></span>
+      </li>
+      
+    </ul>
+    
+    <details class="more-bombs">
+      <summary>Show 15 more bombs</summary>
+      <ul class="bomb-list">
+        
+        <li>
+          <a class="bomb-name" href="index_pages/red-base.html#card=Thundering%20Raiju"><span class="pips small" aria-hidden="true"><span class="pip pip-R"></span></span>Thundering Raiju</a>
+          <span class="bomb-meta"><span class="lift">+7.9 pp</span> win rate when drawn &middot; rare</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/red-base.html#card=Thundering%20Raiju">Red Base</a>, <a href="index_pages/rakdos.html#card=Thundering%20Raiju">Rakdos</a>, <a href="index_pages/gruul.html#card=Thundering%20Raiju">Gruul</a>, <a href="index_pages/izzet.html#card=Thundering%20Raiju">Izzet</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/simic.html#card=Boseiju%20Reaches%20Skyward"><span class="pips small" aria-hidden="true"><span class="pip pip-G"></span></span>Boseiju Reaches Skyward</a>
+          <span class="bomb-meta"><span class="lift">+7.6 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/simic.html#card=Boseiju%20Reaches%20Skyward">Simic</a>, <a href="index_pages/selesnya.html#card=Boseiju%20Reaches%20Skyward">Selesnya</a>, <a href="index_pages/gruul.html#card=Boseiju%20Reaches%20Skyward">Gruul</a>, <a href="index_pages/golgari.html#card=Boseiju%20Reaches%20Skyward">Golgari</a>, <a href="index_pages/five-color.html#card=Boseiju%20Reaches%20Skyward">Five-Color</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/golgari.html#card=Kappa%20Tech-Wrecker"><span class="pips small" aria-hidden="true"><span class="pip pip-G"></span></span>Kappa Tech-Wrecker</a>
+          <span class="bomb-meta"><span class="lift">+7.5 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/golgari.html#card=Kappa%20Tech-Wrecker">Golgari</a>, <a href="index_pages/simic.html#card=Kappa%20Tech-Wrecker">Simic</a>, <a href="index_pages/gruul.html#card=Kappa%20Tech-Wrecker">Gruul</a>, <a href="index_pages/five-color.html#card=Kappa%20Tech-Wrecker">Five-Color</a>, <a href="index_pages/selesnya.html#card=Kappa%20Tech-Wrecker">Selesnya</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/azorius.html#card=Tameshi%2C%20Reality%20Architect"><span class="pips small" aria-hidden="true"><span class="pip pip-W"></span><span class="pip pip-U"></span></span>Tameshi, Reality Architect</a>
+          <span class="bomb-meta"><span class="lift">+7.4 pp</span> win rate when drawn &middot; rare</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/azorius.html#card=Tameshi%2C%20Reality%20Architect">Azorius</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/simic.html#card=Blossom%20Prancer"><span class="pips small" aria-hidden="true"><span class="pip pip-G"></span></span>Blossom Prancer</a>
+          <span class="bomb-meta"><span class="lift">+7.3 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/simic.html#card=Blossom%20Prancer">Simic</a>, <a href="index_pages/selesnya.html#card=Blossom%20Prancer">Selesnya</a>, <a href="index_pages/golgari.html#card=Blossom%20Prancer">Golgari</a>, <a href="index_pages/gruul.html#card=Blossom%20Prancer">Gruul</a>, <a href="index_pages/five-color.html#card=Blossom%20Prancer">Five-Color</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/golgari.html#card=Life%20of%20Toshiro%20Umezawa"><span class="pips small" aria-hidden="true"><span class="pip pip-B"></span></span>Life of Toshiro Umezawa</a>
+          <span class="bomb-meta"><span class="lift">+7.2 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/golgari.html#card=Life%20of%20Toshiro%20Umezawa">Golgari</a>, <a href="index_pages/dimir-2.html#card=Life%20of%20Toshiro%20Umezawa">Dimir · Skyswimmer Koi</a>, <a href="index_pages/dimir.html#card=Life%20of%20Toshiro%20Umezawa">Dimir · Network Disruptor</a>, <a href="index_pages/orzhov.html#card=Life%20of%20Toshiro%20Umezawa">Orzhov</a>, <a href="index_pages/red-base.html#card=Life%20of%20Toshiro%20Umezawa">Red Base</a>, <a href="index_pages/five-color.html#card=Life%20of%20Toshiro%20Umezawa">Five-Color</a>, <a href="index_pages/rakdos.html#card=Life%20of%20Toshiro%20Umezawa">Rakdos</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/dimir.html#card=Biting-Palm%20Ninja"><span class="pips small" aria-hidden="true"><span class="pip pip-B"></span></span>Biting-Palm Ninja</a>
+          <span class="bomb-meta"><span class="lift">+6.8 pp</span> win rate when drawn &middot; rare</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/dimir.html#card=Biting-Palm%20Ninja">Dimir · Network Disruptor</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/izzet.html#card=The%20Reality%20Chip"><span class="pips small" aria-hidden="true"><span class="pip pip-U"></span></span>The Reality Chip</a>
+          <span class="bomb-meta"><span class="lift">+6.8 pp</span> win rate when drawn &middot; rare</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/izzet.html#card=The%20Reality%20Chip">Izzet</a>, <a href="index_pages/simic.html#card=The%20Reality%20Chip">Simic</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/rakdos.html#card=Reckoner%20Bankbuster"><span class="pips small" aria-hidden="true"><span class="pip pip-C"></span></span>Reckoner Bankbuster</a>
+          <span class="bomb-meta"><span class="lift">+6.7 pp</span> win rate when drawn &middot; rare</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/rakdos.html#card=Reckoner%20Bankbuster">Rakdos</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/dimir-2.html#card=Behold%20the%20Unspeakable"><span class="pips small" aria-hidden="true"><span class="pip pip-U"></span></span>Behold the Unspeakable</a>
+          <span class="bomb-meta"><span class="lift">+6.6 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/dimir-2.html#card=Behold%20the%20Unspeakable">Dimir · Skyswimmer Koi</a>, <a href="index_pages/five-color.html#card=Behold%20the%20Unspeakable">Five-Color</a>, <a href="index_pages/simic.html#card=Behold%20the%20Unspeakable">Simic</a>, <a href="index_pages/azorius.html#card=Behold%20the%20Unspeakable">Azorius</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/red-base.html#card=Patchwork%20Automaton"><span class="pips small" aria-hidden="true"><span class="pip pip-C"></span></span>Patchwork Automaton</a>
+          <span class="bomb-meta"><span class="lift">+6.5 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/red-base.html#card=Patchwork%20Automaton">Red Base</a>, <a href="index_pages/izzet.html#card=Patchwork%20Automaton">Izzet</a>, <a href="index_pages/rakdos.html#card=Patchwork%20Automaton">Rakdos</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/izzet.html#card=Twinshot%20Sniper"><span class="pips small" aria-hidden="true"><span class="pip pip-R"></span></span>Twinshot Sniper</a>
+          <span class="bomb-meta"><span class="lift">+6.1 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/izzet.html#card=Twinshot%20Sniper">Izzet</a>, <a href="index_pages/rakdos.html#card=Twinshot%20Sniper">Rakdos</a>, <a href="index_pages/boros.html#card=Twinshot%20Sniper">Boros</a>, <a href="index_pages/gruul.html#card=Twinshot%20Sniper">Gruul</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/red-base.html#card=Kumano%20Faces%20Kakkazan"><span class="pips small" aria-hidden="true"><span class="pip pip-R"></span></span>Kumano Faces Kakkazan</a>
+          <span class="bomb-meta"><span class="lift">+5.8 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/red-base.html#card=Kumano%20Faces%20Kakkazan">Red Base</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/boros.html#card=Selfless%20Samurai"><span class="pips small" aria-hidden="true"><span class="pip pip-W"></span></span>Selfless Samurai</a>
+          <span class="bomb-meta"><span class="lift">+5.5 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/boros.html#card=Selfless%20Samurai">Boros</a></span>
+        </li>
+        
+        <li>
+          <a class="bomb-name" href="index_pages/izzet.html#card=Enthusiastic%20Mechanaut"><span class="pips small" aria-hidden="true"><span class="pip pip-U"></span><span class="pip pip-R"></span></span>Enthusiastic Mechanaut</a>
+          <span class="bomb-meta"><span class="lift">+5.3 pp</span> win rate when drawn &middot; uncommon</span>
+          <span class="bomb-meta">Bomb in <a href="index_pages/izzet.html#card=Enthusiastic%20Mechanaut">Izzet</a></span>
+        </li>
+        
+      </ul>
+    </details>
+    
+  </section>
+  
+
+  
+  <section id="map" aria-labelledby="mapTitle">
+    <h2 id="mapTitle">How the archetypes relate</h2>
+    <p class="section-note">Bubble area = share of decks. Lines join archetypes that play the same core and support cards; thicker lines share more of them. Hover or focus a bubble to see what it shares, select it to open the archetype.</p>
+    <div class="map-frame"><svg id="archMap" role="group" aria-label="Archetype map: bubbles sized by share of decks, linked by shared cards"></svg></div>
+    <p id="archMapInfo" class="map-info" aria-live="polite"></p>
+    <noscript><p class="noscript">The archetype map needs JavaScript; the archetype list above has the same information.</p></noscript>
+  </section>
+  
+
+  
+  <section id="every-card" aria-labelledby="cardsTitle">
+    <div class="section-head">
+      <h2 id="cardsTitle">Every card in one map</h2>
+      <button type="button" class="toggle" id="cardGraphToggle" aria-expanded="false" aria-controls="cardGraphPanel">Show every card</button>
+    </div>
+    <p class="section-note">All 164 tracked cards, each placed once in the archetype where it is most central (core cards toward the middle of each circle). Arcs between circles count the links that run through cards shared by both archetypes.</p>
+    <div id="cardGraphPanel" hidden>
+      <div class="graph-tools">
+        <div class="find"><label for="cardSearch">Find a card</label>
+        <input id="cardSearch" type="search" list="cardNames" autocomplete="off" spellcheck="false" placeholder="Card name" /></div>
+        <datalist id="cardNames"></datalist>
+        <button type="button" class="toggle" id="outsiderToggle" aria-pressed="false">Show undrafted cards (118)</button>
+        <div class="zoom" role="group" aria-label="Zoom">
+          <button type="button" id="zoomOut" aria-label="Zoom out">&minus;</button>
+          <button type="button" id="zoomReset" class="text">Reset</button>
+          <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+        </div>
+      </div>
+      <div class="graph-frame"><svg id="cardGraph" role="group" aria-label="Card map of Kamigawa: Neon Dynasty: one circle per archetype; use Find a card to select a card"></svg></div>
+      <ul class="legend">
+        <li><span class="lg-disc" style="width:10px;height:10px"></span><span class="lg-disc" style="width:18px;height:18px"></span>Size = how central the card is to its archetype</li>
+        <li><span class="lg-line"></span>Verified synergy: win more together than their separate effects predict</li>
+        <li><span class="lg-line tentative"></span>Tentative synergy (weaker evidence)</li>
+        <li><span class="lg-line dashed"></span>Often in the same decks (drafting signal, not a win-rate claim)</li>
+        <li><span class="lg-arc"></span>Cards shared between two archetypes</li>
+        <li><span class="lg-ring"></span>Bomb: strong on its own</li>
+      </ul>
+      <div id="cardDetail" class="detail" aria-live="polite">Select a card, or search for one, to see where it is played. Drag to pan; use the buttons (or Ctrl + scroll) to zoom.</div>
+    </div>
+  </section>
+  
+</main>
+
+<footer class="wrap site-foot">
+  
+  <ul>
+    <li><a href="../index.html">MTGNET home</a></li><li><a href="../about/index.html">About the method</a></li><li><a href="../privacy/index.html">Privacy</a></li>
+  </ul>
+  
+  <p>Data: 17Lands public Premier Draft exports. Win rates are game win rates of the decks in each archetype; card win rates use games where the card was in hand.</p>
+</footer>
+<script id="payloadData" type="application/json">{"meta":{"format":"NEO","set_name":"Kamigawa: Neon Dynasty","deck_count":138326,"game_count":630450,"n_clusters":13,"has_game_data":true,"game_zone":"gih","analysis_version":"v3"},"overview":[{"cluster_id":0,"slug":"selesnya","name":"Selesnya","subtitle":"Jukai Naturalist / Spirited Companion","color_signature":"WG","deck_count":19115,"deck_share":0.1382,"win_rate":0.5632,"games":89696,"href":"index_pages/selesnya.html"},{"cluster_id":1,"slug":"golgari","name":"Golgari","subtitle":"Gloomshrieker / Geothermal Kami","color_signature":"BG","deck_count":17049,"deck_share":0.1233,"win_rate":0.564,"games":79181,"href":"index_pages/golgari.html"},{"cluster_id":2,"slug":"dimir","name":"Dimir","subtitle":"Network Disruptor / Moon-Circuit Hacker","color_signature":"UB","deck_count":13355,"deck_share":0.09655,"win_rate":0.588,"games":64953,"href":"index_pages/dimir.html"},{"cluster_id":3,"slug":"rakdos","name":"Rakdos","subtitle":"Oni-Cult Anvil / Experimental Synthesizer","color_signature":"BR","deck_count":11713,"deck_share":0.08468,"win_rate":0.5633,"games":53543,"href":"index_pages/rakdos.html"},{"cluster_id":4,"slug":"orzhov","name":"Orzhov","subtitle":"Naomi, Pillar of Order / Kami of Terrible Secrets","color_signature":"WB","deck_count":11304,"deck_share":0.08172,"win_rate":0.5593,"games":51945,"href":"index_pages/orzhov.html"},{"cluster_id":5,"slug":"simic","name":"Simic","subtitle":"The Modern Age / Colossal Skyturtle","color_signature":"UG","deck_count":11152,"deck_share":0.08062,"win_rate":0.5569,"games":50641,"href":"index_pages/simic.html"},{"cluster_id":6,"slug":"izzet","name":"Izzet","subtitle":"Enthusiastic Mechanaut / Voltage Surge","color_signature":"UR","deck_count":9106,"deck_share":0.06583,"win_rate":0.5381,"games":40544,"href":"index_pages/izzet.html"},{"cluster_id":7,"slug":"azorius","name":"Azorius","subtitle":"Prodigy's Prototype / Kitsune Ace","color_signature":"WU","deck_count":8730,"deck_share":0.06311,"win_rate":0.546,"games":38216,"href":"index_pages/azorius.html"},{"cluster_id":8,"slug":"five-color","name":"Five-Color","subtitle":"Grafted Growth / Network Terminal","color_signature":"WUBRG","deck_count":8672,"deck_share":0.06269,"win_rate":0.5468,"games":39217,"href":"index_pages/five-color.html"},{"cluster_id":9,"slug":"boros","name":"Boros","subtitle":"Imperial Subduer / Eiganjo Exemplar","color_signature":"WR","deck_count":8091,"deck_share":0.05849,"win_rate":0.5208,"games":34984,"href":"index_pages/boros.html"},{"cluster_id":10,"slug":"dimir-2","name":"Dimir","subtitle":"Skyswimmer Koi / Armguard Familiar","color_signature":"UB","deck_count":7453,"deck_share":0.05388,"win_rate":0.5263,"games":32151,"href":"index_pages/dimir-2.html"},{"cluster_id":11,"slug":"red-base","name":"Red Base","subtitle":"Towashi Songshaper / Simian Sling","color_signature":"R","deck_count":6330,"deck_share":0.04576,"win_rate":0.5672,"games":28066,"href":"index_pages/red-base.html"},{"cluster_id":12,"slug":"gruul","name":"Gruul","subtitle":"Invigorating Hot Spring / Akki Ember-Keeper","color_signature":"RG","deck_count":6256,"deck_share":0.04523,"win_rate":0.5328,"games":27313,"href":"index_pages/gruul.html"}],"archetype_map":{"nodes":[{"cluster_id":0,"slug":"selesnya","title":"Selesnya","label":"Selesnya","subtitle":"Jukai Naturalist / Spirited Companion","color_signature":"WG","deck_count":19115,"deck_share":0.1382,"win_rate":0.5632,"r":111.5,"x":-253.0,"y":-348.2},{"cluster_id":1,"slug":"golgari","title":"Golgari","label":"Golgari","subtitle":"Gloomshrieker / Geothermal Kami","color_signature":"BG","deck_count":17049,"deck_share":0.1233,"win_rate":0.564,"r":105.3,"x":-210.4,"y":386.8},{"cluster_id":2,"slug":"dimir","title":"Dimir","label":"Dimir \u00b7 Network Disruptor","subtitle":"Network Disruptor / Moon-Circuit Hacker","color_signature":"UB","deck_count":13355,"deck_share":0.0965,"win_rate":0.588,"r":93.2,"x":422.7,"y":76.1},{"cluster_id":3,"slug":"rakdos","title":"Rakdos","label":"Rakdos","subtitle":"Oni-Cult Anvil / Experimental Synthesizer","color_signature":"BR","deck_count":11713,"deck_share":0.0847,"win_rate":0.5633,"r":87.3,"x":21.2,"y":435.1},{"cluster_id":4,"slug":"orzhov","title":"Orzhov","label":"Orzhov","subtitle":"Naomi, Pillar of Order / Kami of Terrible Secrets","color_signature":"WB","deck_count":11304,"deck_share":0.0817,"win_rate":0.5593,"r":85.8,"x":408.5,"y":-146.4},{"cluster_id":5,"slug":"simic","title":"Simic","label":"Simic","subtitle":"The Modern Age / Colossal Skyturtle","color_signature":"UG","deck_count":11152,"deck_share":0.0806,"win_rate":0.5569,"r":85.2,"x":0.0,"y":-430.4},{"cluster_id":6,"slug":"izzet","title":"Izzet","label":"Izzet","subtitle":"Enthusiastic Mechanaut / Voltage Surge","color_signature":"UR","deck_count":9106,"deck_share":0.0658,"win_rate":0.5381,"r":77.0,"x":217.9,"y":366.4},{"cluster_id":7,"slug":"azorius","title":"Azorius","label":"Azorius","subtitle":"Prodigy's Prototype / Kitsune Ace","color_signature":"WU","deck_count":8730,"deck_share":0.0631,"win_rate":0.546,"r":75.4,"x":253.0,"y":-348.2},{"cluster_id":8,"slug":"five-color","title":"Five-Color","label":"Five-Color","subtitle":"Grafted Growth / Network Terminal","color_signature":"WUBRG","deck_count":8672,"deck_share":0.0627,"win_rate":0.5468,"r":75.1,"x":-1.2,"y":7.9},{"cluster_id":9,"slug":"boros","title":"Boros","label":"Boros","subtitle":"Imperial Subduer / Eiganjo Exemplar","color_signature":"WR","deck_count":8091,"deck_share":0.0585,"win_rate":0.5208,"r":72.6,"x":-409.3,"y":-133.0},{"cluster_id":10,"slug":"dimir-2","title":"Dimir","label":"Dimir \u00b7 Skyswimmer Koi","subtitle":"Skyswimmer Koi / Armguard Familiar","color_signature":"UB","deck_count":7453,"deck_share":0.0539,"win_rate":0.5263,"r":69.6,"x":387.8,"y":280.0},{"cluster_id":11,"slug":"red-base","title":"Red Base","label":"Red Base","subtitle":"Towashi Songshaper / Simian Sling","color_signature":"R","deck_count":6330,"deck_share":0.0458,"win_rate":0.5672,"r":64.2,"x":-387.9,"y":268.1},{"cluster_id":12,"slug":"gruul","title":"Gruul","label":"Gruul","subtitle":"Invigorating Hot Spring / Akki Ember-Keeper","color_signature":"RG","deck_count":6256,"deck_share":0.0452,"win_rate":0.5328,"r":63.8,"x":-415.2,"y":98.3}],"links":[{"a":3,"b":11,"strength":5.473,"n_shared":14,"shared":["Experimental Synthesizer","Voltage Surge","Towashi Songshaper","Simian Sling","Kami's Flare","Ironhoof Boar"],"bridges":42},{"a":1,"b":5,"strength":5.223,"n_shared":13,"shared":["Fang of Shigeki","Fade into Antiquity","Season of Renewal","Tales of Master Seshiro","Jukai Preserver","Master's Rebuke"],"bridges":7},{"a":6,"b":11,"strength":5.001,"n_shared":13,"shared":["Voltage Surge","Kami's Flare","Experimental Synthesizer","Towashi Songshaper","Ironhoof Boar","Simian Sling"],"bridges":30},{"a":0,"b":1,"strength":4.988,"n_shared":12,"shared":["Tales of Master Seshiro","Fang of Shigeki","Season of Renewal","Fade into Antiquity","Jukai Preserver","Geothermal Kami"],"bridges":36},{"a":1,"b":8,"strength":4.986,"n_shared":14,"shared":["Season of Renewal","Geothermal Kami","Fade into Antiquity","Greater Tanuki","Fang of Shigeki","Tales of Master Seshiro"],"bridges":42},{"a":3,"b":6,"strength":4.559,"n_shared":12,"shared":["Voltage Surge","Experimental Synthesizer","Kami's Flare","Towashi Songshaper","Ironhoof Boar","Simian Sling"],"bridges":33},{"a":0,"b":5,"strength":4.486,"n_shared":11,"shared":["Fang of Shigeki","Season of Renewal","Tales of Master Seshiro","Jukai Preserver","Fade into Antiquity","Master's Rebuke"],"bridges":23},{"a":5,"b":8,"strength":4.313,"n_shared":12,"shared":["Season of Renewal","Greater Tanuki","Fade into Antiquity","Fang of Shigeki","Bamboo Grove Archer","Tales of Master Seshiro"],"bridges":33},{"a":0,"b":8,"strength":4.147,"n_shared":11,"shared":["Season of Renewal","Geothermal Kami","Greater Tanuki","Fade into Antiquity","Fang of Shigeki","Imperial Oath"],"bridges":28},{"a":2,"b":10,"strength":4.045,"n_shared":12,"shared":["The Modern Age","Network Disruptor","Moonsnare Specialist","Moon-Circuit Hacker","Virus Beetle","Tamiyo's Compleation"],"bridges":54},{"a":7,"b":10,"strength":3.683,"n_shared":9,"shared":["The Modern Age","Tamiyo's Compleation","Moonsnare Specialist","Moon-Circuit Hacker","Skyswimmer Koi","Network Disruptor"],"bridges":17},{"a":6,"b":10,"strength":3.611,"n_shared":9,"shared":["Network Disruptor","Skyswimmer Koi","Armguard Familiar","Moonsnare Specialist","Moonfolk Puzzlemaker","Mnemonic Sphere"],"bridges":24},{"a":1,"b":12,"strength":3.507,"n_shared":9,"shared":["Tales of Master Seshiro","Jukai Preserver","Master's Rebuke","Greater Tanuki","Fang of Shigeki","Jukai Trainee"],"bridges":26},{"a":11,"b":12,"strength":3.394,"n_shared":10,"shared":["Kami's Flare","Voltage Surge","Ironhoof Boar","Simian Sling","Akki Ember-Keeper","Kumano Faces Kakkazan"],"bridges":33},{"a":0,"b":4,"strength":3.219,"n_shared":8,"shared":["Spirited Companion","Era of Enlightenment","Sunblade Samurai","Imperial Oath","Intercessor's Arrest","Golden-Tail Disciple"],"bridges":51},{"a":5,"b":12,"strength":3.206,"n_shared":8,"shared":["Master's Rebuke","Tales of Master Seshiro","Jukai Preserver","Greater Tanuki","Fang of Shigeki","Boseiju Reaches Skyward"],"bridges":16},{"a":2,"b":4,"strength":3.029,"n_shared":8,"shared":["Okiba Reckoner Raid","Virus Beetle","Twisted Embrace","Lethal Exploit","Mukotai Ambusher","Life of Toshiro Umezawa"],"bridges":19},{"a":3,"b":4,"strength":2.967,"n_shared":8,"shared":["Okiba Reckoner Raid","Virus Beetle","Twisted Embrace","Lethal Exploit","Undercity Scrounger","Life of Toshiro Umezawa"],"bridges":19},{"a":4,"b":7,"strength":2.619,"n_shared":7,"shared":["Spirited Companion","Era of Enlightenment","Intercessor's Arrest","Imperial Oath","Golden-Tail Disciple","Mothrider Patrol"],"bridges":12},{"a":6,"b":7,"strength":2.593,"n_shared":7,"shared":["Moonsnare Specialist","Skyswimmer Koi","Network Disruptor","Armguard Familiar","Moonfolk Puzzlemaker","Moon-Circuit Hacker"],"bridges":2},{"a":2,"b":3,"strength":2.465,"n_shared":6,"shared":["Virus Beetle","Okiba Reckoner Raid","Twisted Embrace","Lethal Exploit","Life of Toshiro Umezawa","Clawing Torment"],"bridges":16},{"a":6,"b":9,"strength":2.262,"n_shared":6,"shared":["Kami's Flare","Voltage Surge","Ironhoof Boar","Simian Sling","Experimental Synthesizer","Twinshot Sniper"],"bridges":15},{"a":9,"b":11,"strength":2.262,"n_shared":6,"shared":["Kami's Flare","Voltage Surge","Ironhoof Boar","Simian Sling","Experimental Synthesizer","Twinshot Sniper"],"bridges":7},{"a":4,"b":9,"strength":2.151,"n_shared":6,"shared":["Sunblade Samurai","Intercessor's Arrest","Spirited Companion","Befriending the Moths","Mothrider Patrol","Imperial Oath"],"bridges":14}],"extent":[-551.9,-555.6,585.9,586.4]},"whole_format":{"nodes":[{"id":"Bearer of Memory","ci":"G","h":0,"x":-393.1,"y":-533.2,"r":8.5,"ring":"support","play":0.3764,"wr":0.565,"games":16558,"pres":[[0,"support",0.3764]],"core":0.5656,"rar":"common"},{"id":"Befriending the Moths","ci":"W","h":0,"x":-339.9,"y":-515.5,"r":9.3,"ring":"core","play":0.4099,"wr":0.5517,"games":17755,"pres":[[0,"core",0.4099],[9,"support",0.421],[4,"core",0.3416]],"core":0.6618,"rar":"common"},{"id":"Brilliant Restoration","ci":"W","h":0,"x":-445.7,"y":-495.4,"r":6.0,"ring":"periphery","play":0.0606,"wr":0.562,"games":2235,"pres":[[0,"periphery",0.0606],[4,"periphery",0.0531]],"core":0.256,"rar":"rare"},{"id":"Era of Enlightenment","ci":"W","h":0,"x":-360.3,"y":-508.1,"r":9.9,"ring":"core","play":0.5182,"wr":0.5749,"games":24717,"pres":[[0,"core",0.5182],[4,"core",0.4726],[7,"support",0.4057]],"core":0.7362,"rar":"common"},{"id":"Fade into Antiquity","ci":"G","h":0,"x":-307.7,"y":-463.5,"r":9.1,"ring":"core","play":0.4819,"wr":0.5732,"games":20808,"pres":[[0,"core",0.4819],[1,"core",0.5167],[5,"core",0.5343],[8,"support",0.4554]],"core":0.6365,"rar":"common"},{"id":"Fang of Shigeki","ci":"G","h":0,"x":-331.0,"y":-438.4,"r":9.0,"ring":"core","play":0.5107,"wr":0.579,"games":23617,"pres":[[0,"core",0.5107],[1,"core",0.5304],[5,"core",0.5376],[8,"support",0.4293],[12,"support",0.4319]],"core":0.6233,"rar":"common"},{"id":"Favor of Jukai","ci":"G","h":0,"x":-336.3,"y":-549.8,"r":6.4,"ring":"support","play":0.1102,"wr":0.5593,"games":4207,"pres":[[0,"support",0.1102],[12,"periphery",0.0993]],"core":0.305,"rar":"common"},{"id":"Generous Visitor","ci":"G","h":0,"x":-289.7,"y":-527.9,"r":8.4,"ring":"support","play":0.3138,"wr":0.61,"games":14032,"pres":[[0,"support",0.3138],[1,"support",0.2194],[8,"support",0.1898],[5,"support",0.201]],"core":0.5556,"rar":"uncommon"},{"id":"Golden-Tail Disciple","ci":"W","h":0,"x":-378.2,"y":-487.6,"r":9.2,"ring":"core","play":0.4526,"wr":0.5733,"games":20673,"pres":[[0,"core",0.4526],[4,"core",0.3769],[7,"support",0.3208]],"core":0.6527,"rar":"common"},{"id":"Greater Tanuki","ci":"G","h":0,"x":-334.0,"y":-397.1,"r":8.7,"ring":"support","play":0.4698,"wr":0.5635,"games":22010,"pres":[[0,"support",0.4698],[5,"support",0.4993],[12,"support",0.4433],[8,"support",0.4847],[1,"support",0.4375]],"core":0.5845,"rar":"common"},{"id":"Historian's Wisdom","ci":"G","h":0,"x":-373.0,"y":-573.3,"r":6.3,"ring":"periphery","play":0.0843,"wr":0.5604,"games":3512,"pres":[[0,"periphery",0.0843]],"core":0.285,"rar":"uncommon"},{"id":"Jukai Naturalist","ci":"WG","h":0,"x":-321.8,"y":-503.7,"r":9.9,"ring":"core","play":0.4324,"wr":0.6138,"games":19849,"pres":[[0,"core",0.4324]],"core":0.7325,"rar":"uncommon"},{"id":"Regent's Authority","ci":"W","h":0,"x":-361.7,"y":-548.1,"r":6.5,"ring":"support","play":0.0822,"wr":0.553,"games":3116,"pres":[[0,"support",0.0822]],"core":0.3141,"rar":"common"},{"id":"Spirited Companion","ci":"W","h":0,"x":-343.9,"y":-473.3,"r":10.4,"ring":"core","play":0.5619,"wr":0.6058,"games":28430,"pres":[[0,"core",0.5619],[4,"core",0.5187],[7,"core",0.5018],[9,"support",0.3671]],"core":0.8052,"rar":"common"},{"id":"Tales of Master Seshiro","ci":"G","h":0,"x":-308.1,"y":-484.4,"r":9.3,"ring":"core","play":0.5502,"wr":0.5932,"games":25934,"pres":[[0,"core",0.5502],[1,"core",0.544],[12,"support",0.5307],[5,"support",0.5022],[8,"support",0.3881]],"core":0.6573,"rar":"common"},{"id":"The Fall of Lord Konda","ci":"W","h":0,"x":-378.1,"y":-544.4,"r":7.7,"ring":"support","play":0.2828,"wr":0.5888,"games":12222,"pres":[[0,"support",0.2828],[4,"support",0.268]],"core":0.4657,"rar":"uncommon"},{"id":"Azusa's Many Journeys","ci":"G","h":1,"x":-266.3,"y":440.5,"r":8.1,"ring":"support","play":0.2871,"wr":0.5894,"games":11079,"pres":[[1,"support",0.2871],[8,"support",0.2854]],"core":0.509,"rar":"uncommon"},{"id":"Boseiju Reaches Skyward","ci":"G","h":1,"x":-284.5,"y":445.2,"r":8.2,"ring":"support","play":0.3565,"wr":0.621,"games":13909,"pres":[[1,"support",0.3565],[0,"support",0.3446],[5,"support",0.3774],[8,"support",0.316],[12,"support",0.2874]],"core":0.5208,"bomb":1,"bi":[1,0,5,8,12],"rar":"uncommon"},{"id":"Geothermal Kami","ci":"G","h":1,"x":-258.4,"y":503.4,"r":9.8,"ring":"core","play":0.5248,"wr":0.5734,"games":20490,"pres":[[1,"core",0.5248],[0,"core",0.4784],[8,"core",0.4915],[12,"periphery",0.2925]],"core":0.7296,"rar":"common"},{"id":"Gloomshrieker","ci":"BG","h":1,"x":-277.9,"y":479.8,"r":8.9,"ring":"core","play":0.4562,"wr":0.5948,"games":18421,"pres":[[1,"core",0.4562],[8,"support",0.3085],[0,"periphery",0.0625]],"core":0.6123,"rar":"uncommon"},{"id":"Invoke the Ancients","ci":"G","h":1,"x":-158.6,"y":525.8,"r":6.1,"ring":"island","play":0.0862,"wr":0.6566,"games":3037,"pres":[[1,"island",0.0862],[12,"island",0.0959]],"core":0.2621,"bomb":1,"bi":[1,12],"rar":"rare"},{"id":"Life of Toshiro Umezawa","ci":"B","h":1,"x":-196.7,"y":517.9,"r":7.8,"ring":"support","play":0.3537,"wr":0.6336,"games":14058,"pres":[[1,"support",0.3537],[2,"support",0.3517],[4,"support",0.3447],[3,"support",0.3133],[10,"island",0.2399]],"core":0.4699,"bomb":1,"bi":[1,2,3,4,8,10,11],"rar":"uncommon"},{"id":"Spinning Wheel Kick","ci":"G","h":1,"x":-321.7,"y":506.3,"r":7.3,"ring":"support","play":0.2215,"wr":0.5875,"games":7568,"pres":[[1,"support",0.2215]],"core":0.4145,"rar":"uncommon"},{"id":"Tamiyo's Safekeeping","ci":"G","h":1,"x":-300.1,"y":455.2,"r":7.9,"ring":"support","play":0.2559,"wr":0.5817,"games":8713,"pres":[[1,"support",0.2559]],"core":0.4879,"rar":"common"},{"id":"Tatsunari, Toad Rider","ci":"UBG","h":1,"x":-156.4,"y":511.4,"r":6.0,"ring":"island","play":0.0921,"wr":0.6716,"games":3386,"pres":[[1,"island",0.0921],[2,"island",0.0702]],"core":0.254,"bomb":1,"bi":[1,2],"rar":"rare"},{"id":"The Long Reach of Night","ci":"B","h":1,"x":-219.0,"y":453.7,"r":7.9,"ring":"support","play":0.3382,"wr":0.6002,"games":13322,"pres":[[1,"support",0.3382]],"core":0.4883,"rar":"uncommon"},{"id":"Biting-Palm Ninja","ci":"B","h":2,"x":681.2,"y":126.7,"r":6.1,"ring":"island","play":0.1015,"wr":0.6645,"games":3231,"pres":[[2,"island",0.1015],[3,"periphery",0.0716]],"core":0.2576,"bomb":1,"bi":[2],"rar":"rare"},{"id":"Clawing Torment","ci":"B","h":2,"x":581.6,"y":167.9,"r":8.6,"ring":"support","play":0.3439,"wr":0.5994,"games":11718,"pres":[[2,"support",0.3439],[3,"support",0.247],[4,"support",0.2029],[1,"periphery",0.1599],[11,"periphery",0.1009]],"core":0.5779,"rar":"common"},{"id":"Dokuchi Shadow-Walker","ci":"B","h":2,"x":568.0,"y":55.4,"r":8.7,"ring":"core","play":0.5454,"wr":0.5964,"games":18261,"pres":[[2,"core",0.5454],[4,"support",0.2242],[10,"periphery",0.1711]],"core":0.5822,"rar":"common"},{"id":"Dokuchi Silencer","ci":"B","h":2,"x":564.6,"y":9.8,"r":7.9,"ring":"support","play":0.2397,"wr":0.5723,"games":7439,"pres":[[2,"support",0.2397]],"core":0.4887,"rar":"uncommon"},{"id":"Futurist Operative","ci":"U","h":2,"x":547.8,"y":13.8,"r":6.8,"ring":"support","play":0.0964,"wr":0.5521,"games":2737,"pres":[[2,"support",0.0964]],"core":0.3561,"rar":"uncommon"},{"id":"Gravelighter","ci":"B","h":2,"x":480.7,"y":78.2,"r":7.0,"ring":"support","play":0.2201,"wr":0.6101,"games":6932,"pres":[[2,"support",0.2201]],"core":0.3689,"rar":"uncommon"},{"id":"Inkrise Infiltrator","ci":"B","h":2,"x":522.1,"y":81.6,"r":9.9,"ring":"core","play":0.5655,"wr":0.5941,"games":19383,"pres":[[2,"core",0.5655]],"core":0.7344,"rar":"common"},{"id":"Invoke the Winds","ci":"U","h":2,"x":662.2,"y":118.9,"r":5.5,"ring":"periphery","play":0.0606,"wr":0.581,"games":1833,"pres":[[2,"periphery",0.0606]],"core":0.183,"rar":"rare"},{"id":"Kami of Restless Shadows","ci":"B","h":2,"x":530.5,"y":18.5,"r":8.6,"ring":"support","play":0.276,"wr":0.5786,"games":7995,"pres":[[2,"support",0.276]],"core":0.5811,"rar":"common"},{"id":"Lethal Exploit","ci":"B","h":2,"x":486.0,"y":60.9,"r":8.6,"ring":"support","play":0.4398,"wr":0.5916,"games":14904,"pres":[[2,"support",0.4398],[4,"support",0.3787],[3,"support",0.3969],[1,"periphery",0.3788]],"core":0.5777,"rar":"common"},{"id":"Moon-Circuit Hacker","ci":"U","h":2,"x":558.7,"y":92.4,"r":11.3,"ring":"core","play":0.6818,"wr":0.6069,"games":26220,"pres":[[2,"core",0.6818],[10,"core",0.4593],[7,"core",0.4119],[5,"support",0.4339],[6,"support",0.3424]],"core":0.916,"rar":"common"},{"id":"Moonsnare Specialist","ci":"U","h":2,"x":595.0,"y":80.7,"r":9.9,"ring":"core","play":0.6412,"wr":0.6049,"games":24176,"pres":[[2,"core",0.6412],[10,"core",0.5151],[6,"support",0.4255],[7,"core",0.4372],[5,"support",0.4851]],"core":0.7321,"rar":"common"},{"id":"Network Disruptor","ci":"U","h":2,"x":593.2,"y":110.1,"r":11.1,"ring":"core","play":0.6949,"wr":0.616,"games":27662,"pres":[[2,"core",0.6949],[10,"core",0.5199],[6,"core",0.5057],[7,"support",0.3826]],"core":0.8825,"rar":"common"},{"id":"Prosperous Thief","ci":"U","h":2,"x":581.7,"y":17.5,"r":8.3,"ring":"support","play":0.2967,"wr":0.6101,"games":9702,"pres":[[2,"support",0.2967],[10,"support",0.2485]],"core":0.532,"rar":"uncommon"},{"id":"Searchlight Companion","ci":"","h":2,"x":598.7,"y":160.4,"r":7.5,"ring":"support","play":0.3789,"wr":0.6106,"games":13345,"pres":[[2,"support",0.3789]],"core":0.4429,"rar":"common"},{"id":"Silver-Fur Master","ci":"UB","h":2,"x":543.4,"y":57.5,"r":9.9,"ring":"core","play":0.4969,"wr":0.6094,"games":17318,"pres":[[2,"core",0.4969],[10,"support",0.1581]],"core":0.7426,"rar":"uncommon"},{"id":"Suit Up","ci":"U","h":2,"x":577.0,"y":126.6,"r":9.6,"ring":"core","play":0.3376,"wr":0.6176,"games":11871,"pres":[[2,"core",0.3376],[10,"support",0.1766],[6,"periphery",0.1313]],"core":0.696,"rar":"common"},{"id":"Chainflail Centipede","ci":"B","h":3,"x":55.5,"y":615.6,"r":8.5,"ring":"support","play":0.3714,"wr":0.5241,"games":8697,"pres":[[3,"support",0.3714],[4,"support",0.2914]],"core":0.5621,"rar":"common"},{"id":"Experimental Synthesizer","ci":"R","h":3,"x":-0.2,"y":549.6,"r":11.0,"ring":"core","play":0.5879,"wr":0.5893,"games":16602,"pres":[[3,"core",0.5879],[11,"core",0.6754],[6,"core",0.5176],[9,"support",0.3179]],"core":0.8776,"rar":"common"},{"id":"Goro-Goro, Disciple of Ryusei","ci":"R","h":3,"x":71.2,"y":633.0,"r":6.1,"ring":"periphery","play":0.0881,"wr":0.5775,"games":1846,"pres":[[3,"periphery",0.0881]],"core":0.2644,"rar":"rare"},{"id":"Oni-Cult Anvil","ci":"BR","h":3,"x":0.0,"y":585.0,"r":11.6,"ring":"core","play":0.5643,"wr":0.5959,"games":15039,"pres":[[3,"core",0.5643],[11,"support",0.2145],[6,"periphery",0.0951]],"core":0.9441,"rar":"uncommon"},{"id":"Papercraft Decoy","ci":"","h":3,"x":45.3,"y":540.7,"r":6.8,"ring":"support","play":0.2468,"wr":0.5528,"games":6078,"pres":[[3,"support",0.2468]],"core":0.3438,"rar":"common"},{"id":"Reckoner Bankbuster","ci":"","h":3,"x":101.0,"y":600.8,"r":4.0,"ring":"island","play":0.0418,"wr":0.6334,"games":982,"pres":[[3,"island",0.0418]],"core":0.0,"bomb":1,"bi":[3],"rar":"rare"},{"id":"Runaway Trash-Bot","ci":"","h":3,"x":45.3,"y":512.1,"r":6.3,"ring":"periphery","play":0.1394,"wr":0.5201,"games":3138,"pres":[[3,"periphery",0.1394]],"core":0.2844,"rar":"uncommon"},{"id":"Sokenzan Smelter","ci":"R","h":3,"x":-20.3,"y":560.7,"r":9.4,"ring":"core","play":0.3592,"wr":0.5844,"games":8930,"pres":[[3,"core",0.3592],[11,"support",0.4021],[6,"support",0.277]],"core":0.6807,"rar":"uncommon"},{"id":"Undercity Scrounger","ci":"B","h":3,"x":20.2,"y":559.8,"r":9.3,"ring":"core","play":0.4165,"wr":0.5251,"games":10167,"pres":[[3,"core",0.4165],[4,"support",0.3135]],"core":0.6586,"rar":"common"},{"id":"Virus Beetle","ci":"B","h":3,"x":-30.4,"y":589.4,"r":9.0,"ring":"core","play":0.5699,"wr":0.5822,"games":15595,"pres":[[3,"core",0.5699],[2,"core",0.5517],[1,"core",0.4786],[4,"core",0.5114],[10,"support",0.3887]],"core":0.624,"rar":"common"},{"id":"Ao, the Dawn Sky","ci":"W","h":4,"x":663.7,"y":-181.3,"r":4.0,"ring":"island","play":0.046,"wr":0.6599,"games":1138,"pres":[[4,"island",0.046],[9,"island",0.0378]],"core":0.0,"bomb":1,"bi":[4,9],"rar":"mythic"},{"id":"Banishing Slash","ci":"W","h":4,"x":618.1,"y":-175.8,"r":7.8,"ring":"support","play":0.2279,"wr":0.6125,"games":5874,"pres":[[4,"support",0.2279],[9,"periphery",0.2167]],"core":0.4796,"rar":"uncommon"},{"id":"Farewell","ci":"W","h":4,"x":665.8,"y":-195.3,"r":5.9,"ring":"island","play":0.0751,"wr":0.6798,"games":1905,"pres":[[4,"island",0.0751],[0,"island",0.0717],[7,"island",0.0845],[8,"island",0.0682],[9,"island",0.0426]],"core":0.2385,"bomb":1,"bi":[4,0,7,8,9],"rar":"rare"},{"id":"Imperial Oath","ci":"W","h":4,"x":536.6,"y":-178.3,"r":9.1,"ring":"core","play":0.4382,"wr":0.6166,"games":12312,"pres":[[4,"core",0.4382],[0,"support",0.4131],[8,"core",0.4867],[7,"support",0.3816],[9,"support",0.3008]],"core":0.6426,"rar":"common"},{"id":"Kami of Terrible Secrets","ci":"B","h":4,"x":556.2,"y":-204.8,"r":10.6,"ring":"core","play":0.5392,"wr":0.5756,"games":15051,"pres":[[4,"core",0.5392],[1,"support",0.3078],[10,"support",0.2415],[8,"periphery",0.1342]],"core":0.8281,"rar":"common"},{"id":"Michiko's Reign of Truth","ci":"W","h":4,"x":623.6,"y":-193.1,"r":7.8,"ring":"support","play":0.3185,"wr":0.6075,"games":8357,"pres":[[4,"support",0.3185],[7,"support",0.2905]],"core":0.4751,"rar":"uncommon"},{"id":"Mukotai Ambusher","ci":"B","h":4,"x":560.3,"y":-239.1,"r":8.5,"ring":"core","play":0.3705,"wr":0.5783,"games":9828,"pres":[[4,"core",0.3705],[2,"support",0.5597],[11,"periphery",0.0736]],"core":0.5623,"rar":"common"},{"id":"Naomi, Pillar of Order","ci":"WB","h":4,"x":525.8,"y":-217.9,"r":9.5,"ring":"core","play":0.4243,"wr":0.568,"games":10603,"pres":[[4,"core",0.4243]],"core":0.6863,"rar":"uncommon"},{"id":"Nezumi Bladeblesser","ci":"B","h":4,"x":579.2,"y":-269.1,"r":8.3,"ring":"support","play":0.3368,"wr":0.5585,"games":8831,"pres":[[4,"support",0.3368]],"core":0.5338,"rar":"common"},{"id":"Okiba Reckoner Raid","ci":"B","h":4,"x":540.4,"y":-235.5,"r":9.3,"ring":"core","play":0.5478,"wr":0.601,"games":16048,"pres":[[4,"core",0.5478],[2,"core",0.638],[1,"core",0.5656],[3,"support",0.5195],[10,"periphery",0.3401]],"core":0.6641,"rar":"common"},{"id":"The Wandering Emperor","ci":"W","h":4,"x":666.1,"y":-209.8,"r":4.0,"ring":"island","play":0.0459,"wr":0.6783,"games":1147,"pres":[[4,"island",0.0459],[9,"island",0.0459],[7,"island",0.0431],[0,"island",0.0374],[8,"island",0.0232]],"core":0.0,"bomb":1,"bi":[4,0,7,8,9],"rar":"mythic"},{"id":"Twisted Embrace","ci":"B","h":4,"x":512.1,"y":-257.0,"r":8.3,"ring":"support","play":0.4731,"wr":0.5917,"games":13648,"pres":[[4,"support",0.4731],[3,"support",0.4364],[1,"support",0.5056],[2,"support",0.4491]],"core":0.5349,"rar":"common"},{"id":"Behold the Unspeakable","ci":"U","h":5,"x":1.1,"y":-613.1,"r":8.7,"ring":"core","play":0.4582,"wr":0.631,"games":13159,"pres":[[5,"core",0.4582],[7,"support",0.3483],[10,"support",0.4041],[6,"support",0.3124],[2,"support",0.328]],"core":0.588,"bomb":1,"bi":[5,7,8,10],"rar":"uncommon"},{"id":"Blossom Prancer","ci":"G","h":5,"x":38.4,"y":-541.5,"r":7.5,"ring":"support","play":0.2912,"wr":0.6406,"games":7750,"pres":[[5,"support",0.2912],[1,"support",0.2829],[0,"support",0.2705],[12,"support",0.2706],[8,"support",0.2672]],"core":0.4388,"bomb":1,"bi":[5,0,1,8,12],"rar":"uncommon"},{"id":"Boon of Boseiju","ci":"G","h":5,"x":-77.5,"y":-598.0,"r":5.5,"ring":"periphery","play":0.0584,"wr":0.5757,"games":1268,"pres":[[5,"periphery",0.0584]],"core":0.1851,"rar":"uncommon"},{"id":"Careful Cultivation","ci":"G","h":5,"x":-55.6,"y":-601.4,"r":8.1,"ring":"support","play":0.3493,"wr":0.565,"games":9564,"pres":[[5,"support",0.3493]],"core":0.5098,"rar":"common"},{"id":"Colossal Skyturtle","ci":"UG","h":5,"x":-24.0,"y":-599.5,"r":9.6,"ring":"core","play":0.4486,"wr":0.5962,"games":12522,"pres":[[5,"core",0.4486],[8,"core",0.3487]],"core":0.7056,"rar":"uncommon"},{"id":"Guardians of Oboro","ci":"U","h":5,"x":-36.3,"y":-539.8,"r":7.1,"ring":"support","play":0.1211,"wr":0.5487,"games":2978,"pres":[[5,"support",0.1211]],"core":0.3849,"rar":"common"},{"id":"Kairi, the Swirling Sky","ci":"U","h":5,"x":92.6,"y":-571.6,"r":5.8,"ring":"island","play":0.0558,"wr":0.6481,"games":1361,"pres":[[5,"island",0.0558],[10,"island",0.0506],[6,"island",0.042],[2,"island",0.0343]],"core":0.2231,"bomb":1,"bi":[5,2,6,10],"rar":"mythic"},{"id":"The Modern Age","ci":"U","h":5,"x":0.0,"y":-585.0,"r":10.0,"ring":"core","play":0.6405,"wr":0.5949,"games":19158,"pres":[[5,"core",0.6405],[10,"core",0.6096],[7,"core",0.5285],[2,"core",0.5676]],"core":0.7524,"rar":"common"},{"id":"Dragonspark Reactor","ci":"R","h":6,"x":287.0,"y":462.3,"r":9.7,"ring":"core","play":0.3338,"wr":0.5038,"games":6653,"pres":[[6,"core",0.3338],[3,"core",0.2815],[11,"support",0.284]],"core":0.7168,"rar":"uncommon"},{"id":"Enthusiastic Mechanaut","ci":"UR","h":6,"x":281.6,"y":495.4,"r":10.8,"ring":"core","play":0.5696,"wr":0.5897,"games":12605,"pres":[[6,"core",0.5696]],"core":0.853,"bomb":1,"bi":[6],"rar":"uncommon"},{"id":"Fable of the Mirror-Breaker","ci":"R","h":6,"x":387.9,"y":466.8,"r":6.0,"ring":"island","play":0.0944,"wr":0.6739,"games":1883,"pres":[[6,"island",0.0944],[11,"island",0.1032],[12,"island",0.1034],[3,"island",0.1001],[9,"island",0.0874]],"core":0.2506,"bomb":1,"bi":[6,0,1,2,3,4,5,7,8,9,10,11,12],"rar":"rare"},{"id":"Inventive Iteration","ci":"U","h":6,"x":390.8,"y":481.9,"r":5.9,"ring":"island","play":0.0943,"wr":0.6492,"games":1884,"pres":[[6,"island",0.0943],[10,"island",0.0981],[5,"island",0.1005],[7,"island",0.1],[2,"island",0.0798]],"core":0.2318,"bomb":1,"bi":[6,2,5,7,10],"rar":"rare"},{"id":"Ironhoof Boar","ci":"R","h":6,"x":314.9,"y":505.2,"r":9.5,"ring":"core","play":0.4353,"wr":0.5469,"games":8586,"pres":[[6,"core",0.4353],[12,"core",0.4025],[9,"support",0.3713],[11,"support",0.5717],[3,"support",0.4364]],"core":0.6867,"rar":"common"},{"id":"Mnemonic Sphere","ci":"U","h":6,"x":306.0,"y":472.4,"r":9.3,"ring":"core","play":0.3703,"wr":0.5338,"games":7349,"pres":[[6,"core",0.3703],[10,"core",0.3957]],"core":0.6603,"rar":"common"},{"id":"Patchwork Automaton","ci":"","h":6,"x":267.4,"y":428.6,"r":8.2,"ring":"support","play":0.2878,"wr":0.5968,"games":5972,"pres":[[6,"support",0.2878],[11,"support",0.2626],[3,"support",0.2113]],"core":0.5188,"bomb":1,"bi":[6,3,11],"rar":"uncommon"},{"id":"Saiba Trespassers","ci":"U","h":6,"x":320.7,"y":439.5,"r":7.4,"ring":"support","play":0.1704,"wr":0.5362,"games":3079,"pres":[[6,"support",0.1704]],"core":0.4289,"rar":"common"},{"id":"The Reality Chip","ci":"U","h":6,"x":386.6,"y":528.4,"r":5.8,"ring":"island","play":0.1014,"wr":0.6204,"games":1923,"pres":[[6,"island",0.1014],[5,"island",0.1006]],"core":0.226,"bomb":1,"bi":[6,5],"rar":"rare"},{"id":"Thundersteel Colossus","ci":"","h":6,"x":217.4,"y":428.8,"r":5.4,"ring":"periphery","play":0.0674,"wr":0.4709,"games":1100,"pres":[[6,"periphery",0.0674]],"core":0.1795,"rar":"common"},{"id":"Towashi Songshaper","ci":"R","h":6,"x":302.2,"y":523.4,"r":10.3,"ring":"core","play":0.471,"wr":0.5386,"games":10584,"pres":[[6,"core",0.471],[11,"core",0.73],[3,"core",0.5211]],"core":0.7848,"rar":"common"},{"id":"Twinshot Sniper","ci":"R","h":6,"x":349.6,"y":501.1,"r":8.3,"ring":"support","play":0.3308,"wr":0.6048,"games":6913,"pres":[[6,"support",0.3308],[12,"support",0.2938],[9,"support",0.2393],[11,"support",0.3496],[3,"island",0.2868]],"core":0.5342,"bomb":1,"bi":[6,3,9,12],"rar":"uncommon"},{"id":"Dragonfly Suit","ci":"W","h":7,"x":284.2,"y":-448.3,"r":8.4,"ring":"support","play":0.2556,"wr":0.5158,"games":4529,"pres":[[7,"support",0.2556]],"core":0.551,"rar":"common"},{"id":"Futurist Sentinel","ci":"U","h":7,"x":283.2,"y":-467.2,"r":8.0,"ring":"support","play":0.1863,"wr":0.4955,"games":3078,"pres":[[7,"support",0.1863]],"core":0.5046,"rar":"common"},{"id":"Hotshot Mechanic","ci":"W","h":7,"x":286.4,"y":-485.7,"r":8.2,"ring":"support","play":0.2222,"wr":0.5642,"games":4204,"pres":[[7,"support",0.2222]],"core":0.5283,"rar":"uncommon"},{"id":"Imperial Recovery Unit","ci":"W","h":7,"x":312.7,"y":-424.2,"r":7.6,"ring":"support","play":0.1805,"wr":0.5352,"games":3126,"pres":[[7,"support",0.1805]],"core":0.4476,"rar":"uncommon"},{"id":"Kitsune Ace","ci":"W","h":7,"x":317.8,"y":-483.6,"r":9.6,"ring":"core","play":0.3242,"wr":0.5369,"games":6290,"pres":[[7,"core",0.3242]],"core":0.7027,"rar":"common"},{"id":"Mobilizer Mech","ci":"U","h":7,"x":296.4,"y":-433.2,"r":8.5,"ring":"support","play":0.2158,"wr":0.5448,"games":3873,"pres":[[7,"support",0.2158]],"core":0.5652,"rar":"uncommon"},{"id":"Prodigy's Prototype","ci":"WU","h":7,"x":343.9,"y":-473.3,"r":10.1,"ring":"core","play":0.4386,"wr":0.5919,"games":9254,"pres":[[7,"core",0.4386]],"core":0.768,"rar":"uncommon"},{"id":"Tameshi, Reality Architect","ci":"WU","h":7,"x":433.1,"y":-445.3,"r":6.0,"ring":"island","play":0.1532,"wr":0.6398,"games":3112,"pres":[[7,"island",0.1532]],"core":0.2452,"bomb":1,"bi":[7],"rar":"rare"},{"id":"Bamboo Grove Archer","ci":"G","h":8,"x":-22.6,"y":-12.4,"r":9.2,"ring":"core","play":0.4686,"wr":0.5811,"games":9664,"pres":[[8,"core",0.4686],[5,"core",0.4105],[1,"support",0.3615]],"core":0.6496,"rar":"common"},{"id":"Commune with Spirits","ci":"G","h":8,"x":-7.3,"y":-28.1,"r":10.2,"ring":"core","play":0.491,"wr":0.5624,"games":10381,"pres":[[8,"core",0.491],[1,"support",0.3197],[5,"support",0.288]],"core":0.776,"rar":"common"},{"id":"Ecologist's Terrarium","ci":"","h":8,"x":-12.7,"y":35.5,"r":9.2,"ring":"core","play":0.4463,"wr":0.561,"games":8494,"pres":[[8,"core",0.4463],[4,"periphery",0.1842]],"core":0.6517,"rar":"common"},{"id":"Grafted Growth","ci":"G","h":8,"x":-1.2,"y":7.9,"r":10.8,"ring":"core","play":0.5703,"wr":0.5603,"games":12089,"pres":[[8,"core",0.5703]],"core":0.8464,"rar":"common"},{"id":"Network Terminal","ci":"","h":8,"x":-28.5,"y":19.9,"r":10.5,"ring":"core","play":0.4455,"wr":0.5685,"games":8659,"pres":[[8,"core",0.4455],[4,"periphery",0.1548]],"core":0.8121,"rar":"common"},{"id":"Season of Renewal","ci":"G","h":8,"x":10.9,"y":-15.1,"r":9.6,"ring":"core","play":0.5578,"wr":0.5681,"games":10659,"pres":[[8,"core",0.5578],[0,"core",0.5101],[5,"core",0.5054],[1,"core",0.5063]],"core":0.7038,"rar":"common"},{"id":"Shrine Steward","ci":"","h":8,"x":53.3,"y":27.9,"r":7.8,"ring":"support","play":0.2414,"wr":0.5529,"games":4552,"pres":[[8,"support",0.2414],[7,"periphery",0.0756],[5,"periphery",0.0537]],"core":0.4758,"rar":"common"},{"id":"The Kami War","ci":"WUBRG","h":8,"x":-51.4,"y":37.0,"r":7.8,"ring":"support","play":0.1661,"wr":0.6632,"games":3287,"pres":[[8,"support",0.1661]],"core":0.4693,"bomb":1,"bi":[8],"rar":"mythic"},{"id":"Akki Ronin","ci":"R","h":9,"x":-576.2,"y":-154.5,"r":10.1,"ring":"core","play":0.4305,"wr":0.516,"games":7173,"pres":[[9,"core",0.4305]],"core":0.7671,"rar":"common"},{"id":"Ancestral Katana","ci":"W","h":9,"x":-560.9,"y":-232.2,"r":10.8,"ring":"core","play":0.5296,"wr":0.5106,"games":8603,"pres":[[9,"core",0.5296]],"core":0.8508,"rar":"common"},{"id":"Asari Captain","ci":"WR","h":9,"x":-558.3,"y":-141.5,"r":9.5,"ring":"core","play":0.4296,"wr":0.5254,"games":6953,"pres":[[9,"core",0.4296]],"core":0.6905,"rar":"uncommon"},{"id":"Eiganjo Exemplar","ci":"W","h":9,"x":-520.7,"y":-212.5,"r":10.9,"ring":"core","play":0.6506,"wr":0.5311,"games":12626,"pres":[[9,"core",0.6506]],"core":0.8682,"rar":"common"},{"id":"Explosive Entry","ci":"R","h":9,"x":-512.4,"y":-118.4,"r":7.1,"ring":"support","play":0.1345,"wr":0.5351,"games":1878,"pres":[[9,"support",0.1345]],"core":0.3855,"rar":"common"},{"id":"Imperial Subduer","ci":"W","h":9,"x":-556.1,"y":-190.7,"r":11.1,"ring":"core","play":0.6222,"wr":0.5211,"games":11338,"pres":[[9,"core",0.6222]],"core":0.8866,"rar":"common"},{"id":"Intercessor's Arrest","ci":"W","h":9,"x":-475.2,"y":-216.1,"r":8.6,"ring":"support","play":0.4443,"wr":0.5188,"games":7236,"pres":[[9,"support",0.4443],[7,"support",0.4493],[4,"support",0.405],[0,"support",0.4366]],"core":0.5764,"rar":"common"},{"id":"Kami's Flare","ci":"R","h":9,"x":-597.9,"y":-190.9,"r":10.0,"ring":"core","play":0.4964,"wr":0.549,"games":8790,"pres":[[9,"core",0.4964],[6,"support",0.5188],[12,"core",0.5662],[11,"support",0.5945],[3,"support",0.4973]],"core":0.7468,"rar":"common"},{"id":"Kindled Fury","ci":"R","h":9,"x":-575.0,"y":-108.0,"r":6.7,"ring":"support","play":0.0859,"wr":0.4912,"games":1134,"pres":[[9,"support",0.0859]],"core":0.3426,"rar":"common"},{"id":"Mothrider Patrol","ci":"W","h":9,"x":-537.6,"y":-229.1,"r":10.2,"ring":"core","play":0.5475,"wr":0.5326,"games":9551,"pres":[[9,"core",0.5475],[7,"core",0.366],[4,"support",0.314]],"core":0.7795,"rar":"common"},{"id":"Norika Yamazaki, the Poet","ci":"W","h":9,"x":-568.5,"y":-274.3,"r":8.5,"ring":"support","play":0.2631,"wr":0.5179,"games":4111,"pres":[[9,"support",0.2631]],"core":0.5638,"rar":"uncommon"},{"id":"Peerless Samurai","ci":"R","h":9,"x":-540.7,"y":-156.0,"r":10.8,"ring":"core","play":0.5048,"wr":0.5153,"games":8473,"pres":[[9,"core",0.5048]],"core":0.8552,"rar":"common"},{"id":"Raiyuu, Storm's Edge","ci":"WR","h":9,"x":-591.5,"y":-113.6,"r":8.3,"ring":"support","play":0.2247,"wr":0.6062,"games":3512,"pres":[[9,"support",0.2247]],"core":0.5313,"bomb":1,"bi":[9],"rar":"rare"},{"id":"Selfless Samurai","ci":"W","h":9,"x":-587.9,"y":-269.0,"r":8.9,"ring":"support","play":0.3436,"wr":0.5741,"games":5699,"pres":[[9,"support",0.3436]],"core":0.6176,"bomb":1,"bi":[9],"rar":"uncommon"},{"id":"Seven-Tail Mentor","ci":"W","h":9,"x":-518.6,"y":-174.2,"r":9.1,"ring":"core","play":0.3687,"wr":0.5185,"games":5742,"pres":[[9,"core",0.3687]],"core":0.6397,"rar":"common"},{"id":"Sky-Blessed Samurai","ci":"W","h":9,"x":-471.7,"y":-198.8,"r":6.5,"ring":"support","play":0.1353,"wr":0.5143,"games":1929,"pres":[[9,"support",0.1353],[7,"periphery",0.1148]],"core":0.3138,"rar":"uncommon"},{"id":"Sunblade Samurai","ci":"W","h":9,"x":-472.3,"y":-177.7,"r":8.6,"ring":"support","play":0.4483,"wr":0.5121,"games":7334,"pres":[[9,"support",0.4483],[0,"support",0.4343],[4,"support",0.4229]],"core":0.5732,"rar":"common"},{"id":"Tempered in Solitude","ci":"R","h":9,"x":-547.8,"y":-106.6,"r":8.7,"ring":"support","play":0.2673,"wr":0.5159,"games":4034,"pres":[[9,"support",0.2673]],"core":0.5854,"rar":"uncommon"},{"id":"Voltage Surge","ci":"R","h":9,"x":-592.5,"y":-169.6,"r":9.5,"ring":"core","play":0.4679,"wr":0.548,"games":8034,"pres":[[9,"core",0.4679],[11,"core",0.6409],[3,"core",0.5358],[6,"core",0.5709],[12,"core",0.458]],"core":0.6932,"rar":"common"},{"id":"Wanderer's Intervention","ci":"W","h":9,"x":-477.3,"y":-159.3,"r":8.0,"ring":"support","play":0.3123,"wr":0.5036,"games":4788,"pres":[[9,"support",0.3123],[7,"support",0.3635]],"core":0.4977,"rar":"common"},{"id":"Acquisition Octopus","ci":"U","h":10,"x":630.4,"y":389.6,"r":8.3,"ring":"support","play":0.2592,"wr":0.5144,"games":4123,"pres":[[10,"support",0.2592],[2,"support",0.1457]],"core":0.5404,"rar":"uncommon"},{"id":"Armguard Familiar","ci":"U","h":10,"x":591.5,"y":409.1,"r":9.8,"ring":"core","play":0.5111,"wr":0.5251,"games":8990,"pres":[[10,"core",0.5111],[6,"core",0.4677],[7,"core",0.3819]],"core":0.7271,"rar":"common"},{"id":"Circuit Mender","ci":"","h":10,"x":491.2,"y":322.7,"r":4.6,"ring":"periphery","play":0.1422,"wr":0.5958,"games":2551,"pres":[[10,"periphery",0.1422],[0,"periphery",0.0911]],"core":0.07,"rar":"uncommon"},{"id":"Containment Construct","ci":"","h":10,"x":522.6,"y":467.3,"r":7.7,"ring":"support","play":0.2223,"wr":0.563,"games":3947,"pres":[[10,"support",0.2223],[7,"periphery",0.148],[5,"periphery",0.1178],[8,"periphery",0.0835]],"core":0.4595,"rar":"uncommon"},{"id":"Covert Technician","ci":"U","h":10,"x":556.4,"y":325.5,"r":8.3,"ring":"support","play":0.2302,"wr":0.5272,"games":3600,"pres":[[10,"support",0.2302],[2,"support",0.1623]],"core":0.5369,"rar":"uncommon"},{"id":"Disruption Protocol","ci":"U","h":10,"x":507.7,"y":457.4,"r":7.7,"ring":"support","play":0.2101,"wr":0.5374,"games":3318,"pres":[[10,"support",0.2101]],"core":0.4662,"rar":"common"},{"id":"Junji, the Midnight Sky","ci":"B","h":10,"x":675.7,"y":418.6,"r":4.0,"ring":"island","play":0.0352,"wr":0.6334,"games":581,"pres":[[10,"island",0.0352],[3,"island",0.0315]],"core":0.0,"bomb":1,"bi":[10,3],"rar":"mythic"},{"id":"Mechtitan Core","ci":"","h":10,"x":573.3,"y":300.4,"r":5.7,"ring":"periphery","play":0.0561,"wr":0.5165,"games":846,"pres":[[10,"periphery",0.0561]],"core":0.2183,"rar":"rare"},{"id":"Mirrorshell Crab","ci":"U","h":10,"x":535.4,"y":429.8,"r":9.7,"ring":"core","play":0.4854,"wr":0.5412,"games":8206,"pres":[[10,"core",0.4854],[5,"support",0.3342]],"core":0.7086,"rar":"common"},{"id":"Moonfolk Puzzlemaker","ci":"U","h":10,"x":574.8,"y":367.8,"r":9.7,"ring":"core","play":0.5124,"wr":0.5414,"games":8980,"pres":[[10,"core",0.5124],[6,"support",0.3835],[7,"support",0.3584],[5,"support",0.3018],[8,"periphery",0.0617]],"core":0.715,"rar":"common"},{"id":"Okiba Salvage","ci":"B","h":10,"x":524.7,"y":496.7,"r":5.5,"ring":"periphery","play":0.0565,"wr":0.5387,"games":826,"pres":[[10,"periphery",0.0565]],"core":0.1919,"rar":"uncommon"},{"id":"Replication Specialist","ci":"U","h":10,"x":611.8,"y":450.6,"r":9.0,"ring":"support","play":0.3329,"wr":0.5343,"games":5527,"pres":[[10,"support",0.3329],[6,"support",0.3385],[2,"periphery",0.1113]],"core":0.6261,"rar":"uncommon"},{"id":"Skyswimmer Koi","ci":"U","h":10,"x":556.4,"y":400.3,"r":10.4,"ring":"core","play":0.5446,"wr":0.544,"games":9688,"pres":[[10,"core",0.5446],[6,"core",0.4705],[7,"core",0.3898]],"core":0.8001,"rar":"common"},{"id":"Tamiyo's Compleation","ci":"U","h":10,"x":589.8,"y":383.6,"r":9.5,"ring":"core","play":0.5575,"wr":0.5454,"games":10419,"pres":[[10,"core",0.5575],[7,"core",0.4446],[5,"core",0.4961],[2,"support",0.3756]],"core":0.6882,"rar":"common"},{"id":"Thirst for Knowledge","ci":"U","h":10,"x":613.5,"y":352.1,"r":8.2,"ring":"support","play":0.267,"wr":0.5378,"games":4344,"pres":[[10,"support",0.267]],"core":0.5255,"rar":"uncommon"},{"id":"Ambitious Assault","ci":"R","h":11,"x":-499.4,"y":482.7,"r":8.1,"ring":"support","play":0.2106,"wr":0.5549,"games":2296,"pres":[[11,"support",0.2106],[12,"support",0.1125]],"core":0.5076,"rar":"common"},{"id":"Bronzeplate Boar","ci":"R","h":11,"x":-562.6,"y":349.5,"r":8.5,"ring":"support","play":0.3269,"wr":0.5623,"games":3930,"pres":[[11,"support",0.3269]],"core":0.5638,"rar":"uncommon"},{"id":"Flame Discharge","ci":"R","h":11,"x":-537.7,"y":333.8,"r":8.5,"ring":"support","play":0.2796,"wr":0.5469,"games":3284,"pres":[[11,"support",0.2796],[12,"support",0.2794]],"core":0.5651,"rar":"uncommon"},{"id":"Heiko Yamazaki, the General","ci":"R","h":11,"x":-520.1,"y":341.7,"r":8.2,"ring":"support","play":0.252,"wr":0.5326,"games":2927,"pres":[[11,"support",0.252]],"core":0.5289,"rar":"uncommon"},{"id":"Iron Apprentice","ci":"","h":11,"x":-556.1,"y":426.5,"r":9.8,"ring":"core","play":0.4428,"wr":0.5724,"games":6155,"pres":[[11,"core",0.4428],[12,"support",0.2096]],"core":0.727,"rar":"common"},{"id":"Kami of Industry","ci":"R","h":11,"x":-496.4,"y":346.2,"r":7.4,"ring":"support","play":0.1886,"wr":0.5314,"games":2057,"pres":[[11,"support",0.1886]],"core":0.4282,"rar":"common"},{"id":"Kumano Faces Kakkazan","ci":"R","h":11,"x":-491.2,"y":399.4,"r":10.4,"ring":"core","play":0.5175,"wr":0.6221,"games":7188,"pres":[[11,"core",0.5175],[12,"support",0.3496],[3,"support",0.3075]],"core":0.7957,"bomb":1,"bi":[11],"rar":"uncommon"},{"id":"Ninja's Kunai","ci":"","h":11,"x":-618.7,"y":438.5,"r":5.9,"ring":"periphery","play":0.2698,"wr":0.5531,"games":3229,"pres":[[11,"periphery",0.2698],[4,"periphery",0.225]],"core":0.2383,"rar":"common"},{"id":"Rabbit Battery","ci":"R","h":11,"x":-500.2,"y":440.8,"r":9.2,"ring":"core","play":0.4365,"wr":0.5863,"games":5490,"pres":[[11,"core",0.4365],[6,"support",0.2718],[3,"support",0.2707]],"core":0.6515,"rar":"uncommon"},{"id":"Reinforced Ronin","ci":"R","h":11,"x":-480.3,"y":355.1,"r":8.5,"ring":"support","play":0.3201,"wr":0.5413,"games":3778,"pres":[[11,"support",0.3201]],"core":0.5579,"rar":"uncommon"},{"id":"Scrapyard Steelbreaker","ci":"R","h":11,"x":-518.1,"y":379.2,"r":10.0,"ring":"core","play":0.4215,"wr":0.5358,"games":5278,"pres":[[11,"core",0.4215],[3,"core",0.4105],[6,"support",0.3794]],"core":0.7446,"rar":"common"},{"id":"Seismic Wave","ci":"R","h":11,"x":-543.9,"y":351.5,"r":7.7,"ring":"support","play":0.2809,"wr":0.5841,"games":3361,"pres":[[11,"support",0.2809]],"core":0.4676,"rar":"uncommon"},{"id":"Simian Sling","ci":"R","h":11,"x":-520.3,"y":449.2,"r":10.1,"ring":"core","play":0.7212,"wr":0.5676,"games":10633,"pres":[[11,"core",0.7212],[3,"core",0.5058],[12,"support",0.3664],[6,"support",0.4161],[9,"support",0.3688]],"core":0.7638,"rar":"common"},{"id":"Unstoppable Ogre","ci":"R","h":11,"x":-523.2,"y":414.0,"r":10.5,"ring":"core","play":0.5927,"wr":0.5635,"games":8359,"pres":[[11,"core",0.5927],[3,"support",0.3339],[6,"support",0.2659]],"core":0.8111,"rar":"common"},{"id":"Akki Ember-Keeper","ci":"R","h":12,"x":-567.1,"y":122.7,"r":10.4,"ring":"core","play":0.4648,"wr":0.5293,"games":6339,"pres":[[12,"core",0.4648],[11,"core",0.3561]],"core":0.8009,"rar":"common"},{"id":"Coiling Stalker","ci":"G","h":12,"x":-550.6,"y":155.4,"r":9.8,"ring":"core","play":0.4434,"wr":0.5179,"games":5711,"pres":[[12,"core",0.4434]],"core":0.7226,"rar":"common"},{"id":"Crackling Emergence","ci":"R","h":12,"x":-588.8,"y":194.8,"r":6.6,"ring":"support","play":0.0858,"wr":0.4953,"games":955,"pres":[[12,"support",0.0858]],"core":0.324,"rar":"common"},{"id":"Gift of Wrath","ci":"R","h":12,"x":-540.6,"y":191.0,"r":6.9,"ring":"support","play":0.0977,"wr":0.5,"games":996,"pres":[[12,"support",0.0977]],"core":0.3672,"rar":"common"},{"id":"Harmonious Emergence","ci":"G","h":12,"x":-572.8,"y":196.8,"r":7.0,"ring":"support","play":0.2468,"wr":0.557,"games":3034,"pres":[[12,"support",0.2468],[8,"support",0.2042]],"core":0.3734,"rar":"common"},{"id":"Heir of the Ancient Fang","ci":"G","h":12,"x":-531.3,"y":123.9,"r":9.3,"ring":"core","play":0.3744,"wr":0.5095,"games":4830,"pres":[[12,"core",0.3744]],"core":0.664,"rar":"common"},{"id":"Invigorating Hot Spring","ci":"RG","h":12,"x":-537.8,"y":102.7,"r":10.3,"ring":"core","play":0.5596,"wr":0.5385,"games":7305,"pres":[[12,"core",0.5596]],"core":0.7923,"rar":"uncommon"},{"id":"Jugan Defends the Temple","ci":"G","h":12,"x":-449.9,"y":125.2,"r":4.0,"ring":"island","play":0.0467,"wr":0.659,"games":566,"pres":[[12,"island",0.0467],[0,"island",0.0428],[5,"island",0.0416],[1,"island",0.0395],[8,"island",0.0349]],"core":0.0,"bomb":1,"bi":[12,0,1,5,8],"rar":"mythic"},{"id":"Jukai Preserver","ci":"G","h":12,"x":-578.1,"y":156.1,"r":9.1,"ring":"core","play":0.5697,"wr":0.5592,"games":7785,"pres":[[12,"core",0.5697],[1,"core",0.4802],[0,"support",0.5189],[5,"core",0.4839]],"core":0.6344,"rar":"common"},{"id":"Jukai Trainee","ci":"G","h":12,"x":-604.1,"y":185.8,"r":8.7,"ring":"support","play":0.414,"wr":0.5447,"games":5671,"pres":[[12,"support",0.414],[1,"support",0.3143],[8,"periphery",0.1892]],"core":0.5891,"rar":"common"},{"id":"Kappa Tech-Wrecker","ci":"G","h":12,"x":-556.1,"y":197.2,"r":7.3,"ring":"support","play":0.2818,"wr":0.5993,"games":3559,"pres":[[12,"support",0.2818],[5,"support",0.3112],[1,"support",0.2879],[0,"support",0.2418],[8,"support",0.2295]],"core":0.4066,"bomb":1,"bi":[12,0,1,5,8],"rar":"uncommon"},{"id":"Master's Rebuke","ci":"G","h":12,"x":-602.1,"y":126.6,"r":8.9,"ring":"core","play":0.505,"wr":0.5378,"games":6467,"pres":[[12,"core",0.505],[5,"core",0.5144],[0,"support",0.4739],[1,"core",0.4723]],"core":0.6125,"rar":"common"},{"id":"Thundering Raiju","ci":"R","h":12,"x":-495.2,"y":111.7,"r":6.8,"ring":"support","play":0.1447,"wr":0.5891,"games":1689,"pres":[[12,"support",0.1447],[3,"island",0.0879],[6,"island",0.0837],[11,"island",0.1281]],"core":0.3524,"bomb":1,"bi":[12,3,6,11],"rar":"rare"},{"id":"Upriser Renegade","ci":"R","h":12,"x":-532.6,"y":144.4,"r":8.8,"ring":"core","play":0.2613,"wr":0.5443,"games":3270,"pres":[[12,"core",0.2613],[3,"periphery",0.0639]],"core":0.6026,"rar":"uncommon"},{"id":"Blade-Blizzard Kitsune","ci":"W","h":-1,"x":3.6,"y":-789.9,"r":4.0,"out":1},{"id":"Born to Drive","ci":"W","h":-1,"x":48.5,"y":-788.8,"r":4.0,"out":1},{"id":"Cloudsteel Kirin","ci":"W","h":-1,"x":93.2,"y":-785.2,"r":4.0,"out":1},{"id":"Eiganjo, Seat of the Empire","ci":"W","h":-1,"x":137.8,"y":-779.2,"r":4.0,"out":1},{"id":"Go-Shintai of Shared Purpose","ci":"W","h":-1,"x":181.9,"y":-770.9,"r":4.0,"out":1},{"id":"Invoke Justice","ci":"W","h":-1,"x":225.5,"y":-760.2,"r":4.0,"out":1},{"id":"Light the Way","ci":"W","h":-1,"x":268.5,"y":-747.3,"r":4.0,"out":1},{"id":"Light-Paws, Emperor's Voice","ci":"W","h":-1,"x":310.7,"y":-732.0,"r":4.0,"out":1},{"id":"Lion Sash","ci":"W","h":-1,"x":352.1,"y":-714.6,"r":4.0,"out":1},{"id":"Lucky Offering","ci":"W","h":-1,"x":392.5,"y":-694.9,"r":4.0,"out":1},{"id":"March of Otherworldly Light","ci":"W","h":-1,"x":431.7,"y":-673.2,"r":4.0,"out":1},{"id":"Repel the Vile","ci":"W","h":-1,"x":469.8,"y":-649.4,"r":4.0,"out":1},{"id":"The Restoration of Eiganjo","ci":"W","h":-1,"x":506.5,"y":-623.6,"r":4.0,"out":1},{"id":"Touch the Spirit Realm","ci":"W","h":-1,"x":541.9,"y":-595.8,"r":4.0,"out":1},{"id":"When We Were Young","ci":"W","h":-1,"x":575.7,"y":-566.3,"r":4.0,"out":1},{"id":"Anchor to Reality","ci":"U","h":-1,"x":607.8,"y":-535.0,"r":4.0,"out":1},{"id":"Awakened Awareness","ci":"U","h":-1,"x":638.3,"y":-502.0,"r":4.0,"out":1},{"id":"Discover the Impossible","ci":"U","h":-1,"x":666.9,"y":-467.4,"r":4.0,"out":1},{"id":"Essence Capture","ci":"U","h":-1,"x":693.7,"y":-431.4,"r":4.0,"out":1},{"id":"Go-Shintai of Lost Wisdom","ci":"U","h":-1,"x":718.5,"y":-393.9,"r":4.0,"out":1},{"id":"Jin-Gitaxias, Progress Tyrant","ci":"U","h":-1,"x":741.3,"y":-355.3,"r":4.0,"out":1},{"id":"March of Swirling Mist","ci":"U","h":-1,"x":762.0,"y":-315.4,"r":4.0,"out":1},{"id":"Mindlink Mech","ci":"U","h":-1,"x":780.6,"y":-274.5,"r":4.0,"out":1},{"id":"Moonsnare Prototype","ci":"U","h":-1,"x":796.9,"y":-232.7,"r":4.0,"out":1},{"id":"Otawara, Soaring City","ci":"U","h":-1,"x":811.0,"y":-190.1,"r":4.0,"out":1},{"id":"Planar Incision","ci":"U","h":-1,"x":822.8,"y":-146.8,"r":4.0,"out":1},{"id":"Reality Heist","ci":"U","h":-1,"x":832.3,"y":-102.9,"r":4.0,"out":1},{"id":"Short Circuit","ci":"U","h":-1,"x":839.5,"y":-58.5,"r":4.0,"out":1},{"id":"Spell Pierce","ci":"U","h":-1,"x":844.3,"y":-13.9,"r":4.0,"out":1},{"id":"Tezzeret, Betrayer of Flesh","ci":"U","h":-1,"x":846.6,"y":30.9,"r":4.0,"out":1},{"id":"Thousand-Faced Shadow","ci":"U","h":-1,"x":846.6,"y":75.8,"r":4.0,"out":1},{"id":"Assassin's Ink","ci":"B","h":-1,"x":844.3,"y":120.7,"r":4.0,"out":1},{"id":"Blade of the Oni","ci":"B","h":-1,"x":839.5,"y":165.3,"r":4.0,"out":1},{"id":"Debt to the Kami","ci":"B","h":-1,"x":832.3,"y":209.6,"r":4.0,"out":1},{"id":"Dockside Chef","ci":"B","h":-1,"x":822.8,"y":253.5,"r":4.0,"out":1},{"id":"Enormous Energy Blade","ci":"B","h":-1,"x":811.0,"y":296.8,"r":4.0,"out":1},{"id":"Go-Shintai of Hidden Cruelty","ci":"B","h":-1,"x":796.9,"y":339.5,"r":4.0,"out":1},{"id":"Invoke Despair","ci":"B","h":-1,"x":780.6,"y":381.3,"r":4.0,"out":1},{"id":"Kaito's Pursuit","ci":"B","h":-1,"x":762.0,"y":422.2,"r":4.0,"out":1},{"id":"Leech Gauntlet","ci":"B","h":-1,"x":741.3,"y":462.0,"r":4.0,"out":1},{"id":"Malicious Malfunction","ci":"B","h":-1,"x":718.5,"y":500.7,"r":4.0,"out":1},{"id":"March of Wretched Sorrow","ci":"B","h":-1,"x":693.7,"y":538.1,"r":4.0,"out":1},{"id":"Mukotai Soulripper","ci":"B","h":-1,"x":666.9,"y":574.2,"r":4.0,"out":1},{"id":"Nashi, Moon Sage's Scion","ci":"B","h":-1,"x":638.3,"y":608.7,"r":4.0,"out":1},{"id":"Nezumi Prowler","ci":"B","h":-1,"x":607.8,"y":641.7,"r":4.0,"out":1},{"id":"Reckoner Shakedown","ci":"B","h":-1,"x":575.7,"y":673.0,"r":4.0,"out":1},{"id":"Reckoner's Bargain","ci":"B","h":-1,"x":541.9,"y":702.6,"r":4.0,"out":1},{"id":"Return to Action","ci":"B","h":-1,"x":506.5,"y":730.3,"r":4.0,"out":1},{"id":"Soul Transfer","ci":"B","h":-1,"x":469.8,"y":756.1,"r":4.0,"out":1},{"id":"Takenuma, Abandoned Mire","ci":"B","h":-1,"x":431.7,"y":780.0,"r":4.0,"out":1},{"id":"Tribute to Horobi","ci":"B","h":-1,"x":392.5,"y":801.7,"r":4.0,"out":1},{"id":"Unforgiving One","ci":"B","h":-1,"x":352.1,"y":821.4,"r":4.0,"out":1},{"id":"You Are Already Dead","ci":"B","h":-1,"x":310.7,"y":838.8,"r":4.0,"out":1},{"id":"Akki War Paint","ci":"R","h":-1,"x":268.5,"y":854.0,"r":4.0,"out":1},{"id":"Atsushi, the Blazing Sky","ci":"R","h":-1,"x":225.5,"y":867.0,"r":4.0,"out":1},{"id":"Explosive Singularity","ci":"R","h":-1,"x":181.9,"y":877.7,"r":4.0,"out":1},{"id":"Go-Shintai of Ancient Wars","ci":"R","h":-1,"x":137.8,"y":886.0,"r":4.0,"out":1},{"id":"Invoke Calamity","ci":"R","h":-1,"x":93.2,"y":891.9,"r":4.0,"out":1},{"id":"Lizard Blades","ci":"R","h":-1,"x":48.5,"y":895.5,"r":4.0,"out":1},{"id":"March of Reckless Joy","ci":"R","h":-1,"x":3.6,"y":896.7,"r":4.0,"out":1},{"id":"Ogre-Head Helm","ci":"R","h":-1,"x":-41.3,"y":895.5,"r":4.0,"out":1},{"id":"Scrap Welder","ci":"R","h":-1,"x":-86.0,"y":891.9,"r":4.0,"out":1},{"id":"Sokenzan, Crucible of Defiance","ci":"R","h":-1,"x":-130.5,"y":886.0,"r":4.0,"out":1},{"id":"The Shattered States Era","ci":"R","h":-1,"x":-174.7,"y":877.7,"r":4.0,"out":1},{"id":"Boseiju, Who Endures","ci":"G","h":-1,"x":-218.3,"y":867.0,"r":4.0,"out":1},{"id":"Go-Shintai of Boundless Vigor","ci":"G","h":-1,"x":-261.3,"y":854.0,"r":4.0,"out":1},{"id":"Kami of Transience","ci":"G","h":-1,"x":-303.5,"y":838.8,"r":4.0,"out":1},{"id":"Kodama of the West Tree","ci":"G","h":-1,"x":-344.9,"y":821.4,"r":4.0,"out":1},{"id":"Kura, the Boundless Sky","ci":"G","h":-1,"x":-385.2,"y":801.7,"r":4.0,"out":1},{"id":"March of Burgeoning Life","ci":"G","h":-1,"x":-424.5,"y":780.0,"r":4.0,"out":1},{"id":"Orochi Merge-Keeper","ci":"G","h":-1,"x":-462.6,"y":756.1,"r":4.0,"out":1},{"id":"Roaring Earth","ci":"G","h":-1,"x":-499.3,"y":730.3,"r":4.0,"out":1},{"id":"Shigeki, Jukai Visionary","ci":"G","h":-1,"x":-534.6,"y":702.6,"r":4.0,"out":1},{"id":"Spring-Leaf Avenger","ci":"G","h":-1,"x":-568.4,"y":673.0,"r":4.0,"out":1},{"id":"Storyweave","ci":"G","h":-1,"x":-600.6,"y":641.7,"r":4.0,"out":1},{"id":"Teachings of the Kirin","ci":"G","h":-1,"x":-631.1,"y":608.7,"r":4.0,"out":1},{"id":"The Dragon-Kami Reborn","ci":"G","h":-1,"x":-659.7,"y":574.2,"r":4.0,"out":1},{"id":"Weaver of Harmony","ci":"G","h":-1,"x":-686.5,"y":538.1,"r":4.0,"out":1},{"id":"Webspinner Cuff","ci":"G","h":-1,"x":-711.3,"y":500.7,"r":4.0,"out":1},{"id":"Jungle Hollow","ci":"BG","h":-1,"x":-734.1,"y":462.0,"r":4.0,"out":1},{"id":"Bloodfell Caves","ci":"BR","h":-1,"x":-754.8,"y":422.2,"r":4.0,"out":1},{"id":"Hidetsugu Consumes All","ci":"BR","h":-1,"x":-773.4,"y":381.3,"r":4.0,"out":1},{"id":"Hidetsugu, Devouring Chaos","ci":"BR","h":-1,"x":-789.7,"y":339.5,"r":4.0,"out":1},{"id":"Rugged Highlands","ci":"RG","h":-1,"x":-803.8,"y":296.8,"r":4.0,"out":1},{"id":"Dismal Backwater","ci":"UB","h":-1,"x":-815.6,"y":253.5,"r":4.0,"out":1},{"id":"Kaito Shizuki","ci":"UB","h":-1,"x":-825.1,"y":209.6,"r":4.0,"out":1},{"id":"Kotose, the Silent Spider","ci":"UB","h":-1,"x":-832.3,"y":165.3,"r":4.0,"out":1},{"id":"Satoru Umezawa","ci":"UB","h":-1,"x":-837.0,"y":120.7,"r":4.0,"out":1},{"id":"Tamiyo, Compleated Sage","ci":"UG","h":-1,"x":-839.4,"y":75.8,"r":4.0,"out":1},{"id":"Thornwood Falls","ci":"UG","h":-1,"x":-839.4,"y":30.9,"r":4.0,"out":1},{"id":"Swiftwater Cliffs","ci":"UR","h":-1,"x":-837.0,"y":-13.9,"r":4.0,"out":1},{"id":"Greasefang, Okiba Boss","ci":"WB","h":-1,"x":-832.3,"y":-58.5,"r":4.0,"out":1},{"id":"Scoured Barrens","ci":"WB","h":-1,"x":-825.1,"y":-102.9,"r":4.0,"out":1},{"id":"Spirit-Sister's Call","ci":"WB","h":-1,"x":-815.6,"y":-146.8,"r":4.0,"out":1},{"id":"Isshin, Two Heavens as One","ci":"WBR","h":-1,"x":-803.8,"y":-190.1,"r":4.0,"out":1},{"id":"Blossoming Sands","ci":"WG","h":-1,"x":-789.7,"y":-232.7,"r":4.0,"out":1},{"id":"Satsuki, the Living Lore","ci":"WG","h":-1,"x":-773.4,"y":-274.5,"r":4.0,"out":1},{"id":"Eiganjo Uprising","ci":"WR","h":-1,"x":-754.8,"y":-315.4,"r":4.0,"out":1},{"id":"Risona, Asari Commander","ci":"WR","h":-1,"x":-734.1,"y":-355.3,"r":4.0,"out":1},{"id":"Wind-Scarred Crag","ci":"WR","h":-1,"x":-711.3,"y":-393.9,"r":4.0,"out":1},{"id":"Tranquil Cove","ci":"WU","h":-1,"x":-686.5,"y":-431.4,"r":4.0,"out":1},{"id":"Kyodai, Soul of Kamigawa","ci":"WUBRG","h":-1,"x":-659.7,"y":-467.4,"r":4.0,"out":1},{"id":"Hinata, Dawn-Crowned","ci":"WUR","h":-1,"x":-631.1,"y":-502.0,"r":4.0,"out":1},{"id":"Automated Artificer","ci":"","h":-1,"x":-600.6,"y":-535.0,"r":4.0,"out":1},{"id":"Bronze Cudgels","ci":"","h":-1,"x":-568.4,"y":-566.3,"r":4.0,"out":1},{"id":"Brute Suit","ci":"","h":-1,"x":-534.6,"y":-595.8,"r":4.0,"out":1},{"id":"Dramatist's Puppet","ci":"","h":-1,"x":-499.3,"y":-623.6,"r":4.0,"out":1},{"id":"Eater of Virtue","ci":"","h":-1,"x":-462.6,"y":-649.4,"r":4.0,"out":1},{"id":"High-Speed Hoverbike","ci":"","h":-1,"x":-424.5,"y":-673.2,"r":4.0,"out":1},{"id":"Mech Hangar","ci":"","h":-1,"x":-385.2,"y":-694.9,"r":4.0,"out":1},{"id":"Mirror Box","ci":"","h":-1,"x":-344.9,"y":-714.6,"r":4.0,"out":1},{"id":"Reito Sentinel","ci":"","h":-1,"x":-303.5,"y":-732.0,"r":4.0,"out":1},{"id":"Roadside Reliquary","ci":"","h":-1,"x":-261.3,"y":-747.3,"r":4.0,"out":1},{"id":"Secluded Courtyard","ci":"","h":-1,"x":-218.3,"y":-760.2,"r":4.0,"out":1},{"id":"Surgehacker Mech","ci":"","h":-1,"x":-174.7,"y":-770.9,"r":4.0,"out":1},{"id":"Towashi Guide-Bot","ci":"","h":-1,"x":-130.5,"y":-779.2,"r":4.0,"out":1},{"id":"Uncharted Haven","ci":"","h":-1,"x":-86.0,"y":-785.2,"r":4.0,"out":1},{"id":"Walking Skyscraper","ci":"","h":-1,"x":-41.3,"y":-788.8,"r":4.0,"out":1}],"edges":[{"a":"Brilliant Restoration","b":"Spirited Companion","k":"s","l":0.2838,"t":"core","n":888,"wr":0.6475,"lo":0.1028,"hi":0.4647},{"a":"Befriending the Moths","b":"Generous Visitor","k":"s","l":0.1665,"t":"core","n":2765,"wr":0.6184,"lo":0.0727,"hi":0.2603},{"a":"Bearer of Memory","b":"Brilliant Restoration","k":"s","l":0.2642,"t":"tentative","n":447,"wr":0.6286,"lo":0.0431,"hi":0.4853},{"a":"Era of Enlightenment","b":"Regent's Authority","k":"s","l":0.2361,"t":"tentative","n":931,"wr":0.5994,"lo":0.0736,"hi":0.3986},{"a":"Befriending the Moths","b":"Jukai Naturalist","k":"s","l":0.102,"t":"tentative","n":4004,"wr":0.6136,"lo":0.0201,"hi":0.1839},{"a":"Jukai Naturalist","b":"Tales of Master Seshiro","k":"s","l":0.0894,"t":"tentative","n":5802,"wr":0.6486,"lo":0.016,"hi":0.1628},{"a":"Favor of Jukai","b":"Regent's Authority","k":"c","q":6.946,"n":237},{"a":"Favor of Jukai","b":"Historian's Wisdom","k":"c","q":6.711,"n":240},{"a":"Historian's Wisdom","b":"Regent's Authority","k":"c","q":6.152,"n":182},{"a":"Befriending the Moths","b":"Regent's Authority","k":"c","q":4.883,"n":730},{"a":"Bearer of Memory","b":"Generous Visitor","k":"c","q":4.844,"n":2417},{"a":"Fang of Shigeki","b":"Generous Visitor","k":"c","q":4.529,"n":3237},{"a":"Bearer of Memory","b":"Regent's Authority","k":"c","q":4.484,"n":667},{"a":"Brilliant Restoration","b":"Golden-Tail Disciple","k":"c","q":4.428,"n":595},{"a":"Befriending the Moths","b":"Era of Enlightenment","k":"c","q":4.166,"n":4244},{"a":"Historian's Wisdom","b":"Jukai Naturalist","k":"c","q":3.789,"n":766},{"a":"Era of Enlightenment","b":"The Fall of Lord Konda","k":"c","q":3.522,"n":2930},{"a":"Favor of Jukai","b":"Jukai Naturalist","k":"c","q":3.218,"n":978},{"a":"Golden-Tail Disciple","b":"Regent's Authority","k":"c","q":3.133,"n":769},{"a":"Befriending the Moths","b":"The Fall of Lord Konda","k":"c","q":3.019,"n":2314},{"a":"Fade into Antiquity","b":"Tales of Master Seshiro","k":"c","q":2.454,"n":5189},{"a":"Brilliant Restoration","b":"Era of Enlightenment","k":"c","q":2.2,"n":638},{"a":"Brilliant Restoration","b":"Greater Tanuki","k":"c","q":2.192,"n":580},{"a":"Jukai Naturalist","b":"Regent's Authority","k":"c","q":2.03,"n":716},{"a":"Regent's Authority","b":"The Fall of Lord Konda","k":"c","q":1.829,"n":471},{"a":"Bearer of Memory","b":"Tales of Master Seshiro","k":"c","q":1.717,"n":4033},{"a":"Boseiju Reaches Skyward","b":"Spinning Wheel Kick","k":"s","l":0.1803,"t":"tentative","n":1394,"wr":0.6786,"lo":0.0482,"hi":0.3124},{"a":"Azusa's Many Journeys","b":"Boseiju Reaches Skyward","k":"s","l":0.1511,"t":"tentative","n":1941,"wr":0.6667,"lo":0.0384,"hi":0.2638},{"a":"Geothermal Kami","b":"Life of Toshiro Umezawa","k":"s","l":0.109,"t":"tentative","n":3926,"wr":0.6472,"lo":0.0221,"hi":0.1958},{"a":"Azusa's Many Journeys","b":"Tamiyo's Safekeeping","k":"c","q":6.486,"n":1412},{"a":"Azusa's Many Journeys","b":"Invoke the Ancients","k":"c","q":5.036,"n":494},{"a":"Boseiju Reaches Skyward","b":"The Long Reach of Night","k":"c","q":4.401,"n":2194},{"a":"Azusa's Many Journeys","b":"Geothermal Kami","k":"c","q":4.358,"n":2722},{"a":"Boseiju Reaches Skyward","b":"Tamiyo's Safekeeping","k":"c","q":4.042,"n":1666},{"a":"Invoke the Ancients","b":"Spinning Wheel Kick","k":"c","q":4.009,"n":376},{"a":"Spinning Wheel Kick","b":"Tamiyo's Safekeeping","k":"c","q":3.82,"n":1049},{"a":"Geothermal Kami","b":"Gloomshrieker","k":"c","q":3.404,"n":4232},{"a":"Geothermal Kami","b":"Life of Toshiro Umezawa","k":"c","q":2.988,"n":3281},{"a":"Moon-Circuit Hacker","b":"Network Disruptor","k":"s","l":0.1959,"t":"core","n":11669,"wr":0.6444,"lo":0.1296,"hi":0.2621},{"a":"Moon-Circuit Hacker","b":"Suit Up","k":"s","l":0.1515,"t":"core","n":5382,"wr":0.6486,"lo":0.0674,"hi":0.2357},{"a":"Invoke the Winds","b":"Moonsnare Specialist","k":"s","l":0.2835,"t":"tentative","n":794,"wr":0.636,"lo":0.0863,"hi":0.4806},{"a":"Futurist Operative","b":"Kami of Restless Shadows","k":"c","q":8.888,"n":472},{"a":"Clawing Torment","b":"Suit Up","k":"c","q":8.182,"n":1774},{"a":"Dokuchi Silencer","b":"Kami of Restless Shadows","k":"c","q":8.016,"n":1049},{"a":"Searchlight Companion","b":"Suit Up","k":"c","q":7.81,"n":1932},{"a":"Futurist Operative","b":"Silver-Fur Master","k":"c","q":5.55,"n":737},{"a":"Dokuchi Silencer","b":"Lethal Exploit","k":"c","q":4.661,"n":1529},{"a":"Clawing Torment","b":"Searchlight Companion","k":"c","q":3.967,"n":1855},{"a":"Kami of Restless Shadows","b":"Prosperous Thief","k":"c","q":3.769,"n":1180},{"a":"Moon-Circuit Hacker","b":"Suit Up","k":"c","q":3.345,"n":3202},{"a":"Moonsnare Specialist","b":"Network Disruptor","k":"c","q":3.014,"n":6112},{"a":"Gravelighter","b":"Lethal Exploit","k":"c","q":3.011,"n":1368},{"a":"Invoke the Winds","b":"Moonsnare Specialist","k":"c","q":2.989,"n":566},{"a":"Moon-Circuit Hacker","b":"Network Disruptor","k":"c","q":2.421,"n":6461},{"a":"Biting-Palm Ninja","b":"Kami of Restless Shadows","k":"c","q":2.233,"n":404},{"a":"Futurist Operative","b":"Invoke the Winds","k":"c","q":2.103,"n":91},{"a":"Dokuchi Silencer","b":"Prosperous Thief","k":"c","q":2.075,"n":994},{"a":"Moon-Circuit Hacker","b":"Moonsnare Specialist","k":"c","q":2.039,"n":5946},{"a":"Futurist Operative","b":"Inkrise Infiltrator","k":"c","q":1.614,"n":758},{"a":"Biting-Palm Ninja","b":"Futurist Operative","k":"c","q":1.556,"n":143},{"a":"Biting-Palm Ninja","b":"Clawing Torment","k":"c","q":1.533,"n":489},{"a":"Experimental Synthesizer","b":"Oni-Cult Anvil","k":"s","l":0.1683,"t":"core","n":5040,"wr":0.6423,"lo":0.084,"hi":0.2526},{"a":"Oni-Cult Anvil","b":"Undercity Scrounger","k":"s","l":0.1417,"t":"tentative","n":3346,"wr":0.5822,"lo":0.0457,"hi":0.2376},{"a":"Oni-Cult Anvil","b":"Undercity Scrounger","k":"c","q":9.988,"n":3117},{"a":"Oni-Cult Anvil","b":"Papercraft Decoy","k":"c","q":7.19,"n":1833},{"a":"Experimental Synthesizer","b":"Oni-Cult Anvil","k":"c","q":6.94,"n":4186},{"a":"Sokenzan Smelter","b":"Undercity Scrounger","k":"c","q":6.528,"n":1942},{"a":"Papercraft Decoy","b":"Runaway Trash-Bot","k":"c","q":4.866,"n":471},{"a":"Experimental Synthesizer","b":"Sokenzan Smelter","k":"c","q":4.66,"n":2634},{"a":"Oni-Cult Anvil","b":"Sokenzan Smelter","k":"c","q":4.376,"n":2522},{"a":"Chainflail Centipede","b":"Goro-Goro, Disciple of Ryusei","k":"c","q":2.92,"n":423},{"a":"Experimental Synthesizer","b":"Virus Beetle","k":"c","q":2.505,"n":4033},{"a":"Sokenzan Smelter","b":"Virus Beetle","k":"c","q":2.312,"n":2476},{"a":"Imperial Oath","b":"Okiba Reckoner Raid","k":"c","q":4.482,"n":2875},{"a":"Mukotai Ambusher","b":"Okiba Reckoner Raid","k":"c","q":4.393,"n":2440},{"a":"Farewell","b":"Imperial Oath","k":"c","q":4.1,"n":427},{"a":"Imperial Oath","b":"Michiko's Reign of Truth","k":"c","q":4.051,"n":1689},{"a":"Kami of Terrible Secrets","b":"Naomi, Pillar of Order","k":"c","q":3.971,"n":2726},{"a":"Mukotai Ambusher","b":"Twisted Embrace","k":"c","q":2.612,"n":2062},{"a":"Mukotai Ambusher","b":"Nezumi Bladeblesser","k":"c","q":2.554,"n":1477},{"a":"Okiba Reckoner Raid","b":"Twisted Embrace","k":"c","q":2.545,"n":3025},{"a":"Banishing Slash","b":"The Wandering Emperor","k":"c","q":1.937,"n":133},{"a":"Careful Cultivation","b":"Colossal Skyturtle","k":"c","q":3.953,"n":1862},{"a":"Guardians of Oboro","b":"Kairi, the Swirling Sky","k":"c","q":3.71,"n":98},{"a":"Boon of Boseiju","b":"Colossal Skyturtle","k":"c","q":3.107,"n":329},{"a":"Boon of Boseiju","b":"Guardians of Oboro","k":"c","q":2.267,"n":93},{"a":"Blossom Prancer","b":"Careful Cultivation","k":"c","q":2.208,"n":1186},{"a":"Dragonspark Reactor","b":"Enthusiastic Mechanaut","k":"s","l":0.2052,"t":"core","n":1926,"wr":0.582,"lo":0.0868,"hi":0.3235},{"a":"Enthusiastic Mechanaut","b":"Thundersteel Colossus","k":"s","l":0.375,"t":"tentative","n":373,"wr":0.5764,"lo":0.1137,"hi":0.6363},{"a":"Dragonspark Reactor","b":"Patchwork Automaton","k":"c","q":5.21,"n":982},{"a":"Dragonspark Reactor","b":"Mnemonic Sphere","k":"c","q":4.092,"n":1221},{"a":"Saiba Trespassers","b":"Thundersteel Colossus","k":"c","q":3.955,"n":133},{"a":"Enthusiastic Mechanaut","b":"Thundersteel Colossus","k":"c","q":2.942,"n":388},{"a":"Inventive Iteration","b":"Mnemonic Sphere","k":"c","q":2.733,"n":352},{"a":"Patchwork Automaton","b":"Towashi Songshaper","k":"c","q":1.907,"n":1281},{"a":"Enthusiastic Mechanaut","b":"Saiba Trespassers","k":"c","q":1.839,"n":922},{"a":"Mnemonic Sphere","b":"Twinshot Sniper","k":"c","q":1.581,"n":1152},{"a":"Fable of the Mirror-Breaker","b":"Thundersteel Colossus","k":"c","q":1.493,"n":66},{"a":"Kitsune Ace","b":"Prodigy's Prototype","k":"s","l":0.2162,"t":"core","n":2102,"wr":0.6061,"lo":0.0958,"hi":0.3366},{"a":"Mobilizer Mech","b":"Prodigy's Prototype","k":"s","l":0.2121,"t":"tentative","n":1242,"wr":0.6159,"lo":0.0641,"hi":0.36},{"a":"Futurist Sentinel","b":"Mobilizer Mech","k":"c","q":25.65,"n":691},{"a":"Dragonfly Suit","b":"Kitsune Ace","k":"c","q":23.87,"n":1173},{"a":"Kitsune Ace","b":"Mobilizer Mech","k":"c","q":21.5,"n":983},{"a":"Futurist Sentinel","b":"Kitsune Ace","k":"c","q":21.35,"n":871},{"a":"Imperial Recovery Unit","b":"Kitsune Ace","k":"c","q":19.89,"n":826},{"a":"Futurist Sentinel","b":"Hotshot Mechanic","k":"c","q":18.84,"n":613},{"a":"Hotshot Mechanic","b":"Kitsune Ace","k":"c","q":17.81,"n":941},{"a":"Hotshot Mechanic","b":"Mobilizer Mech","k":"c","q":17.66,"n":672},{"a":"Kitsune Ace","b":"Prodigy's Prototype","k":"c","q":16.22,"n":1639},{"a":"Dragonfly Suit","b":"Futurist Sentinel","k":"c","q":16.08,"n":645},{"a":"Hotshot Mechanic","b":"Imperial Recovery Unit","k":"c","q":15.09,"n":548},{"a":"Dragonfly Suit","b":"Mobilizer Mech","k":"c","q":14.78,"n":708},{"a":"Futurist Sentinel","b":"Prodigy's Prototype","k":"c","q":14.18,"n":977},{"a":"Mobilizer Mech","b":"Prodigy's Prototype","k":"c","q":13.62,"n":1099},{"a":"Imperial Recovery Unit","b":"Mobilizer Mech","k":"c","q":10.25,"n":472},{"a":"Network Terminal","b":"The Kami War","k":"s","l":0.4366,"t":"core","n":1054,"wr":0.7315,"lo":0.2639,"hi":0.6094},{"a":"Network Terminal","b":"The Kami War","k":"c","q":9.792,"n":814},{"a":"Ecologist's Terrarium","b":"The Kami War","k":"c","q":6.776,"n":762},{"a":"Commune with Spirits","b":"Season of Renewal","k":"c","q":3.965,"n":2509},{"a":"Grafted Growth","b":"Shrine Steward","k":"c","q":3.724,"n":1283},{"a":"Bamboo Grove Archer","b":"Season of Renewal","k":"c","q":3.52,"n":2383},{"a":"Tempered in Solitude","b":"Voltage Surge","k":"s","l":0.291,"t":"core","n":988,"wr":0.5972,"lo":0.1327,"hi":0.4493},{"a":"Explosive Entry","b":"Imperial Subduer","k":"s","l":0.3326,"t":"tentative","n":561,"wr":0.59,"lo":0.1244,"hi":0.5408},{"a":"Akki Ronin","b":"Peerless Samurai","k":"c","q":9.858,"n":2045},{"a":"Akki Ronin","b":"Asari Captain","k":"c","q":7.362,"n":1694},{"a":"Seven-Tail Mentor","b":"Wanderer's Intervention","k":"c","q":7.092,"n":1082},{"a":"Raiyuu, Storm's Edge","b":"Tempered in Solitude","k":"c","q":6.131,"n":580},{"a":"Kindled Fury","b":"Tempered in Solitude","k":"c","q":6.112,"n":244},{"a":"Akki Ronin","b":"Kindled Fury","k":"c","q":5.961,"n":371},{"a":"Asari Captain","b":"Peerless Samurai","k":"c","q":5.763,"n":1922},{"a":"Kindled Fury","b":"Peerless Samurai","k":"c","q":5.691,"n":425},{"a":"Akki Ronin","b":"Tempered in Solitude","k":"c","q":5.658,"n":1051},{"a":"Explosive Entry","b":"Peerless Samurai","k":"c","q":5.27,"n":635},{"a":"Explosive Entry","b":"Kindled Fury","k":"c","q":5.234,"n":129},{"a":"Sky-Blessed Samurai","b":"Sunblade Samurai","k":"c","q":4.879,"n":566},{"a":"Ancestral Katana","b":"Mothrider Patrol","k":"c","q":4.729,"n":2505},{"a":"Kami's Flare","b":"Peerless Samurai","k":"c","q":4.672,"n":2173},{"a":"Intercessor's Arrest","b":"Sky-Blessed Samurai","k":"c","q":4.662,"n":558},{"a":"Kami's Flare","b":"Voltage Surge","k":"c","q":4.616,"n":2018},{"a":"Norika Yamazaki, the Poet","b":"Sky-Blessed Samurai","k":"c","q":4.389,"n":340},{"a":"Explosive Entry","b":"Seven-Tail Mentor","k":"c","q":4.3,"n":461},{"a":"Peerless Samurai","b":"Raiyuu, Storm's Edge","k":"c","q":4.249,"n":1007},{"a":"Eiganjo Exemplar","b":"Sky-Blessed Samurai","k":"c","q":4.187,"n":790},{"a":"Eiganjo Exemplar","b":"Imperial Subduer","k":"c","q":4.079,"n":3437},{"a":"Sky-Blessed Samurai","b":"Wanderer's Intervention","k":"c","q":4.043,"n":394},{"a":"Ancestral Katana","b":"Imperial Subduer","k":"c","q":3.714,"n":2799},{"a":"Ancestral Katana","b":"Norika Yamazaki, the Poet","k":"c","q":3.583,"n":1211},{"a":"Akki Ronin","b":"Raiyuu, Storm's Edge","k":"c","q":3.47,"n":850},{"a":"Ancestral Katana","b":"Eiganjo Exemplar","k":"c","q":3.446,"n":2914},{"a":"Asari Captain","b":"Kindled Fury","k":"c","q":3.445,"n":340},{"a":"Seven-Tail Mentor","b":"Sky-Blessed Samurai","k":"c","q":2.885,"n":444},{"a":"Eiganjo Exemplar","b":"Norika Yamazaki, the Poet","k":"c","q":2.745,"n":1456},{"a":"Intercessor's Arrest","b":"Sunblade Samurai","k":"c","q":2.53,"n":1682},{"a":"Ancestral Katana","b":"Selfless Samurai","k":"c","q":2.206,"n":1531},{"a":"Imperial Subduer","b":"Selfless Samurai","k":"c","q":2.196,"n":1793},{"a":"Imperial Subduer","b":"Mothrider Patrol","k":"c","q":2.054,"n":2831},{"a":"Mirrorshell Crab","b":"Okiba Salvage","k":"c","q":5.077,"n":255},{"a":"Containment Construct","b":"Skyswimmer Koi","k":"c","q":4.631,"n":999},{"a":"Covert Technician","b":"Mechtitan Core","k":"c","q":4.613,"n":128},{"a":"Circuit Mender","b":"Mechtitan Core","k":"c","q":3.593,"n":79},{"a":"Disruption Protocol","b":"Mirrorshell Crab","k":"c","q":3.333,"n":824},{"a":"Acquisition Octopus","b":"Armguard Familiar","k":"c","q":3.055,"n":1054},{"a":"Armguard Familiar","b":"Mechtitan Core","k":"c","q":2.983,"n":244},{"a":"Mechtitan Core","b":"Moonfolk Puzzlemaker","k":"c","q":2.826,"n":243},{"a":"Mechtitan Core","b":"Thirst for Knowledge","k":"c","q":2.759,"n":132},{"a":"Junji, the Midnight Sky","b":"Moonfolk Puzzlemaker","k":"c","q":2.44,"n":154},{"a":"Replication Specialist","b":"Thirst for Knowledge","k":"c","q":2.438,"n":706},{"a":"Acquisition Octopus","b":"Skyswimmer Koi","k":"c","q":2.035,"n":1098},{"a":"Acquisition Octopus","b":"Replication Specialist","k":"c","q":1.923,"n":677},{"a":"Ambitious Assault","b":"Iron Apprentice","k":"c","q":4.606,"n":668},{"a":"Kami of Industry","b":"Scrapyard Steelbreaker","k":"c","q":4.282,"n":570},{"a":"Heiko Yamazaki, the General","b":"Scrapyard Steelbreaker","k":"c","q":4.261,"n":749},{"a":"Kami of Industry","b":"Unstoppable Ogre","k":"c","q":3.967,"n":781},{"a":"Iron Apprentice","b":"Ninja's Kunai","k":"c","q":3.021,"n":814},{"a":"Heiko Yamazaki, the General","b":"Kami of Industry","k":"c","q":2.912,"n":336},{"a":"Ambitious Assault","b":"Kumano Faces Kakkazan","k":"c","q":2.584,"n":737},{"a":"Flame Discharge","b":"Heiko Yamazaki, the General","k":"c","q":2.522,"n":483},{"a":"Flame Discharge","b":"Reinforced Ronin","k":"c","q":2.45,"n":607},{"a":"Ambitious Assault","b":"Simian Sling","k":"c","q":2.449,"n":1014},{"a":"Flame Discharge","b":"Scrapyard Steelbreaker","k":"c","q":2.372,"n":791},{"a":"Ambitious Assault","b":"Rabbit Battery","k":"c","q":2.218,"n":619},{"a":"Flame Discharge","b":"Seismic Wave","k":"c","q":2.184,"n":531},{"a":"Bronzeplate Boar","b":"Flame Discharge","k":"c","q":2.183,"n":615},{"a":"Bronzeplate Boar","b":"Scrapyard Steelbreaker","k":"c","q":1.852,"n":910},{"a":"Invigorating Hot Spring","b":"Upriser Renegade","k":"s","l":0.2617,"t":"tentative","n":960,"wr":0.5875,"lo":0.094,"hi":0.4294},{"a":"Crackling Emergence","b":"Gift of Wrath","k":"c","q":13.65,"n":124},{"a":"Coiling Stalker","b":"Heir of the Ancient Fang","k":"c","q":9.359,"n":1248},{"a":"Gift of Wrath","b":"Upriser Renegade","k":"c","q":8.389,"n":234},{"a":"Akki Ember-Keeper","b":"Gift of Wrath","k":"c","q":7.232,"n":369},{"a":"Invigorating Hot Spring","b":"Upriser Renegade","k":"c","q":5.524,"n":1031},{"a":"Crackling Emergence","b":"Harmonious Emergence","k":"c","q":5.27,"n":175},{"a":"Akki Ember-Keeper","b":"Invigorating Hot Spring","k":"c","q":3.846,"n":1735},{"a":"Harmonious Emergence","b":"Jukai Trainee","k":"c","q":3.291,"n":697},{"a":"Jukai Preserver","b":"Jukai Trainee","k":"c","q":2.721,"n":1548},{"a":"Gift of Wrath","b":"Kappa Tech-Wrecker","k":"c","q":2.602,"n":196},{"a":"Jukai Preserver","b":"Master's Rebuke","k":"c","q":2.493,"n":1873},{"a":"Jukai Preserver","b":"Kappa Tech-Wrecker","k":"c","q":2.348,"n":1056},{"a":"Coiling Stalker","b":"Jugan Defends the Temple","k":"c","q":2.079,"n":146}],"clusters":[{"id":0,"title":"Selesnya","x":-343.9,"y":-473.3,"r":134.0,"sig":"WG"},{"id":1,"title":"Golgari","x":-258.4,"y":503.4,"r":112.2,"sig":"BG"},{"id":2,"title":"Dimir \u00b7 Network Disruptor","x":558.7,"y":92.4,"r":137.2,"sig":"UB"},{"id":3,"title":"Rakdos","x":0.0,"y":585.0,"r":112.2,"sig":"BR"},{"id":4,"title":"Orzhov","x":556.2,"y":-204.8,"r":120.1,"sig":"WB"},{"id":5,"title":"Simic","x":0.0,"y":-585.0,"r":103.5,"sig":"UG"},{"id":6,"title":"Izzet","x":281.6,"y":495.4,"r":120.1,"sig":"UR"},{"id":7,"title":"Azorius","x":343.9,"y":-473.3,"r":103.5,"sig":"WU"},{"id":8,"title":"Five-Color","x":-1.2,"y":7.9,"r":103.5,"sig":"WUBRG"},{"id":9,"title":"Boros","x":-556.1,"y":-190.7,"r":146.3,"sig":"WR"},{"id":10,"title":"Dimir \u00b7 Skyswimmer Koi","x":556.4,"y":400.3,"r":130.7,"sig":"UB"},{"id":11,"title":"Red Base","x":-523.2,"y":414.0,"r":127.3,"sig":"R"},{"id":12,"title":"Gruul","x":-567.1,"y":122.7,"r":127.3,"sig":"RG"}],"bridges":[{"a":0,"b":1,"n":36,"s":7,"cards":["Generous Visitor","Boseiju Reaches Skyward","Geothermal Kami","Fade into Antiquity","Fang of Shigeki"]},{"a":0,"b":4,"n":51,"s":6,"cards":["Imperial Oath","Brilliant Restoration","Era of Enlightenment","Golden-Tail Disciple","Befriending the Moths"]},{"a":0,"b":5,"n":23,"s":1,"cards":["Tales of Master Seshiro","Fade into Antiquity","Fang of Shigeki","Generous Visitor","Blossom Prancer"]},{"a":0,"b":6,"n":2,"s":0,"cards":["Fable of the Mirror-Breaker"]},{"a":0,"b":7,"n":10,"s":0,"cards":["Golden-Tail Disciple","Era of Enlightenment","Spirited Companion"]},{"a":0,"b":8,"n":28,"s":1,"cards":["Season of Renewal","Fang of Shigeki","Generous Visitor","Tales of Master Seshiro","Fade into Antiquity"]},{"a":0,"b":9,"n":11,"s":0,"cards":["Spirited Companion","Befriending the Moths","Sunblade Samurai"]},{"a":0,"b":10,"n":3,"s":0,"cards":["Circuit Mender"]},{"a":0,"b":12,"n":31,"s":3,"cards":["Favor of Jukai","Master's Rebuke","Fang of Shigeki","Greater Tanuki","Jukai Preserver"]},{"a":1,"b":2,"n":9,"s":0,"cards":["Life of Toshiro Umezawa","Tatsunari, Toad Rider","Clawing Torment"]},{"a":1,"b":3,"n":10,"s":1,"cards":["Life of Toshiro Umezawa","Virus Beetle"]},{"a":1,"b":4,"n":16,"s":2,"cards":["Okiba Reckoner Raid","Imperial Oath","Kami of Terrible Secrets","Life of Toshiro Umezawa","Twisted Embrace"]},{"a":1,"b":5,"n":7,"s":0,"cards":["Boseiju Reaches Skyward","Blossom Prancer"]},{"a":1,"b":6,"n":1,"s":0,"cards":["Fable of the Mirror-Breaker"]},{"a":1,"b":8,"n":42,"s":3,"cards":["Commune with Spirits","Bamboo Grove Archer","Azusa's Many Journeys","Season of Renewal","Boseiju Reaches Skyward"]},{"a":1,"b":10,"n":3,"s":0,"cards":["Life of Toshiro Umezawa"]},{"a":1,"b":11,"n":5,"s":0,"cards":["Life of Toshiro Umezawa"]},{"a":1,"b":12,"n":26,"s":2,"cards":["Jukai Preserver","Boseiju Reaches Skyward","Master's Rebuke","Geothermal Kami","Invoke the Ancients"]},{"a":2,"b":3,"n":16,"s":0,"cards":["Clawing Torment","Virus Beetle","Biting-Palm Ninja","Lethal Exploit"]},{"a":2,"b":4,"n":19,"s":0,"cards":["Dokuchi Shadow-Walker","Clawing Torment","Okiba Reckoner Raid","Lethal Exploit","Twisted Embrace"]},{"a":2,"b":5,"n":15,"s":0,"cards":["Behold the Unspeakable","Kairi, the Swirling Sky","Moon-Circuit Hacker","Moonsnare Specialist","The Modern Age"]},{"a":2,"b":6,"n":34,"s":7,"cards":["Moon-Circuit Hacker","Moonsnare Specialist","Suit Up","Network Disruptor","Fable of the Mirror-Breaker"]},{"a":2,"b":7,"n":15,"s":2,"cards":["Moon-Circuit Hacker","Moonsnare Specialist","Network Disruptor"]},{"a":2,"b":10,"n":54,"s":4,"cards":["Acquisition Octopus","Moonsnare Specialist","Tamiyo's Compleation","Dokuchi Shadow-Walker","Moon-Circuit Hacker"]},{"a":2,"b":11,"n":8,"s":0,"cards":["Clawing Torment"]},{"a":3,"b":4,"n":19,"s":1,"cards":["Chainflail Centipede","Okiba Reckoner Raid","Twisted Embrace","Undercity Scrounger","Virus Beetle"]},{"a":3,"b":6,"n":33,"s":5,"cards":["Dragonspark Reactor","Oni-Cult Anvil","Sokenzan Smelter","Patchwork Automaton","Towashi Songshaper"]},{"a":3,"b":9,"n":6,"s":0,"cards":["Experimental Synthesizer","Voltage Surge"]},{"a":3,"b":10,"n":8,"s":0,"cards":["Virus Beetle","Junji, the Midnight Sky"]},{"a":3,"b":11,"n":42,"s":1,"cards":["Virus Beetle","Oni-Cult Anvil","Scrapyard Steelbreaker","Kumano Faces Kakkazan","Rabbit Battery"]},{"a":3,"b":12,"n":9,"s":1,"cards":["Upriser Renegade","Thundering Raiju"]},{"a":4,"b":5,"n":6,"s":0,"cards":["Imperial Oath"]},{"a":4,"b":6,"n":3,"s":0,"cards":["Fable of the Mirror-Breaker"]},{"a":4,"b":7,"n":12,"s":0,"cards":["Imperial Oath","Michiko's Reign of Truth","The Wandering Emperor","Farewell"]},{"a":4,"b":8,"n":21,"s":1,"cards":["Kami of Terrible Secrets","Ecologist's Terrarium","Network Terminal","Imperial Oath","Farewell"]},{"a":4,"b":9,"n":14,"s":0,"cards":["Imperial Oath","Mothrider Patrol","Sunblade Samurai","Intercessor's Arrest","Ao, the Dawn Sky"]},{"a":4,"b":10,"n":13,"s":0,"cards":["Kami of Terrible Secrets","Okiba Reckoner Raid"]},{"a":4,"b":11,"n":19,"s":1,"cards":["Okiba Reckoner Raid","Mukotai Ambusher","Ninja's Kunai"]},{"a":5,"b":6,"n":13,"s":1,"cards":["Behold the Unspeakable","Fable of the Mirror-Breaker","Inventive Iteration","The Reality Chip","Kairi, the Swirling Sky"]},{"a":5,"b":7,"n":13,"s":0,"cards":["The Modern Age","Behold the Unspeakable"]},{"a":5,"b":8,"n":33,"s":0,"cards":["Commune with Spirits","Season of Renewal","Bamboo Grove Archer","Behold the Unspeakable","Colossal Skyturtle"]},{"a":5,"b":10,"n":24,"s":0,"cards":["Containment Construct","Mirrorshell Crab","Moonfolk Puzzlemaker","The Modern Age","Behold the Unspeakable"]},{"a":5,"b":12,"n":16,"s":0,"cards":["Jukai Preserver","Master's Rebuke","Jugan Defends the Temple","Blossom Prancer","Kappa Tech-Wrecker"]},{"a":6,"b":7,"n":2,"s":0,"cards":["Fable of the Mirror-Breaker","Inventive Iteration"]},{"a":6,"b":8,"n":3,"s":0,"cards":["Fable of the Mirror-Breaker"]},{"a":6,"b":9,"n":15,"s":0,"cards":["Ironhoof Boar","Twinshot Sniper","Kami's Flare","Voltage Surge","Fable of the Mirror-Breaker"]},{"a":6,"b":10,"n":24,"s":2,"cards":["Moonfolk Puzzlemaker","Skyswimmer Koi","Armguard Familiar","Fable of the Mirror-Breaker","Mnemonic Sphere"]},{"a":6,"b":11,"n":30,"s":0,"cards":["Dragonspark Reactor","Patchwork Automaton","Rabbit Battery","Unstoppable Ogre","Scrapyard Steelbreaker"]},{"a":6,"b":12,"n":11,"s":1,"cards":["Ironhoof Boar","Thundering Raiju","Twinshot Sniper","Fable of the Mirror-Breaker"]},{"a":7,"b":8,"n":2,"s":0,"cards":["Shrine Steward"]},{"a":7,"b":9,"n":12,"s":1,"cards":["Mothrider Patrol","Sky-Blessed Samurai","Intercessor's Arrest"]},{"a":7,"b":10,"n":17,"s":0,"cards":["Skyswimmer Koi","Tamiyo's Compleation","Armguard Familiar","Containment Construct","Moonfolk Puzzlemaker"]},{"a":8,"b":10,"n":10,"s":0,"cards":["Moonfolk Puzzlemaker","Containment Construct"]},{"a":8,"b":12,"n":12,"s":0,"cards":["Harmonious Emergence","Kappa Tech-Wrecker","Jukai Trainee","Jugan Defends the Temple"]},{"a":9,"b":11,"n":7,"s":0,"cards":["Simian Sling","Voltage Surge","Kami's Flare"]},{"a":9,"b":12,"n":7,"s":0,"cards":["Voltage Surge","Kami's Flare"]},{"a":11,"b":12,"n":33,"s":1,"cards":["Ambitious Assault","Simian Sling","Iron Apprentice","Akki Ember-Keeper","Kumano Faces Kakkazan"]}],"extent":[-873.4,-823.9,880.6,930.7]}}</script>
+<script src="_assets/mtgnet.js?v=8a16184a39"></script>
+<script>
+(function () {
+  'use strict';
+  var payload = JSON.parse(document.getElementById('payloadData').textContent);
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var TINT = { W: 'var(--lp-W)', U: 'var(--lp-U)', B: 'var(--lp-B)', R: 'var(--lp-R)', G: 'var(--lp-G)' };
+  var overview = payload.overview || [];
+  var rowById = {};
+  overview.forEach(function (row) { rowById[row.cluster_id] = row; });
+
+  function el(name, attrs, parent) {
+    var node = document.createElementNS(SVGNS, name);
+    Object.keys(attrs || {}).forEach(function (key) { node.setAttribute(key, String(attrs[key])); });
+    if (parent) parent.appendChild(node);
+    return node;
+  }
+  function h(tag, text, cls) {
+    var node = document.createElement(tag);
+    if (text != null) node.textContent = text;
+    if (cls) node.className = cls;
+    return node;
+  }
+  function link(text, href) {
+    var a = h('a', text);
+    a.href = href;
+    return a;
+  }
+  function pct(x, digits) { return (100 * Number(x || 0)).toFixed(digits == null ? 1 : digits) + '%'; }
+  function fmtInt(x) { return Number(x || 0).toLocaleString('en'); }
+  function colorsOf(sig) {
+    var out = [];
+    String(sig || '').toUpperCase().split('').forEach(function (c) { if ('WUBRG'.indexOf(c) >= 0 && out.indexOf(c) < 0) out.push(c); });
+    return 'WUBRG'.split('').filter(function (c) { return out.indexOf(c) >= 0; });
+  }
+  function solidFill(sig) {
+    var cs = colorsOf(sig);
+    if (!cs.length) return 'var(--lp-colorless)';
+    if (cs.length === 1) return TINT[cs[0]];
+    return 'var(--lp-multi)';
+  }
+  function cardHref(clusterId, card) {
+    var row = rowById[clusterId];
+    return row ? row.href + '#card=' + encodeURIComponent(card) : null;
+  }
+  function screenScale(svg) {
+    var ctm = svg.getScreenCTM && svg.getScreenCTM();
+    return ctm && ctm.a ? ctm.a : 1;
+  }
+  function debounce(fn, ms) {
+    var t = null;
+    return function () { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  function sliceArc(cx, cy, r, a0, a1) {
+    var x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+    var x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+    var large = (a1 - a0) > Math.PI ? 1 : 0;
+    return 'M' + cx + ' ' + cy + 'L' + x0.toFixed(2) + ' ' + y0.toFixed(2) + 'A' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + 'Z';
+  }
+  // Pie of the colour signature (one slice per colour); solid disc for 0-1 colours.
+  function drawColorDisc(parent, cx, cy, r, sig, cls) {
+    var cs = colorsOf(sig);
+    if (cs.length <= 1) {
+      el('circle', { cx: cx, cy: cy, r: r, style: 'fill:' + solidFill(sig), 'class': cls }, parent);
+      return;
+    }
+    var step = 2 * Math.PI / cs.length;
+    cs.forEach(function (c, i) {
+      var a0 = -Math.PI / 2 + i * step;
+      el('path', { d: sliceArc(cx, cy, r, a0, a0 + step), style: 'fill:' + TINT[c], 'class': cls }, parent);
+    });
+  }
+
+  // Light / dark toggle (shared MTGNET.theme: same remembered choice as the archetype pages).
+  (function setupTheme() {
+    var btn = document.getElementById('themeBtn');
+    var M = window.MTGNET;
+    if (!btn || !M || !M.theme) return;
+    var text = document.getElementById('themeBtnText');
+    function sync() {
+      var light = M.theme.current() === 'light';
+      btn.setAttribute('aria-pressed', light ? 'true' : 'false');
+      btn.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+      if (text) text.textContent = light ? 'Dark theme' : 'Light theme';
+    }
+    btn.addEventListener('click', function () { M.theme.toggle(); sync(); });
+    btn.hidden = false;
+    sync();
+  })();
+
+  // Locale-formatted counts (server renders the same digits with commas).
+  Array.prototype.forEach.call(document.querySelectorAll('[data-num]'), function (node) {
+    var v = Number(node.getAttribute('data-num'));
+    if (isFinite(v)) node.textContent = v.toLocaleString('en');
+  });
+
+  // ── Archetype bubble map ────────────────────────────────────────────────
+  (function renderArchetypeMap() {
+    var svg = document.getElementById('archMap');
+    var info = document.getElementById('archMapInfo');
+    var map = payload.archetype_map || {};
+    var nodes = map.nodes || [];
+    if (!svg || !nodes.length || !map.extent) return;
+    var ext = map.extent;
+    var w = ext[2] - ext[0], hgt = ext[3] - ext[1];
+    svg.setAttribute('viewBox', ext[0] + ' ' + ext[1] + ' ' + w + ' ' + hgt);
+    svg.style.aspectRatio = w + ' / ' + hgt;
+    var byId = {};
+    nodes.forEach(function (n) { byId[n.cluster_id] = n; });
+    var links = (map.links || []).filter(function (l) { return byId[l.a] && byId[l.b]; });
+    var maxStrength = Math.max.apply(null, links.map(function (l) { return l.strength; }).concat([0.0001]));
+    var linkLayer = el('g', {}, svg);
+    var bubbleLayer = el('g', {}, svg);
+    var linkEls = [];
+    links.forEach(function (l) {
+      var a = byId[l.a], b = byId[l.b];
+      var line = el('line', {
+        x1: a.x, y1: a.y, x2: b.x, y2: b.y, 'class': 'am-link',
+        'stroke-width': (2 + 14 * l.strength / maxStrength).toFixed(1)
+      }, linkLayer);
+      var t = el('title', {}, line);
+      t.textContent = (a.label || a.title) + ' and ' + (b.label || b.title) + ' share ' + l.n_shared + ' core/support card' + (l.n_shared === 1 ? '' : 's') + ': ' + l.shared.join(', ');
+      linkEls.push({ node: line, link: l });
+    });
+    var bubbleEls = [];
+    nodes.forEach(function (n) {
+      var row = rowById[n.cluster_id] || {};
+      var label = n.title + (n.subtitle ? ' (' + n.subtitle + ')' : '') + ', ' + pct(n.deck_share) + ' of decks, win rate ' + pct(n.win_rate) + '. Open archetype';
+      var a = el('a', { href: row.href || '#', 'class': 'am-bubble', 'aria-label': label }, bubbleLayer);
+      el('title', {}, a).textContent = (n.label || n.title) + ' \u2014 ' + pct(n.deck_share) + ' of decks';
+      drawColorDisc(a, n.x, n.y, n.r, n.color_signature, 'am-slice');
+      el('circle', { cx: n.x, cy: n.y, r: n.r, 'class': 'am-outline' }, a);
+      var text = el('text', { x: n.x, y: n.y, 'text-anchor': 'middle', 'class': 'am-label', 'aria-hidden': 'true' }, a);
+      var t1 = el('tspan', { x: n.x }, text);
+      t1.textContent = n.label || n.title;
+      var t2 = el('tspan', { x: n.x, 'class': 'am-share' }, text);
+      t2.textContent = pct(n.deck_share, 0);
+      var item = { node: n, el: a, text: text, t1: t1, t2: t2, rank: bubbleEls.length + 1 };
+      bubbleEls.push(item);
+      a.addEventListener('mouseenter', function () { highlight(n); });
+      a.addEventListener('focus', function () { highlight(n); });
+      a.addEventListener('mouseleave', function () { highlight(null); });
+      a.addEventListener('blur', function () { highlight(null); });
+    });
+    // Labels at a constant screen size: two lines inside the bubble when they fit,
+    // otherwise one line next to it at the first free spot (no label/bubble overlap).
+    function layoutLabels() {
+      var scale = screenScale(svg);
+      var unit = 1 / scale;
+      var placed = [];
+      function measure(tspan, fallbackText, fs) {
+        try { return tspan.getComputedTextLength(); } catch (e) { return String(fallbackText).length * fs * 0.6; }
+      }
+      function free(b, self) {
+        if (b.x0 < ext[0] || b.x1 > ext[2] || b.y0 < ext[1] || b.y1 > ext[3]) return false;
+        for (var i = 0; i < placed.length; i++) {
+          var p = placed[i];
+          if (b.x0 < p.x1 && b.x1 > p.x0 && b.y0 < p.y1 && b.y1 > p.y0) return false;
+        }
+        for (var j = 0; j < nodes.length; j++) {
+          var o = nodes[j];
+          if (o === self) continue;
+          var cx = Math.max(b.x0, Math.min(o.x, b.x1)), cy = Math.max(b.y0, Math.min(o.y, b.y1));
+          if ((o.x - cx) * (o.x - cx) + (o.y - cy) * (o.y - cy) < o.r * o.r) return false;
+        }
+        return true;
+      }
+      var outside = [];
+      var abbreviated = 0;
+      bubbleEls.forEach(function (item) {
+        var n = item.node;
+        item.t1.textContent = n.label || n.title;
+        item.t2.textContent = pct(n.deck_share, 0);
+        var sizes = [13 * unit, 11 * unit];
+        for (var s = 0; s < sizes.length; s++) {
+          var fs = sizes[s];
+          item.text.setAttribute('font-size', fs.toFixed(2));
+          var width = Math.max(measure(item.t1, item.t1.textContent, fs), measure(item.t2, item.t2.textContent, fs));
+          if (n.r * 2 >= width + 10 * unit && n.r >= fs * 1.6) {
+            item.text.setAttribute('class', 'am-label');
+            item.text.setAttribute('text-anchor', 'middle');
+            item.t1.setAttribute('x', n.x); item.t2.setAttribute('x', n.x);
+            item.t1.setAttribute('y', (n.y - fs * 0.15).toFixed(2));
+            item.t2.setAttribute('y', (n.y + fs * 1.0).toFixed(2));
+            return;
+          }
+        }
+        outside.push(item);
+      });
+      outside.sort(function (a, b) { return b.node.r - a.node.r; });
+      outside.forEach(function (item) {
+        var n = item.node;
+        item.text.setAttribute('class', 'am-label outside');
+        item.t2.textContent = '';
+        item.t1.textContent = (n.label || n.title) + ' ' + pct(n.deck_share, 0);
+        var sizes = [13 * unit, 11 * unit];
+        for (var s = 0; s < sizes.length; s++) {
+          var fs = sizes[s];
+          item.text.setAttribute('font-size', fs.toFixed(2));
+          var w = measure(item.t1, item.t1.textContent, fs);
+          var g = 3 * unit;
+          var opts = [
+            { x: n.x, y: n.y + n.r + g + fs * 0.85, a: 'middle', b: { x0: n.x - w / 2, x1: n.x + w / 2, y0: n.y + n.r + g, y1: n.y + n.r + g + fs * 1.1 } },
+            { x: n.x, y: n.y - n.r - g - fs * 0.25, a: 'middle', b: { x0: n.x - w / 2, x1: n.x + w / 2, y0: n.y - n.r - g - fs * 1.1, y1: n.y - n.r - g } },
+            { x: n.x + n.r + g, y: n.y + fs * 0.35, a: 'start', b: { x0: n.x + n.r + g, x1: n.x + n.r + g + w, y0: n.y - fs * 0.6, y1: n.y + fs * 0.5 } },
+            { x: n.x - n.r - g, y: n.y + fs * 0.35, a: 'end', b: { x0: n.x - n.r - g - w, x1: n.x - n.r - g, y0: n.y - fs * 0.6, y1: n.y + fs * 0.5 } }
+          ];
+          for (var k = 0; k < opts.length; k++) {
+            if (!free(opts[k].b, n)) continue;
+            item.text.setAttribute('text-anchor', opts[k].a);
+            item.t1.setAttribute('x', opts[k].x.toFixed(2));
+            item.t1.setAttribute('y', opts[k].y.toFixed(2));
+            placed.push(opts[k].b);
+            return;
+          }
+        }
+        // Nowhere free: the archetype's rank (as in the list above) inside the bubble,
+        // decoded by the key under the map.
+        var fsIn = 12 * unit;
+        abbreviated += 1;
+        item.text.setAttribute('font-size', fsIn.toFixed(2));
+        item.text.setAttribute('class', 'am-label');
+        item.text.setAttribute('text-anchor', 'middle');
+        item.t1.textContent = '#' + item.rank;
+        item.t1.setAttribute('x', n.x);
+        item.t1.setAttribute('y', (n.y + fsIn * 0.35).toFixed(2));
+      });
+      renderKey(abbreviated > 0);
+    }
+    var keyEl = null;
+    function renderKey(show) {
+      if (!show) { if (keyEl) keyEl.hidden = true; return; }
+      if (!keyEl) {
+        keyEl = h('ol', null, 'map-key');
+        keyEl.setAttribute('aria-hidden', 'true');
+        bubbleEls.forEach(function (item) {
+          var li = h('li');
+          li.appendChild(h('span', '#' + item.rank, 'map-key-n'));
+          li.appendChild(document.createTextNode(' ' + (item.node.label || item.node.title) + ' ' + pct(item.node.deck_share, 0)));
+          keyEl.appendChild(li);
+        });
+        svg.parentNode.parentNode.insertBefore(keyEl, info);
+      }
+      keyEl.hidden = false;
+    }
+    function highlight(n) {
+      var id = n ? n.cluster_id : null;
+      var near = {};
+      linkEls.forEach(function (item) {
+        var on = id !== null && (item.link.a === id || item.link.b === id);
+        if (on) { near[item.link.a] = true; near[item.link.b] = true; }
+        item.node.classList.toggle('on', on);
+        item.node.classList.toggle('dim', id !== null && !on);
+      });
+      bubbleEls.forEach(function (item) {
+        var cid = item.node.cluster_id;
+        item.el.classList.toggle('on', cid === id);
+        item.el.classList.toggle('dim', id !== null && cid !== id && !near[cid]);
+      });
+      describe(n);
+    }
+    function describe(n) {
+      while (info.firstChild) info.removeChild(info.firstChild);
+      if (!n) { info.textContent = 'Hover or focus an archetype to see which cards it shares.'; return; }
+      info.appendChild(h('strong', n.label || n.title));
+      info.appendChild(document.createTextNode(' — ' + pct(n.deck_share) + ' of decks, win rate ' + pct(n.win_rate) + '. '));
+      var mine = links.filter(function (l) { return l.a === n.cluster_id || l.b === n.cluster_id; });
+      if (!mine.length) { info.appendChild(document.createTextNode('Shares no core or support cards with another archetype.')); return; }
+      info.appendChild(document.createTextNode('Shares cards with '));
+      mine.forEach(function (l, i) {
+        var other = byId[l.a === n.cluster_id ? l.b : l.a];
+        if (i) info.appendChild(document.createTextNode(i === mine.length - 1 ? ' and ' : ', '));
+        info.appendChild(h('strong', other.label || other.title));
+        info.appendChild(document.createTextNode(' (' + l.shared.slice(0, 3).join(', ') + (l.n_shared > 3 ? ', …' : '') + ')'));
+      });
+      info.appendChild(document.createTextNode('.'));
+    }
+    layoutLabels();
+    describe(null);
+    window.addEventListener('resize', debounce(layoutLabels, 120));
+  })();
+
+  // ── Card-level whole-format graph (rendered on first open) ─────────────
+  (function setupCardGraph() {
+    var toggle = document.getElementById('cardGraphToggle');
+    var panel = document.getElementById('cardGraphPanel');
+    var wf = payload.whole_format || {};
+    if (!toggle || !panel || !(wf.nodes || []).length) return;
+    var rendered = false;
+    function setOpen(open) {
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.textContent = open ? 'Hide card map' : 'Show every card';
+      panel.hidden = !open;
+      if (open && !rendered) { rendered = true; renderCardGraph(wf); }
+    }
+    toggle.addEventListener('click', function () { setOpen(toggle.getAttribute('aria-expanded') !== 'true'); });
+    if (location.hash === '#every-card') setOpen(true);
+  })();
+
+  function renderCardGraph(wf) {
+    var svg = document.getElementById('cardGraph');
+    var detail = document.getElementById('cardDetail');
+    var search = document.getElementById('cardSearch');
+    var datalist = document.getElementById('cardNames');
+    var outsiderBtn = document.getElementById('outsiderToggle');
+    var nodes = wf.nodes || [], edges = wf.edges || [], clusters = wf.clusters || [], bridges = wf.bridges || [];
+    var nodeById = {}, clusterById = {};
+    nodes.forEach(function (n) { nodeById[n.id] = n; });
+    clusters.forEach(function (c) { clusterById[c.id] = c; });
+    var showOutsiders = false;
+    // Legacy (pre-v3) payloads have no coreness rings: label each archetype's four
+    // biggest discs (highest analysis score, then play rate) instead of the core ring.
+    var hasRings = nodes.some(function (n) { return !n.out && n.ring; });
+    var legacyTop = {};
+    if (!hasRings) {
+      var byHome = {};
+      nodes.forEach(function (n) { if (!n.out) (byHome[n.h] = byHome[n.h] || []).push(n); });
+      Object.keys(byHome).forEach(function (k) {
+        byHome[k].sort(function (a, b) { return (b.r - a.r) || ((b.play || 0) - (a.play || 0)); })
+          .slice(0, 4).forEach(function (n) { legacyTop[n.id] = true; });
+      });
+    }
+    function isBomb(n) { return !!(n.bomb || (n.bi && n.bi.length)); }
+
+    function boxOf(includeOutsiders) {
+      var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      clusters.forEach(function (c) {
+        x0 = Math.min(x0, c.x - c.r); x1 = Math.max(x1, c.x + c.r);
+        y0 = Math.min(y0, c.y - c.r - 40); y1 = Math.max(y1, c.y + c.r);
+      });
+      if (includeOutsiders) nodes.forEach(function (n) {
+        if (!n.out) return;
+        x0 = Math.min(x0, n.x - 10); x1 = Math.max(x1, n.x + 10);
+        y0 = Math.min(y0, n.y - 10); y1 = Math.max(y1, n.y + 10);
+      });
+      var pad = 24;
+      return { x: x0 - pad, y: y0 - pad, w: x1 - x0 + 2 * pad, h: y1 - y0 + 2 * pad };
+    }
+    var home = boxOf(false);
+    var view = { x: home.x, y: home.y, w: home.w, h: home.h };
+    svg.style.aspectRatio = home.w + ' / ' + home.h;
+
+    var gBridges = el('g', {}, svg);
+    var gClusters = el('g', {}, svg);
+    var gEdges = el('g', {}, svg);
+    var gOut = el('g', { style: 'display:none' }, svg);
+    var gNodes = el('g', {}, svg);
+    var gLabels = el('g', {}, svg);
+    var clusterLabels = [];
+
+    bridges.forEach(function (b) {
+      var A = clusterById[b.a], B = clusterById[b.b];
+      if (!A || !B) return;
+      var mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+      var dx = B.x - A.x, dy = B.y - A.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+      var bow = 0.12 * d;
+      var path = el('path', {
+        d: 'M' + A.x + ' ' + A.y + 'Q' + (mx - dy / d * bow).toFixed(1) + ' ' + (my + dx / d * bow).toFixed(1) + ' ' + B.x + ' ' + B.y,
+        'class': 'wf-bridge', 'stroke-width': (1 + Math.sqrt(b.n)).toFixed(2)
+      }, gBridges);
+      var t = el('title', {}, path);
+      t.textContent = A.title + ' ↔ ' + B.title + ': ' + b.n + ' link' + (b.n === 1 ? '' : 's') + ' through shared cards (' + (b.cards || []).join(', ') + ')';
+    });
+    clusters.forEach(function (c) {
+      el('circle', { cx: c.x, cy: c.y, r: c.r, 'class': 'wf-cluster' }, gClusters);
+      var row = rowById[c.id];
+      var holder = row ? el('a', { href: row.href }, gLabels) : gLabels;
+      var text = el('text', { x: c.x, y: c.y - c.r - 8, 'text-anchor': 'middle', 'class': 'wf-cluster-label' }, holder);
+      text.textContent = c.title;
+      clusterLabels.push({ c: c, text: text });
+    });
+
+    var edgeEls = [];
+    var adj = {};
+    edges.forEach(function (e) {
+      var a = nodeById[e.a], b = nodeById[e.b];
+      if (!a || !b) return;
+      var syn = e.k === 's';
+      var line = el('line', {
+        x1: a.x, y1: a.y, x2: b.x, y2: b.y, 'class': syn ? 'wf-syn' : 'wf-coplay',
+        'stroke-width': syn ? (1.5 + 6 * Math.max(0, Math.min(0.6, Number(e.l) || 0))).toFixed(2) : 1
+      }, gEdges);
+      if (syn && e.t === 'tentative') line.setAttribute('stroke-dasharray', '7 4');
+      edgeEls.push({ el: line, e: e });
+      (adj[e.a] = adj[e.a] || []).push(e);
+      (adj[e.b] = adj[e.b] || []).push(e);
+    });
+
+    var nodeEls = {};
+    nodes.forEach(function (n) {
+      var g = el('g', { 'class': 'wf-node' + (n.out ? ' wf-out' : '') }, n.out ? gOut : gNodes);
+      var cs = colorsOf(n.ci);
+      if (cs.length === 2) {
+        el('path', { d: sliceArc(n.x, n.y, n.r, -Math.PI / 2, Math.PI / 2), style: 'fill:' + TINT[cs[0]], 'class': 'wf-disc' }, g);
+        el('path', { d: sliceArc(n.x, n.y, n.r, Math.PI / 2, 3 * Math.PI / 2), style: 'fill:' + TINT[cs[1]], 'class': 'wf-disc' }, g);
+      } else {
+        el('circle', { cx: n.x, cy: n.y, r: n.r, style: 'fill:' + solidFill(n.ci), 'class': 'wf-disc' }, g);
+      }
+      if (isBomb(n)) el('circle', { cx: n.x, cy: n.y, r: n.r + 3, 'class': 'wf-bomb' }, g);
+      var t = el('title', {}, g);
+      t.textContent = n.id;
+      g.addEventListener('click', function (evt) {
+        if (suppressClick) return;
+        evt.stopPropagation();
+        select(n.id);
+      });
+      nodeEls[n.id] = g;
+    });
+
+    // Searchable names
+    var names = nodes.map(function (n) { return n.id; }).sort();
+    names.forEach(function (name) {
+      var opt = document.createElement('option');
+      opt.value = name;
+      datalist.appendChild(opt);
+    });
+
+    // ── labels: constant screen size, greedy placement without overlaps ──
+    var labelEls = [];
+    function labelCandidates() {
+      var zoom = home.w / view.w;
+      return nodes.filter(function (n) {
+        if (n.out) return showOutsiders && zoom >= 3;
+        if (n.id === selected) return true;
+        if (!hasRings) return !!legacyTop[n.id] || isBomb(n) || zoom >= 1.8;
+        if (n.ring === 'core' || isBomb(n)) return true;
+        return zoom >= 1.8 && n.ring === 'support';
+      }).sort(function (a, b) {
+        if (a.id === selected) return -1;
+        if (b.id === selected) return 1;
+        return (b.core || 0) - (a.core || 0) || (b.r - a.r);
+      });
+    }
+    function relabel() {
+      while (gLabels.lastChild && labelEls.length) { gLabels.removeChild(labelEls.pop()); }
+      var px = svg.clientWidth || 800;
+      var unit = view.w / px;
+      var narrow = px < 560;
+      var fs = (narrow ? 11 : 12) * unit;
+      var placed = [];
+      function overlapsPlaced(b) {
+        for (var i = 0; i < placed.length; i++) {
+          var p = placed[i];
+          if (b.x0 < p.x1 && b.x1 > p.x0 && b.y0 < p.y1 && b.y1 > p.y0) return true;
+        }
+        return false;
+      }
+      // Archetype names: above the circle, else below; the short colour name when the
+      // full one collides; hidden as a last resort (tap a card to see its archetype).
+      var cfs = (narrow ? 11 : 13) * unit;
+      clusterLabels.slice().sort(function (a, b) { return b.c.r - a.c.r; }).forEach(function (item) {
+        var c = item.c, t = item.text;
+        t.style.display = '';
+        t.setAttribute('font-size', cfs.toFixed(2));
+        var texts = [c.title];
+        if (c.title.indexOf(' \u00b7 ') > 0) texts.push(c.title.split(' \u00b7 ')[0]);
+        for (var k = 0; k < texts.length; k++) {
+          t.textContent = texts[k];
+          var w;
+          try { w = t.getComputedTextLength(); } catch (e) { w = texts[k].length * cfs * 0.6; }
+          var spots = [c.y - c.r - 6 * unit, c.y + c.r + cfs + 2 * unit];
+          for (var m = 0; m < spots.length; m++) {
+            var y = spots[m];
+            var x = Math.max(view.x + w / 2 + 4 * unit, Math.min(view.x + view.w - w / 2 - 4 * unit, c.x));
+            var b = { x0: x - w / 2, x1: x + w / 2, y0: y - cfs * 0.9, y1: y + cfs * 0.25 };
+            if (b.y0 < view.y || b.y1 > view.y + view.h || Math.abs(x - c.x) > c.r || overlapsPlaced(b)) continue;
+            t.setAttribute('x', x.toFixed(1));
+            t.setAttribute('y', y.toFixed(1));
+            placed.push(b);
+            return;
+          }
+        }
+        t.textContent = c.title;
+        t.style.display = 'none';
+      });
+      var discs = nodes.filter(function (n) { return !n.out || showOutsiders; });
+      function hits(b) {
+        if (b.x0 < view.x || b.y0 < view.y || b.x1 > view.x + view.w || b.y1 > view.y + view.h) return true;
+        if (overlapsPlaced(b)) return true;
+        for (var j = 0; j < discs.length; j++) {
+          var d = discs[j];
+          if (d === b.n) continue;
+          var cx = Math.max(b.x0, Math.min(d.x, b.x1)), cy = Math.max(b.y0, Math.min(d.y, b.y1));
+          var dx = d.x - cx, dy = d.y - cy;
+          if (dx * dx + dy * dy < d.r * d.r) return true;
+        }
+        return false;
+      }
+      labelCandidates().forEach(function (n) {
+        if (n.x < view.x || n.x > view.x + view.w || n.y < view.y || n.y > view.y + view.h) return;
+        var text = el('text', { 'font-size': fs.toFixed(2), 'class': 'wf-label' + (nearSet[n.id] ? ' near' : '') }, gLabels);
+        text.textContent = n.id;
+        var tw;
+        try { tw = text.getComputedTextLength(); } catch (e) { tw = n.id.length * fs * 0.56; }
+        var gap = 3 * unit + n.r;
+        var opts = [
+          { x: n.x + gap, y: n.y + fs * 0.35, anchor: 'start', x0: n.x + gap, x1: n.x + gap + tw, y0: n.y - fs * 0.6, y1: n.y + fs * 0.5 },
+          { x: n.x - gap, y: n.y + fs * 0.35, anchor: 'end', x0: n.x - gap - tw, x1: n.x - gap, y0: n.y - fs * 0.6, y1: n.y + fs * 0.5 },
+          { x: n.x, y: n.y + gap + fs * 0.85, anchor: 'middle', x0: n.x - tw / 2, x1: n.x + tw / 2, y0: n.y + gap, y1: n.y + gap + fs * 1.05 },
+          { x: n.x, y: n.y - gap - fs * 0.25, anchor: 'middle', x0: n.x - tw / 2, x1: n.x + tw / 2, y0: n.y - gap - fs * 1.05, y1: n.y - gap }
+        ];
+        var chosen = null;
+        for (var i = 0; i < opts.length; i++) {
+          var o = opts[i];
+          o.n = n;
+          if (!hits(o)) { chosen = o; break; }
+        }
+        if (!chosen) {
+          if (n.id !== selected) { gLabels.removeChild(text); return; }
+          // The selected card is always labelled: first spot inside the view, else clamped.
+          chosen = opts.filter(function (o) {
+            return o.x0 >= view.x && o.x1 <= view.x + view.w && o.y0 >= view.y && o.y1 <= view.y + view.h;
+          })[0];
+          if (!chosen) {
+            var cx = Math.max(view.x + tw / 2 + 4 * unit, Math.min(view.x + view.w - tw / 2 - 4 * unit, n.x));
+            var cy = n.y - gap - fs * 0.25 < view.y + fs ? n.y + gap + fs * 0.85 : n.y - gap - fs * 0.25;
+            chosen = { x: cx, y: cy, anchor: 'middle', x0: cx - tw / 2, x1: cx + tw / 2, y0: cy - fs, y1: cy + fs * 0.2 };
+          }
+        }
+        text.setAttribute('x', chosen.x.toFixed(1));
+        text.setAttribute('y', chosen.y.toFixed(1));
+        text.setAttribute('text-anchor', chosen.anchor);
+        placed.push(chosen);
+        labelEls.push(text);
+      });
+    }
+    var relabelSoon = (function () {
+      var pending = false;
+      return function () {
+        if (pending) return;
+        pending = true;
+        (window.requestAnimationFrame || setTimeout)(function () { pending = false; relabel(); });
+      };
+    })();
+
+    // ── view: viewBox zoom / pan ─────────────────────────────────────────
+    function applyView() {
+      svg.setAttribute('viewBox', view.x.toFixed(1) + ' ' + view.y.toFixed(1) + ' ' + view.w.toFixed(1) + ' ' + view.h.toFixed(1));
+      relabelSoon();
+    }
+    function zoomBy(factor, cx, cy) {
+      var w = Math.max(home.w / 10, Math.min(home.w * 1.6, view.w / factor));
+      var f = w / view.w;
+      if (cx == null) { cx = view.x + view.w / 2; cy = view.y + view.h / 2; }
+      view.x = cx - (cx - view.x) * f;
+      view.y = cy - (cy - view.y) * f;
+      view.w = w;
+      view.h = view.h * f;
+      applyView();
+    }
+    function resetView() {
+      var box = boxOf(showOutsiders);
+      var k = Math.max(box.w / home.w, box.h / home.h);
+      view = { x: box.x + box.w / 2 - home.w * k / 2, y: box.y + box.h / 2 - home.h * k / 2, w: home.w * k, h: home.h * k };
+      applyView();
+    }
+    document.getElementById('zoomIn').addEventListener('click', function () { zoomBy(1.4); });
+    document.getElementById('zoomOut').addEventListener('click', function () { zoomBy(1 / 1.4); });
+    document.getElementById('zoomReset').addEventListener('click', resetView);
+    svg.addEventListener('wheel', function (evt) {
+      if (!evt.ctrlKey && !evt.metaKey) return;
+      evt.preventDefault();
+      var rect = svg.getBoundingClientRect();
+      var cx = view.x + (evt.clientX - rect.left) / rect.width * view.w;
+      var cy = view.y + (evt.clientY - rect.top) / rect.height * view.h;
+      zoomBy(evt.deltaY < 0 ? 1.15 : 1 / 1.15, cx, cy);
+    }, { passive: false });
+    var drag = null;
+    var suppressClick = false;
+    svg.addEventListener('pointerdown', function (evt) {
+      if (evt.button !== 0) return;
+      drag = { x: evt.clientX, y: evt.clientY, vx: view.x, vy: view.y, moved: false, id: evt.pointerId };
+      suppressClick = false;
+    });
+    svg.addEventListener('pointermove', function (evt) {
+      if (!drag || evt.pointerId !== drag.id) return;
+      var dx = evt.clientX - drag.x, dy = evt.clientY - drag.y;
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
+      if (!drag.moved) {
+        drag.moved = true;
+        svg.classList.add('dragging');
+        try { svg.setPointerCapture(evt.pointerId); } catch (e) {}
+      }
+      var unit = view.w / (svg.clientWidth || 1);
+      view.x = drag.vx - dx * unit;
+      view.y = drag.vy - dy * unit;
+      applyView();
+    });
+    function endDrag() {
+      if (drag && drag.moved) { suppressClick = true; setTimeout(function () { suppressClick = false; }, 0); }
+      drag = null;
+      svg.classList.remove('dragging');
+    }
+    svg.addEventListener('pointerup', endDrag);
+    svg.addEventListener('pointercancel', endDrag);
+    svg.addEventListener('click', function () { if (!suppressClick) select(null); });
+    window.addEventListener('resize', debounce(relabel, 150));
+    document.addEventListener('keydown', function (evt) { if (evt.key === 'Escape' && selected) select(null); });
+
+    if (outsiderBtn) {
+      outsiderBtn.addEventListener('click', function () {
+        showOutsiders = !showOutsiders;
+        outsiderBtn.setAttribute('aria-pressed', showOutsiders ? 'true' : 'false');
+        gOut.style.display = showOutsiders ? '' : 'none';
+        resetView();
+      });
+    }
+
+    // ── selection + detail ───────────────────────────────────────────────
+    var selected = null;
+    var nearSet = {};
+    function select(id) {
+      if (selected && nodeEls[selected]) nodeEls[selected].classList.remove('sel');
+      selected = id && nodeById[id] ? id : null;
+      nearSet = {};
+      Object.keys(nodeEls).forEach(function (key) { nodeEls[key].classList.remove('near'); });
+      edgeEls.forEach(function (item) { item.el.classList.remove('near'); });
+      if (!selected) {
+        svg.classList.remove('dimmed');
+        renderDetail(null);
+        relabel();
+        return;
+      }
+      nearSet[selected] = true;
+      (adj[selected] || []).forEach(function (e) { nearSet[e.a] = true; nearSet[e.b] = true; });
+      Object.keys(nearSet).forEach(function (key) { if (nodeEls[key]) nodeEls[key].classList.add('near'); });
+      edgeEls.forEach(function (item) { if (item.e.a === selected || item.e.b === selected) item.el.classList.add('near'); });
+      nodeEls[selected].classList.add('sel');
+      svg.classList.add('dimmed');
+      var n = nodeById[selected];
+      if (n.out && !showOutsiders && outsiderBtn) outsiderBtn.click();
+      if (n.x < view.x || n.x > view.x + view.w || n.y < view.y || n.y > view.y + view.h) {
+        view.x = n.x - view.w / 2;
+        view.y = n.y - view.h / 2;
+        applyView();
+      }
+      renderDetail(n);
+      relabel();
+    }
+    function ringText(ring) {
+      return { core: 'core', support: 'support', periphery: 'periphery', island: 'bomb island' }[ring] || '';
+    }
+    function odds(l) {
+      var v = (Math.exp(Number(l) || 0) - 1) * 100;
+      return (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(0) + '%';
+    }
+    function renderDetail(n) {
+      while (detail.firstChild) detail.removeChild(detail.firstChild);
+      if (!n) {
+        detail.textContent = 'Select a card, or search for one, to see where it is played. Drag to pan; use the buttons (or Ctrl + scroll) to zoom.';
+        return;
+      }
+      detail.appendChild(h('h3', n.id));
+      if (n.out) {
+        detail.appendChild(h('p', 'Not tracked in any archetype: too few decks or games for this card in the data.'));
+        return;
+      }
+      var c = clusterById[n.h];
+      var p = h('p');
+      p.appendChild(document.createTextNode('Home archetype: '));
+      var href = cardHref(n.h, n.id);
+      p.appendChild(href ? link(c ? c.title : 'archetype', href) : h('span', c ? c.title : ''));
+      if (n.ring) p.appendChild(document.createTextNode(' · ' + ringText(n.ring)));
+      detail.appendChild(p);
+      var stats = 'In ' + pct(n.play, 0) + ' of its decks';
+      if (n.games) stats += ' · win rate when drawn ' + pct(n.wr) + ' (' + fmtInt(n.games) + ' games)';
+      detail.appendChild(h('p', stats + '.'));
+      if (isBomb(n)) {
+        var bp = h('p', 'Bomb (wins clearly more than the archetype average on its own) in ');
+        var bombIds = (n.bi && n.bi.length) ? n.bi : [n.h];
+        bombIds.forEach(function (cid, i) {
+          var bc = clusterById[cid];
+          var bhref = cardHref(cid, n.id);
+          if (i) bp.appendChild(document.createTextNode(i === bombIds.length - 1 ? ' and ' : ', '));
+          bp.appendChild(bhref ? link(bc ? bc.title : 'archetype', bhref) : h('span', bc ? bc.title : ''));
+        });
+        bp.appendChild(document.createTextNode('.'));
+        detail.appendChild(bp);
+      }
+      var others = (n.pres || []).filter(function (row) { return row[0] !== n.h; });
+      if (others.length) {
+        var q = h('p', 'Also played in: ');
+        others.forEach(function (row, i) {
+          var cl = clusterById[row[0]];
+          var ohref = cardHref(row[0], n.id);
+          if (i) q.appendChild(document.createTextNode(', '));
+          q.appendChild(ohref ? link(cl ? cl.title : 'archetype', ohref) : h('span', cl ? cl.title : ''));
+          q.appendChild(document.createTextNode(' (' + pct(row[2], 0) + (row[1] ? ', ' + ringText(row[1]) : '') + ')'));
+        });
+        detail.appendChild(q);
+      }
+      var syn = (adj[n.id] || []).filter(function (e) { return e.k === 's'; });
+      if (syn.length) {
+        detail.appendChild(h('p', 'Verified synergy partners (win more together than predicted):'));
+        var ul = h('ul');
+        syn.sort(function (a, b) { return (b.l || 0) - (a.l || 0); }).forEach(function (e) {
+          var other = e.a === n.id ? e.b : e.a;
+          var txt = other + ': ' + odds(e.l) + ' odds';
+          if (e.lo != null) txt += ' (95% CI ' + odds(e.lo) + ' to ' + odds(e.hi) + ')';
+          if (e.n) txt += ', ' + fmtInt(e.n) + ' games together';
+          if (e.t === 'tentative') txt += ', tentative';
+          ul.appendChild(h('li', txt));
+        });
+        detail.appendChild(ul);
+      }
+      var cop = (adj[n.id] || []).filter(function (e) { return e.k === 'c'; }).map(function (e) { return e.a === n.id ? e.b : e.a; });
+      if (cop.length) detail.appendChild(h('p', 'Often in the same decks as: ' + cop.slice(0, 6).join(', ') + '.'));
+    }
+
+    function findCard(q) {
+      q = String(q || '').trim().toLowerCase();
+      if (!q) return null;
+      for (var i = 0; i < names.length; i++) if (names[i].toLowerCase() === q) return names[i];
+      for (var j = 0; j < names.length; j++) if (names[j].toLowerCase().indexOf(q) === 0) return names[j];
+      for (var k = 0; k < names.length; k++) if (names[k].toLowerCase().indexOf(q) >= 0) return names[k];
+      return null;
+    }
+    search.addEventListener('change', function () { var hit = findCard(search.value); if (hit) select(hit); });
+    search.addEventListener('keydown', function (evt) {
+      if (evt.key !== 'Enter') return;
+      evt.preventDefault();
+      var hit = findCard(search.value);
+      if (hit) select(hit);
+    });
+
+    applyView();
+    relabel();
+  }
+})();
+</script>
+</body>
+</html>

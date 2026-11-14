@@ -1,0 +1,294 @@
+/* mtgnet.css — shared design tokens and rules for MTGNET pages.
+ *
+ * Dark tokens live on :root and apply everywhere. The light theme is opt-in:
+ * a page that is ready for it puts class="mtg-themed" on <html>; it then
+ * follows prefers-color-scheme, and an explicit data-theme="light|dark" on
+ * <html> (set by MTGNET.theme.toggle(), remembered in localStorage) wins over
+ * the system setting. Pages without the class stay dark exactly as before.
+ * Page-specific / layout-specific rules stay inline in each template.
+ */
+
+:root {
+  --bg: #09111f;
+  --bg-2: #10203a;
+  --panel: rgba(11, 18, 32, 0.92);
+  --panel-2: rgba(18, 30, 52, 0.96);
+  --text: #ecf2fb;
+  --muted: #9dafc8;
+  --line: rgba(126, 157, 197, 0.18);
+  --accent: #5cc8ff;
+  --good: #43d17a;
+  --warn: #f4c95d;
+  --engine: #c084fc;
+  --danger: #ee6c4d;
+  --gold: #f4c95d;
+  --flow-enabler: #2dd4bf;
+  --flow-payoff: #e879f9;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  font: 14px/1.4 var(--font);
+  background: radial-gradient(circle at top, var(--bg-glow, #132849), var(--bg) 58%);
+}
+
+a { color: inherit; text-decoration: none; }
+
+.muted { color: var(--muted); }
+.hidden { display: none !important; }
+
+button {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+button.active {
+  background: rgba(92, 200, 255, 0.18);
+  border-color: rgba(92, 200, 255, 0.45);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--muted);
+  font-size: 12px;
+  background: rgba(255,255,255,0.04);
+}
+.chip small { color: var(--muted); font-size: 11px; }
+
+.tableish { display: grid; gap: 6px; }
+.tableish .row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+.tableish .row:last-child { border-bottom: 0; }
+.tableish .sub { color: var(--muted); font-size: 12px; }
+
+.legend { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* ── Legend panel (collapsible, both graph page types) ─────────────────── */
+.legend-panel {
+  position: fixed;
+  right: 16px;
+  top: 86px;
+  z-index: 8;
+  width: min(340px, calc(100vw - 32px));
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+}
+.legend-panel strong { display: block; margin-bottom: 8px; }
+.legend-grid { display: grid; gap: 8px; }
+.legend-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.legend-samples {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+}
+.legend-node {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid rgba(236, 242, 251, 0.9);
+  background: rgba(92, 200, 255, 0.35);
+}
+.legend-node.sm { width: 10px; height: 10px; }
+.legend-node.md { width: 16px; height: 16px; }
+.legend-node.lg { width: 24px; height: 24px; }
+.legend-node.pick { background: rgba(244, 201, 93, 0.42); }
+.legend-flow {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.25);
+}
+.legend-flow.enabler { border: 2.4px solid var(--flow-enabler); }
+.legend-flow.payoff { border: 2.4px solid var(--flow-payoff); }
+.legend-edge {
+  display: inline-block;
+  width: 40px;
+  border-top: 2px solid rgba(92, 200, 255, 0.9);
+  border-radius: 999px;
+}
+.legend-edge.strong { border-top-width: 6px; }
+.legend-edge.pick { border-top-color: rgba(244, 201, 93, 0.92); }
+.legend-edge.extended {
+  border-top-width: 1px;
+  border-top-style: dashed;
+  opacity: 0.55;
+}
+.legend-edge.none {
+  border-top-width: 0;
+  height: 10px;
+  border: 1px dashed rgba(157, 175, 200, 0.45);
+  width: 40px;
+}
+.legend-area {
+  width: 38px;
+  height: 22px;
+  border-radius: 12px;
+  background: rgba(92, 200, 255, 0.14);
+  border: 1px solid rgba(92, 200, 255, 0.25);
+}
+.legend-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+.legend-toggle .caret { color: var(--muted); font-size: 11px; transition: transform 120ms ease; }
+.legend-panel.collapsed .legend-grid,
+.legend-panel.collapsed .legend-toggle .caret-label { display: none; }
+.legend-panel.collapsed .legend-toggle .caret { transform: rotate(-90deg); }
+
+/* ── Edge density slider ────────────────────────────────────────────────── */
+.edge-density-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.edge-density-control input[type="range"] {
+  width: 120px;
+  accent-color: var(--accent);
+}
+.edge-density-control .edge-density-value {
+  min-width: 34px;
+  text-align: right;
+  color: var(--text);
+}
+
+/* ══ Themed pages (html.mtg-themed): tokens for both themes ══════════════════
+ * Graph tokens: --edge / --coplay are "r, g, b" triples so SVG strokes can mix
+ * their own alpha; mana tints keep every colour identity readable on both
+ * backgrounds (no near-black fills). */
+:root {
+  --bg-glow: #132849;
+  --surface: rgba(9, 17, 31, 0.94);
+  --panel-solid: #0f1a2d;
+  --accent-ink: #04121f;
+  --edge: 92, 200, 255;
+  --coplay: 203, 213, 225;
+  --coplay-alpha: 0.12;
+  --halo: #09111f;
+  --ring-core: rgba(92, 200, 255, 0.11);
+  --ring-support: rgba(92, 200, 255, 0.055);
+  --ring-periphery: rgba(148, 163, 184, 0.035);
+  --ring-line: rgba(126, 157, 197, 0.30);
+  --ring-text: #8193ad;
+  --island-fill: rgba(181, 140, 255, 0.09);
+  --island-line: rgba(181, 140, 255, 0.55);
+  --bomb: #c4a1ff;
+  --bomb-ink: #1b0f33;
+  --pick: #f59e0b;
+  --sig: #f4c95d;
+  --focus: #f8fafc;
+  --node-stroke: rgba(236, 242, 251, 0.62);
+  --mana-w: #f1e7b8;
+  --mana-u: #7fb4e6;
+  --mana-b: #a497a8;
+  --mana-r: #e57c62;
+  --mana-g: #79b886;
+  --mana-m: #d8b65a;
+  --mana-c: #b3bcc9;
+  --shadow: 0 14px 40px rgba(0, 0, 0, 0.32);
+}
+@media (prefers-color-scheme: light) {
+  :root.mtg-themed:not([data-theme="dark"]) {
+    --bg: #f5f7fa; --bg-2: #e9eef5; --bg-glow: #e6edf7;
+    --panel: rgba(255, 255, 255, 0.96); --panel-2: #f0f3f7; --panel-solid: #ffffff;
+    --surface: rgba(245, 247, 250, 0.95);
+    --text: #0f1a2a; --muted: #4b5b70; --line: rgba(15, 26, 42, 0.14);
+    --accent: #0b63c1; --accent-ink: #ffffff; --good: #15803d; --danger: #c2410c; --warn: #a16207;
+    --edge: 11, 99, 193; --coplay: 15, 26, 42; --coplay-alpha: 0.10; --halo: #f5f7fa;
+    --ring-core: rgba(11, 99, 193, 0.085); --ring-support: rgba(11, 99, 193, 0.04);
+    --ring-periphery: rgba(15, 26, 42, 0.025); --ring-line: rgba(15, 26, 42, 0.22); --ring-text: #5b6b80;
+    --island-fill: rgba(124, 58, 237, 0.065); --island-line: rgba(124, 58, 237, 0.45);
+    --bomb: #7c3aed; --bomb-ink: #ffffff; --pick: #b45309; --sig: #a16207; --focus: #0f172a;
+    --flow-payoff: #a21caf; --flow-enabler: #0f766e;
+    --node-stroke: rgba(15, 23, 42, 0.55);
+    --mana-w: #eadb92; --mana-u: #5b9bd5; --mana-b: #8a7d8c; --mana-r: #de6a4f;
+    --mana-g: #5aa36b; --mana-m: #caa23c; --mana-c: #9aa4b2;
+    --shadow: 0 10px 30px rgba(15, 26, 42, 0.14);
+  }
+}
+:root.mtg-themed[data-theme="light"] {
+  --bg: #f5f7fa; --bg-2: #e9eef5; --bg-glow: #e6edf7;
+  --panel: rgba(255, 255, 255, 0.96); --panel-2: #f0f3f7; --panel-solid: #ffffff;
+  --surface: rgba(245, 247, 250, 0.95);
+  --text: #0f1a2a; --muted: #4b5b70; --line: rgba(15, 26, 42, 0.14);
+  --accent: #0b63c1; --accent-ink: #ffffff; --good: #15803d; --danger: #c2410c; --warn: #a16207;
+  --edge: 11, 99, 193; --coplay: 15, 26, 42; --coplay-alpha: 0.10; --halo: #f5f7fa;
+  --ring-core: rgba(11, 99, 193, 0.085); --ring-support: rgba(11, 99, 193, 0.04);
+  --ring-periphery: rgba(15, 26, 42, 0.025); --ring-line: rgba(15, 26, 42, 0.22); --ring-text: #5b6b80;
+  --island-fill: rgba(124, 58, 237, 0.065); --island-line: rgba(124, 58, 237, 0.45);
+  --bomb: #7c3aed; --bomb-ink: #ffffff; --pick: #b45309; --sig: #a16207; --focus: #0f172a;
+    --flow-payoff: #a21caf; --flow-enabler: #0f766e;
+  --node-stroke: rgba(15, 23, 42, 0.55);
+  --mana-w: #eadb92; --mana-u: #5b9bd5; --mana-b: #8a7d8c; --mana-r: #de6a4f;
+  --mana-g: #5aa36b; --mana-m: #caa23c; --mana-c: #9aa4b2;
+  --shadow: 0 10px 30px rgba(15, 26, 42, 0.14);
+}
+:root.mtg-themed { color-scheme: dark; }
+:root.mtg-themed[data-theme="light"] { color-scheme: light; }
+@media (prefers-color-scheme: light) {
+  :root.mtg-themed:not([data-theme="dark"]) { color-scheme: light; }
+}
+.mtg-themed body { background: radial-gradient(circle at top, var(--bg-glow), var(--bg) 58%) no-repeat; background-color: var(--bg); }
+
+/* Mana tints: SVG fills (.mf-*) and HTML pips (.pip-*). M = 3+ colours, C = colourless. */
+.mf-W { fill: var(--mana-w); } .mf-U { fill: var(--mana-u); } .mf-B { fill: var(--mana-b); }
+.mf-R { fill: var(--mana-r); } .mf-G { fill: var(--mana-g); } .mf-M { fill: var(--mana-m); }
+.mf-C { fill: var(--mana-c); }
+.pip-W { background: var(--mana-w); } .pip-U { background: var(--mana-u); } .pip-B { background: var(--mana-b); }
+.pip-R { background: var(--mana-r); } .pip-G { background: var(--mana-g); } .pip-M { background: var(--mana-m); }
+.pip-C { background: var(--mana-c); }
+.pips { display: inline-flex; gap: 2px; vertical-align: middle; flex: none; }
+.pip { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--node-stroke); }
+
+/* Visually hidden but available to assistive technology. */
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0; padding: 0; margin: -1px;
+}
+.skip-link {
+  position: absolute; left: 8px; top: -60px; z-index: 100; padding: 12px 14px; border-radius: 10px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 600;
+}
+.skip-link:focus { top: 8px; }
+
+/* SVG label halo: constant screen-size labels stay readable over edges and rings. */
+.mtg-lbl {
+  fill: var(--text); paint-order: stroke; stroke: var(--halo); stroke-width: 4px;
+  stroke-linejoin: round; pointer-events: none;
+}
